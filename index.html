@@ -54,51 +54,73 @@
         </div>
 
         <ul class="project-grid">
-          <!-- ===== 真實示範卡：∑ Calc Pro ===== -->
           <li class="project-card project-card--lead">
             <div class="project-meta">
               <span class="tag">Web App</span>
-              <span class="tag">Live</span>
+              <span class="tag tag--live">Live</span>
             </div>
             <h3 class="project-title">∑ Calc Pro</h3>
             <p class="project-desc">
-              功能完整的線上計算工具，含繪圖、進階運算與
-              Pro 訂閱授權（Cloudflare Worker + JWT + KV 即時撤銷）。
+              功能完整的線上計算工具：繪圖、進階運算，外加 Pro 訂閱授權
+              （Cloudflare Worker + JWT + KV 即時撤銷）。
+              <br /><strong>目標</strong>：把萬能計算機做成真正的 freemium 產品，
+              從純前端一路演進到安全的伺服器端授權架構。
             </p>
             <div class="project-foot">
-              <span class="project-stack">HTML · CF Worker · KV</span>
+              <span class="project-stack">HTML · CF Worker · KV · JWT</span>
               <a class="project-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">
                 開啟 <span aria-hidden="true">↗</span>
               </a>
             </div>
           </li>
 
-          <!-- ===== 改這裡：複製這個 <li> 來新增專案 ===== -->
           <li class="project-card">
             <div class="project-meta">
-              <span class="tag">改這裡</span>
+              <span class="tag">Infra</span>
+              <span class="tag tag--private">Private</span>
             </div>
-            <h3 class="project-title">專案名稱</h3>
+            <h3 class="project-title">Antigravity-Stack</h3>
             <p class="project-desc">
-              一兩句話講清楚這個專案解決什麼問題、用什麼做的。
+              自訂 MCP 伺服器與整合腳本的中樞，搭配 Hermes Agent CLI 當 runtime；
+              內含 nomad-recon（Reflection + Judge）與 eng-pipeline MCP。
+              <br /><strong>目標</strong>：打造可攜、本地優先的 AI agent 工程基礎設施。
             </p>
             <div class="project-foot">
-              <span class="project-stack">技術標籤</span>
-              <a class="project-link" href="#" >查看 <span aria-hidden="true">↗</span></a>
+              <span class="project-stack">Python · MCP · Hermes CLI</span>
+              <span class="project-note">私有專案</span>
             </div>
           </li>
 
           <li class="project-card">
             <div class="project-meta">
-              <span class="tag">改這裡</span>
+              <span class="tag">Tooling</span>
+              <span class="tag tag--private">Private</span>
             </div>
-            <h3 class="project-title">專案名稱</h3>
+            <h3 class="project-title">Skills Governance</h3>
             <p class="project-desc">
-              一兩句話講清楚這個專案解決什麼問題、用什麼做的。
+              為 215 個 Claude skills 建立 Version + Audit + Test 三維治理框架，
+              1290 回歸案例 99.77% 通過。
+              <br /><strong>目標</strong>：讓大量 skills 可控管、可稽核、可回歸驗證。
             </p>
             <div class="project-foot">
-              <span class="project-stack">技術標籤</span>
-              <a class="project-link" href="#">查看 <span aria-hidden="true">↗</span></a>
+              <span class="project-stack">Python · SQLite · JSONL</span>
+              <span class="project-note">私有專案</span>
+            </div>
+          </li>
+
+          <li class="project-card">
+            <div class="project-meta">
+              <span class="tag">Learning</span>
+              <span class="tag tag--private">Private</span>
+            </div>
+            <h3 class="project-title">Grid Trading Bot</h3>
+            <p class="project-desc">
+              網格交易策略與券商 API 整合的實作練習。
+              <br /><strong>目標</strong>：透過動手做，理解網格交易機制與自動化下單流程。
+            </p>
+            <div class="project-foot">
+              <span class="project-stack">Python</span>
+              <span class="project-note">私有學習專案</span>
             </div>
           </li>
         </ul>
@@ -112,18 +134,23 @@
           <h2 id="writing-heading">Writing &amp; Docs</h2>
         </div>
         <ul class="link-list">
-          <!-- 改這裡：每一條是一篇文件 / 文章 -->
           <li>
-            <a href="#">
-              <span class="link-title">技術文件標題</span>
-              <span class="link-note">一句話摘要 — 之後換成真的連結</span>
-            </a>
+            <div class="link-row">
+              <span class="link-title">∑ Calc Pro — 架構演進</span>
+              <span class="link-note">純前端授權 → Worker JWT → KV-backed 即時撤銷 → Sandbox / Live dual-mode</span>
+            </div>
           </li>
           <li>
-            <a href="#">
-              <span class="link-title">開發筆記標題</span>
-              <span class="link-note">一句話摘要 — 之後換成真的連結</span>
-            </a>
+            <div class="link-row">
+              <span class="link-title">Antigravity-Stack — 工程設計</span>
+              <span class="link-note">Hermes CLI as runtime · nomad-recon Reflection/Judge · eng-pipeline MCP · ADR×4</span>
+            </div>
+          </li>
+          <li>
+            <div class="link-row">
+              <span class="link-title">Skills Governance — 三維治理</span>
+              <span class="link-note">Version 控管 + 調用 Audit + 回歸 Test，215 skills / 1290 cases 99.77% pass</span>
+            </div>
           </li>
         </ul>
       </div>
@@ -137,8 +164,7 @@
         </div>
         <p class="contact-lede">對這些東西有興趣，或想交流學習，歡迎來敲我。</p>
         <ul class="contact-list">
-          <!-- 改這裡：換成你真的 email / 連結 -->
-          <li><a href="mailto:you@example.com">you@example.com</a></li>
+          <li><a href="mailto:boboidvtw+labs@gmail.com">boboidvtw+labs@gmail.com</a></li>
           <li><a href="https://github.com/boboidvtw" target="_blank" rel="noopener">github.com/boboidvtw</a></li>
         </ul>
       </div>
