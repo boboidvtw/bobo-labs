@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skills Governance — 三維治理 · Bobo Labs</title>
+  <meta name="description" content="為 215 個 Claude skills 建立 Version + Audit + Test 三維治理框架的設計與取捨。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · 三維治理</p>
+      <h1 class="article-title">Skills Governance — 怎麼測一個不是程式碼的東西</h1>
+      <p class="article-lede">
+        215 個 Claude skill，主體是 SKILL.md 文件而非可執行程式。
+        要怎麼建立「升版前自動回歸」的治理框架？
+      </p>
+
+      <div class="article-body">
+        <h2>核心矛盾：測什麼？</h2>
+        <p>Skill 主體是給 LLM 看的文件。「測試一個 skill」必須分層：</p>
+        <table>
+          <thead><tr><th>層級</th><th>測什麼</th><th>成本</th></tr></thead>
+          <tbody>
+            <tr><td>Static</td><td>frontmatter 完整、必要章節存在、無 TODO 殘留</td><td>毫秒，無 API</td></tr>
+            <tr><td>Behavioral</td><td>內附 scripts/ 能正常退出</td><td>秒，無 API</td></tr>
+            <tr><td>LLM-driven</td><td>trigger prompt 能否正確觸發</td><td>慢、貴、flaky（延後）</td></tr>
+          </tbody>
+        </table>
+        <p>
+          MVP 選 Static + Behavioral：cheap、deterministic、能在 <code>sgov bump</code>
+          前自動跑、能抓 90% 退化。LLM 層留給 Phase 3.1。
+        </p>
+
+        <h2>三維治理</h2>
+        <table>
+          <thead><tr><th>維度</th><th>機制</th></tr></thead>
+          <tbody>
+            <tr><td>Version</td><td>SemVer + tar.gz 快照 + Changelog + 鎖定快照</td></tr>
+            <tr><td>Audit</td><td>Hook + JSONL + SQLite + <code>sgov audit</code>，新調用即時記錄</td></tr>
+            <tr><td>Maintainability</td><td>14 個 rules + default suite + custom spec + bump regression gate</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Baseline Sweep 揪出的真問題</h2>
+        <p>
+          1,290 個測試案例，<strong>99.77% 通過</strong>（1,287/1,290）。
+          失敗的那幾個正是價值所在：<code>skill-stocktake</code> frontmatter 缺
+          <code>name:</code>（list 看不出，因為 scan 用目錄名 fallback）；
+          <code>perl-testing</code> 內文還有未完成的 <code>TODO:</code>。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>default spec 自動套用</strong>：215 個 skill 不可能逐一手寫 spec。預設套件讓 <code>sgov test all</code> 第一天就有用。</p>
+          <p><strong>規則用裝飾器註冊</strong>：<code>@rule("name")</code> 一行加一個規則；class 階層對 14 個簡單規則太重。維持 stdlib-only。</p>
+          <p><strong>逃生口要可稽核</strong>：bump gate 允許 <code>--skip-tests</code>，但 audit log 會記錄這個規避事件。</p>
+          <p><strong>一個壞規則不該炸掉整個 sweep</strong>：每個規則包 try/except，crash 視為 fail 並繼續。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-15（Phase 1a–3 + baseline fixes）· v1.0.0 · 3,000+ 行 Python · 215 skills 入冊
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

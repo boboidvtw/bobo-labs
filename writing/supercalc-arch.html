@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>∑ Calc Pro — 架構演進 · Bobo Labs</title>
+  <meta name="description" content="從純前端 Crockford 授權碼漏洞，到 Worker JWT + KV-backed 即時撤銷的完整改造紀錄。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · 架構演進</p>
+      <h1 class="article-title">∑ Calc Pro — 從前端漏洞到 KV-backed 撤銷</h1>
+      <p class="article-lede">
+        一個 freemium 計算機，如何在一天內從「任何人都能本地破解」的純前端授權碼，
+        重構成後端可即時撤銷的訂閱系統。
+      </p>
+
+      <div class="article-body">
+        <h2>起點：一個錯誤的安全模型</h2>
+        <p>
+          v3.1 freemium 系統用的是純前端 Crockford 授權碼 —— 驗證邏輯全在瀏覽器，
+          任何人打開 DevTools 都能繞過。問題不是「前端被看到」，而是
+          <strong>沒有任何後端在驗證</strong>。
+        </p>
+
+        <h2>五個 Stage 的改造</h2>
+        <table>
+          <thead><tr><th>Stage</th><th>內容</th></tr></thead>
+          <tbody>
+            <tr><td>1 · Worker JWT</td><td>建立 Cloudflare Worker，HS256 + WebCrypto；端點 /health、/license/issue、/license/validate</td></tr>
+            <tr><td>2 · v3.2 模組化</td><td>index.html -334 行，抽出 5 個 JS 模組，純前端 Crockford 換成 JWT</td></tr>
+            <tr><td>3 · v3.2.1 KV-backed</td><td>引入 KV namespace；/issue 要求 KV status='active' 才簽；/validate 每次查 KV；JWT 1 年→7 天 + 自動續期</td></tr>
+            <tr><td>4 · v3.3.0 Sandbox</td><td>第二個 Sandbox Worker + KV；前端 <code>?sandbox=1</code> 切換；PayPal SDK 動態載入</td></tr>
+            <tr><td>5 · v3.3.1 retry fix</td><td>修正 webhook 時序：對「403 + currentStatus='pending'」也 retry</td></tr>
+          </tbody>
+        </table>
+
+        <h2>最終驗證（Sandbox e2e）</h2>
+        <p>
+          訂閱 <code>I-R2SFXX7U1SW2</code>：建立 → ACTIVATED → KV active；
+          取消 → CANCELLED webhook → KV cancelled；4 秒後 <code>/license/validate</code> 回 401。
+          <strong>即時撤銷成立。</strong>
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>「開源 vs. 收費」是迷思。</strong>前端被看到不是問題，後端驗證才是。架構正確時，整個前端公開都沒事。</p>
+          <p><strong>JWT 短期 + KV 撤銷</strong> vs 純 JWT 長期：訂閱系統必須前者才能即時撤銷。</p>
+          <p><strong>Sandbox 是必需的</strong>，不是 nice-to-have —— 台灣 PayPal P2P 限制讓真實 Live 自我測試不可能。</p>
+          <p><strong>base64UrlEncode 對 binary buffer</strong>：要逐 byte 從 Uint8Array 構造，別把 ArrayBuffer 轉字串再 btoa（會被當 UTF-8 雙重編碼）。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-14（v3.2 → v3.3.1）· 3 commits · 2 Worker · 2 KV namespace · 5 個攻擊向量已防禦
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

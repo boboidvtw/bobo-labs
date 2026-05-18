@@ -1,0 +1,116 @@
+/* Bobo Labs — article layer. Reuses tokens from ../styles.css; only adds prose. */
+
+.article {
+  padding-block: clamp(3rem, 2rem + 5vw, 6rem) var(--space-section);
+}
+
+.article-wrap {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding-inline: var(--wrap-pad);
+}
+
+.back-link {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--duration) var(--ease),
+              border-color var(--duration) var(--ease);
+}
+.back-link:hover { color: var(--color-ink); border-bottom-color: var(--color-accent); }
+
+.article-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.article-title {
+  font-size: clamp(2rem, 1.2rem + 3.5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  max-width: 18ch;
+}
+
+.article-lede {
+  margin-top: 1.5rem;
+  color: var(--color-muted);
+  font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+  max-width: 56ch;
+}
+
+.article-body { margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+
+.article-body h2 {
+  font-size: clamp(1.375rem, 1rem + 1.4vw, 1.875rem);
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--color-ink);
+}
+.article-body h2:first-child { margin-top: 0; }
+
+.article-body h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 2rem;
+}
+
+.article-body p { margin-top: 1.1rem; }
+.article-body ul, .article-body ol { margin-top: 1.1rem; padding-left: 1.4rem; }
+.article-body li { margin-top: 0.5rem; }
+
+.article-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: oklch(95% 0 0);
+  padding: 0.1rem 0.35rem;
+}
+
+.article-body strong { font-weight: 700; }
+
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  font-size: 0.9375rem;
+}
+.article-body th, .article-body td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-line);
+  vertical-align: top;
+}
+.article-body th {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.takeaway {
+  margin-top: 2rem;
+  padding: 1.5rem 1.75rem;
+  border-left: 3px solid var(--color-accent);
+  background: oklch(96.5% 0 0);
+}
+.takeaway p { margin-top: 0.6rem; }
+.takeaway p:first-child { margin-top: 0; }
+
+.article-foot {
+  margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}

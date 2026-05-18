@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Antigravity-Stack — 工程設計 · Bobo Labs</title>
+  <meta name="description" content="nomad-recon 的 Reflection / Judge 設計，與 Antigravity-Stack 工程管線的核心決策。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · 工程設計</p>
+      <h1 class="article-title">Antigravity-Stack — Reflection 與 Judge 的設計取捨</h1>
+      <p class="article-lede">
+        nomad-recon 在 Sprint D 加入 LLM 反思與推薦評分。重點不是「加了 AI」，
+        而是怎麼讓它<strong>不破壞主流程</strong>。
+      </p>
+
+      <div class="article-body">
+        <h2>兩個新模組</h2>
+        <p>
+          <strong>Reflector</strong>（149 行）：決策後生成繁中反思，自動截斷 2000 字符，
+          LLM 失敗回 <code>None</code> 不中斷 recon。<br />
+          <strong>Judge</strong>（140 行）：對推薦品質評 0.0–1.0 分，自動 clamp，
+          評估相似度 / 接受度 / 歷史成功率。
+        </p>
+
+        <h2>五個設計決策</h2>
+        <table>
+          <thead><tr><th>原則</th><th>怎麼落實</th></tr></thead>
+          <tbody>
+            <tr><td>異步優先</td><td>所有 LLM 呼叫 async/await，Reflector/Judge 為 coroutine，不阻塞 recon</td></tr>
+            <tr><td>優雅降級</td><td>LLM 失敗 → 回 None + warning，recon 繼續；反思/評分是 bonus 不是關鍵路徑</td></tr>
+            <tr><td>環境變數開關</td><td><code>NOMAD_ENABLE_REFLECTOR</code> / <code>NOMAD_ENABLE_JUDGE</code> 預設關閉</td></tr>
+            <tr><td>不可變性</td><td>frozen dataclass、pure function 作 prompt builder</td></tr>
+            <tr><td>繁中提示工程</td><td>system / user prompt 與輸出全繁體中文</td></tr>
+          </tbody>
+        </table>
+
+        <h2>品質門檻</h2>
+        <p>
+          187/187 測試通過（Sprint D 特定 13/13），全程 0.84s。
+          所有函數 &lt;50 行、檔案 &lt;800 行、無深層嵌套、無硬編碼值、80%+ 覆蓋率。
+          Code review 收斂到 0 CRITICAL / 0 HIGH。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>把 AI 功能當 bonus，不當關鍵路徑。</strong>「LLM 失敗就回 None、主流程照走」這個降級設計，是讓非確定性元件能安全進產品的前提。</p>
+          <p><strong>環境變數預設關閉</strong>：新能力先 scaffold、可開關，而不是預設啟用後再補救。</p>
+          <p><strong>subagent-driven-development</strong>：9 個任務拆給子代理並行推進，單日 +2101 行跨 17 檔完成。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-07（Antigravity-Stack Phase 4）、2026-05-14（nomad-recon Sprint D）· 4 commits · 187/187 tests
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
