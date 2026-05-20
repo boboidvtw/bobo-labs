@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>∑ Calc — 一天內 v3.5.3 → v3.5.6 與 Pro 端對端驗證 · Bobo Labs</title>
+  <meta name="description" content="深審揪出的兩個 CRITICAL、手機浮動鍵盤、公式庫 +25、揪出兩個 latent engine bug，並把 Pro 全部 8 個賣點端對端驗證一遍。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-20</p>
+      <h1 class="article-title">∑ Calc — 一天的深審、修補、與真實驗證</h1>
+      <p class="article-lede">
+        把 README 上的賣點當招牌，就應該禁得起一條一條走過。
+        今天把 ∑ Calc 從 v3.5.2 推到 v3.5.6、跑完 Pro 全 8 個賣點的端對端驗證，
+        順手挖出兩個從第一版就潛伏的 engine bug。
+      </p>
+
+      <div class="article-body">
+        <h2>v3.5.3 — 深審揪出的兩個 CRITICAL</h2>
+        <p>
+          照 README 的五個賣點逐條對驗，意外發現兩個 CRITICAL：
+        </p>
+        <ul>
+          <li><strong>SEO / footer 從未渲染</strong>：頁面結構上有，但被既有 CSS 規則整段藏掉，等於對搜尋引擎與使用者都不存在。</li>
+          <li><strong>自建公式 XSS</strong>：使用者自訂公式名稱沒做 escape，直接拼回 DOM；只要在公式名稱塞 <code>&lt;img onerror&gt;</code> 之類就能執行。</li>
+        </ul>
+        <p>另外還有一個 MEDIUM：自由輸入式 <code>y=</code> 前綴在某些情境會被重複附加。三個一起在 v3.5.3 修掉。</p>
+
+        <h2>Bug C — 手機 ≤768px 函式無法閉合括號</h2>
+        <p>
+          手機上輸入 <code>sin(</code> 後，要關括號的 <code>)</code> 鍵被軟鍵盤蓋住，等於整個函式輸入流程斷掉。
+          DOM 完全不動，純用 CSS 在 ≤768px 時做一個固定在底部的浮動運算列；
+          桌機完全零回歸。
+        </p>
+
+        <h2>v3.5.5 — 公式庫 +20，順手挖出兩個 latent engine bug</h2>
+        <p>
+          公式庫從 63 條擴到 83 條（+32%），新增「健康」分類。但加進「萬有引力」「普朗克時間」這種極端數量級的公式時，計算引擎直接吐出奇怪的結果。挖下去才發現引擎裡兩個從第一版就有的潛伏 bug：
+        </p>
+        <ul>
+          <li><strong>Math.E regex 誤替換</strong>：正則沒做邊界保護，連 <code>e</code> 結尾的識別字（像 <code>distance</code>、<code>response</code>）都被替成 2.718…，計算當然出錯。</li>
+          <li><strong>toFixed underflow</strong>：超小數量級（如 1e-43）走過 <code>toFixed(n)</code> 會直接歸零；極大值（1e+20）反而被科學記號處理掉，造成顯示截斷。</li>
+        </ul>
+        <p>
+          修完之後：<br />
+          萬有引力 → <code>1.982e+20</code>、普朗克時間 → <code>3.313e-19</code>，數字才終於對得起物理常數。
+        </p>
+
+        <h2>v3.5.6 — 引擎 audit + 健康分類拓展</h2>
+        <p>
+          給計算引擎跑了 12 個邊界 case 的 audit（極大、極小、混合運算、識別字干擾），引擎本身健全、不需要再補。
+          同日把健康分類補到 9 條：
+        </p>
+        <ul>
+          <li>TDEE（男 / 女兩條，套用 Mifflin-St Jeor 後再乘活動係數）</li>
+          <li>體脂率（男 / 女，Deurenberg 公式）</li>
+          <li>每日水分需求</li>
+        </ul>
+
+        <h2>Pro Phase 5 → 8 全部端對端驗證</h2>
+        <p>
+          趁今天版本連推，乾脆把 Pro 全部 8 個對外賣點透過合法的 trial 路徑跑一遍：
+        </p>
+        <table>
+          <thead><tr><th>Phase</th><th>賣點</th><th>驗證結果</th></tr></thead>
+          <tbody>
+            <tr><td>5</td><td>切線 / 積分 / 斜率</td><td>數學閉式解對比，誤差 &lt; 1e-8</td></tr>
+            <tr><td>6</td><td>函數交點 + SVG 匯出</td><td>交點精確、SVG 結構正確</td></tr>
+            <tr><td>7</td><td>統計工具（4 個子功能）</td><td>全綠</td></tr>
+            <tr><td>8</td><td>3D 視覺化（8 個案例）</td><td>全綠 · console 零 error</td></tr>
+          </tbody>
+        </table>
+        <p>
+          這輪驗證沒改任何一行 code，純粹是把賣點對使用者的承諾走一遍。
+          順手糾正了一個之前的誤判：「frozen 物件無法 mock」其實有合法路徑，是當初繞太遠。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>對自己賣點做深審</strong>：把 README 當測試清單一條條走，會挖出比想像中嚴重的問題（SEO 從沒渲染、XSS 漏洞），這比加新功能值錢得多。</p>
+          <p><strong>極端值是 latent bug 的照妖鏡</strong>：今天的兩個 engine bug 都是被「萬有引力」「普朗克時間」逼出來的；正常數量級永遠不會發現。</p>
+          <p><strong>手機修復不一定要動 DOM</strong>：純 CSS 浮動列就解了，桌機零回歸；越是 UI 改動越該找最小改動面的解法。</p>
+          <p><strong>賣點驗證 ≠ 寫新測試</strong>：把對外承諾走完一遍是另一種形式的迴歸測試，而且直接對得起 README。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-20 · v3.5.3、v3.5.5、v3.5.6 三版本連推 · 公式庫 63 → 88 · Pro 8 個賣點 100% 驗證
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
