@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>當文件說謊 — 一場公式庫一致性深審 · Bobo Labs</title>
+  <meta name="description" content="∑ Calc v3.5.7：一個掛錯名三個版本的公式、三份各自脫節的文件。談軟體演進時文件如何無聲地過時，以及怎麼系統性地揪出來。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-21</p>
+      <h1 class="article-title">當文件說謊 — 一場公式庫一致性深審</h1>
+      <p class="article-lede">
+        軟體會演進，文件不會自己跟上。今天替 ∑ Calc 做一輪公式庫一致性審查，
+        揪出一個掛了錯名的公式、和三份各自和實機脫節的文件。
+        bug 不一定藏在程式裡——有時候它藏在你對使用者的承諾裡。
+      </p>
+
+      <div class="article-body">
+        <h2>一個掛錯名的公式</h2>
+        <p>
+          ∑ Calc 的健康分類有一條「目標心率」公式，名稱標的是
+          <strong>Karvonen 法</strong>。但實際算式是
+          <code>(220 − 年齡) × 強度%</code>。
+        </p>
+        <p>
+          這其實是另一個方法——「最大心率百分比法」（%MaxHR）。
+          真正的 Karvonen 公式需要一個額外的輸入：靜息心率，
+          算的是 <code>(最大心率 − 靜息心率) × 強度% + 靜息心率</code>。
+          兩種方法都廣為使用、都正確，但它們不是同一個東西。
+        </p>
+        <p>
+          換句話說：公式本身沒錯，計算結果也對，
+          錯的只是它掛了一個它配不上的名字。
+          修法選了最誠實的一種——不動算式、把名稱改成它真正是的
+          「目標心率（%最大心率）」。要補一個有靜息心率變數的真 Karvonen
+          也行，但那是新增功能，不是修 bug。
+        </p>
+
+        <h2>三份說謊的文件</h2>
+        <p>
+          順著這條線往外掃，發現對外文件比公式本身更不老實：
+        </p>
+        <ul>
+          <li>
+            <strong>README 的公式分類表</strong>寫著「幾何 / 物理 / 化學 / 財務」四類。
+            但實機的分類頁籤是「數學 / 物理 / 金融 / 工程 / 健康 / 科學」六類——
+            連分類名稱都對不上，更別說那張表還停在「20+、30+」這種模糊數字。
+          </li>
+          <li>
+            <strong>app 內的說明區</strong>有兩處數字：一處寫「47 條公式、五大分類」，
+            另一處寫「共 83 條」。實際上是 88 條、六大分類。
+            兩個數字、兩個都過時、而且彼此還不一致。
+          </li>
+          <li>
+            <strong>docs/FORMULAS.md</strong>——README 指著它說「完整公式清單」——
+            自第一版發布後就再也沒被動過，缺了後來新增的數十條公式和整個健康分類。
+          </li>
+        </ul>
+
+        <h2>為什麼文件會說謊</h2>
+        <p>
+          沒有人是故意的。每次加公式，改的是程式裡的資料結構；
+          而文件是另一個檔案、另一個地方。功能上線了、測試過了、使用者也在用了，
+          但那句「內建 47 條公式」還靜靜躺在說明頁裡，沒有任何訊號提醒它該改。
+        </p>
+        <p>
+          數字型的承諾特別脆弱。「47 條」「83 條」這種寫死在文字裡的數量，
+          每加一條公式就過時一次。它不會報錯、不會讓測試變紅，
+          只會慢慢地、無聲地，變成一句謊話。
+        </p>
+
+        <h2>怎麼修</h2>
+        <p>
+          這次的修法是把文件重新對齊實機，當成單一事實來源：
+        </p>
+        <ul>
+          <li>公式 #93 改名，README 與 app 說明同步。</li>
+          <li>README 的分類表（中英文版）重建為實機六分類，逐欄填上實際數量與範例。</li>
+          <li>docs/FORMULAS.md 整份重建為完整 88 條清單，並補上健康公式的方法依據。</li>
+          <li>所有「47 條 / 83 條 / 五大分類」過時敘述，一次清乾淨。</li>
+        </ul>
+        <p>
+          收尾時做了一件最重要的事：在本機把改過的版本跑起來，
+          確認那條改名的公式還是算得出正確結果——
+          名字改了，數學不能變。代入年齡 30、強度 70%，
+          得到 133，跟手算一致。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>能從程式導出的數字，就別手寫進文件</strong>：「47 條公式」這種承諾每次擴充都會過時。要嘛自動產生，要嘛寫成「80+」這種不會錯的模糊值。</p>
+          <p><strong>命名是一種承諾</strong>：一個演算法叫什麼名字，使用者會據此理解它在做什麼。掛錯名比沒有名更糟——它讓人以為自己懂了。</p>
+          <p><strong>審查不只問「有沒有 bug」，也問「文件還算不算數」</strong>：把 README 的每一句話當成可驗證的主張去對，會發現最老的謊言往往躲在最沒人看的角落。</p>
+          <p><strong>修文件不能改數學</strong>：任何「只是改個名字」的修補，都要實際驗算一次，確認行為真的沒變。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-21 · ∑ Calc v3.5.7 · 公式 #93 改名 · 三份文件對齊實機 · 公式庫 88 條
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
