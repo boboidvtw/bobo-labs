@@ -20,6 +20,10 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-21** — 新增 Writing 文章 `2026-05-21-formula-audit.html`（∑ Calc v3.5.7 公式庫
+  一致性深審日誌：揪出一條掛錯名的「目標心率」公式與三份和實機脫節的文件）。
+  Index Writing 區置頂新條目。
+  Added daily-log article on a formula-library consistency audit; pinned to top of Writing.
 - **2026-05-20** — 新增 Writing 文章 `2026-05-20-supercalc-day.html`（∑ Calc 一日深審日誌：
   v3.5.3→v3.5.6 三版連推、手機 Bug C 浮動列、揪出兩個 latent engine bug、Pro 全 8 賣點端對端驗證）。
   Index Writing 區置頂新條目，採時間倒序。
