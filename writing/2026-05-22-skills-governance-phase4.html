@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>替監工裝上儀表板 — Skills Governance Phase 4 · Bobo Labs</title>
+  <meta name="description" content="一個管著兩百多個 skills 的治理框架，自己卻沒有一塊能一眼看懂全局的畫面，也沒有任何測試保護它的程式碼。今天補完觀測儀表板、演化引擎與單元測試——然後引擎剛蓋好就告訴我：目前沒事。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-22</p>
+      <h1 class="article-title">替監工裝上儀表板 — Skills Governance Phase 4</h1>
+      <p class="article-lede">
+        一個管著兩百多個 skills 的治理框架，自己卻沒有一塊能一眼看懂全局的畫面，
+        也沒有任何測試保護它的程式碼。今天補完這兩塊，順手蓋了一個會自己找問題的演化引擎——
+        然後它剛蓋好就告訴我：目前沒事。而那是對的。
+      </p>
+
+      <div class="article-body">
+        <h2>三件待辦，做著做著只剩兩件</h2>
+        <p>
+          Phase 4 在我的筆記裡是三個候選：把治理層同步上 GitHub、做一個網頁儀表板、
+          寫一個 skill 演化引擎。動工的第一件事是確認同步——
+          結果發現它早在框架發布當天就完成了。同步腳本裡一直有那段邏輯，
+          本機和遠端逐檔比對完全一致。
+        </p>
+        <p>
+          筆記停在「待辦」，現實已經做完了。三件變兩件不是因為偷懶，
+          是因為筆記比現實老。這件事本身就是個提醒：
+          動工前先逐項驗證清單上的每一條到底是不是真的還沒做，
+          不要照單全收過去的自己寫下的東西。
+        </p>
+
+        <h2>替散落的數字裝上一塊畫面</h2>
+        <p>
+          治理框架累積了三種資料：skill 的清單與版本、每次調用的稽核紀錄、
+          回歸測試的結果。它們各自待在不同的地方，要看全局得自己手動拼。
+        </p>
+        <p>
+          儀表板做的事就是把這三股資料併成一頁靜態 HTML——
+          CSS 和 JS 全部內嵌、零外部依賴，打開就是完整的一頁。
+          五個區段：總覽的數字卡、清單涵蓋率長條圖、測試健康度、稽核活動、
+          以及一張可篩選可排序的 skill 清單表。
+          風格刻意走技術控制台的調性，不套泛用模板。
+        </p>
+        <p>
+          跑出來的數字：215 個 skills、其中 15 個納入完整治理、
+          1290 個回歸測試案例、2 筆稽核紀錄。最後那個「2」，等一下會變成這天的重點。
+        </p>
+
+        <h2>一個會自己找問題的引擎</h2>
+        <p>
+          演化引擎想回答的問題只有一句：「哪個 skill 現在最該被處理？」
+        </p>
+        <p>
+          它看六種訊號，每種有自己的權重與嚴重度：測試失敗（最重）、
+          稽核高失敗率、稽核中失敗率、有在用但沒納管、回應太慢、描述寫得太弱。
+          一個 skill 如果同時踩到多個訊號，分數會加總，
+          最後依總分排序，把最該動手的排到最前面。
+        </p>
+        <p>
+          細節上放了兩個防呆：稽核類訊號要求至少累積到一定筆數才採信，
+          避免一兩筆資料就誤判；延遲訊號設了一個地板值，太低的數字不算「慢」。
+          這些不是為了讓引擎多說話，是為了讓它在資料還稀疏的時候別亂喊。
+        </p>
+
+        <h2>剛蓋好，就沒話說</h2>
+        <p>
+          然後是這天最誠實的一刻。引擎蓋好、跑下去——它回報：沒有候選。
+        </p>
+        <p>
+          不是壞掉。是現況真的沒事：所有測試都綠、稽核紀錄只有兩筆
+          （低於採信門檻）、每個 skill 的描述都夠長。
+          引擎看遍六種訊號，每一種都沒被觸發，於是它正確地閉上嘴。
+        </p>
+        <p>
+          這逼我想清楚一件事：一個分析工具「沒有輸出」有兩種可能——
+          它壞了，或者真的沒事。差別在於你有沒有為「沒事」設計過。
+          如果空狀態是程式裡沒處理到的縫隙，那它就是 bug；
+          如果空狀態是被想過、被測過、會明確說出「目前無候選」的一條路徑，
+          那它就是一個正確的答案。所以引擎現在能說的話不多，
+          但它說的每一句都可信。等稽核資料累積起來，它才會真的開始有事可報。
+        </p>
+
+        <h2>連監工自己也要被監工</h2>
+        <p>
+          最後一塊有點諷刺。這個框架的工作，就是替兩百多個 skills 做版本控管、
+          稽核、回歸測試——但框架自己的那支 CLI 程式，一行測試都沒有。
+          監工從來沒被監工過。
+        </p>
+        <p>
+          所以這天補上了 20 個單元測試：11 個測演化引擎的評分、合併、排序、
+          門檻與地板，9 個測儀表板的 HTML 渲染、除零安全、跳脫處理。
+          全部用語言內建的測試工具，不裝任何額外套件，
+          跟框架一貫的「只用標準函式庫」原則一致。20 個全綠。
+        </p>
+        <p>
+          評分引擎的核心邏輯不好直接測——它得去讀真實資料。
+          解法是把資料來源換成合成資料注進去，
+          這樣就能精準餵一個「壞掉的 skill」進去，
+          確認它真的算出高分、真的被排到最前面。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>筆記會比現實老</strong>：動工前先逐項驗證待辦清單是不是真的還沒做。照單全收過去的自己，會白做或漏做。</p>
+          <p><strong>「沒有輸出」要嘛是 bug，要嘛是答案</strong>：差別在於空狀態有沒有被設計過、測試過。為「資料不足」寫一條明確路徑，沉默才會變成可信的沉默。</p>
+          <p><strong>工具也要被自己的標準檢驗</strong>：一個做治理的框架，自己的程式碼卻沒測試——最容易被忽略的，往往是監工本身。</p>
+          <p><strong>防呆是為了讓工具懂得閉嘴</strong>：採信門檻和地板值存在的意義，不是讓引擎多說，是讓它在資料不足時別亂說。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-22 · Skills Governance v1.1.0 · 新增觀測儀表板與六訊號演化引擎 · 215 skills 治理 · 20 單元測試全綠
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
