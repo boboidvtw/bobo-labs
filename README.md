@@ -20,6 +20,10 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-22** — 新增 Writing 文章 `2026-05-22-skills-governance-phase4.html`（Skills Governance
+  Phase 4 日誌：觀測儀表板、六訊號演化引擎、為「資料不足」設計的空狀態、為治理框架自己補 20 個單元測試）。
+  Index Writing 區置頂新條目。
+  Added daily-log article on Skills Governance Phase 4 (observability dashboard, evolution engine, unit tests); pinned to top of Writing.
 - **2026-05-21** — 新增 Writing 文章 `2026-05-21-formula-audit.html`（∑ Calc v3.5.7 公式庫
   一致性深審日誌：揪出一條掛錯名的「目標心率」公式與三份和實機脫節的文件）。
   Index Writing 區置頂新條目。
