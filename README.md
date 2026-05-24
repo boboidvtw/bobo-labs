@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-24** — 再補貼 3 篇先前工作的 Writing 文章（5/15–5/18 的舊落差）：
+  `2026-05-18-pages-cert-stuck.html`（GitHub Pages 憑證 pipeline 卡死的檔案層級重置解法）、
+  `2026-05-17-bobo-labs-origin.html`（站台「為何存在」的四輪需求釐清歷程）、
+  `2026-05-15-test-the-tests.html`（測試框架自己也得被測——3 失敗中 1 真實 bug + 2 規則偽陽性）。
+  Index Writing 區依時間倒序插入。
+  Backfilled 3 more daily-log articles for older 5/15–5/18 work (GitHub Pages cert
+  troubleshooting, site-origin Q&amp;A, and a meta-lesson on testing the test framework).
 - **2026-05-24** — 補貼 4 篇先前工作的 Writing 文章（5/21–5/22 的日誌落差）：
   `2026-05-22-supercalc-a11y.html`（∑ Calc v3.6.0 WCAG 強化 + 5 個耦合陷阱）、
   `2026-05-22-supercalc-v359.html`（nCr 大數溢位 + 三角浮點殘渣 + 公式破百）、
