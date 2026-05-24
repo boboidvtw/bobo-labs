@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>用 subagent 跑九個任務 — nomad-recon Sprint D 的一日 · Bobo Labs</title>
+  <meta name="description" content="九個任務、一天、187 個測試全綠。但這天真正學到的不是「速度」，是兩件設計上的事——subagent-driven 開發模式怎麼安排切片，以及為什麼 graceful degradation 必須是契約而不是禮貌。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-14</p>
+      <h1 class="article-title">用 subagent 跑九個任務 — nomad-recon Sprint D 的一日</h1>
+      <p class="article-lede">
+        九個任務、一天、187 個測試全綠。但這天真正學到的不是「速度」，是兩件設計上的事——
+        subagent-driven 開發模式怎麼安排切片，以及為什麼 graceful degradation
+        必須是契約而不是禮貌。
+      </p>
+
+      <div class="article-body">
+        <h2>Sprint D 要做什麼</h2>
+        <p>
+          nomad-recon 是個 MCP server，會替我做研究、回傳結構化結果。
+          Sprint D 想加兩塊新東西到它的 learning 層：
+        </p>
+        <p>
+          <strong>Reflector</strong>——每次決策跑完，呼叫 LLM 寫一段「事後反思」，
+          記錄當下情境、選擇了什麼、結果如何、有沒有異常。下次遇到類似情境時，這些反思就是參考。
+        </p>
+        <p>
+          <strong>Judge</strong>——當系統推薦「過去類似情境的決策」給未來的查詢時，
+          用 LLM 評分這個推薦本身有多好（0.0–1.0）。好的推薦會被優先採用，差的會被冷處理。
+        </p>
+        <p>
+          兩塊都涉及 LLM 呼叫、SQLite schema 變動、儀表板更新。如果照傳統順序做，
+          光是「Reflector 寫好 → 整合進 navigator → 寫測試 → 加進儀表板」這條鏈
+          可能就要兩三天，更別說還要做 Judge。
+        </p>
+
+        <h2>切九片：把任務拆成可獨立做的 subagent 工作單</h2>
+        <p>
+          所以這天試了一個不同的安排：把 Sprint D 整包拆成 9 個任務切片，
+          每個切片的接口都明確、依賴單純、可以丟給 subagent 各自並行做。
+        </p>
+        <p>
+          切法是這樣：
+        </p>
+        <p>
+          1. Reflector 核心模組——async 函式、prompt engineering、降級 None。<br>
+          2. Judge 核心模組——async 函式、評分 clamp、無效回應處理。<br>
+          3. Reflection 接到 decision_logger——加一個 update_reflection 方法。<br>
+          4. 把 Reflector 串進 navigator 主流程——在 learning hook 之後。<br>
+          5. Judge 事件記錄——新表 recommendation_judge、寫入 API。<br>
+          6. Analytics 查詢——judge_stats、poor_recommendations 兩個 query。<br>
+          7. Dashboard 更新——加 JUDGE SCORES 區段。<br>
+          8. 端對端測試——完整流程跑通。<br>
+          9. 文件——README、規劃文檔。
+        </p>
+        <p>
+          每一片都有明確的「輸入」「輸出」「測試標準」。Subagent 接到任務，能各自完成，
+          只在整合點與我對齊。九片大多可以重疊推進——這就是這天能一日收工的關鍵。
+        </p>
+
+        <h2>切片要切得對，靠的是先想清楚資料流</h2>
+        <p>
+          切九片聽起來像勞動分工，實際上更接近「把資料流畫出來」這件事。
+        </p>
+        <p>
+          一個錯誤的切法是「按時間切」：早上做 Reflector、下午做 Judge、晚上做測試。
+          這種切法子任務之間還是順序依賴的，subagent 沒辦法並行。
+        </p>
+        <p>
+          正確的切法是「按資料流切」：Reflector 跟 Judge 兩條鏈各自獨立——
+          各自有自己的 module、各自接到 decision_logger 不同欄位、各自有自己的測試。
+          只有在最後的 navigator 整合點才匯合。每條鏈內部又能再切（核心 → 接點 → 測試 → 儀表板），
+          每塊都能獨立做。
+        </p>
+        <p>
+          <strong>切片好不好，看的是接口跟依賴有沒有想清楚。
+          切錯了，subagent 互相等；切對了，subagent 各跑各的。</strong>
+          這跟微服務拆分的設計哲學是一樣的，只是 timescale 縮短到「一天之內」。
+        </p>
+
+        <h2>第二件事：graceful degradation 是契約</h2>
+        <p>
+          Reflector 跟 Judge 都呼叫外部 LLM，外部 LLM 隨時可能失敗——
+          token 用完、網路掉、模型超時。這天最重要的設計決定，是怎麼處理這種失敗。
+        </p>
+        <p>
+          錯誤的處理：LLM 失敗 → 整個 navigator.research() 拋例外、recon 流程中斷、查詢失敗回給上層。
+        </p>
+        <p>
+          正確的處理：LLM 失敗 → Reflector / Judge 回 None、寫 warning log、
+          recon 流程當作這次「沒有反思」「沒有評分」繼續跑完。
+          反思跟評分是 bonus feature，不是關鍵路徑。
+        </p>
+        <p>
+          這個設計需要兩個明確的承諾：
+        </p>
+        <p>
+          <strong>第一，Reflector / Judge 的回傳型別是 Optional[X]。</strong>
+          不是「通常會回 X，偶爾出錯」，是「型別本身就允許 None」。呼叫方必須處理 None 的情況——
+          這不是禮貌，這是型別系統強制要求。
+        </p>
+        <p>
+          <strong>第二，bonus 失敗不能影響主流程的成功訊號。</strong>
+          recon 在沒有反思/評分下仍然回傳完整的研究結果。
+          上層永遠不會看到「因為 LLM 掛了所以你的查詢失敗」這種訊息。
+        </p>
+        <p>
+          這個取捨在環境變數層也有對應的開關：NOMAD_ENABLE_REFLECTOR / NOMAD_ENABLE_JUDGE
+          各自獨立。三種狀態都得能正常運作——兩個都開、一個開一個關、兩個都關。
+          每種狀態都被測試過。<strong>系統不能在「附加功能」上脆弱。</strong>
+        </p>
+
+        <h2>傳統中文 prompt：一個小但重要的選擇</h2>
+        <p>
+          Reflector 和 Judge 的 system prompt 都是繁體中文寫的。
+        </p>
+        <p>
+          這不只是「使用者習慣中文」的偏好問題——是因為這個 recon 系統服務的查詢通常是繁中，
+          反思內容也要被同一個我（或同樣使用繁中的下次查詢）讀懂。
+          用英文 prompt → 模型回英文反思 → 下次查詢時要翻譯、要對齊術語、要重新理解。
+          全程繁中省掉了這層 friction。
+        </p>
+        <p>
+          LLM 的 prompt 語言選擇是個常被低估的設計決定——
+          它影響的不只是輸出，還影響整個 downstream 的可讀性與一致性。
+        </p>
+
+        <h2>結果：187/187，但這不是重點</h2>
+        <p>
+          全部跑完是 187 個測試案例全綠、Sprint D 特定的 13 個測試全綠、
+          4 個 commit push 到 main、+2101 行跨 17 個檔案。
+        </p>
+        <p>
+          但「一天做完」這個結果不是這天最重要的東西。重要的是兩個原則被驗證可行：
+          切片切對了 subagent 真的能並行推、graceful degradation 寫成契約後上層真的不受影響。
+          這兩個原則可以複製到下一個 sprint、下一個專案。
+          一天的速度只是這次的結果，原則才是可帶走的。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>切片要按資料流切，不要按時間切</strong>：按時間切 subagent 互相等；按資料流切各跑各的。切片好不好，看接口跟依賴有沒有想清楚。</p>
+          <p><strong>Graceful degradation 要寫進型別</strong>：Reflector 回 Optional[str]，不是「通常回 str 偶爾出錯」。呼叫方被型別系統強制處理 None——這是契約，不是禮貌。</p>
+          <p><strong>Bonus 功能失敗不能拖垮主流程</strong>：附加功能掛了、主功能要照常運作。三種狀態（都開、半開、都關）都得能跑、都得有測試。</p>
+          <p><strong>Prompt 語言是設計決定</strong>：用什麼語言寫 system prompt，影響 downstream 整條鏈的可讀性與一致性。不是偏好，是架構選擇。</p>
+          <p><strong>速度是結果，原則才能帶走</strong>：一天完成 187 測試很爽，但下次能不能複製？要看當天用了什麼原則。原則才是真正的累積。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-14 · nomad-recon Sprint D · Reflector + Judge LLM 整合 · 9 任務 · 187/187 tests passing · +2101 lines across 17 files
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
