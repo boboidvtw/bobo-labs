@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>當「點擊測試」揪出兩個沒人會回報的 bug — ∑ Calc v3.5.8 · Bobo Labs</title>
+  <meta name="description" content="一個產品上線一年，被點過數萬次，卻有兩個 bug 從來沒人回報——絕對值鍵每按必出錯，CSV 匯出對 89% 的使用情境靜默崩潰。這天我用 90 個自動化點擊揪出它們，順手把 7 顆物理常數升級成 SI 2019 精確值。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-21</p>
+      <h1 class="article-title">當「點擊測試」揪出兩個沒人會回報的 bug — ∑ Calc v3.5.8</h1>
+      <p class="article-lede">
+        一個產品上線一年、被點過數萬次，卻有兩個 bug 從來沒人回報——
+        絕對值鍵每按必出錯，CSV 匯出對 89% 的使用情境靜默崩潰。
+        這天我用 90 個自動化點擊揪出它們，順手把 7 顆物理常數升級成 SI 2019 精確值。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼平常用不出來的 bug 還是 bug</h2>
+        <p>
+          這兩個 bug 之所以沒人回報，不是因為它們「不嚴重」，是因為它們在「不夠多人會走的路徑」上。
+        </p>
+        <p>
+          絕對值鍵 |x| 不在主鍵盤面，要按工具列裡的特殊符號才會出現。
+          多數人遇到 |3 − 9| 會口算成 6，沒按那顆按鈕。
+        </p>
+        <p>
+          CSV 匯出是設定面板裡的功能，多數人按完計算就走了，不會點匯出。
+          就算點了，看到「沒檔案下載」也只會懷疑自己的瀏覽器，不會回報 bug。
+        </p>
+        <p>
+          這種 bug 不是「使用者沒發現」，是「使用者沒走到那條路」。
+          唯一能揪出來的方法，是把所有路徑都自動走一遍。
+        </p>
+
+        <h2>90 個點擊案例怎麼擺</h2>
+        <p>
+          5 大分頁（計算 / 單位 / 匯率 / 公式 / 儲存）加 Header 的功能鍵，
+          列出來大約 90 個可點擊按鈕。一個個手點要超過 30 分鐘，還沒辦法穩定重做。
+        </p>
+        <p>
+          所以寫個自動化 helper：用 preview_eval 拿到目前可見的按鈕（每個分類各有隱藏的網格，
+          要用 offsetParent !== null 過濾），然後 preview_click 逐一點。
+          每按一顆截一次圖，看顯示有沒有壞掉。
+        </p>
+        <p>
+          途中有個有趣的陷阱：helper 找按鈕時用 textContent === "計算" 比對，
+          結果誤中了「計算」這個分頁 tab 而非「計算公式」這個按鈕——兩個按鈕剛好同字。
+          改成用 id 鎖定（#calculateFormulaBtn）才正常。
+          <strong>多同字按鈕在點擊測試裡是地雷，務必用 id 或 scope 限定。</strong>
+        </p>
+
+        <h2>Bug #1：絕對值鍵每按必出錯</h2>
+        <p>
+          按 |7| 出現 Error。看程式碼：
+        </p>
+        <p>
+          .replace(/\|/g, 'Math.abs(')
+        </p>
+        <p>
+          這條把「每個」豎線都換成 Math.abs(，缺對應的閉括號。
+          |7| 變成 Math.abs(7Math.abs( ——語法錯誤、Math.abs 沒收，整個運算式炸掉。
+        </p>
+        <p>
+          解法：成對轉換。
+        </p>
+        <p>
+          .replace(/\|([^|]*)\|/g, 'Math.abs($1)')
+        </p>
+        <p>
+          這個正則匹配「一對豎線之間沒有豎線的內容」，整對換成 Math.abs(內容)。
+          |7| → Math.abs(7)，|3 − 9| → Math.abs(3 − 9)，全綠。
+        </p>
+        <p>
+          這個 bug 在說明文件第 1804 行白紙黑字寫著 abs (|)——
+          也就是說「已宣傳的功能」從上線那天起就沒運作過。
+        </p>
+
+        <h2>Bug #2：CSV 匯出對 89% 的歷史紀錄靜默崩潰</h2>
+        <p>
+          這個更糟。匯出歷史成 CSV，沒檔案下載、沒錯誤訊息、toast 也不跳。
+          按了等於沒按。
+        </p>
+        <p>
+          開 console 才看到 TypeError：row.result.replace is not a function。
+          原來 row.result 多數情況是 Number（程式碼把計算結果 toFixed(12) 後 parseFloat 存進去）。
+          Number 沒有 .replace。
+        </p>
+        <p>
+          但更陰險的是「為什麼這個錯誤被吃掉」——
+          錯誤發生在 forEach 的 callback 內，這層是 event listener 起點。
+          瀏覽器把 listener 內的例外只寫進 console，不會往呼叫方拋。
+          我的 try/catch 包在外面（包 exportBtn.click()）抓不到任何東西，
+          就誤以為「沒丟錯就是成功」。
+        </p>
+        <p>
+          解法兩部分。技術修法：把 row.result 包成 String() 再 .replace。
+          設計修法（更重要）：<strong>「element.click() 之後沒拋錯」不等於「event listener 內沒拋錯」。</strong>
+          要真的測 listener 行為，要嘛直接複製 listener 的邏輯來測，
+          要嘛攔截下游副作用（這次例子是「有沒有觸發 toast」）。
+        </p>
+        <p>
+          順手量了一下實際使用情境：歷史紀錄 45 筆中 40 筆（89%）是 number 型結果。
+          也就是說，這個功能對絕大多數人「日常完全不可用」一年了。
+        </p>
+
+        <h2>物理常數升級：從 4 位近似到 SI 2019 精確值</h2>
+        <p>
+          抓完 bug 之後，使用者追問了一句「都修好之後還能做什麼」。
+          看了一下 7 顆物理常數按鈕，全是 4 位有效數字的近似值，這是教科書級別、但對追求精準的人會不夠。
+        </p>
+        <p>
+          升級成 SI 2019 與 CODATA 精確值：
+        </p>
+        <p>
+          光速 c：2.998×10⁸ → 299,792,458（SI 精確定義，無小數點）<br>
+          普朗克 h：6.626×10⁻³⁴ → 6.62607015×10⁻³⁴（SI 2019）<br>
+          波茲曼 kB：1.381×10⁻²³ → 1.380649×10⁻²³（SI 2019）<br>
+          引力 G：6.674×10⁻¹¹ → 6.6743×10⁻¹¹（CODATA 2018）<br>
+          亞佛加厥 NA：6.022×10²³ → 6.02214076×10²³（SI 2019）<br>
+          氣體 R：8.314 → 8.314462618<br>
+          電子電荷 ec：1.602×10⁻¹⁹ → 1.602176634×10⁻¹⁹（SI 2019）
+        </p>
+        <p>
+          順手把公式庫裡用到這些常數的 3 條公式（庫倫力、萬有引力、E = hf）也同步升級，
+          避免「按鈕一個值、公式內嵌另一個值」的隱性不一致。
+        </p>
+        <p>
+          指數顯示尾隨零（toPrecision(10) 把 6.626×10⁻³⁴ 渲染成 6.626000000×10⁻³⁴）順手修掉：
+          拆 mantissa 過 parseFloat 去零後再接回指數字串。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>沒人回報不等於沒 bug</strong>：絕對值鍵跟 CSV 匯出全壞了一年，因為沒夠多人走到那條路徑。要找這種 bug 只能靠系統性走過所有按鈕。</p>
+          <p><strong>多同字按鈕用 textContent 點會誤中</strong>：tab「計算」和按鈕「計算公式」同字。點擊測試裡的 helper 一律用 id 或 scope 限定，不要靠文字內容比對。</p>
+          <p><strong>element.click() 之後沒拋錯 ≠ listener 內沒拋錯</strong>：event listener 內的例外只進 console，不會往呼叫方拋。要驗證 listener 行為要看下游副作用，不要靠 try/catch。</p>
+          <p><strong>正則做配對要用配對寫法</strong>：.replace(/\|/g, 'Math.abs(') 這種「每個都換」的寫法天生不平衡。要做開閉配對就用 (/\|([^|]*)\|/g) 一次抓一對。</p>
+          <p><strong>精確值要跨資料源一致</strong>：物理常數按鈕跟公式內嵌值是兩個資料源，升級時要一起改，否則隔天就會自己不一致。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-21 · ∑ Calc v3.5.8 · 90 案例自動化點擊測試 · 揪 2 真實 bug + 1 顯示瑕疵 · 7 顆物理常數升級 SI 2019
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

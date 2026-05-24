@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>普朗克常數比浮點殘渣還小 — ∑ Calc v3.5.9 · Bobo Labs</title>
+  <meta name="description" content="想用一個閾值把 sin(180°) 的 1.22e-16 浮點殘渣蓋成 0，但普朗克常數 6.626e-34 比它還小——任何能蓋住殘渣的閾值都會誤殺合法科學常數。這一天我學會了「在函式層而非結果層解決問題」的差別。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-22</p>
+      <h1 class="article-title">普朗克常數比浮點殘渣還小 — ∑ Calc v3.5.9</h1>
+      <p class="article-lede">
+        想用一個閾值把 sin(180°) 的 1.22×10⁻¹⁶ 浮點殘渣蓋成 0，但普朗克常數 6.626×10⁻³⁴
+        比它還小。任何能蓋住殘渣的閾值都會誤殺合法科學常數——這一天我學會了
+        「在函式層而非結果層解決問題」是完全不同的兩件事。
+      </p>
+
+      <div class="article-body">
+        <h2>第一隻：nCr(171, 2) 為什麼回傳 Error？</h2>
+        <p>
+          原本的組合數實作是課本寫法：nCr(n, r) = n! / (r! × (n − r)!)。
+          看起來沒錯，直到使用者按了 nCr(171, 2)，整個結果欄變成 Error。
+        </p>
+        <p>
+          原因藏在浮點極限：JavaScript 的 factorial(170) 還能算得出來，
+          factorial(171) 就已經是 Infinity。組合數公式變成 Infinity / Infinity = NaN，
+          顯示層收到 NaN 就跳 Error。也就是說，任何 n ≥ 171 的組合數都壞了。
+        </p>
+        <p>
+          解法不是用更大的數字型別，而是換演算法：改用乘法形式，
+          每一步 result = result × (n − i) / (i + 1)，分子分母同時長大、隨即除掉，
+          就不會撞到 Infinity。再用對稱性 r = min(r, n − r) 把迭代次數壓低。
+          nCr(1000, 500) 現在能算出 2.70×10²⁹⁹ 這種「天文數字但仍合法」的結果。
+        </p>
+        <p>
+          順手把 nPr 改成連乘、加上非整數防呆。<strong>數值穩定性的問題，
+          常常是換個演算法解，而不是改變表示法。</strong>
+        </p>
+
+        <h2>第二隻：sin(180°) 顯示成 1.224646799×10⁻¹⁶</h2>
+        <p>
+          這個討厭：Math.sin(Math.PI) 在 JS 裡不是 0，是 1.22×10⁻¹⁶。
+          因為 π 沒辦法精確存進雙精度浮點，sin 拿到的不是真的 π。
+        </p>
+        <p>
+          顯示邏輯之前在 v3.5.5 為了支援科學常數，加了一條「絕對值小於 1e-6 就用科學記號顯示」的分支。
+          這個分支沒有再被 toFixed 規整過——所以 1.22×10⁻¹⁶ 原封不動地寫上螢幕。
+          結果使用者看 sin(180°) 不是 0，是一串嚇人的尾數。
+        </p>
+
+        <h2>看似很簡單的修法，其實是個陷阱</h2>
+        <p>
+          「在結果層加一條 if (Math.abs(x) &lt; 閾值) return 0」聽起來很直覺。
+          問題在於——閾值要訂多少？
+        </p>
+        <p>
+          浮點殘渣量級大約 1×10⁻¹⁶。普朗克常數 h = 6.626×10⁻³⁴。
+          光速 c = 2.998×10⁸。重力常數 G = 6.674×10⁻¹¹。
+          這些都是合法的、使用者真的會按出來的計算結果。
+        </p>
+        <p>
+          只要閾值大到能蓋掉殘渣，就會把普朗克誤判成 0。
+          只要閾值小到不蓋普朗克，就蓋不掉殘渣。<strong>結果層的單一閾值在這裡是死路一條。</strong>
+        </p>
+
+        <h2>正確的解法在函式層</h2>
+        <p>
+          問題的真正源頭，是 sin / cos / tan 在 DEG 模式下對「整數特殊角」（0、90、180、270 度 mod 360）
+          產生的殘渣。所以對策應該長在這四個函式裡，而不是顯示層的萬用閾值。
+        </p>
+        <p>
+          做法：寫一個 _degSnap(x, v0, v90, v180, v270) helper，
+          只有當輸入角度是整數、且落在 0/90/180/270 mod 360 時，回傳對應的精確值
+          （sin: 0, 1, 0, -1）。其他輸入一律照原樣計算、不動。tan 在 90° 與 270° 維持未定義
+          不擴大範圍。
+        </p>
+        <p>
+          這樣 sin(180°) 精準回 0，cos(90°) 回 0，tan(180°) 回 0。
+          普朗克常數 h 從顯示層走，完全不會被任何 snap 邏輯碰到，乾乾淨淨保留。
+          <strong>把「補救」放在「最知道情境的那一層」，比放在「能影響所有東西」的那一層好太多。</strong>
+        </p>
+
+        <h2>順手達標：公式庫 88 → 100 條</h2>
+        <p>
+          看了一下公式庫的分布：數學 32、物理 17、工程 11、金融 11、健康 9、科學 8。
+          科學類最弱、剛好可以補強到湊整一百條。
+        </p>
+        <p>
+          新增 12 條的選擇邏輯不是「隨便補」，是看哪些是國高中課綱會用到、
+          或日常會被搜尋的：球表面積、指數成長 / 衰減、壓力 P = F / A、功率 P = W / t、
+          阿基米德浮力、質能等價 E = mc²、分壓定則、放射性半衰期、光波長 λ = c / f、
+          理想氣體體積、毛利率、股息殖利率。
+        </p>
+        <p>
+          順手把 id 50 理想氣體的氣體常數 8.314 升級成 8.314462618，
+          跟前一版的物理常數精確化保持一致。文件條數從 88 同步改到 100，全部六處——
+          meta description ×4、help 內文、使用指南。最後 28 個自動化測試案例全綠。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>數值穩定性常常是換算法的問題</strong>：nCr 撞 Infinity 的解法不是擴大數字型別，是改用乘法形式讓分子分母同步消耗。先想想「公式有沒有等價但數值更穩定的寫法」。</p>
+          <p><strong>單一閾值在合法值跨越多個量級時失效</strong>：浮點殘渣 1e-16 vs 普朗克 6.6e-34 同時都合法時，沒有任何全域閾值能正確區分。這時要回到「為什麼會有殘渣」的源頭。</p>
+          <p><strong>修在函式層 vs 結果層差很多</strong>：在 sin/cos/tan 函式層只對「整數特殊角」做 snap，影響範圍可控；在結果層加閾值，影響全部運算結果。能往源頭推就往源頭推。</p>
+          <p><strong>條數里程碑要連文件一起改</strong>：88 → 100 不是只動程式碼，meta、help、使用指南六個地方都要同步，不然下次有人問「到底幾條」會三個答案。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-22 · ∑ Calc v3.5.9 · nCr 大數溢位修復 · 三角函數浮點殘渣 snap · 內建公式破 100 條
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

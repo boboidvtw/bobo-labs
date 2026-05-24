@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>讓監工自己學會閉嘴與遮罩 — Skills Governance v1.2 + v1.3 · Bobo Labs</title>
+  <meta name="description" content="把祕密遮罩在序列化之前，而不是之後。讓 LLM 規則在資料不足時明確失敗，而不是靜默放水。讓演化引擎在還沒夠多稽核資料前，老實說『目前無候選』而不是亂指。這幾天在 Skills Governance 上累積的三條品味。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-22</p>
+      <h1 class="article-title">讓監工自己學會閉嘴與遮罩 — Skills Governance v1.2 + v1.3</h1>
+      <p class="article-lede">
+        把祕密遮罩在序列化之前，而不是之後。讓 LLM 規則在資料不足時明確失敗，
+        而不是靜默放水。讓演化引擎在還沒夠多稽核資料前，老實說「目前無候選」
+        而不是亂指方向。一個治理框架要管別人，自己得先做到這三件事。
+      </p>
+
+      <div class="article-body">
+        <h2>v1.2 — 讓 skill 作者宣告 audit 區塊</h2>
+        <p>
+          治理框架累積稽核資料的方式很簡單：在每次 skill 被調用前後，把輸入輸出寫進 DB。
+          但這種「全部寫進去」的策略有兩個缺口——
+          稽核紀錄缺乏語意（單看 JSON dump 不知道這次調用「想達成什麼」），
+          以及 raw 輸入裡可能藏著祕密（API key、token、private key）。
+        </p>
+        <p>
+          v1.2 的核心交付，是讓 skill 作者用一個 frontmatter 區塊宣告兩件事：
+          這個 skill 的決策提示（decision_hint）、要追蹤的關鍵輸入欄位（key_inputs），
+          以及需要遮罩的祕密欄位（redact）。三者結合起來，
+          稽核紀錄會多一條「為什麼」、抽幾個「什麼」、扣掉「不該記的」。
+        </p>
+
+        <h2>實作中撞見的死角：序列化後遮罩會失效</h2>
+        <p>
+          一開始的直覺寫法是這樣：先把工具輸入 json.dumps 成字串，再對字串套遮罩正則。
+          正則寫的是「"api_key" 後面接冒號接值」這種樣板。
+        </p>
+        <p>
+          結果完全沒遮罩成功。
+        </p>
+        <p>
+          原因藏在巢狀序列化：tool_input 裡的 args 欄位本身是個 dict，
+          外層 json.dumps 把整個 dict 變成字串時，內層的引號全部被跳脫——
+          原本應該長成 "api_key": "secret" 的東西，現在是 \"api_key\": \"secret\"。
+          正則期待 " 緊接著 :，但跳脫過後中間多了個反斜線。匹配失敗，祕密沒被遮，
+          照原樣寫進稽核 DB。
+        </p>
+        <p>
+          解法是把遮罩動作搬到序列化「之前」：寫一個 redact_object 函式，
+          遞迴走訪 dict / list，遇到鍵名命中遮罩清單就把值替換掉，再 json.dumps。
+          跳脫發生在遮罩之後，死角消失。
+          <strong>這也呼應到前幾天在 ∑ Calc 學到的東西——
+          「修在源頭那一層」比「修在最後一層」乾淨太多。</strong>
+        </p>
+
+        <h2>Fail-safe：寧可整段藏起來，也不退回明文</h2>
+        <p>
+          一個容易被忽略的設計選擇：如果 skill 宣告了 redact 但遮罩函式拋例外（正則崩、解析錯），
+          要怎麼處理？兩個選項：① 退回明文（保留資訊但漏祕密），
+          ② 整段內容藏起來（withhold，犧牲可讀性但守住底線）。
+        </p>
+        <p>
+          選 ②。一個治理框架最重要的契約是：「你宣告了要遮，我就絕不會把它變回明文。」
+          就算這代表某次稽核紀錄變成 "[withheld due to redact failure]"
+          也比把 secret 寫進 DB 安全。
+          <strong>安全性的預設值要往悲觀方向偏。</strong>
+        </p>
+
+        <h2>v1.3 — LLM 規則的兩個誠實設計</h2>
+        <p>
+          v1.3 加了一條 LLM 測試規則：用 LLM 判斷 skill 描述是否真的會在對的情境被觸發、
+          輸出格式是否真的符合宣告的準則。這是治理框架第一次跨進「需要外部 LLM 諮詢」的領域。
+        </p>
+        <p>
+          兩個誠實設計：
+        </p>
+        <p>
+          <strong>第一，LLM 不可用時規則明確 FAIL，絕不靜默放水。</strong>
+          這是大型系統很常見的陷阱——外部依賴掛了，預設「跳過這條規則」當作通過。
+          結果某天 LLM 額度滿了、某天網路抖了，治理框架就「全部測試通過」但其實沒測。
+          這條規則明確：LLM 連不上 → 規則回 FAIL 並寫 "LLM unavailable"，
+          測試報告會誠實顯示失敗。
+        </p>
+        <p>
+          <strong>第二，承認 LLM 規則在某些環境就是跑不了。</strong>
+          測試的時候撞到一個現象：在自動化的 session 內呼叫 LLM CLI，
+          會因為環境變數衝突（host session token 對 fresh CLI 無效）而失敗。
+          做法是剝除特定的環境變數讓 fresh CLI 跑乾淨。
+          這條 workaround 寫在程式碼註解、規則文件也明白標註
+          「LLM 規則設計給正常終端執行」，避免使用者誤以為「自動跑 = 沒問題」。
+          <strong>能不能跑、什麼時候跑得了，這種事要寫清楚，不要藏。</strong>
+        </p>
+
+        <h2>演化引擎的第七個訊號：「從未被調用」</h2>
+        <p>
+          演化引擎本來看六個訊號（測試失敗、稽核高 / 中失敗率、有在用但沒納管、回應太慢、描述太弱）。
+          v1.3 補上第七個：「已納管但 0 次調用」——dead-weight skill。
+        </p>
+        <p>
+          這個訊號有兩個 gate 防誤判：
+          ① 只看已納管的 skill（沒納管的本來就沒稽核資料），
+          ② 全機稽核總筆數 ≥ 50 才採信（剛上線時誤判所有 skill 都是 dead）。
+          現在實際只有 2 筆稽核紀錄，引擎正確地閉嘴：dormant，無候選。
+        </p>
+        <p>
+          一個會自我抑制的引擎，比一個總在說話的引擎可信。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>遮罩要在序列化之前做</strong>：之後做會被跳脫破壞匹配。這跟「在函式層而非結果層」是同一條原則的不同顯化——能往源頭推就往源頭推。</p>
+          <p><strong>安全性預設往悲觀偏</strong>：遮罩失敗 → withhold 整段，絕不退回明文。一旦宣告了某個契約，就要在意外時繼續守。</p>
+          <p><strong>外部依賴掛了要明確失敗，不要靜默放水</strong>：LLM 連不上 → 規則 FAIL，不要 skip。靜默通過的測試報告比沒測還危險，因為它讓你以為自己有測。</p>
+          <p><strong>「環境限制」要寫進文件</strong>：自動化環境內跑不了 LLM CLI 不是 bug，是條件限制。承認這件事、寫清楚什麼條件能跑，比假裝它總是會跑更有用。</p>
+          <p><strong>會自我抑制的工具，比話多的工具可信</strong>：演化引擎在資料不足時回「無候選」是正確答案，不是壞掉。為「資料不足」設計過的沉默才是可信的沉默。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-22 · Skills Governance v1.2 + v1.3 · audit 區塊 + LLM 規則 + dead-weight 訊號 · 78 單元測試全綠
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

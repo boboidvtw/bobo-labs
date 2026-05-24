@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>把可用性還給鍵盤族 — ∑ Calc v3.6.0 WCAG 強化 · Bobo Labs</title>
+  <meta name="description" content="一份 5262 行的單頁 app，全頁只有 1 處 aria-、0 處 role=。我用一天時間把它從『勉強能用滑鼠』補成『鍵盤族也能用』——順手撞見 5 個改 HTML 之前必須先 grep 的耦合陷阱。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-22</p>
+      <h1 class="article-title">把可用性還給鍵盤族 — ∑ Calc v3.6.0 WCAG 強化</h1>
+      <p class="article-lede">
+        一份 5262 行的單頁 app，全頁只有 1 處 aria-、0 處 role=、只有 4 條 :focus 規則
+        而且都只在改 input 邊框色。今天我把它從「勉強能用滑鼠」補成「鍵盤族也能用」——
+        順手撞見 5 個改 HTML 之前必須先 grep 的耦合陷阱。
+      </p>
+
+      <div class="article-body">
+        <h2>先把該做的事排序</h2>
+        <p>
+          原本開工指引推的是「觀察 webhook 流量」，但評估後發現它有兩個盲點：
+          事件本身很稀疏，即時串流未必等得到資料；持久化又需要付費的日誌服務。
+          被動等資料、又卡在外部依賴，當主線就太弱了。
+        </p>
+        <p>
+          換個角度盤點整份 index.html：role= 0 處、aria- 只 1 處、:focus 僅 4 條
+          且都只改 input 邊框色。這是個 a11y 系統性缺口；
+          相較之下行動裝置反而在前幾版浮動列改造後體質健全。
+          所以這天的主題定下來：a11y 深做、行動裝置順手補。
+        </p>
+
+        <h2>八個 a11y 問題與兩個行動裝置問題</h2>
+        <p>
+          清單列下來不算少：沒有可見的鍵盤焦點指示、手風琴展開只能用滑鼠、
+          整頁沒有 h1 而且大綱跳階、純圖示按鈕沒有可朗讀的名字、
+          7 個下拉選單沒有與標籤關聯、modal 沒有 dialog 語意也沒有焦點陷阱、
+          結果區與 toast 不會被螢幕閱讀器朗讀、表單 label 沒 for/id。
+          再加上兩條行動裝置：繪圖工具列的觸控目標太小、有 CSS 變數沒定義。
+        </p>
+        <p>
+          這份清單裡每一項都不大，但全部加起來就是「鍵盤族跟螢幕閱讀器使用者沒辦法用這個 app」。
+        </p>
+
+        <h2>第一個耦合陷阱：改 h3 到 h1，CSS 跟著壞</h2>
+        <p>
+          整份頁面沒有 h1，這在 a11y 是基本問題：螢幕閱讀器靠標題大綱導覽，
+          沒有 h1 等於沒有目錄的書。我把側欄第一個區塊的 h3 改成 h1，再把其他標題重排層級。
+        </p>
+        <p>
+          結果手機浮動列跑出一個本來被隱藏的「常用按鈕」標題。
+          回頭 grep CSS 才發現，有一條規則寫 .main-sidebar &gt; .panel:first-child &gt; h3，
+          靠 tag 選擇器把那個 h3 鎖定隱藏。標題標籤一改，選擇器就抓不到了。
+        </p>
+        <p>
+          這給我一條準則：<strong>改 HTML 的標題標籤前，先 grep CSS 有沒有用 tag 選擇器鎖定它</strong>。
+          這種耦合在 IDE 裡不會跳警告，只能用搜尋抓出來。
+        </p>
+
+        <h2>第二個耦合陷阱：!important 不一定是壞品味</h2>
+        <p>
+          現代 a11y 推 :focus-visible 而非 :focus，因為前者只在「鍵盤導航時」才亮，
+          滑鼠點擊不會看見一圈醒目的框。我寫一條 input:focus-visible 規則加 outline。
+        </p>
+        <p>
+          結果某個 input 沒亮。原因是既有一條 .graph-expr-input:focus { outline: none } 的特異度
+          (0,2,0) 壓過我的 input:focus-visible (0,1,1)，瀏覽器忠實地照特異度判贏家。
+        </p>
+        <p>
+          要嘛我把 :focus-visible 規則的選擇器寫得跟它一樣特異（並重複每個 input class），
+          要嘛在 a11y override 用 !important。我選後者。
+          這不是品味問題，是 <strong>a11y override 對「可用性底線」的優先級，
+          應該系統性地壓過任何視覺微調規則</strong>。!important 在這種情境是正當用法。
+        </p>
+
+        <h2>第三個陷阱：你沒辦法用 JavaScript 驗證 :focus-visible</h2>
+        <p>
+          我想寫一段 console 驗證：呼叫 element.focus()，然後讀 outline 顏色，
+          確認 :focus-visible 規則被套上去。怎麼試都沒亮。
+        </p>
+        <p>
+          翻規範才知道，:focus-visible 是瀏覽器「啟發式」判斷使用者意圖的——
+          它要判斷這個 focus 是因為鍵盤導航還是程式呼叫。
+          element.focus() 或 element.focus({ focusVisible: true }) 都不會觸發。
+          只有真實鍵盤的 Tab 才會。
+        </p>
+        <p>
+          解法：改測 cascade 是否正確。focus 之後讀 getComputedStyle 的 outlineColor，
+          看到 rgb(6, 182, 212) 就證明規則的 outline 顏色變數已經被解析、規則本身已經套到元素。
+          真實鍵盤觸發只是時序問題。
+          <strong>分清楚「規則是否套用」跟「條件是否觸發」是兩個獨立問題，分開驗。</strong>
+        </p>
+
+        <h2>第四個成果：modal 焦點管理抽成一個函式</h2>
+        <p>
+          原本程式碼裡有 9 個地方散落著 classList.add('active') 或 .remove('active') 的呼叫，
+          各自做開關 modal 的事。要為 modal 加焦點陷阱（Tab 不能跑出去）+ Escape 關閉
+          + 還原焦點到觸發按鈕，這 9 個地方各自重複一份程式碼是地獄。
+        </p>
+        <p>
+          把它抽成兩個函式 openModal / closeModal，函式宣告式所以會被 hoist 到模組頂部，
+          可以放在最早被呼叫處的「之後」也沒問題。keydown 監聽掛在 modal 元素上而非 document，
+          因為焦點本來就在 modal 內，事件冒泡到 modal 就能處理 Escape 跟 Tab 陷阱。
+          9 個原本散亂的點被替換成兩個一致的呼叫。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>改 HTML 標題標籤前先 grep CSS</strong>：tag 選擇器鎖定 h3 / h2 的耦合在 IDE 不會警告，只能搜尋。重排標題大綱前先確認沒人靠標題標籤型別在排版。</p>
+          <p><strong>a11y override 用 !important 是正當的</strong>：可用性底線優先級應該系統性地壓過視覺微調規則。問題不是「品味」，是「層級設計」。</p>
+          <p><strong>:focus-visible 沒辦法用 JS 驗證觸發</strong>：那是瀏覽器啟發式決定的，element.focus() 不算鍵盤。改測「規則是否套上元素」（讀 outlineColor），把「規則套用」跟「條件觸發」拆兩件事驗。</p>
+          <p><strong>9 個散落的 toggle 不如 2 個一致的函式</strong>：要為 modal 加焦點管理時才能體會——分散的設計乘以新需求等於 9 倍工。早抽就好。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-22 · ∑ Calc v3.6.0 · WCAG 2.1 AA · 8 a11y + 2 行動裝置問題全修
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
