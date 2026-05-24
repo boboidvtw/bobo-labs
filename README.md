@@ -20,6 +20,14 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-24** — 補貼 4 篇先前工作的 Writing 文章（5/21–5/22 的日誌落差）：
+  `2026-05-22-supercalc-a11y.html`（∑ Calc v3.6.0 WCAG 強化 + 5 個耦合陷阱）、
+  `2026-05-22-supercalc-v359.html`（nCr 大數溢位 + 三角浮點殘渣 + 公式破百）、
+  `2026-05-22-skills-governance-audit-and-llm.html`（v1.2 audit 區塊 + v1.3 LLM 規則 + dead-weight 訊號）、
+  `2026-05-21-supercalc-click-test.html`（90 案例點擊測試揪 2 真實 bug + 物理常數 SI 2019 升級）。
+  Index Writing 區依時間倒序置頂。
+  Backfilled 4 daily-log articles for prior 5/21–5/22 work that had not yet been posted;
+  pinned to top of Writing in reverse chronological order.
 - **2026-05-22** — 新增 Writing 文章 `2026-05-22-skills-governance-phase4.html`（Skills Governance
   Phase 4 日誌：觀測儀表板、六訊號演化引擎、為「資料不足」設計的空狀態、為治理框架自己補 20 個單元測試）。
   Index Writing 區置頂新條目。
