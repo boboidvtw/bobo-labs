@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-24** — 補上最後一篇老 journal：`2026-05-14-nomad-recon-sprint-d.html`
+  （subagent-driven 切片開發 + graceful degradation 寫進型別 + 187/187 tests passing）。
+  lookback 14 天範圍內落差歸零。
+  Backfilled the last older journal — nomad-recon Sprint D log on subagent-driven slicing
+  and graceful-degradation contracts; gap-reminder backlog now clear within 14-day lookback.
 - **2026-05-24** — 再補貼 3 篇先前工作的 Writing 文章（5/15–5/18 的舊落差）：
   `2026-05-18-pages-cert-stuck.html`（GitHub Pages 憑證 pipeline 卡死的檔案層級重置解法）、
   `2026-05-17-bobo-labs-origin.html`（站台「為何存在」的四輪需求釐清歷程）、
