@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DNS 全對，憑證卻卡死 — Bobo Labs 上線那天的 GitHub Pages 故事 · Bobo Labs</title>
+  <meta name="description" content="DNS、CAA、build 全通過，但 GitHub Pages 的 https_certificate 物件「完全不存在」、cert_state 永遠 None，超過一小時零進展。最後解法不是 API toggle，是檔案層級的完整重置。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-18</p>
+      <h1 class="article-title">DNS 全對，憑證卻卡死 — Bobo Labs 上線那天的 GitHub Pages 故事</h1>
+      <p class="article-lede">
+        DNS、CAA、build 全通過，但 GitHub Pages 的 https_certificate 物件「完全不存在」、
+        cert_state 永遠 None，超過一小時零進展。最後的解法不是更精緻的 API toggle，
+        是把整個 Pages 設定退到一個「網域真的不存在」的乾淨狀態，再重來。
+      </p>
+
+      <div class="article-body">
+        <h2>症狀：所有檢查都綠，憑證就是不來</h2>
+        <p>
+          這個站的上線目標很簡單：把 GitHub Pages 綁到自訂網域，拿到 HTTPS。
+          流程理論上是這樣——repo 推 main、CNAME 檔內寫 labs.moneyai168.com、
+          Cloudflare DNS 加 CNAME 指 boboidvtw.github.io、等 GitHub 後台簽憑證。
+        </p>
+        <p>
+          走完所有步驟以後，DNS 解析正確、CAA 沒擋住 Let's Encrypt、
+          GitHub Pages 的 build 顯示 success、HTTP 連線也通。
+          但打 Pages API：
+        </p>
+        <p>
+          GET /repos/&lt;user&gt;/&lt;repo&gt;/pages →<br>
+          { "cname": "labs.moneyai168.com", ... 沒有 https_certificate 欄位 }
+        </p>
+        <p>
+          這個欄位連「存在但 pending」都不是——它整個不存在。cert_state 也永遠回 None。
+          這代表 GitHub 沒有為這個網域啟動憑證簽發流程，而不是流程跑到一半。
+        </p>
+
+        <h2>第一次嘗試：純 API toggle，無效</h2>
+        <p>
+          直覺解法：把網域「拔掉、再加回去」逼系統重跑流程。
+        </p>
+        <p>
+          gh api -X PUT repos/&lt;u&gt;/&lt;r&gt;/pages -f cname:null<br>
+          # 等一下<br>
+          gh api -X PUT repos/&lt;u&gt;/&lt;r&gt;/pages -f cname=labs.moneyai168.com
+        </p>
+        <p>
+          沒用。Pages API 顯示 cname 是切掉了，但 https_certificate 仍然不存在，
+          重設網域後一樣不簽。
+        </p>
+        <p>
+          為什麼？因為 repo 裡還有 CNAME 檔。GitHub Pages 每次 build 都會讀這個檔案，
+          自動把網域宣告回去。也就是說——API 那邊我「拔掉」了網域，但 Pages 後端
+          在下一次 build 又從檔案重新讀進來。網域從未真正進入「不存在」的狀態，
+          流程也從未真正「重置」。
+        </p>
+
+        <h2>關鍵頓悟：要拔到「檔案層」才算數</h2>
+        <p>
+          API 是描述狀態的，但 Pages 後端的真實狀態是 API 設定 ∪ repo 內 CNAME 檔。
+          只動 API 不動檔案，等於一邊清、一邊有人補。
+        </p>
+        <p>
+          所以正確的重置順序是這樣：
+        </p>
+        <p>
+          1. git rm CNAME → commit → push（同步呼叫 API 把 cname 設 null）<br>
+          2. 輪詢 Pages API 直到 cname 真的回 None，並且 https://&lt;user&gt;.github.io/&lt;repo&gt;/
+             直連回 200——這證明網域真的釋放了，請求可以走 default Pages URL<br>
+          3. 重建 CNAME 檔 → commit → push（API 設 cname=labs.moneyai168.com）<br>
+          4. 等憑證簽發——本次重加後第一次輪詢就看到 cert_state=approved
+        </p>
+        <p>
+          整個重置加上重簽，1 到 15 分鐘搞定。
+          <strong>對比之前糾結一小時零進展，差別不在「等久一點」，差別在「狀態真的歸零」。</strong>
+        </p>
+
+        <h2>還有一個附加坑：HTTPS enforced 切不過去</h2>
+        <p>
+          憑證剛 approved 的那幾秒，GitHub 後端有時還不允許切「Enforce HTTPS」。
+          API 會回類似「certificate not ready」的錯誤。但這時候憑證本身已經可用，
+          直接 curl https://&lt;domain&gt;/ 是 200。
+        </p>
+        <p>
+          解法：把切換動作做成輪詢的一部分，失敗就 5 秒後重試。
+        </p>
+        <p>
+          printf '{"https_enforced":true}' | gh api -X PUT \<br>
+          &nbsp;&nbsp;repos/&lt;u&gt;/&lt;r&gt;/pages --input -
+        </p>
+        <p>
+          這個小延遲不影響站台運作——憑證已可用、HTTPS 已能連，只是「強制重導」這個開關
+          晚個幾分鐘才能切。可以非阻塞地等。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>狀態存在多個地方時，重置要全部歸零</strong>：Pages 後端的網域是 API 設定 + repo 內 CNAME 檔的聯集。只動 API 不動檔案，等於一邊清、一邊補。</p>
+          <p><strong>驗證「真的歸零」要用獨立通道</strong>：API 回 cname=None 不夠，還要 curl https://&lt;user&gt;.github.io/&lt;repo&gt;/ 直連回 200，證明請求真的走回 default Pages URL。兩個訊號同時對才信。</p>
+          <p><strong>沒進度 ≠ 進行中</strong>：cert_state 永遠 None 不是「正在簽」，是「根本沒啟動」。如果 1 小時沒動靜，要懷疑流程從未開始，而不是繼續等。</p>
+          <p><strong>非阻塞操作要做成輪詢</strong>：HTTPS enforce 切換的暫時失敗不影響服務，包成 5 秒重試的輪詢，比手動重跑乾淨。</p>
+          <p><strong>留下可複用的 troubleshooting 路徑</strong>：這個坑下次還會踩，把「git rm CNAME → 雙重驗證 → 重建 CNAME」這條路徑寫進 memory，下次直接走，不要重新摸索。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-18 · Bobo Labs 站上線當日 · GitHub Pages + 自訂網域 + Let's Encrypt 流程修復
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

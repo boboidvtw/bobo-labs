@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三個失敗，只有一個是真的壞 — 測試框架自己也得被測 · Bobo Labs</title>
+  <meta name="description" content="baseline 報「3 個 case 失敗」，直覺以為「3 個壞 skill」。實際上是 1 個真實 bug + 2 個來自同一條規則的偽陽性——而且偽陽性的原因，是規則把程式碼範例當成散文宣告。靜態檢查的偽陽性，比真陽性更難察覺。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-15</p>
+      <h1 class="article-title">三個失敗，只有一個是真的壞 — 測試框架自己也得被測</h1>
+      <p class="article-lede">
+        baseline 報「3 個 case 失敗」，直覺以為「3 個壞 skill」。
+        實際上是 1 個真實 bug + 2 個來自同一條規則的偽陽性——
+        而且偽陽性的原因，是規則把程式碼範例當成散文宣告。
+        靜態檢查的偽陽性，比真陽性更難察覺。
+      </p>
+
+      <div class="article-body">
+        <h2>第一次 baseline sweep 的成績單</h2>
+        <p>
+          治理框架第一次跑 baseline：總共 1290 個測試 case 跑過 215 個 skill。
+          結果 3 個失敗，集中在 2 個 skill 上。
+        </p>
+        <p>
+          一個叫 skill-stocktake，兩個 case 失敗——frontmatter 完整性檢查、name 與目錄名一致檢查。<br>
+          一個叫 perl-testing，一個 case 失敗——「不應出現 TODO/FIXME 等遺留標記」檢查。
+        </p>
+        <p>
+          看到失敗數，第一個反應通常是：「找出問題 skill 修一修」。但這次我多停了一秒——
+          1290 個 case、3 個失敗、99.77% pass rate。這數字漂亮到讓我懷疑：
+          有沒有可能其中某些「失敗」其實是規則本身判斷錯了？
+        </p>
+
+        <h2>真陽性：skill-stocktake 的 frontmatter 真的缺欄位</h2>
+        <p>
+          skill-stocktake 看起來像「真的壞」。frontmatter 區塊沒有 name: 欄位，
+          所以 frontmatter-has-keys 規則找不到必要欄、name-matches-dir 規則也算不出來
+          （因為要比對的 frontmatter.name 是空字串）。
+        </p>
+        <p>
+          這是個真實 bug。修法很直接：在 SKILL.md frontmatter 加 name: skill-stocktake。
+          順手用這個 skill 當示範跑了一次完整的版本化流程——bump 升版、tar.gz 快照、Changelog 自動加條目。
+          治理框架第一次跑出「真實的 SDLC 循環」：偵測問題 → 修正 → 自動測試 → 版本化 → 留下歷史。
+        </p>
+
+        <h2>偽陽性：perl-testing 的 TODO 是合法 Perl 語法</h2>
+        <p>
+          perl-testing 的失敗訊息：「內文出現禁用標記 TODO:」。
+        </p>
+        <p>
+          打開 SKILL.md 找 TODO:，看到的是這個：
+        </p>
+        <p>
+          ```perl<br>
+          TODO: {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;local $TODO = 'Caching not yet implemented';<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+          }<br>
+          ```
+        </p>
+        <p>
+          這是 Perl 的 Test::More 模組裡，宣告「這段測試預期會失敗，因為功能還沒實作」的合法語法。
+          它在 markdown 的 fenced code block 內，是教學範例，不是該被修掉的待辦標記。
+        </p>
+        <p>
+          但檢查規則寫的是這樣：
+        </p>
+        <p>
+          found = [s for s in args if s in ctx.body]
+        </p>
+        <p>
+          一個粗暴的 Python in 子串檢查，把整篇 markdown 當一坨字串掃。
+          它根本不知道「這個 TODO: 在 code block 內」這件事。
+        </p>
+
+        <h2>修規則：剝離 code 區域再檢查</h2>
+        <p>
+          這不是 perl-testing 的問題，是規則太天真。修法是加一個前置處理：
+        </p>
+        <p>
+          def _strip_code_regions(text):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;out = re.sub(r"```.*?```", "", text, flags=re.DOTALL)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;out = re.sub(r"`[^`\n]*`", "", out)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;return out
+        </p>
+        <p>
+          absent 規則只對「散文區塊」做檢查，code block（fenced 跟 inline）內的 TODO/FIXME 一律放行。
+          這個小修改影響到所有 skill 的 default suite，但邏輯上是修「假警報」、不是放鬆規則。
+        </p>
+        <p>
+          修完再跑一次 baseline：1290/1290 全綠。
+          <strong>差別不在「skill 變好了」，差別在「規則學會了區分散文與程式碼」。</strong>
+        </p>
+
+        <h2>為什麼這條 meta-lesson 重要</h2>
+        <p>
+          看到「3 個 case 失敗」就去修 3 個 skill，邏輯上聽起來很合理，但會留下 2 個沒被發現的問題：
+          一條會誤判的規則繼續在背景跑著，未來會在不同 skill 上踩到一樣的雷，
+          而那些 skill 的作者會被罵「你寫了不該寫的 TODO」——明明那是合法的程式碼範例。
+        </p>
+        <p>
+          靜態檢查的偽陽性比真陽性更難察覺，因為失敗訊息看起來都一樣專業。
+          「missing keys: name」跟「forbidden token: TODO:」在報告裡長得一模一樣，
+          但前者是 skill 的問題，後者是規則的問題。
+        </p>
+        <p>
+          所以這天學到的不是「怎麼修 perl-testing」，是個更廣的原則——
+          <strong>看到 N 個 case 失敗，要先問「這 N 個失敗是 N 個 skill 的問題，
+          還是 1 條規則的問題乘以 N」</strong>。前者線性、後者係數。
+        </p>
+
+        <h2>類似的雷還會踩到</h2>
+        <p>
+          剝 code block 這招只修了 absent 規則，但同類問題在其他規則也會出現：
+        </p>
+        <p>
+          contains-heading 如果只在 code block 裡找到 heading 樣式的字串，應該算找到嗎？<br>
+          min-words 在算字數時，code block 內的 token 應該扣掉嗎？<br>
+          contains-substring 如果搜尋的字串只在 code 範例裡出現，算合法嗎？
+        </p>
+        <p>
+          這些目前都沒處理，因為它們各有不同的語意需求——not all rules want the same treatment。
+          但記住這條原則：靜態檢查每加一條新規則，都要主動問「這條規則在 markdown code block 裡會不會誤判？」
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>N 個失敗不一定是 N 個壞東西</strong>：可能是 1 條規則的問題乘以 N。先驗證測試案例本身的正確性，再相信它的結果。</p>
+          <p><strong>靜態檢查要區分「散文宣告」與「程式碼示例」</strong>：markdown 的 code block 是技術文件的常見成分，規則直接 in 子串檢查必誤判。剝 code region 再檢查是基本動作。</p>
+          <p><strong>偽陽性比真陽性更危險</strong>：失敗訊息長得一樣專業，看不出來「這是 skill 壞了」還是「這是規則錯了」。要保留「規則本身可能錯」的懷疑空間。</p>
+          <p><strong>修規則是線性投資，修 skill 是個案救火</strong>：發現偽陽性時，往源頭修一次，後續所有 skill 都受惠。比一個個改個案有效率。</p>
+          <p><strong>每加新規則就主動想反例</strong>：「這條規則在 code block 裡會不會誤判？」這個問題要在寫的當下問，不要等 baseline 爆出來才問。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-15 · Skills Governance baseline 修正 · 1 真實 bug + 1 規則 bug · 1290/1290 cases pass
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
