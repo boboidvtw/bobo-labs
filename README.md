@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-25** — 由 /boboweb 核可 3 篇文章：
+  `2026-05-24-stock-grid-tick-fix.html`（台股升降單位沒對齊的 CRITICAL — 423 筆 CANCELLED 自 4/29 起靜默失敗，snap_to_tick 修法 + 14 條回歸）、
+  `2026-05-18-skills-40-eval.html`（40 個 Skills 評估 — 32 已有等效，Superpowers 12/14 覆蓋不值整包，外科式單抽方法論）、
+  `2026-05-15-skills-governance-v1.html`（215 個 Skills 治理問題 — 版本控制／稽核／測試三系統一天建完，hook 三鐵律）。
+  Index Writing 區依時間倒序插入。
+  Promoted 3 drafts from `_pending/` via /boboweb on 2026-05-25 (tick alignment CRITICAL fix,
+  40-skills evaluation methodology, and skills governance v1.0 architecture).
 - **2026-05-24** — 補上最後一篇老 journal：`2026-05-14-nomad-recon-sprint-d.html`
   （subagent-driven 切片開發 + graceful degradation 寫進型別 + 187/187 tests passing）。
   lookback 14 天範圍內落差歸零。
