@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>215 個 Skills 的治理問題 — 版本控制、稽核、測試三個系統一天建完 · Bobo Labs</title>
+  <meta name="description" content="Skills 從幾十個長到 215 個以後，哪一版在跑、上次誰改了什麼、有沒有退化，這三個問題都沒有答案。用一天從零做出版本控制、稽核、自動測試三維治理框架。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-15</p>
+      <h1 class="article-title">215 個 Skills 的治理問題 — 版本控制、稽核、測試三個系統一天建完</h1>
+      <p class="article-lede">
+        Skills 從幾十個長到 215 個以後，「哪一版在跑？上次誰改了什麼？有沒有退化？」
+        這三個問題都沒有答案。某一天某個 skill 靜悄悄地壞掉，沒有人知道，直到真的踩到才發現。
+        用一天的時間，從零做出版本控制、稽核、自動測試三維治理框架。
+      </p>
+
+      <div class="article-body">
+        <h2>問題的規模：215 個散裝指令腳本</h2>
+        <p>
+          在治理框架上線之前，skills 是這個狀態：
+          私人 skills 189 個、plugin skills 14 個、flat skills 12 個，
+          合計 215 個，散落在 3 個不同目錄、9 個分類下。
+          每個 skill 是一份 SKILL.md，格式由人控制，沒有 schema 驗證、沒有版本歷史、調用了不留紀錄。
+        </p>
+        <p>
+          當 skill 少的時候這沒關係。但 215 個以後，「這個 skill 上次是什麼時候改的」
+          就只能靠記憶，而記憶一定會失敗。
+          決定要做三個維度的治理：Version Control（版本控制）、Auditability（稽核）、Maintainability（可維護性）。
+        </p>
+
+        <h2>Phase 1a：掃描現有 skills，建立基礎設施</h2>
+        <p>
+          第一步是弄清楚到底有哪些 skills、它們在哪裡。
+          寫了一個 CLI 工具 <code>sgov</code>（Python 3 stdlib-only，不引入任何外部依賴），
+          主入口是 argparse + 惰性匯入的子命令。
+        </p>
+        <p>
+          掃描馬上踩到第一個坑：第一次跑出 28 個 plugin skills，但實際只有 14 個。
+          原因是 plugins 的 cache 目錄保留了 5.0.7（舊版）和 5.1.0（當前版）兩個版本目錄，
+          <code>rglob</code> 全掃就重複了。
+          解法：改以 <code>installed_plugins.json</code> 為單一真相來源，
+          只掃 <code>installPath</code> 指向的當前版本。
+          舊版 cache 不入 registry，這給了後來的 snapshot 機制意義。
+        </p>
+        <p>
+          另一個邊界問題：系統 skills（<code>anthropic-skills:*</code>、<code>design:*</code>）
+          在 Claude Code runtime 內建，本機檔案系統找不到——它們不在治理範圍內。
+          治理邊界 = 本機檔案，這個決定讓 registry 乾淨很多。
+        </p>
+        <p>
+          設計原則：governance 是 metadata 層，不動 skill 本體。
+          私人 skill 留在 <code>skills-library/</code> 原位不動，
+          治理層只在 <code>skills-governance/manifests/&lt;skill&gt;/</code> 建 manifest + changelog + versions。
+          即使 governance 系統壞掉，skills 仍然完全可用。
+        </p>
+
+        <h2>Phase 1b：寫操作 — bump、rollback、diff、snapshot</h2>
+        <p>
+          讀操作搞定之後，下午做寫操作。四個指令，每個都在完整的 lifecycle smoke test 後才算完成。
+        </p>
+        <p>
+          <strong>bump</strong>：首次升版一律 0.1.0（後來的 patch/minor/major 才有意義）；
+          升版產生 tar.gz 快照 + Keep a Changelog 條目；拒絕覆寫既有版本號。
+        </p>
+        <p>
+          <strong>rollback</strong>：設計了一個反直覺但合理的決定——rollback 後版本號是「遞增的新 patch」，
+          而不是等於目標版本號。理由：若 rollback 後版本號變回 0.5.0，再 bump patch 就撞到舊的 0.5.1 tarball 命名。
+          改成「rollback 也是一次升版」，保證每個版本號全域唯一，歷史可追溯。
+          另外，rollback 必須帶 <code>--yes</code>，不帶就是 dry-run——這是破壞性操作的標準保護。
+        </p>
+        <p>
+          <strong>diff</strong>：解壓兩個 tarball 至臨時目錄，跑 <code>diff -ruN</code>，
+          輸出時把噪音的 /tmp 路徑改寫成 <code>&lt;skill&gt;@&lt;version&gt;</code>，讓 diff 能直接看。
+        </p>
+        <p>
+          <strong>snapshot</strong>：鎖定 plugin 當前版本。Plugin 升版後重 snapshot 是常態，
+          所以容許覆寫，舊 lock 移到 <code>lock.previous.json</code> 保留一層偵錯用。
+        </p>
+        <p>
+          Smoke test 結果：215 skills 的完整治理層加起來 &lt; 1 MB（manifests 40 KB + snapshots 452 KB + registry 188 KB）。
+          遠低於 skills 本身的體積。
+        </p>
+
+        <h2>Phase 2：稽核 — hook 攔截 + JSONL/SQLite 雙寫</h2>
+        <p>
+          稽核的目標：每次 Skill 工具調用都自動留下完整的證據鏈，後續可查詢、聚合。
+          實作分三層：hook 腳本、audit lib、CLI。
+        </p>
+        <p>
+          Hook 掛在 <code>settings.json</code> 的 <code>PreToolUse</code> 和 <code>PostToolUse</code>，
+          matcher 是 <code>Skill</code>。Hook 有三條鐵律：
+        </p>
+        <p>
+          NEVER raise（全 try/except，錯誤寫 error log）、NEVER block（2 秒 SIGALRM 超時強制 exit 0）、
+          NEVER modify stdin（hook 純觀察，不修改輸入輸出）。
+          一個稽核工具如果讓 skill 調用失敗或變慢，就沒有存在的意義。
+        </p>
+        <p>
+          雙寫的理由：JSONL 給人類即時觀察（grep / tail -f），SQLite 給結構化統計（GROUP BY）。
+          這兩個視角不互斥，磁碟成本可忽略。每筆 invocation 約 1 KB，
+          中重度使用（100 次/天 × 90 天）才 9 MB。
+        </p>
+        <p>
+          設計細節：audit 紀錄寫入時把當下的 <code>governed</code>（是否已入治理）和 <code>skill_version</code> 快取進去。
+          好處是未來 registry 變動不影響歷史 audit——A 月份的調用記錄永遠反映當時的治理狀態。
+        </p>
+        <p>
+          Live smoke test：在當前 session 呼叫 <code>/docs</code>，
+          audit log 立刻出現該調用的紀錄（session id、skill name、duration=99ms、success=Y）。
+          意外發現：Claude Code 似乎動態載入 <code>settings.json</code>，不需要重啟 session。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>治理層不動本體</strong>：governance 系統是 metadata 層，放在獨立目錄，原始 skills 不搬不動。即使 governance 壞掉，skills 仍然可用。非侵入式設計讓採用成本接近零。</p>
+          <p><strong>版本號必須單調遞增</strong>：rollback 不是「還原版本號」，是「帶著舊內容升一個新版本號」。版本號的意義是「出現順序的標記」，不是「內容的 ID」。</p>
+          <p><strong>破壞性操作三步驟：dry-run + --yes + 備份</strong>：rollback 預設是 dry-run，<code>--yes</code> 才真的執行，執行前自動建 pre-rollback 備份。這個模式可以套用到任何破壞性 CLI 指令。</p>
+          <p><strong>Hook 三鐵律：不 raise、不 block、不改 stdin</strong>：稽核工具的職責是觀察，不是干預。任何讓主流程失敗的 hook 都是壞設計，即使失敗原因是 hook 本身有 bug。</p>
+          <p><strong>stdlib-only 不是偷懶</strong>：215 個 skills、215 個 frontmatter YAML、SHA256、tar.gz，Python 3 標準函式庫全部搞定，不引入任何外部依賴，這個工具在任何有 Python 3 的機器上都能跑。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-15 · Skills Governance v1.0 · 215 skills 全部入冊 · 3,000+ 行 Python · Phase 1 + Phase 2 單日完成
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

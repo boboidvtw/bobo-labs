@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>40 個 Skills 評估：32 個已有等效，真正的缺口只有 1 個 · Bobo Labs</title>
+  <meta name="description" content="有人給了一份 40 個 Claude Code Skills 的清單，要求評估哪些可以裝。掃完 215 個現有 skills 之後，發現 32 個已有等效，Superpowers plugin 12/14 被覆蓋，最終只精準補裝 1 個。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-18</p>
+      <h1 class="article-title">40 個 Skills 評估：32 個已有等效，真正的缺口只有 1 個</h1>
+      <p class="article-lede">
+        有一份 40 個 Claude Code Skills 的清單，每個都聽起來有用。
+        但在裝任何東西之前，先掃完 215 個現有 skills——
+        結果 32 個已有等效覆蓋，真正的缺口只有 1 個。
+        「外科式單抽」比「整包安裝」省了很多不必要的衝突。
+      </p>
+
+      <div class="article-body">
+        <h2>先盤點現有的，再決定裝什麼</h2>
+        <p>
+          清單裡的 40 個 skills 是翻譯型目錄，只有名字，沒有安裝來源。
+          直覺是「挑幾個裝」，但更好的做法是先掃清楚現有的 215 個 skills 裡已經有什麼。
+        </p>
+        <p>
+          掃完之後：40 個裡 32 個已有等效——不是完全相同的 skill，
+          而是相同功能已被現有 skill 涵蓋。
+          真正的功能缺口只有 6-7 個，不是 40 個。
+          這告訴我：評估新 tools 的第一步不是「哪個好」，是「哪個沒有了」。
+        </p>
+
+        <h2>Superpowers Plugin：12/14 已有等效，不值得整包啟用</h2>
+        <p>
+          缺口裡有幾個來自 Anthropic 官方的 Superpowers plugin。
+          翻了一下，這個 plugin 之前在 2026-04-27 就裝好了，但一直維持停用狀態。
+        </p>
+        <p>
+          14 個 Superpowers skills 裡，分析下來 12 個已被現有 library 等效覆蓋
+          （parallel-feature-development、tdd-workflow、verification-loop、plan、skill-create 等）。
+          真正的新增只有 2 個。
+        </p>
+        <p>
+          但整包啟用有一個根本性的衝突：Superpowers 的 <code>using-superpowers</code> bootstrap skill
+          會在每次 session 開始時自動呼叫，強制讓 Claude 知道它有哪些 skills。
+          這直接牴觸了「預設不主動呼叫任何 skill」的設計原則——
+          那個原則是為了節省 context token、避免 session 開頭被不必要的 skill 加載佔滿。
+          邊際價值低（2 個新 skills）+ 全域衝突 → 不划算。
+        </p>
+        <p>
+          結論：Superpowers 維持停用。未來如果需要某個特定 Superpowers skill，
+          用「外科式單抽」的方式把那一個 SKILL.md 複製出來，其餘不動。
+        </p>
+
+        <h2>UI UX Pro Max：SKILL.md 和引擎不在同一個地方</h2>
+        <p>
+          另一個候選是 <code>nextlevelbuilder/ui-ux-pro-max-skill</code>。
+          這個 repo 的佈局藏了一個陷阱：SKILL.md 本身只有 44 KB，是純指引文件，
+          但 SKILL.md 裡的指令引用了 <code>skills/ui-ux-pro-max/scripts/search.py</code>，
+          實際的引擎和資料（1.8 MB）在 <code>src/ui-ux-pro-max/</code> 下。
+        </p>
+        <p>
+          如果 naive 地只複製 SKILL.md，search.py 不存在，skill 直接壞掉。
+          正確做法是先 <code>grep</code> SKILL.md 裡的所有路徑引用，
+          再讀 <code>core.py</code> 確認 <code>DATA_DIR</code> 是相對 <code>__file__</code> 的位置（不是 cwd），
+          然後把 SKILL.md + scripts/ + data/ + templates/ 組裝成兄弟結構。
+        </p>
+        <p>
+          從根目錄跑 <code>search.py</code> 冒煙測試通過，這才算真的安裝完成。
+          另外捨棄了同 repo 裡 6 個 <code>ckm:*</code> 附屬 skills——其中一個會撞到既有的 <code>design-system</code>，
+          不需要的功能不要裝。
+        </p>
+
+        <h2>Brainstorming：自包含驗證後單抽</h2>
+        <p>
+          真正的功能缺口只有 <code>brainstorming</code>。
+          在從 Superpowers 單抽之前，先驗證它是否自包含——
+          <code>grep</code> SKILL.md 裡所有對 superpowers/skills/ 的引用，
+          結果只有輸出路徑慣例（<code>docs/superpowers/specs/</code>）和自引用的 visual-companion.md，
+          沒有對其他 Superpowers skill 的硬依賴。
+          可以安全單抽。
+        </p>
+        <p>
+          64 KB 的 SKILL.md 複製過來，放進 <code>skills-library/dev-patterns/brainstorming/</code>。完成。
+        </p>
+
+        <h2>為什麼「先盤點現有的」比「看清單選」更有效</h2>
+        <p>
+          這個評估流程裡最重要的一步不是分析哪個 skill 好，
+          而是先建立「現有功能的地圖」。沒有那份地圖，就只能靠直覺猜哪些重疊、哪些不重疊。
+          有了地圖，「40 個缺口」立刻縮減到「1 個真缺口」，
+          也讓 Superpowers 整包啟用的決定有了具體的數字支撐（2/14 真新增），
+          而不只是「感覺裝了會衝突」。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>先盤點現有功能，再評估新工具</strong>：「這 40 個裡哪些有用」是錯的問題。正確的問題是「這 40 個裡哪些是現在沒有的」。盤點完再篩，工作量從 40 變 1。</p>
+          <p><strong>整包啟用前先算邊際價值</strong>：Superpowers 12/14 已覆蓋，整包啟用卻帶來全域 bootstrap 衝突。邊際收益（2 個 skills）遠小於邊際成本（每個 session 的額外負擔）。</p>
+          <p><strong>安裝前先驗證依賴</strong>：SKILL.md 引用 <code>scripts/search.py</code> 但引擎在別的目錄——不先 grep 路徑引用就複製，裝完就壞。安裝陌生 repo 的 skill 時，先讀完 SKILL.md 的路徑引用，再決定要帶什麼進來。</p>
+          <p><strong>自包含驗證後才敢單抽</strong>：brainstorming 能安全單抽，是因為 grep 驗證了它對外部的依賴只有「輸出路徑慣例」，沒有對其他 skill 的硬依賴。不驗證就直接抽，等於裝了半個 skill。</p>
+          <p><strong>不需要的功能不要裝</strong>：捨棄 6 個 ckm:* 附屬 skills 的決定比安裝它們更重要。功能列表只增不減，是後來難以管理的根本原因。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-18 · 40 Skills 評估 · 215 個現有 skills 對比 · 最終裝 2 個（ui-ux-pro-max + brainstorming）
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>委託成功：4 筆，成交：0 — 台股升降單位沒對齊的隱性 CRITICAL · Bobo Labs</title>
+  <meta name="description" content="Deploy 顯示「佈署完成！成功:4」，16 秒後委託追蹤全部變 CANCELLED。查 DB 才發現，這個 bug 從 2026-04-29 就存在，423 筆委託全部被交易所靜默拒絕。根本原因：round(price, 2) 沒有對齊台股升降單位。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-24</p>
+      <h1 class="article-title">委託成功：4 筆，成交：0 — 台股升降單位沒對齊的隱性 CRITICAL</h1>
+      <p class="article-lede">
+        Deploy 顯示「佈署完成！成功:4」。16 秒後，委託追蹤四筆全部變成 ❌ 已取消。
+        沒有任何錯誤訊息，UI 正常、console 零 error。
+        查 DB 才發現，這個 bug 從 2026-04-29 就存在，
+        之後的每一筆委託都在被交易所靜默拒絕，而 app 一直在說「成功」。
+      </p>
+
+      <div class="article-body">
+        <h2>症狀：一個很短暫的「成功」</h2>
+        <p>
+          在模擬環境做全面點擊測試，各功能依序走過：初始載入、資產看板、網格策略 UI、
+          等差↔等比切換、單筆測試下單——全部正常。
+          最後做 Deploy All（4 筆委託），app 顯示「佈署完成！成功:4」。
+        </p>
+        <p>
+          正要收工，16 秒後看委託追蹤：四筆全部 ❌ 已取消。沒有按 Cancel All。
+          這個狀態從哪來的？
+        </p>
+
+        <h2>為什麼「成功」之後會「取消」</h2>
+        <p>
+          下委託的流程是非同步的。
+          <code>place_order()</code> 呼叫後，券商先回 PendingSubmit，
+          app 立刻把這筆記為「成功下出去了」，然後顯示「佈署完成！成功:4」。
+          但 PendingSubmit 只是「你的委託書送到我這了」，不是「我接受了」。
+        </p>
+        <p>
+          幾秒到十幾秒後，交易所驗證委託書——如果格式不對，就靜默拒絕，狀態變 CANCELLED。
+          這個拒絕是異步的，不會主動通知，要自己去查狀態。
+          app 的委託追蹤確實在追蹤，但使用者如果只看到最初的「成功:4」就離開，就錯過了拒絕。
+        </p>
+
+        <h2>根本原因：round(price, 2) 不等於台股升降單位</h2>
+        <p>
+          翻 <code>src/strategy.py</code> 的 <code>generate_grids()</code>，找到問題：
+        </p>
+        <p>
+          算網格價格的地方寫著 <code>round(price, 2)</code>。保留兩位小數。
+          但同一個檔案裡已經有 <code>get_stock_tick()</code>——這個函式會根據股價區間查 TWSE 的升降單位——
+          只是 <code>generate_grids()</code> 沒有呼叫它。
+        </p>
+        <p>
+          問題在哪？台股的升降單位不是「保留兩位小數就好」。
+          以 00878 為例，這支 ETF 在 28 元附近，對應的升降單位是 0.05 元——
+          也就是說，合法的委託價格必須是 0.05 的整數倍（28.00、28.05、28.10……）。
+        </p>
+        <p>
+          系統儲存的 anchor 中心價是 25.22，interval 是 1.00。
+          套進去就會算出 26.22、27.22、28.22、29.22——
+          這些價格 <code>round(*, 2)</code> 看起來沒問題，但全部都不是 0.05 的倍數。
+          交易所逐筆驗，逐筆拒。
+        </p>
+
+        <h2>DB 裡的歷史把故事說清楚了</h2>
+        <p>
+          <code>grid_state.db</code> 裡查：423 筆 CANCELLED，15 筆 FILLED。
+        </p>
+        <p>
+          15 筆 FILLED 全在 2026-04-28——也就是 25.22 這個 anchor 設定**之前**。
+          2026-04-29 anchor 設定完成之後，共 5 個 deploy 批次，包含今天這次模擬，
+          100% CANCELLED，0 筆 FILLED。
+        </p>
+        <p>
+          這個 bug 從 2026-04-29 就存在，到今天才被發現。
+          原因是 app 說「成功」，使用者沒有理由繼續查；
+          而交易所的拒絕是靜默的，不發推播、不跳通知，只靜靜地把狀態改掉。
+        </p>
+
+        <h2>修法：snap_to_tick + step_price</h2>
+        <p>
+          新增 <code>snap_to_tick(price)</code>：先呼叫 <code>get_stock_tick()</code> 取得升降單位，
+          再 <code>round(price / tick) * tick</code>，最後 <code>round(*, 2)</code> 清浮點殘差。
+        </p>
+        <p>
+          新增 <code>step_price(base, direction, mode, interval)</code>：
+          補格走一格並 snap，避免重複在多處寫一樣的邏輯。
+        </p>
+        <p>
+          <code>generate_grids()</code> 兩處算價改用 <code>snap_to_tick</code>；
+          <code>fragments.py</code> 裡的補格 <code>_step</code> 改用 <code>step_price()</code>。
+          另外加了 <code>seen_prices</code> set 去重——間距小於 tick 時，相鄰格 snap 後可能同價，
+          去重避免重複委託。
+        </p>
+        <p>
+          新增 14 條回歸測試（<code>tests/test_tick_alignment.py</code>），
+          覆蓋各價位區間、等差/等比 ±1 步、anchor=25.22 回歸、小間距去重。修完試算：
+          30.30 / 30.20 / 30.10 / 30.00 / 29.90 / 29.80——全部 0.05 倍數，0 筆未對齊。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>「成功」不代表「接受」</strong>：place_order 回 PendingSubmit 是「送達」不是「接受」。委託從提交到確認有一段異步窗口，UI 的「成功」是時序上的一個截面，不是最終狀態。</p>
+          <p><strong>靜默拒絕比明顯錯誤更危險</strong>：交易所不會呼叫你的 callback 說「我拒絕了」，只是靜靜地改狀態。這種失敗模式要靠主動輪詢或 DB 分析才能發現，不是靠看 UI。</p>
+          <p><strong>同檔案裡已有的函式要主動找</strong>：<code>get_stock_tick()</code> 一直在 strategy.py 裡，<code>generate_grids()</code> 沒有呼叫它。重寫 <code>round(price, 2)</code> 之前先 grep 一下，現有的工具常常比寫新的好。</p>
+          <p><strong>DB 狀態會說話</strong>：423 CANCELLED / 15 FILLED、15 筆 FILLED 全在 anchor 設定之前——這個分佈模式直接定位了「bug 從哪一天開始」。數據庫不是只用來存，也是排查的工具。</p>
+          <p><strong>模擬環境測試要走完委託生命週期</strong>：Deploy All 之後等 16-30 秒再看委託追蹤，才算真正跑完一個委託週期。只看「成功:N」就收工，會錯過異步拒絕。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-24 · stock_grid_bot 模擬環境測試 · CRITICAL fix · 423 筆歷史 CANCELLED / snap_to_tick + 14 條回歸測試
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
