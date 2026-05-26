@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-26** — 由 /boboweb 核可 3 篇文章：
+  `2026-05-25-grid-bot-tick-verified.html`（grid bot tick 修復盤中驗證 — BUY 0%→100% PENDING，模擬 SELL 賣空限制，4/29 以來靜默失敗解謎）、
+  `2026-05-24-auto-publish-pipeline.html`（日誌堆著不上站 — 三個零件把 journal→文章流程自動化，自動化拆 A/B/C，gitignored 隔本地與對外效果）、
+  `2026-05-20-bobo-labs-publish-flow.html`（「上站」這兩個字到底許可了哪些動作 — 授權粒度拆四級，AskUserQuestion 問範圍不問是否，until-loop 比 sleep 誠實）。
+  Index Writing 區依時間倒序插入；5/24、5/20 兩篇昨日 LLM 紅線跳過，今日重新評估通過。
+  Promoted 3 drafts from `_pending/` via /boboweb on 2026-05-26 (grid bot tick verification,
+  auto-publish pipeline design, and authorization granularity for publish flow).
 - **2026-05-25** — 由 /boboweb 核可 3 篇文章：
   `2026-05-24-stock-grid-tick-fix.html`（台股升降單位沒對齊的 CRITICAL — 423 筆 CANCELLED 自 4/29 起靜默失敗，snap_to_tick 修法 + 14 條回歸）、
   `2026-05-18-skills-40-eval.html`（40 個 Skills 評估 — 32 已有等效，Superpowers 12/14 覆蓋不值整包，外科式單抽方法論）、
