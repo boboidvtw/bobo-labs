@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>日誌堆著不上站 — 三個零件把 journal→文章流程自動化 · Bobo Labs</title>
+  <meta name="description" content="寫了快一個月的開發日誌，一篇也沒上站。問題不在排程，在「沒有任何機制掃落差」。用一天時間建三個零件，讓草擬流程自己跑。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-24</p>
+      <h1 class="article-title">日誌堆著不上站 — 三個零件把 journal→文章流程自動化</h1>
+      <p class="article-lede">
+        問題不是排程壞了，排程一直都在跑。
+        問題是沒有任何機制去掃「journal 累積了多少、writing/ 發了多少、落差有多大」。
+        一句話問出真問題之後，一天建三個零件補上這條空缺。
+      </p>
+
+      <div class="article-body">
+        <h2>兩次糾正才找到真問題</h2>
+        <p>
+          「網站沒有按排程定時做事？」我第一反應是去查排程 log。
+          結果 log 顯示每天都在正常執行。「但我網頁上沒看到。」
+          我以為這是站台顯示問題，去確認部署狀態。一切正常。
+        </p>
+        <p>
+          第三次才終於對齊：「是工作經驗。」
+          「工作經驗」是什麼？是 journal 每天都在寫，
+          但從來沒有任何機制把 journal 變成站台上的文章。
+          排程跑的不是「發文」，只是「記錄」。完全不同的兩件事。
+        </p>
+        <p>
+          使用者糾正一次是術語差異，糾正兩次是我整個問題框架錯了。
+          遇到連續糾正應該回到最原始的問題重新解析，不要在錯的框架裡一直修細節。
+        </p>
+
+        <h2>自動化是光譜，不是開關</h2>
+        <p>
+          對齊真問題後，自然的問題是「要自動化到什麼程度」。
+          如果直接問「要不要全自動發布」，這是逼使用者選極端。
+          我改成提三個等級：
+        </p>
+        <p>
+          A — 自動草擬，人工核可後發布。<br />
+          B — 自動草擬＋自動 commit，人工核可才 push。<br />
+          C — 全自動，草擬＋commit＋push 一條龍。
+        </p>
+        <p>
+          列完之後，使用者立刻選 A。理由直接：git push 是對外行為，
+          有人工核可才有品質關卡。全自動沒有意義，因為節省的時間遠小於萬一發錯的代價。
+          先列各級邊界，使用者才能精準選位置。
+        </p>
+
+        <h2>三個零件的分工</h2>
+        <p>
+          選定 A 之後，要建的東西就清楚了：一個偵測落差的掃描器、
+          一個把 journal 變成 HTML 草稿的生成器、一個讓人工核可後走完發布流程的工具。
+        </p>
+        <p>
+          落差掃描每天定時跑，把「journal 有但 writing/ 沒有」的清單 append 進 ops log。
+          草稿生成也是定時排程，套紅線篩選邏輯（涉及私有 API、密鑰、純內部運維的直接跳過），
+          再把通過的 journal 轉成結構化 HTML，存進 gitignored 的暫存資料夾。
+          人工核可工具負責最後一哩：把草稿移進 writing/、更新 index.html 條目、commit、push、
+          確認部署成功。
+        </p>
+        <p>
+          這三件事沒有一件是「全新概念」，但三者串起來才補上那條空缺。
+        </p>
+
+        <h2>gitignored 暫存區是紅線的解套方式</h2>
+        <p>
+          草稿存在哪裡？有兩個選項：存在 repo 外的資料夾，或存在 repo 內但 gitignored。
+          選第二個。
+        </p>
+        <p>
+          存在 repo 外要多管一個路徑，跨層移動容易漂移。
+          存在 repo 內但加進 `.gitignore`，「不進版控」跟「不在 repo 路徑下」的區別就出來了：
+          前者是本地草稿，後者連工作環境都不在了。
+          `git status` 驗一下，確認 HTML 草稿確實不出現在 tracked files 裡。
+        </p>
+        <p>
+          這裡有一個設計原則在：禁止的通常是對外效果（push、公開頁面變更），
+          不是本地動作本身。把本地動作跟對外效果用 gitignored 隔開，
+          就能在不動既有限制的前提下擴大自主運作範圍。
+        </p>
+
+        <h2>Bash 的 cwd 不跨 call 持久</h2>
+        <p>
+          實作過程踩了一個讓流程靜默失敗的坑：先 `cd repo && git ...` 成功，
+          但下一個步驟在另一個 Bash call 裡，cwd 已經重置了，
+          後面的 `git rev-parse HEAD` 跑在不對的資料夾裡，變數展開成空字串。
+        </p>
+        <p>
+          根因很直接：每個 Bash call 都是 fresh shell，shell state 不持久。
+          多步驟流程裡所有需要相同 cwd 的命令要打包進同一個 chain，
+          或者每個命令都用絕對路徑。分裂進不同 call 就只能祈禱。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>連續被糾正兩次表示框架錯了，不是細節錯了</strong>：回到最原始的問題重新 parse，不要在錯誤的問題框架裡繼續修。</p>
+          <p><strong>自動化拆成等級再談</strong>：A（本地草稿）/ B（commit 等核可）/ C（全自動）各有邊界，使用者才能精準選位置，比「要不要自動」的二元問法有效。</p>
+          <p><strong>gitignored 把本地動作跟對外效果隔開</strong>：禁止的是 push 和公開頁面變更，不是本地寫作。用 gitignored 暫存區把這兩層物理分開。</p>
+          <p><strong>Bash cwd 不跨 call 持久</strong>：多步驟 shell 流程，需要相同目錄的命令打包進同一 chain，或全用絕對路徑。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-24 · Bobo Labs 自動發文管線 · gap 掃描 + 草稿生成 + 核可發布三件套 · 一天完成
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>修了，然後親眼看它跑 — grid bot tick 修復盤中驗證 · Bobo Labs</title>
+  <meta name="description" content="5/24 修好台股升降單位對齊問題，5/25 開盤後直接在模擬環境部署 10 筆驗證。BUY 端從 100% CANCELLED 變成 100% PENDING。同時意外解開 4/29 以來一筆未成交的歷史謎。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-25</p>
+      <h1 class="article-title">修了，然後親眼看它跑 — grid bot tick 修復盤中驗證</h1>
+      <p class="article-lede">
+        5/24 把台股升降單位對齊的 bug 修掉，但測試環境跑通不等於問題解決。
+        5/25 開盤後立刻部署 10 筆到模擬環境：5 BUY + 5 SELL。
+        BUY 端 7 分鐘後全 PENDING。同時意外發現模擬環境 SELL 的侷限，
+        以及一個 2026-04-29 以來一直沒被注意到的事實。
+      </p>
+
+      <div class="article-body">
+        <h2>Before / After 對照</h2>
+        <p>
+          修復前（5/22 模擬）：部署 4 筆，16 秒內全部 CANCELLED。成功率 0%。<br />
+          修復後（5/25 模擬）：部署 10 筆，7 分鐘後 BUY 端全 PENDING。BUY 成功率 100%。
+        </p>
+        <p>
+          差異的根源昨天已確認：台股每支股票有各自的升降單位（台積電 0.5 元、一般股 0.1 元），
+          委託價格必須是升降單位的整數倍。之前用 `round(price, 2)` 四捨五入，
+          結果 28.38 這個數字 round 完是 28.38，但 28.38 / 0.05 = 567.6——不是整數，券商直接拒絕。
+          修成 `snap_to_tick`（往最近 tick 對齊）之後，28.40、28.35 這種乾淨整數才會出現。
+        </p>
+
+        <h2>意外：模擬環境拒絕 SELL</h2>
+        <p>
+          5 筆 SELL @ 29.0–29.4，全都 tick 對齊、現價之上的合理限價，卻全部 CANCELLED。
+          這跟 tick bug 無關。模擬帳戶顯示有 20,000 股持倉，但那是 UI 顯示值；
+          實際下 SELL 單時，模擬後端判斷「帳戶無實際持倉」→ 視為賣空 → 拒絕。
+        </p>
+        <p>
+          這是模擬環境的已知侷限，不是 bug。正式環境跑的話，帳戶裡有真實持倉，
+          SELL 端應該會正常 PENDING。模擬環境的 API 限制在這裡就是比正式環境嚴。
+        </p>
+        <p>
+          這個發現的價值在於：它說明了在模擬環境裡「全部通過」不保證正式環境也全通，
+          但「BUY 端通過」確實反映了 tick 修復有效。兩件事要分開解讀。
+        </p>
+
+        <h2>4/29 以來一筆未成交的謎</h2>
+        <p>
+          看 DB 資料時發現一件事：2026-04-29 那批委託，以及後續所有批次，
+          記錄顯示全部 CANCELLED。但當時的 log 明確寫著「佈署完成 成功:4」。
+        </p>
+        <p>
+          這兩個資訊並不矛盾。「佈署完成」是 API call 回傳，是同步確認。
+          「CANCELLED」是券商在數秒後的非同步拒絕，時序上不同。
+          當時看到同步成功就以為沒問題，沒等非同步結果出來。
+        </p>
+        <p>
+          真相：tick bug 從 4/29 設了 25.22 作為 anchor 就存在了。
+          在那之前（4/28 之前），anchor 恰好 tick 對齊，所以能成交。
+          4/29 換了 anchor，tick 不對齊，此後每次部署都是靜默失敗。
+          grid bot 自 2026-04-29 起，<strong>一筆也沒有成交過</strong>。
+        </p>
+
+        <h2>「成功」要等到非同步結果才算數</h2>
+        <p>
+          這個謎解開之後，顯出一個設計上的問題：部署結果的呈現只有同步那一層。
+          同步 API 說「成功」，但券商的實際判斷是在後面的非同步流程裡完成的。
+          如果介面只顯示同步結果，使用者就會誤以為已成功。
+        </p>
+        <p>
+          修法方向：部署後等一段時間（比如 30 秒），再查一次委託狀態，
+          把 PENDING / CANCELLED 的最終結果顯示出來。
+          或者在 reconcile 結果頁加一個「上批結果」的摘要，讓每次部署後 10 分鐘內都能看到最終狀態。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>tick 修復 production-ready 確認</strong>：BUY 端從 0% → 100% PENDING，7 分鐘內穩定，排除事後取消事件可能性。</p>
+          <p><strong>模擬環境 SELL 拒絕 ≠ 修復失敗</strong>：是模擬後端的賣空限制，與 tick 邏輯無關。正式環境有真實持倉就不受此限。</p>
+          <p><strong>同步成功不等於真的成功</strong>：券商非同步拒絕在 API 回傳之後才到。佈署完成的同步訊號不代表委託最終被接受。</p>
+          <p><strong>異步拒絕要在 UI 層呈現</strong>：只顯示同步結果的介面會讓靜默失敗持續數週都沒人發現。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-25 · stock grid bot · 盤中模擬驗證 10 筆（5 BUY + 5 SELL）· 4/29 以來歷史 DB 分析
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

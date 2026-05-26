@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>「上站」這兩個字到底許可了哪些動作 · Bobo Labs</title>
+  <meta name="description" content="使用者說「寫上去」，但這授權了哪些動作？草稿、編輯 index.html、commit、push——四件事分開核可。一次關於授權粒度與部署等待的實作筆記。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-20</p>
+      <h1 class="article-title">「上站」這兩個字到底許可了哪些動作</h1>
+      <p class="article-lede">
+        「把今天做的事情寫上站。」這句話是草稿？是 commit？還是 push？
+        一個簡短的指令可能隱含四個完全不同等級的動作。
+        那天把 ∑ Calc 當日日誌發上 Bobo Labs，
+        讓我想清楚了授權粒度跟一個 AI 助理應該怎麼拆解指令。
+      </p>
+
+      <div class="article-body">
+        <h2>一句話指令裡有幾個動作？</h2>
+        <p>
+          「把今天做的事情寫上站」，拆開來是：草擬文章（本地寫作）、
+          編輯 index.html 加條目（修改現有公開頁）、commit（版本記錄）、push（對外發布）。
+          這四件事的可逆程度完全不同。
+          草稿寫壞了刪掉，不影響任何人。push 出去的東西要回頭就要另一個 commit 蓋掉。
+        </p>
+        <p>
+          如果 AI 助理把「上站」當成「全部執行」，出了問題使用者可能根本不知道哪個步驟出了什麼事。
+          正確的做法是：先做本地草稿（自主），然後拆解後續動作讓使用者明確選範圍。
+        </p>
+
+        <h2>AskUserQuestion 不是在問「要不要做」</h2>
+        <p>
+          我的做法是草稿完成後提出四選一：全部執行（草稿＋index 編輯＋commit＋push）、
+          只編輯不 push、看草稿再決定、微調後再上。
+          這個問題不是在問「要不要做」，而是在問「授權範圍到哪裡」。
+        </p>
+        <p>
+          使用者選了「全部執行」。這才是 push 動作的明確核可，而不是那句「寫上站」。
+          句意模糊就要拆解，等到使用者選了邊界才動。
+          這個原則跟「先草稿再提案」是同一個概念的不同展現。
+        </p>
+
+        <h2>新類型：daily log 的命名規約</h2>
+        <p>
+          Bobo Labs 原本有三篇文章，都是大型專案的架構敘事：
+          supercalc-arch.html、antigravity-stack.html、skills-governance.html。
+          當日的 ∑ Calc 密集迭代——三個版本（v3.5.3、v3.5.5、v3.5.6）、
+          Pro 全 8 賣點驗證——是不一樣的性質：密集的一天，不是長期演進的架構故事。
+        </p>
+        <p>
+          為此建了新命名規約：`YYYY-MM-DD-&lt;topic&gt;.html`。
+          日期直接帶在檔名前，Writing 區顯示的時候天然排序，
+          閱讀者也立刻看到「這是哪一天的工作」。
+          daily log 是第二種 article type，跟架構演進文章放在同一個 writing/ 資料夾但語意不同。
+        </p>
+
+        <h2>until-loop 比 sleep 正直</h2>
+        <p>
+          push 完之後要確認文章真的上線了——GitHub Pages 部署有個窗口期，
+          快的時候 15 秒，慢的時候 30 秒，但不固定。
+          如果寫 `sleep 30 &amp;&amp; curl ...`，30 秒是拍腦袋的，不是實際部署的時間。
+        </p>
+        <p>
+          改成 until-loop：`until [ "$(curl -s -o /dev/null -w "%{http_code}" URL)" = "200" ]; do sleep 5; done`。
+          等到 HTTP 200 才繼續，不管實際花多久。
+          部署快就快出去，部署慢就多等幾個 5 秒。
+          條件等待比定時等待誠實——你不知道的事就不要假裝你知道。
+        </p>
+
+        <h2>跨 repo 紅線的展開方式</h2>
+        <p>
+          那天的文章寫了 ∑ Calc 的 bug fix 和版本演進，但沒有寫 billing 流程、
+          也沒有寫後端 worker 的任何端點細節。
+          這個篩選不是「不能講 ∑ Calc」，而是「公開行為可以講，私有實作不講」。
+        </p>
+        <p>
+          版本號從 v3.5.3 升到 v3.5.6 是公開事實。
+          bug fix 的症狀（手機浮動列跑位、公式計算 underflow）是公開現象。
+          修法原理（CSS specificity、正則邊界）是普遍知識。
+          把這些講清楚跟暴露任何密鑰或私有端點毫無關係。
+          紅線是「不洩漏」，不是「不提及」。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>授權粒度要比句意精確</strong>：一個口頭指令可以拆成多個動作，各個動作的可逆程度不同。先做本地可逆部分，再問使用者明確授權邊界。</p>
+          <p><strong>AskUserQuestion 的問法要給出選項而非問是否</strong>：「要不要」是二元的；「授權到哪一步」才反映出使用者的實際需求區間。</p>
+          <p><strong>until-loop 等條件比 sleep 等時間誠實</strong>：你不知道部署要多久就不要假裝你知道。等到條件成立再繼續。</p>
+          <p><strong>日期命名規約自帶索引</strong>：`YYYY-MM-DD-topic.html` 把 daily log 的時序資訊放進檔名，目錄排序就是時間軸。</p>
+          <p><strong>紅線是「不洩漏」不是「不提及」</strong>：公開行為、症狀、普遍原理都可以講，禁的是密鑰、端點、私有實作細節。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-20 · Bobo Labs 發文流程 · ∑ Calc v3.5.3→v3.5.6 · 4 步驟發布核可鏈
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
