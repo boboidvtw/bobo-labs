@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>pH = -log[H⁺]：為什麼 pH 差 1 等於酸度差 10 倍 · Bobo Labs</title>
+  <meta name="description" content="pH 是對數刻度，pH 5 比 pH 6 酸 10 倍、比 pH 7 酸 100 倍。本文從 H⁺ 濃度推出 pH 公式，並列出常見飲料、化學品、人體部位的 pH 範圍。" />
+  <meta property="og:type" content="article" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/ph-value.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">{ "@context": "https://schema.org", "@type": "TechArticle", "headline": "pH = -log[H⁺]", "url": "https://labs.moneyai168.com/formulas/ph-value.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant" }</script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #53 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">pH 值 = −log[H⁺]：為什麼 pH 5 比 pH 6 酸 10 倍</h1>
+      <p class="article-lede">
+        1909 年丹麥化學家 Sørensen 發明 pH 刻度時，是為了釀酒研究 — 他需要一個能在 0–14 區間方便描述「跨幾個數量級」H⁺ 濃度的工具。
+        對數刻度 pH 自此成為化學、生物、農業、食品、醫療的共通語言。本文講清為什麼是 −log 而不是直接濃度，
+        以及為什麼可樂 pH 2.5 卻沒把胃黏膜灼傷。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">pH = −log<sub>10</sub>[H⁺]</div>
+          <div class="formula-box-note">[H⁺] 為氫離子濃度（mol/L）· log<sub>10</sub> 是常用對數</div>
+        </div>
+
+        <h2>為什麼是 −log 而不是直接寫濃度？</h2>
+        <p>
+          純水 25°C 的 [H⁺] = 10⁻⁷ mol/L。胃酸 [H⁺] ≈ 0.1 mol/L = 10⁻¹。
+          兩者差 6 個數量級 —— 用十進位寫又長又難記。
+          取對數變成 7 與 1，加負號讓結果為正：pH(水) = 7、pH(胃酸) = 1。
+          <strong>pH 差 1 = 濃度差 10 倍</strong>，這是對數刻度最重要的直覺。
+        </p>
+
+        <h2>常見物質 pH 對照</h2>
+        <table class="formula-vars">
+          <thead><tr><th>物質</th><th>pH</th><th>類型</th></tr></thead>
+          <tbody>
+            <tr><td>胃酸</td><td>1.0–2.0</td><td>強酸</td></tr>
+            <tr><td>檸檬汁</td><td>2.2</td><td>強酸</td></tr>
+            <tr><td>可樂</td><td>2.5</td><td>強酸</td></tr>
+            <tr><td>醋</td><td>3.0</td><td>酸</td></tr>
+            <tr><td>葡萄酒</td><td>3.5</td><td>酸</td></tr>
+            <tr><td>咖啡</td><td>5.0</td><td>弱酸</td></tr>
+            <tr><td>純水</td><td>7.0</td><td>中性</td></tr>
+            <tr><td>人類血液</td><td>7.35–7.45</td><td>弱鹼</td></tr>
+            <tr><td>海水</td><td>8.1</td><td>弱鹼</td></tr>
+            <tr><td>小蘇打水</td><td>9.0</td><td>鹼</td></tr>
+            <tr><td>家用漂白水</td><td>13</td><td>強鹼</td></tr>
+          </tbody>
+        </table>
+        <p>
+          可樂 pH 2.5 比血液 pH 7.4 酸 <strong>10^(7.4−2.5) = 10⁴⁹ ≈ 80000 倍</strong>。
+          那為什麼喝可樂不會死？因為食道與胃黏膜有黏液保護層、胃本來就有 pH 1 的酸環境，
+          可樂進胃反而被稀釋。但長期高頻率喝會侵蝕牙齒琺瑯質（牙釉質的羥磷灰石在 pH &lt; 5.5 開始溶解）。
+        </p>
+
+        <h2>血液 pH 的紅線</h2>
+        <p>
+          人血 pH 必須維持在 7.35–7.45 這 0.1 區間內。
+          低於 7.35 叫酸中毒、高於 7.45 叫鹼中毒，超過 6.8 或 7.8 通常致命。
+          身體靠碳酸-碳酸氫根緩衝系統（H₂CO₃ ⇌ H⁺ + HCO₃⁻）來維持，
+          糖尿病酮酸中毒、嚴重腹瀉、慢性肺病都會打破這個平衡。
+          0.1 pH 差距聽起來小，但對應 H⁺ 濃度 26% 變化，足以讓酵素失效、心律不整。
+        </p>
+
+        <h2>pOH 與 pK：對數家族</h2>
+        <p>
+          pOH = −log[OH⁻]，與 pH 關係：pH + pOH = 14（25°C 水的離子積 K<sub>w</sub> = 10⁻¹⁴）。
+          進階版還有 pK<sub>a</sub>（酸解離常數的負對數，用於緩衝液設計）、pK<sub>b</sub>、pK<sub>w</sub>。
+          所有 p 開頭的化學量都是「取 −log」 —— 這個記號統一性是 Sørensen 留下的真正遺產。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>pH 不是線性平均</strong>：pH 3 與 pH 5 等量混合，結果不是 pH 4。
+            濃度才是線性的：[H⁺]=10⁻³ 與 [H⁺]=10⁻⁵ 等量混合 → 平均 [H⁺] = (10⁻³ + 10⁻⁵)/2 ≈ 5.05×10⁻⁴，
+            取 −log 得 pH 3.3，不是 4。算 pH 必須回到濃度層級加總再取對數。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc pH 計算機。輸入 H⁺ 濃度（如可樂 2.5 ≈ 0.003 mol/L 用 3e-3 表示）。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · pH 值 #53</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=53" title="pH 值互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li>進階：莫耳濃度 C = n/V — 即將推出</li>
+          <li>進階：稀釋方程 C₁V₁ = C₂V₂ — 即將推出</li>
+          <li>進階：緩衝液與 Henderson-Hasselbalch 公式 — Pro 版即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

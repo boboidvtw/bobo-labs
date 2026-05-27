@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>歐姆定律 V = IR：電路學唯一不能不會的公式 · Bobo Labs</title>
+  <meta name="description" content="V = IR 看起來最簡單，但 90% 的電路問題都從它開始。本文講清歐姆三角的三種解法、為什麼歐姆定律對二極體不成立、以及如何用它估算手機充電時間。" />
+  <meta property="og:title" content="歐姆定律 V = IR：電路學唯一不能不會的公式" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/ohms-law.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/ohms-law.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">{ "@context": "https://schema.org", "@type": "TechArticle", "headline": "歐姆定律 V = IR", "url": "https://labs.moneyai168.com/formulas/ohms-law.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant" }</script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #30 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">歐姆定律 V = IR：簡單到所有電路都從它推</h1>
+      <p class="article-lede">
+        Georg Ohm 在 1827 年發表這條公式時，學術圈嘲笑他「太簡單」拒絕承認，直到 20 年後英國皇家學會才頒獎給他。
+        現在所有電子工程師、維修技師、自學者最先學的就是它。本文不只講公式，講三種變形怎麼用，並指出兩個常見誤區。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">V = I × R</div>
+          <div class="formula-box-note">V 電壓（伏特 V）· I 電流（安培 A）· R 電阻（歐姆 Ω）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>V</td><td>跨在電阻兩端的電壓差</td><td>Volt (V)</td></tr>
+            <tr><td>I</td><td>流過電阻的電流</td><td>Ampere (A)</td></tr>
+            <tr><td>R</td><td>電阻值</td><td>Ohm (Ω)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>歐姆三角：一個公式三種用法</h2>
+        <p>
+          把 V = IR 三個變數排成三角形（V 在頂、I 與 R 在底），遮住要求的那一個，剩下兩個就是運算式：
+        </p>
+        <ul>
+          <li><strong>求 V</strong>：V = I × R（已知電流與電阻）</li>
+          <li><strong>求 I</strong>：I = V / R（已知電壓與電阻，最常用 — 想知道電路會抽多少電）</li>
+          <li><strong>求 R</strong>：R = V / I（已知電壓與電流，用三用電表量測時）</li>
+        </ul>
+        <p>
+          這個圖示在電子課本和維修手冊用了 100 年沒換過，因為它讓初學者不用記三條公式，記一個圖就好。
+        </p>
+
+        <h2>實例 1：LED 限流電阻</h2>
+        <p>
+          紅色 LED 順向電壓 2V、額定電流 20 mA = 0.02 A。要接在 5V 電源（如 USB）上，串聯多大電阻？
+        </p>
+        <p>
+          電阻兩端電壓 = 5V − 2V = 3V（LED 自己吃 2V）。代入 R = V/I = 3 / 0.02 = <strong>150 Ω</strong>。
+          手邊沒 150 Ω 就用 220 Ω（標準色環電阻常見值），電流降到 3/220 = 13.6 mA，亮度稍降但 LED 更耐用。
+          這個算法是電子業 50 年的標準操作。
+        </p>
+
+        <h2>實例 2：手機充電時間估算</h2>
+        <p>
+          USB-A 5V/2A 快充充 5000 mAh 電池：充電器最多輸出 P = VI = 5 × 2 = 10 W。
+          電池容量 = 5000 mAh × 3.7V（鋰電池標稱）= 18.5 Wh。
+          理論最短充滿時間 = 18.5 / 10 = 1.85 小時 ≈ 1 小時 51 分。
+          實際 2-2.5 小時（最後 20% CV 階段電流會降）。
+          PD 18W 快充頭把這個時間壓到 1 小時 10 分以內 — 物理上就是 V 與 I 同時提升的結果。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>對二極體 / LED 用歐姆定律</strong>：歐姆定律只對「線性元件」（電阻值不隨電壓變）成立。
+            二極體、LED、電晶體的 V-I 曲線是<em>非線性</em>的 —— 順向電壓接近閾值前幾乎沒電流，超過閾值後電流爆衝。
+            所以 LED 點亮要靠<strong>限流電阻</strong>不能直接接電源，否則電流會在毫秒內燒掉它。
+            歐姆定律「不成立」這件事，本身就是這些元件的工作原理。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 歐姆定律計算機。試你常用電器的電流。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 歐姆定律 #30</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=30" title="歐姆定律互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li>進階：電功率 P = VI（從電壓電流推功率）— 即將推出</li>
+          <li>進階：電阻並聯 — 即將推出</li>
+          <li>進階：RC 時間常數（電容充放電速率）— Pro 版即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

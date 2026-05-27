@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>複利終值 P(1+r/n)^(nt)：愛因斯坦稱為「世界第八大奇蹟」的公式 · Bobo Labs</title>
+  <meta name="description" content="複利終值公式如何決定退休金、定存、投資組合？n（每年複利次數）對結果影響多大？本文用實例算給你看 100 萬放 30 年的差距。" />
+  <meta property="og:title" content="複利終值：愛因斯坦稱為『世界第八大奇蹟』的公式" />
+  <meta property="og:description" content="P(1+r/n)^(nt) 的完整解析、複利頻率影響、與單利對照。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/compound-interest.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/compound-interest.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "複利終值：愛因斯坦稱為世界第八大奇蹟的公式", "url": "https://labs.moneyai168.com/formulas/compound-interest.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #39 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">複利終值：每多複利一次，差距就放大</h1>
+      <p class="article-lede">
+        愛因斯坦是否真說過「複利是世界第八大奇蹟」這句話歷史學家持保留意見，
+        但這條公式的<strong>數學威力</strong>毫無爭議 — 100 萬放 30 年、年息 6%，年複利得 574 萬、月複利得 605 萬。
+        多複利 11 次/年，多賺 31 萬。本文用實例拆解 P(1+r/n)^(nt) 每一個變數的影響。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">F = P(1 + r/n)<sup>nt</sup></div>
+          <div class="formula-box-note">P 本金 · r 年利率（小數）· n 每年複利次數 · t 年數</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>初始本金（Principal）</td><td>1,000,000</td></tr>
+            <tr><td>r</td><td>名目年利率（decimal）</td><td>0.06（即 6%）</td></tr>
+            <tr><td>n</td><td>每年複利次數</td><td>1（年）/ 12（月）/ 365（日）</td></tr>
+            <tr><td>t</td><td>投資年數</td><td>30</td></tr>
+            <tr><td>F</td><td>終值（Future Value）</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>n 怎麼影響結果？百萬實測</h2>
+        <p>
+          P = 1,000,000、r = 6%、t = 30 年。改變 n 看結果：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>複利頻率 n</th><th>終值 F</th><th>比年複利多賺</th></tr></thead>
+          <tbody>
+            <tr><td>1（年複利）</td><td>5,743,491</td><td>—</td></tr>
+            <tr><td>4（季複利）</td><td>5,891,603</td><td>+148,112</td></tr>
+            <tr><td>12（月複利）</td><td>6,022,575</td><td>+279,084</td></tr>
+            <tr><td>365（日複利）</td><td>6,049,646</td><td>+306,155</td></tr>
+            <tr><td>∞（連續複利）</td><td>6,049,647</td><td>+306,156</td></tr>
+          </tbody>
+        </table>
+        <p>
+          每年多複利一次，到 30 年後差距還能放大 30 萬。但<strong>邊際遞減</strong>明顯 ——
+          從月複利（n=12）到日複利（n=365），多賺只增 2.7 萬；繼續加密到連續複利，差幾乎為零。
+          所以「日複利 vs 連續複利」的廣告話術其實沒太大實質差別。
+        </p>
+
+        <h2>為什麼是 (1+r/n)^(nt) 而不是 (1+r)^t？</h2>
+        <p>
+          (1+r)^t 是<strong>年複利</strong>的特例（n=1）。當 n=12（月複利），每月利息是 r/12，一年複利 12 次，所以指數變 12t。
+          公式分母 n 把年利率切成 n 等份、指數的 n 倍補回頻率提升 —— 數學上就是「把同樣的 r 切細，但複利次數變多」的權衡。
+        </p>
+        <p>
+          當 n → ∞，公式趨向 P·e^(rt)（連續複利），這就是 e 這個常數出現在金融的根本原因。
+          歐拉發現 e 的故事就是從研究複利上限開始的（雅各·伯努利 1683 年的問題）。
+        </p>
+
+        <h2>單利 vs 複利的差距</h2>
+        <p>
+          單利公式是 F = P(1 + rt) —— 利息只算本金。
+          P=100 萬、r=6%、t=30 年：單利 = 280 萬、年複利 = 574 萬。<strong>多賺 294 萬，全是「利上加利」貢獻</strong>。
+          這就是為什麼 <a href="/formulas/rule-of-72.html">72 法則</a>（資金翻倍速度的快速估算）只對複利成立。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>r 的單位混淆</strong>：r 是 decimal 不是百分比。6% 要代入 0.06，不是 6。
+            ∑ Calc 公式 #39 在輸入時提示「年利率 %（如 5）」，會自動 /100，因此填整數 6 即可。
+            自己用 Excel 算的話，記得 = P*(1+0.06/12)^(12*30)，不是 (1+6/12)。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 複利終值計算機。試你的退休金規劃。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 複利終值 #39</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=39" title="複利終值互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 翻倍年數的快速估算</a></li>
+          <li>進階：現值 PV（複利的反向問題：終值倒推本金）— Pro 版即將推出</li>
+          <li>進階：年金終值（每期定額存入的複利累積）— Pro 版即將推出</li>
+          <li>進階：實質年利率 EAR（解決廣告利率的可比性）— Pro 版即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

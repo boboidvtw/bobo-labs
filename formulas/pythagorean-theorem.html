@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>勾股定理 c² = a² + b²：為什麼直角三角形必須遵守它 · Bobo Labs</title>
+  <meta name="description" content="勾股定理是兩條直角邊平方和等於斜邊平方。本文用面積證明、3-4-5 勾股數實例、座標距離應用，把這條 2500 年前的等式從『會背』推到『真懂』。" />
+  <meta property="og:title" content="勾股定理 c² = a² + b²：為什麼直角三角形必須遵守它" />
+  <meta property="og:description" content="2500 年前的等式為什麼今天還在用？從面積證明到座標距離公式，一次看懂。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/pythagorean-theorem.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/pythagorean-theorem.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "勾股定理 c² = a² + b²：為什麼直角三角形必須遵守它",
+    "description": "勾股定理的完整推導、實際應用與互動試算。",
+    "url": "https://labs.moneyai168.com/formulas/pythagorean-theorem.html",
+    "datePublished": "2026-05-27",
+    "inLanguage": "zh-Hant",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" },
+    "about": { "@type": "Thing", "name": "Pythagorean theorem" }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/formulas/">Formulas</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">
+        Formula · 數學 · #11
+        <span class="formula-tier formula-tier--free">Free</span>
+      </p>
+      <h1 class="article-title">勾股定理：為什麼直角三角形必須遵守它</h1>
+      <p class="article-lede">
+        畢達哥拉斯把它寫下來，但它早已存在 — 巴比倫泥板（YBC 7289，公元前 1800 年）就有 30, 40, 50 的勾股數。
+        2500 年來，這條等式從建築工地到 GPS 定位都在用。本文用面積證明把它「真正講通」，順帶看它怎麼長成現代的兩點距離公式。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">c² = a² + b²</div>
+          <div class="formula-box-note">a, b 為兩條直角邊長 · c 為斜邊長</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td>直角三角形的一條直角邊</td><td>長度（m、cm、任意一致單位）</td></tr>
+            <tr><td>b</td><td>直角三角形的另一條直角邊</td><td>同 a</td></tr>
+            <tr><td>c</td><td>斜邊（對直角的那條邊，永遠最長）</td><td>同 a</td></tr>
+          </tbody>
+        </table>
+
+        <h2>幾何意義：三個正方形的面積關係</h2>
+        <p>
+          勾股定理不是抽象的代數關係，它在說一件視覺上的事：
+          以三角形的三條邊各畫一個正方形，那兩個小正方形的面積加起來，剛好等於大正方形的面積。
+          a 邊上的正方形面積是 a²、b 邊上的是 b²、c 邊上的是 c²。
+          這就是 c² = a² + b² 的「面積版本」說法。
+        </p>
+        <p>
+          這個說法的好處是：它把「邊長」的代數問題轉成「面積」的幾何問題。
+          面積看得到、剪得開、能對齊 —— 而代數要靠符號操作。
+          幾何證明能繞過代數技巧，純粹靠「把東西移到等大的位置」就完成。
+        </p>
+
+        <h2>證明：把同樣的四個三角形排兩次</h2>
+        <p>
+          畫一個邊長 (a+b) 的大正方形。在裡面用兩種不同方式擺四個全等的直角三角形。
+        </p>
+        <p>
+          <strong>擺法一</strong>：把四個三角形貼在大正方形四個角落，每個角落各一個，斜邊朝內。
+          中間留下一個邊長 c 的小正方形（因為四個斜邊圍出的就是 c 邊）。
+          這時剩下的空白面積 = c²。
+        </p>
+        <p>
+          <strong>擺法二</strong>：把同樣的四個三角形重新排成兩對矩形，每對拼成一個邊長 a×b 的矩形。
+          剩下的空白被切成兩塊正方形，一個 a×a、一個 b×b。
+          這時剩下的空白面積 = a² + b²。
+        </p>
+        <p>
+          兩種擺法在同一個大正方形裡，三角形佔的面積也一樣（四個全等三角形）。
+          所以「剩下的空白」必然相等：c² = a² + b²。
+          證明只用了「面積守恆」這個小學就會的事，沒動到任何高深代數。
+        </p>
+
+        <h2>實際應用</h2>
+
+        <h3>1. 勾股數：整數解的優雅特例</h3>
+        <p>
+          當 a, b, c 都是整數時，叫做<strong>勾股數</strong>。最小的一組是 (3, 4, 5)：3² + 4² = 9 + 16 = 25 = 5²。
+          其他常見：(5, 12, 13)、(8, 15, 17)、(7, 24, 25)、(20, 21, 29)。
+          施工放樣常用 3-4-5 規則畫出真正的直角 — 把繩子打三個結，分成 3:4:5 的三段拉開，圍出的就是 90°。
+          這是 GPS 還沒發明前所有木工 / 砌磚工的標準技術。
+        </p>
+
+        <h3>2. 兩點距離公式：勾股定理的座標版本</h3>
+        <p>
+          平面上任兩點 P₁(x₁, y₁) 與 P₂(x₂, y₂) 的距離怎麼算？
+          畫一條水平線、一條垂直線，得到一個直角三角形：
+          水平邊長 |x₂ − x₁|、垂直邊長 |y₂ − y₁|、斜邊就是兩點距離 d。
+          直接套勾股定理：
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">d = √((x₂ − x₁)² + (y₂ − y₁)²)</div>
+          <div class="formula-box-note">兩點距離 = 勾股定理的座標版</div>
+        </div>
+        <p>
+          這條公式是國中座標幾何的基石，也是機器學習裡 Euclidean distance 的源頭。
+          擴展到三維 (x, y, z) 或 n 維時，只要把更多項加進根號內就行 —— 勾股定理在每個維度都成立。
+        </p>
+
+        <h3>3. 建築與螢幕對角線</h3>
+        <p>
+          標 27 吋的螢幕到底有多大？「27 吋」指的是<strong>對角線</strong>長 27 吋。
+          16:9 螢幕的寬高比例代入：寬 = 16k、高 = 9k、對角線 = √(256k² + 81k²) = √337 · k。
+          √337 ≈ 18.36，所以 k = 27/18.36 ≈ 1.47。
+          寬約 23.5 吋（59.7 cm）、高約 13.2 吋（33.6 cm）。
+          下次買螢幕看廣告寫「27 吋」就能心算實際尺寸。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>誤用在非直角三角形</strong>：勾股定理<em>只</em>對直角三角形成立。
+            一般三角形要用<strong>餘弦定理</strong> c² = a² + b² − 2ab·cos(C)，
+            其中 C 是 a、b 兩邊的夾角。
+            當 C = 90° 時 cos(C) = 0，餘弦定理就退化成勾股定理 —— 勾股是餘弦定理的特例。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的勾股定理計算機。試試 a=3、b=4 看是不是 5；或試你家螢幕的對角線。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 勾股定理 #11</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=11" title="勾股定理互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/quadratic-function.html">二次函數 — 從一元二次方程到拋物線</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：餘弦定理（一般三角形版本）— 即將推出</li>
+          <li>進階：三維歐氏距離 — 即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+</body>
+</html>

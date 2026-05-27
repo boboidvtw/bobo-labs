@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>動能 ½mv²：為什麼是平方而不是線性 · Bobo Labs</title>
+  <meta name="description" content="動能與速度的平方成正比 —— 速度加倍動能 4 倍、煞車距離也 4 倍。本文用功能定理 W=Fd 推出 ½mv²，並用車禍實例說明為什麼超速這麼危險。" />
+  <meta property="og:type" content="article" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/kinetic-energy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">{ "@context": "https://schema.org", "@type": "TechArticle", "headline": "動能 ½mv²", "url": "https://labs.moneyai168.com/formulas/kinetic-energy.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant" }</script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #71 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">動能 ½mv²：速度加倍，殺傷力 4 倍</h1>
+      <p class="article-lede">
+        為什麼物理老師說「超速 50% 撞擊力暴增 125%」？因為動能與速度<strong>平方</strong>成正比。
+        時速 60 撞牆是時速 30 的 4 倍能量，車禍致死率不是線性放大、是平方放大。本文從 W = Fd 推出 ½mv²，並指出兩個常見的物理直覺失誤。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">E<sub>k</sub> = ½ m v²</div>
+          <div class="formula-box-note">m 質量（kg）· v 速度（m/s）· E<sub>k</sub> 動能（焦耳 J）</div>
+        </div>
+
+        <h2>為什麼是平方？從功能定理推導</h2>
+        <p>
+          靜止物體被定力 F 加速行進距離 d，作功 W = Fd。
+          牛頓第二定律 F = ma，等加速直線運動 v² = 2ad，所以 d = v²/(2a)。
+          代入：W = ma × v²/(2a) = ½mv²。
+          動能就是「把物體從靜止加速到速度 v 所需的功」 —— 等號右邊的 ½ 不是補丁，是積分自然產生的。
+        </p>
+        <p>
+          數學上：F = m·dv/dt，W = ∫F dx = ∫m·v dv（換變數 dx = v dt）= ½mv²。
+          這條公式是「功能定理」的最簡形式，能量守恆所有形式都從它衍生。
+        </p>
+
+        <h2>實例：車禍能量比較</h2>
+        <table class="formula-vars">
+          <thead><tr><th>速度</th><th>v² 因子</th><th>動能（1500kg 車）</th></tr></thead>
+          <tbody>
+            <tr><td>30 km/h（8.3 m/s）</td><td>69</td><td>52 kJ</td></tr>
+            <tr><td>60 km/h（16.7 m/s）</td><td>278</td><td>208 kJ（4×）</td></tr>
+            <tr><td>90 km/h（25 m/s）</td><td>625</td><td>469 kJ（9×）</td></tr>
+            <tr><td>120 km/h（33.3 m/s）</td><td>1111</td><td>833 kJ（16×）</td></tr>
+          </tbody>
+        </table>
+        <p>
+          超速 100%（60 變 120），動能變 16/4 = 4 倍，撞擊能量、煞車距離、致死率都跟著放大。
+          這就是道路速限不是「超一點點沒關係」的物理理由 —— 速度只翻倍，要消耗的能量翻 4 倍。
+        </p>
+
+        <h2>實例 2：高處摔落 vs 平地撞擊</h2>
+        <p>
+          從 1 公尺高度自由落下，落地速度 v = √(2gh) ≈ 4.4 m/s。
+          動能 ½ × 70 × 4.4² ≈ 678 J。
+          這個能量等於什麼？大約是時速 12.3 km/h 撞牆的能量。
+          所以從 1 公尺高摔下對 70 kg 成人不算嚴重 —— 但從 5 公尺高（v ≈ 9.9 m/s），動能放大 5 倍，相當於時速 35 km/h 直接撞地。
+          這就是工安規定為什麼把 1.8 公尺視為「墜落高風險」分水嶺。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>動能與動量混淆</strong>：動量 p = mv（線性）、動能 E<sub>k</sub> = ½mv²（平方）。
+            兩物體相同動量時動能不一定相同：小質量高速 vs 大質量低速。
+            子彈質量小（5 g）但速度高（800 m/s），動量 = 4 kg·m/s，動能 = 1600 J（殺傷力來源）；
+            搬磚工抱 80 kg 慢走 0.05 m/s，動量也是 4，但動能只有 0.1 J。
+            動量決定撞擊後對方獲得多少 momentum，動能決定能造成多少形變、產熱、破壞。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 動能計算機。試騎機車的動能 vs 走路。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 動能 #71</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=71" title="動能互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li>進階：動量 p = mv（與動能的對比）— 即將推出</li>
+          <li>進階：重力位能 mgh（能量守恆的另一半）— 即將推出</li>
+          <li><a href="/formulas/emc2.html">質能等價 E = mc² — 動能的終極推廣</a></li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

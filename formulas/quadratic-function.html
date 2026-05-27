@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>二次函數 y = ax² + bx + c：拋物線怎麼讀懂 · Bobo Labs</title>
+  <meta name="description" content="a 決定開口方向與寬窄、頂點公式 x = -b/(2a)、判別式 b²-4ac 揭示根的數量。二次函數的所有性質都長在這條公式裡。" />
+  <meta property="og:type" content="article" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/quadratic-function.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">{ "@context": "https://schema.org", "@type": "TechArticle", "headline": "二次函數 y = ax² + bx + c", "url": "https://labs.moneyai168.com/formulas/quadratic-function.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant" }</script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #23 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">二次函數：三個係數決定一條拋物線</h1>
+      <p class="article-lede">
+        y = ax² + bx + c 是高中數學唯一一條只用三個字母就能描述「任何拋物線」的公式。
+        a, b, c 各自管理什麼？頂點為什麼是 x = −b/(2a)？判別式 b²−4ac 怎麼預知根的數量？
+        本文一次把它們連起來，讓三個係數從「要背」變成「看得懂」。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = ax² + bx + c</div>
+          <div class="formula-box-note">a ≠ 0，否則退化成一次函數</div>
+        </div>
+
+        <h2>a 的兩個工作：方向 + 寬窄</h2>
+        <p>
+          <strong>a &gt; 0</strong> 開口朝上（U 形）；<strong>a &lt; 0</strong> 開口朝下（∩ 形）。
+          |a| 越大開口越窄，|a| 越小開口越寬。a = 1 是「標準寬度」、a = 0.5 拋物線變胖一倍、a = 2 變瘦一半。
+          物理上的拋體運動公式 y = −½g·t² 就是 a = −4.9 的拋物線（地球上 g = 9.8 m/s²），這就是為什麼丟東西的軌跡是拋物線。
+        </p>
+
+        <h2>頂點 x = −b/(2a)：對稱軸在哪</h2>
+        <p>
+          拋物線是對稱的，對稱軸就是頂點所在的垂直線。為什麼是 −b/(2a)？
+          配方法：y = a(x + b/(2a))² + c − b²/(4a)。括號內 x = −b/(2a) 時整個平方項為 0，y 達到極值（min 或 max）。
+          所以頂點座標 (−b/(2a), c − b²/(4a))。
+        </p>
+        <p>
+          記憶捷徑：把 a, b 兩個係數對折抹個負號就得對稱軸 x 座標。
+          應用：想知道丟一顆球到最高點什麼時候、什麼高度？v₀t − ½g·t² 是 a = −g/2、b = v₀、c = 0，
+          最高時刻 t = v₀/g、最高高度 v₀²/(2g)。所有運動學公式都從這出來。
+        </p>
+
+        <h2>判別式 b² − 4ac：根的「身分證」</h2>
+        <table class="formula-vars">
+          <thead><tr><th>Δ = b² − 4ac</th><th>實根數量</th><th>幾何意義</th></tr></thead>
+          <tbody>
+            <tr><td>&gt; 0</td><td>2 個不同實根</td><td>拋物線與 x 軸交於兩點</td></tr>
+            <tr><td>= 0</td><td>1 個重根</td><td>頂點剛好在 x 軸（相切）</td></tr>
+            <tr><td>&lt; 0</td><td>無實根（共軛複根）</td><td>整條拋物線在 x 軸上方或下方</td></tr>
+          </tbody>
+        </table>
+        <p>
+          這就是 <a href="/formulas/">公式 #24 判別式</a> 真正在算的東西。求根公式 x = (−b ± √Δ)/(2a) 裡，
+          根號內就是判別式 —— Δ 若為負，根號出現虛數單位 i，這正是複數系統最早被「逼出來」的地方（16 世紀 Cardano 解三次方程式）。
+        </p>
+
+        <h2>實際應用：求最佳化問題</h2>
+        <p>
+          某商品定價 p 元時，銷量 = 100 − p 件，利潤函數 = p × (100 − p) − 成本 = −p² + 100p − 成本。
+          這是 a = −1 的二次函數，頂點 p = −100/(2×−1) = 50 元。
+          無需微積分，二次函數頂點公式直接給最佳定價。
+          所有「U 形 / ∩ 形」最佳化問題在高中數學階段都靠這招。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>a = 0 還叫二次函數嗎？</strong>不叫。a = 0 時方程式變成 y = bx + c，是一次函數。
+            「二次」的定義就是 a ≠ 0，所以 ax² + bx + c 這個寫法<em>隱含</em> a ≠ 0 的前提。
+            高中題目寫「設 f(x) = ax² + bx + c 為二次函數」，背後條件是 a ≠ 0 — 推導時請保留這個前提，不要把 a 設為任意值。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 二次函數計算機。輸入 x 求 y。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 二次函數 #23</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=23" title="二次函數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li>進階：判別式 b²−4ac 完整解析 — Pro 版即將推出</li>
+          <li>進階：求根公式 / 配方法 — 即將推出</li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 另一條高中必備</a></li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

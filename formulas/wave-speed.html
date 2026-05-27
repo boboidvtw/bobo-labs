@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>波速 v = fλ：從聲音、光、到 Wi-Fi 都用同一條公式 · Bobo Labs</title>
+  <meta name="description" content="頻率 × 波長 = 波速。為什麼 5GHz Wi-Fi 比 2.4GHz 容易被牆擋？為什麼大象用次聲波溝通？波速公式一條搞定所有波動的尺度感。" />
+  <meta property="og:type" content="article" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/wave-speed.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">{ "@context": "https://schema.org", "@type": "TechArticle", "headline": "波速 v = fλ", "url": "https://labs.moneyai168.com/formulas/wave-speed.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant" }</script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #76 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">波速 v = fλ：所有波都遵守的單一規則</h1>
+      <p class="article-lede">
+        聲波、光波、水波、地震波、Wi-Fi 訊號 —— 五種完全不同的物理現象，遵守的是同一條公式。
+        波速等於頻率乘波長。這條公式讓你能解釋為什麼鋼琴琴弦長度設計成那樣、為什麼蝙蝠用超音波看世界、為什麼 5G 訊號穿牆能力不如 4G。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">v = f λ</div>
+          <div class="formula-box-note">v 波速（m/s）· f 頻率（Hz）· λ 波長（m）</div>
+        </div>
+
+        <h2>直覺：頻率與波長是反比</h2>
+        <p>
+          給定一種介質，波速 v 大致是常數（空氣中聲速 343 m/s、真空中光速 3×10⁸ m/s）。
+          所以一旦 v 固定，f 與 λ 必須反比 —— <strong>頻率高的波，波長就短；頻率低的波，波長就長</strong>。
+          這個簡單反比關係是所有波動工程設計的起點。
+        </p>
+
+        <h2>實例 1：人耳可聽聲的尺度</h2>
+        <p>
+          人耳可聽 20 Hz – 20000 Hz。空氣中聲速 343 m/s：
+        </p>
+        <ul>
+          <li><strong>20 Hz（最低）</strong>波長 λ = 343/20 = 17 m — 一棟房子的長度</li>
+          <li><strong>440 Hz（A4，鋼琴中央 La）</strong>波長 0.78 m — 大約手臂長度</li>
+          <li><strong>20000 Hz（最高）</strong>波長 17 mm — 比一元硬幣還小</li>
+        </ul>
+        <p>
+          鋼琴最低音 27.5 Hz、最高音 4186 Hz，琴弦長度從 2 公尺到 5 公分階梯式縮短，正是配合這個波長範圍。
+          低頻波長長、能繞過障礙物（衍射），高頻波長短、容易被擋住 —— 這就是為什麼隔壁鄰居半夜的低音貝斯穿牆，但人聲講話聽不太清楚。
+        </p>
+
+        <h2>實例 2：Wi-Fi 2.4G vs 5G 為什麼差這麼多</h2>
+        <p>
+          光速 c = 3×10⁸ m/s。Wi-Fi 訊號是電磁波：
+        </p>
+        <ul>
+          <li><strong>2.4 GHz</strong>：λ = 3×10⁸ / 2.4×10⁹ = 0.125 m = 12.5 cm</li>
+          <li><strong>5 GHz</strong>：λ = 3×10⁸ / 5×10⁹ = 0.06 m = 6 cm</li>
+        </ul>
+        <p>
+          2.4 GHz 波長 12.5 cm，比一般水泥牆厚度小但與「混凝土孔隙與鋼筋間距」尺度相近，較容易穿過。
+          5 GHz 波長 6 cm，與牆內結構尺度衝突更多，穿透力大幅下降。
+          所以路由器設定 2.4 GHz 範圍大、速率慢；5 GHz 範圍小、速率快。
+          選哪個取決於你想要「穿牆覆蓋」還是「同一房間極速」。
+        </p>
+
+        <h2>實例 3：可見光的彩虹尺度</h2>
+        <p>
+          可見光頻率 4×10¹⁴ – 7.5×10¹⁴ Hz。波長：
+        </p>
+        <ul>
+          <li><strong>紅光</strong> 4.3×10¹⁴ Hz → λ ≈ 700 nm</li>
+          <li><strong>綠光</strong> 5.5×10¹⁴ Hz → λ ≈ 550 nm</li>
+          <li><strong>紫光</strong> 7.5×10¹⁴ Hz → λ ≈ 400 nm</li>
+        </ul>
+        <p>
+          紫外線（&lt; 400 nm）能量高、能造成 DNA 損傷（曬傷、皮膚癌）；
+          紅外線（&gt; 700 nm）能量低、被吸收後變成熱（暖暖包、烤箱）。
+          能量、頻率、波長三者環環相扣 —— 詳見 <a href="/formulas/">普朗克 E = hf</a>。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>波速 v 不是常數，與介質有關</strong>：聲音在空氣 343 m/s、水中 1480 m/s、鋼鐵 5960 m/s。
+            光在真空 3×10⁸ m/s、水中 2.25×10⁸ m/s、玻璃約 2×10⁸ m/s。
+            v = fλ 在「同一介質」內成立。波從一種介質進另一種介質時，<strong>頻率不變、波長與波速一起變</strong>。
+            這是折射定律（Snell's law）的物理起源。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 波速計算機。試你常用 Wi-Fi 頻段的波長。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 波速 #76</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=76" title="波速互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li>進階：普朗克能量 E = hf（每個光子的能量）— Pro 版即將推出</li>
+          <li>進階：光波長 = c / f（由頻率反推波長）— Pro 版即將推出</li>
+          <li>進階：折射定律與介質中波速 — 即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

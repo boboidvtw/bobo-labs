@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>72 法則：心算複利翻倍年數的最強捷徑 · Bobo Labs</title>
+  <meta name="description" content="72 / 年化報酬率 = 資金翻倍年數。為什麼是 72 不是 70 或 100？本文用 ln(2) 推出真正的「準確值」，並標示在什麼利率區間最準。" />
+  <meta property="og:type" content="article" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/rule-of-72.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">{ "@context": "https://schema.org", "@type": "TechArticle", "headline": "72 法則", "url": "https://labs.moneyai168.com/formulas/rule-of-72.html", "datePublished": "2026-05-27", "inLanguage": "zh-Hant" }</script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #46 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">72 法則：複利翻倍年數的心算捷徑</h1>
+      <p class="article-lede">
+        年化 6% 報酬，資金幾年翻一倍？72 / 6 = 12 年。年化 8%？9 年。年化 12%？6 年。
+        這個 1494 年就出現在義大利商人手冊的近似法，至今仍是私人銀行家、財經 podcaster、個人理財書的標配。
+        本文揭曉：72 不是隨便挑的，是 ln(2) ≈ 0.693 配合「實用利率區間」的最佳近似。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">t ≈ 72 / r</div>
+          <div class="formula-box-note">t 翻倍年數 · r 年化報酬率（百分比，不是 decimal）</div>
+        </div>
+
+        <h2>用法直白：填一個數除 72</h2>
+        <table class="formula-vars">
+          <thead><tr><th>年化報酬</th><th>72/r 估算</th><th>實際值 ln(2)/ln(1+r)</th><th>誤差</th></tr></thead>
+          <tbody>
+            <tr><td>4%</td><td>18.0 年</td><td>17.67 年</td><td>+1.9%</td></tr>
+            <tr><td>6%</td><td>12.0 年</td><td>11.90 年</td><td>+0.9%</td></tr>
+            <tr><td>8%</td><td>9.0 年</td><td>9.01 年</td><td>−0.1%</td></tr>
+            <tr><td>10%</td><td>7.2 年</td><td>7.27 年</td><td>−1.0%</td></tr>
+            <tr><td>15%</td><td>4.8 年</td><td>4.96 年</td><td>−3.2%</td></tr>
+            <tr><td>25%</td><td>2.88 年</td><td>3.11 年</td><td>−7.4%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          結論：<strong>4–12% 區間誤差 &lt; 1%</strong>，這正好涵蓋人類歷史絕大多數合理長期報酬。
+          超過 15% 就要校正 — 高利率時 70 比 72 更準，低利率（&lt; 4%）時 73 比 72 略佳。
+          投資銀行內部偶爾用「Rule of 70」就是這個原因。
+        </p>
+
+        <h2>為什麼是 72？真正的數學</h2>
+        <p>
+          複利公式：終值 / 本金 = (1 + r)^t。翻倍意味左邊 = 2，所以 (1+r)^t = 2，兩邊取對數：t = ln(2) / ln(1+r)。
+          ln(2) ≈ 0.693。對小的 r，ln(1+r) ≈ r（一階泰勒展開）。
+        </p>
+        <p>
+          所以 t ≈ 0.693 / r。但 r 是 decimal（如 0.06），把 r 寫成百分比 R = 100r：
+          t ≈ 69.3 / R。理論上應該叫「69.3 法則」 — 但 69.3 心算難，72 有 1, 2, 3, 4, 6, 8, 9, 12 等好多因數，
+          而且在 6–10% 區間誤差更小（因為 ln(1+r) 比 r 略小一點，多放幾個單位剛好抵消）。
+          歷史選擇了 72。
+        </p>
+
+        <h2>反向用法：要 30 年翻倍要多少報酬？</h2>
+        <p>
+          公式倒過來：r ≈ 72 / t。30 年翻倍要 72/30 = 2.4% 年化。<strong>意義：30 年定存 2.4% 等於翻倍。</strong>
+          這比想像中低，因為複利時間長。但通膨 2-3% 會把這「翻倍」幾乎完全吃掉 — 所以理財書才會強調「報酬要 high enough to beat inflation」。
+        </p>
+
+        <h2>實際情境：退休金估算</h2>
+        <p>
+          25 歲存 100 萬、年化 7%，到 65 歲（40 年）有多少？72/7 ≈ 10.3 年翻倍，40 年翻 4 次（10 × 4 = 40），
+          1 → 2 → 4 → 8 → 16，<strong>1600 萬</strong>。實際 (1.07)^40 ≈ 14.97 倍 = 1497 萬，估算誤差 7%，能心算到這精度已經很實用。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 r 代成 decimal</strong>：公式裡 r 是百分比的「數字」，不是 0.06。
+            年化 6% 直接代 6，得 72/6 = 12 年。代 0.06 得 1200 年顯然錯。
+            和 <a href="/formulas/compound-interest.html">複利終值</a>公式（r 是 decimal）剛好相反，這是 72 法則最常見的陷阱。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 72 法則計算機。試你預期的 ETF 年化、債券殖利率、定存利率。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 72 法則 #46</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=46" title="72 法則互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 72 法則背後的精確公式</a></li>
+          <li>進階：實質年利率 EAR（廣告利率比較）— Pro 版即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>

@@ -1,0 +1,240 @@
+/* Bobo Labs — Formula article layer. Extends article.css with formula-specific blocks. */
+
+/* Tier badge（Free / Pro 標籤）---------------------------------------------- */
+.formula-tier {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  margin-left: 0.5rem;
+  vertical-align: 0.18em;
+}
+.formula-tier--free {
+  background: oklch(95% 0.04 150);
+  color: oklch(35% 0.14 150);
+}
+.formula-tier--pro {
+  background: oklch(94% 0.06 70);
+  color: oklch(40% 0.18 70);
+}
+
+/* 公式展示 box（LaTeX-style 大號顯示）-------------------------------------- */
+.formula-box {
+  margin: 2rem 0 1.25rem;
+  padding: 1.75rem 1.5rem;
+  background: oklch(99% 0 0);
+  border: 1px solid var(--color-line);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0.5rem;
+  text-align: center;
+}
+.formula-box-eq {
+  font-family: "Times New Roman", "Cambria Math", "STIX Two Math", serif;
+  font-size: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  line-height: 1.3;
+}
+.formula-box-note {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-top: 0.6rem;
+  font-style: normal;
+}
+.formula-box-eq sup, .formula-box-eq sub { font-size: 0.6em; line-height: 0; }
+.formula-box-eq em { font-style: italic; }
+
+/* 變數說明表 ------------------------------------------------------------- */
+.formula-vars {
+  margin: 1rem 0 2rem;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.95rem;
+}
+.formula-vars th, .formula-vars td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+}
+.formula-vars th {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+.formula-vars td:first-child {
+  font-family: var(--font-mono);
+  font-style: italic;
+  width: 6rem;
+  color: var(--color-accent);
+}
+
+/* 互動計算 iframe ------------------------------------------------------- */
+.formula-interactive {
+  margin: 2.5rem 0;
+  background: oklch(97% 0 0);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.formula-interactive-head {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-line);
+  background: oklch(98% 0 0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.formula-interactive-title {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+  text-transform: uppercase;
+}
+.formula-interactive-link {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration) var(--ease);
+}
+.formula-interactive-link:hover { border-bottom-color: var(--color-accent); }
+.formula-interactive iframe {
+  width: 100%;
+  height: 600px;
+  border: 0;
+  display: block;
+  background: var(--color-bg);
+}
+
+/* 警示框（常見錯誤）---------------------------------------------------- */
+.formula-callout {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: oklch(97% 0.02 60);
+  border-left: 3px solid oklch(70% 0.16 60);
+  border-radius: 0.25rem;
+  font-size: 0.95rem;
+}
+.formula-callout-title {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: oklch(45% 0.14 60);
+  margin-bottom: 0.4rem;
+}
+
+/* 延伸閱讀 -------------------------------------------------------------- */
+.formula-related {
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  background: oklch(98% 0 0);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+.formula-related-title {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 0.6rem;
+}
+.formula-related ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.formula-related li {
+  margin: 0.3rem 0;
+}
+.formula-related a {
+  color: var(--color-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-line);
+}
+.formula-related a:hover {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Index 頁面：公式卡片 grid ------------------------------------------- */
+.formula-grid {
+  list-style: none;
+  margin: 2rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.75rem;
+}
+.formula-card {
+  padding: 1rem 1.1rem;
+  background: oklch(99% 0 0);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  transition: border-color var(--duration) var(--ease),
+              transform var(--duration) var(--ease);
+}
+.formula-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+.formula-card.is-placeholder {
+  opacity: 0.55;
+  background: oklch(97% 0 0);
+}
+.formula-card a {
+  text-decoration: none;
+  color: var(--color-ink);
+  display: block;
+}
+.formula-card-id {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+}
+.formula-card-name {
+  font-weight: 600;
+  margin: 0.3rem 0;
+  font-size: 1.0625rem;
+}
+.formula-card-expr {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  font-style: italic;
+}
+
+.formula-category {
+  margin: 3rem 0 1rem;
+}
+.formula-category-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 2px solid var(--color-ink);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.formula-category-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.formula-category-count {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}

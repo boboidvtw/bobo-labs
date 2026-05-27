@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BMI 計算公式：為什麼這個 19 世紀的公式還沒被淘汰 · Bobo Labs</title>
+  <meta name="description" content="BMI = 體重 / 身高² 是 1830 年代統計學家發明的公式。它有什麼盲點？亞洲人為什麼用不同標準？本文一次講清 BMI 的計算、解讀、限制。" />
+  <meta property="og:title" content="BMI 計算公式：為什麼這個 19 世紀的公式還沒被淘汰" />
+  <meta property="og:description" content="BMI = w / (h/100)² 的完整解析、亞洲標準、與替代指標。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/bmi.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/bmi.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "BMI 計算公式：為什麼這個 19 世紀的公式還沒被淘汰",
+    "url": "https://labs.moneyai168.com/formulas/bmi.html",
+    "datePublished": "2026-05-27",
+    "inLanguage": "zh-Hant",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a>
+      <nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav>
+    </div>
+  </header>
+
+  <main id="article" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 健康 · #90 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">BMI 身體質量指數：簡單到危險的健康指標</h1>
+      <p class="article-lede">
+        BMI 是 1830 年代比利時統計學家 Adolphe Quetelet 為了「人口層級研究」發明的公式，從沒打算用在個人健康診斷上。
+        然而 200 年過去，它仍是體檢報告、人壽保險、健身 App 的標配。本文講清楚它的數學、它的盲點、以及亞洲為何另立標準。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">BMI = w / (h/100)²</div>
+          <div class="formula-box-note">w 為體重（公斤）· h 為身高（公分）· 結果單位 kg/m²</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>w</td><td>體重</td><td>kg</td></tr>
+            <tr><td>h</td><td>身高</td><td>cm（公式中 /100 換成 m）</td></tr>
+            <tr><td>BMI</td><td>身體質量指數</td><td>kg/m²</td></tr>
+          </tbody>
+        </table>
+
+        <h2>數學上它在算什麼？</h2>
+        <p>
+          BMI 是「體重對身高的二次方比」。為什麼是二次方而不是三次方？
+          直覺上，人是 3D 物體，質量應該與身高的<em>三次方</em>成正比 — 但 Quetelet 在實測 19 世紀比利時人口時發現，
+          體重大致與身高的二次方相關（成人軀幹趨於圓柱形而非球形）。
+          這個經驗式取捨讓 BMI 在「平均人口」上不錯，但對<strong>非平均體型</strong>（極瘦、極壯、極高、極矮）誤差很大。
+        </p>
+
+        <h2>解讀標準：WHO vs 亞洲</h2>
+        <table class="formula-vars">
+          <thead><tr><th>分類</th><th>WHO 國際</th><th>亞洲標準（含台灣國健署）</th></tr></thead>
+          <tbody>
+            <tr><td>過輕</td><td>&lt; 18.5</td><td>&lt; 18.5</td></tr>
+            <tr><td>正常</td><td>18.5–24.9</td><td>18.5–23.9</td></tr>
+            <tr><td>過重</td><td>25.0–29.9</td><td>24.0–26.9</td></tr>
+            <tr><td>肥胖</td><td>≥ 30.0</td><td>≥ 27.0</td></tr>
+          </tbody>
+        </table>
+        <p>
+          亞洲標準把過重/肥胖門檻調低 3 個單位，因為東亞研究顯示：相同 BMI 下，亞洲人的<strong>體脂率與內臟脂肪</strong>顯著高於白人，
+          糖尿病、心血管疾病風險也較高。WHO 標準直接套用會低估亞洲族群的代謝風險。
+          台灣的標準是 2002 年由國健署參考衛生研究院流行病學資料訂定。
+        </p>
+
+        <h2>BMI 的三大盲點</h2>
+        <p>
+          <strong>1. 不分肌肉與脂肪</strong>：健身者肌肉量大、體脂低，BMI 卻可能落入「過重」。
+          NFL 球員 BMI 普遍 &gt; 30，但體脂率 10% 上下 —— 用 BMI 標籤他們「肥胖」顯然錯。
+        </p>
+        <p>
+          <strong>2. 不看脂肪分布</strong>：兩個 BMI 同為 24 的人，一個梨型（脂肪在臀腿）、一個蘋果型（脂肪在腹部），
+          代謝風險差異巨大。腰圍（男 &gt; 90cm / 女 &gt; 80cm）是更直接的危險訊號。
+        </p>
+        <p>
+          <strong>3. 對極端身高失準</strong>：身高 200 cm 與 150 cm 的人套同一個公式，
+          結果偏向把高個子歸為「過重」、矮個子歸為「過輕」。
+          這也是為什麼運動員體型常用 <a href="/formulas/">體脂率 Deurenberg 公式</a> 或 DEXA 掃描補強。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>身高單位用錯</strong>：公式分母是 (h/100)²，h 是公分時要先除以 100 變公尺再平方。
+            直接用公分代入會把 BMI 算成正確值的 1/10000 倍（變成 0.00xx），看起來像「過輕到極致」。
+            ∑ Calc 已在公式內處理 /100，輸入時填公分即可。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的 BMI 計算機。試試你或家人的數值，並對照亞洲標準看分類。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · BMI #90</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=90" title="BMI 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li>進階：BMR 基礎代謝率（同樣輸入體重身高，預測每日所需熱量）— 即將推出</li>
+          <li>進階：TDEE 每日總消耗（BMI 之外的飲食控制基準）— Pro 版即將推出</li>
+          <li>進階：體脂率 Deurenberg 公式（補強 BMI 對運動員的失準）— Pro 版即將推出</li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+</body>
+</html>
