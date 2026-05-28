@@ -114,3 +114,204 @@
   font-size: 0.8125rem;
   color: var(--color-muted);
 }
+
+/* ============================================================
+   v2 ENHANCEMENT — Linear/Stripe modern technical blog layer
+   100% 向後相容：舊文章不加 .article--enhanced 不會改變
+   ============================================================ */
+
+/* 1. Reading progress bar（頂部進度條）-------------------------- */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  z-index: 100;
+  pointer-events: none;
+}
+.reading-progress::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: var(--progress, 0%);
+  background: var(--color-accent);
+  transition: width 80ms linear;
+}
+
+/* 2. Byline meta line（Amy · 日期 · reading time）---------------- */
+.article-meta {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.85rem;
+  align-items: center;
+}
+.article-meta-author {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.article-meta-sep {
+  opacity: 0.4;
+}
+.article-meta-time::before {
+  content: "⏱  ";
+  opacity: 0.6;
+}
+
+/* 3. 兩欄 layout（main + sticky TOC）---------------------------- */
+.article--enhanced .article-wrap {
+  max-width: 72rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 1rem + 3vw, 3.5rem);
+}
+
+@media (min-width: 1024px) {
+  .article--enhanced .article-wrap {
+    grid-template-columns: 14rem 1fr;
+  }
+  .article--enhanced .article-toc {
+    grid-column: 1;
+    grid-row: 2 / span 99;
+  }
+  .article--enhanced .back-link,
+  .article--enhanced .article-eyebrow,
+  .article--enhanced .article-title,
+  .article--enhanced .article-meta,
+  .article--enhanced .article-lede {
+    grid-column: 2;
+  }
+  .article--enhanced .article-body,
+  .article--enhanced .formula-interactive,
+  .article--enhanced .formula-related {
+    grid-column: 2;
+    max-width: 44rem;
+  }
+}
+
+/* 4. Sticky TOC（左側目錄）------------------------------------- */
+.article-toc {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .article-toc {
+    display: block;
+    position: sticky;
+    top: 4.5rem;
+    align-self: start;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    font-size: 0.875rem;
+    border-left: 1px solid var(--color-line);
+    padding-left: 1rem;
+  }
+}
+.article-toc-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+.article-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.article-toc-list li {
+  margin: 0.45rem 0;
+  line-height: 1.4;
+}
+.article-toc-list a {
+  color: var(--color-muted);
+  text-decoration: none;
+  display: inline-block;
+  border-left: 2px solid transparent;
+  padding-left: 0.6rem;
+  margin-left: -0.6rem;
+  transition: color var(--duration) var(--ease),
+              border-color var(--duration) var(--ease);
+}
+.article-toc-list a:hover {
+  color: var(--color-ink);
+}
+.article-toc-list a.is-active {
+  color: var(--color-accent);
+  border-left-color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* 5. Section anchor offset（避免 sticky bar 擋到跳轉目標）------- */
+.article--enhanced .article-body h2,
+.article--enhanced .article-body h3 {
+  scroll-margin-top: 4.5rem;
+}
+
+/* 6. Formula-box hover lift（微妙感）--------------------------- */
+.article--enhanced .formula-box {
+  transition: box-shadow var(--duration) var(--ease),
+              transform var(--duration) var(--ease);
+}
+.article--enhanced .formula-box:hover {
+  box-shadow: 0 6px 24px -8px oklch(0% 0 0 / 0.08);
+  transform: translateY(-1px);
+}
+
+/* 7. 多色 callout（除原本 warning 色外，新增 info / tip / key）-- */
+.formula-callout--info {
+  background: oklch(96% 0.03 230);
+  border-left-color: oklch(60% 0.16 230);
+}
+.formula-callout--info .formula-callout-title {
+  color: oklch(40% 0.18 230);
+}
+.formula-callout--tip {
+  background: oklch(97% 0.04 150);
+  border-left-color: oklch(58% 0.16 150);
+}
+.formula-callout--tip .formula-callout-title {
+  color: oklch(35% 0.16 150);
+}
+.formula-callout--key {
+  background: oklch(96% 0.04 290);
+  border-left-color: oklch(55% 0.18 290);
+}
+.formula-callout--key .formula-callout-title {
+  color: oklch(38% 0.20 290);
+}
+
+/* 8. inline anchor link 樣式（hover 時 # 符號出現）-------------- */
+.article--enhanced .article-body h2,
+.article--enhanced .article-body h3 {
+  position: relative;
+}
+.article--enhanced .article-body h2 .anchor-link,
+.article--enhanced .article-body h3 .anchor-link {
+  position: absolute;
+  left: -1.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  color: var(--color-muted);
+  font-weight: 400;
+  text-decoration: none;
+  transition: opacity var(--duration) var(--ease);
+}
+.article--enhanced .article-body h2:hover .anchor-link,
+.article--enhanced .article-body h3:hover .anchor-link {
+  opacity: 0.6;
+}
+.article--enhanced .article-body h2 .anchor-link:hover,
+.article--enhanced .article-body h3 .anchor-link:hover {
+  opacity: 1;
+  color: var(--color-accent);
+}

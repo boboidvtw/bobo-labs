@@ -26,6 +26,7 @@
   </script>
 </head>
 <body>
+  <div class="reading-progress" aria-hidden="true"></div>
   <a class="skip-link" href="#article">跳到主要內容</a>
   <header class="site-header">
     <div class="wrap header-inner">
@@ -34,11 +35,21 @@
     </div>
   </header>
 
-  <main id="article" class="article">
+  <main id="article" class="article article--enhanced">
     <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
       <a class="back-link" href="/formulas/">← 回 Formula Library</a>
       <p class="article-eyebrow">Formula · 健康 · #90 <span class="formula-tier formula-tier--free">Free</span></p>
       <h1 class="article-title">BMI 身體質量指數：簡單到危險的健康指標</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-05-27</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
       <p class="article-lede">
         BMI 是 1830 年代比利時統計學家 Adolphe Quetelet 為了「人口層級研究」發明的公式，從沒打算用在個人健康診斷上。
         然而 200 年過去，它仍是體檢報告、人壽保險、健身 App 的標配。本文講清楚它的數學、它的盲點、以及亞洲為何另立標準。
@@ -134,5 +145,7 @@
   </main>
 
   <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
 </body>
 </html>
