@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三件事一次做完：∑ Calc 贊助按鈕、公式分層、/formulas/ 子站 · Bobo Labs</title>
+  <meta name="description" content="使用者一次下達三條並行指令。先問清楚四個阻塞性決策，後續六小時無中斷。記 Phase 1 贊助 modal、Phase 2.1 公式分層 Markdown 草案、Phase 3 /formulas/ 子站 + 10 篇 SEO 文章的設計選擇與踩坑。" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-27</p>
+      <h1 class="article-title">三件事一次做完：∑ Calc 贊助按鈕、公式分層、/formulas/ 子站</h1>
+      <p class="article-lede">
+        使用者一口氣下達三條並行指令：Phase 1 贊助按鈕、Phase 2 公式分層、Phase 3 /formulas/ 子站。
+        開工前先用一個 AskUserQuestion 把四個阻塞性決策全收完——帳號狀態、金流服務商、定價策略、發文位置。
+        四題一輪問完，後續六小時無中斷推進。這篇記三個 Phase 的技術選擇、Modal 重用策略，以及驗證過程中踩到的兩個小坑。
+      </p>
+
+      <div class="article-body">
+        <h2>先問清楚四件事，不要讓決策散落在工作中間</h2>
+        <p>
+          執行三個並行 Phase 最貴的成本不是打程式碼，而是工作到一半停下來等答案。
+          開工前列了 21 條 TodoWrite，然後一次性問清楚四個後段會卡住的決策：
+          GitHub Sponsors 帳號開了沒（已開）、付款服務商選誰（Polar.sh，Merchant of Record、4% 抽成）、
+          定價策略是什麼（IP 判斷 TW/其他，雙幣別自動偵測）、Phase 3 文章發在哪裡（Bobo Labs /formulas/ 子站）。
+        </p>
+        <p>
+          四個決策全部前置收完，後面推進才真正不會中斷。
+          比「做到哪、問到哪」省下大量 context switching，這個模式值得在未來所有多 Phase 任務裡複用。
+        </p>
+
+        <h2>Phase 1：贊助按鈕為什麼不放在右下角</h2>
+        <p>
+          計畫書原本寫「右下角浮動按鈕」。實作前評估了兩個問題：
+          CLAUDE.md 開發禁忌明列「不放計算機按鈕區廣告」，而且浮動層在手機上會擋到 UI。
+          沒有硬性規定一定要右下角，只是「浮動 = 曝光」這個直覺把人帶過去的。
+        </p>
+        <p>
+          最後改在 header controls 區放一個心形按鈕（紅 <code>#f43f5e</code>），36×36 圓形、與右側 help 按鈕並排。
+          設計一致、不擋 UI、語意清楚——三個條件都達到，而且不需要任何額外的 z-index 管理。
+          設計問題的答案通常不在「要不要加」，而在「放在哪裡才不尷尬」。
+        </p>
+
+        <h2>Modal 的重用策略：借語意不精確的 class，換一致的 layout</h2>
+        <p>
+          ∑ Calc 已有三個 modal（help / formula / graph），每個各自一套 CSS，沒有共用的 base class。
+          新的 support modal 需要 overlay + 置中容器 + 關閉按鈕這三件事，.help-modal 剛好有這三件事。
+        </p>
+        <p>
+          「help-modal」這個命名其實是「dialog overlay layout」的意思，只是歷史原因叫這個名字。
+          我選擇複製 .help-modal 結構給 supportModal，再加 .support-cta / .support-uses 等內容專用樣式。
+          <strong>寧可借語意不夠精確的舊 class，也不為一個新功能再開一套設計系統。</strong>
+          如果未來三個 modal 都要統一，那時再一次性抽 base class，現在抽是過早設計。
+        </p>
+        <p>
+          a11y 完整跟進：role="dialog" + aria-modal="true" + aria-labelledby="supportModalTitle"，
+          與既有 openModal()/closeModal() helper 整合（焦點移入、Tab 陷阱、Escape 關閉、關閉後焦點還原）。
+          #/support 與 #support 兩種 hash route 都支援。
+        </p>
+
+        <h2>驗證踩坑一：hash 路由是 microtask，同步斷言永遠太早</h2>
+        <p>
+          第一輪驗證寫了一段 console 測試：設定 location.hash = '#/support'，然後立刻讀 modal 的 classList。
+          結果 modal_active: false，以為 bug。
+        </p>
+        <p>
+          實際原因是：hashchange 事件是 microtask，同步讀取狀態的時間點是在事件 handler 執行前。
+          加了 await new Promise(r =&gt; setTimeout(r, 50)) 之後，modal_active: true，一切正常。
+          <strong>DOM 副作用 + event listener 的驗證，務必跨一個 microtask 再讀狀態。</strong>
+        </p>
+
+        <h2>驗證踩坑二：截圖工具的「mobile」不等於 375px</h2>
+        <p>
+          截圖看 modal 視覺「向左溢出」，懷疑 RWD 壞掉。inspect 實測：
+          viewport_width 是 478（preset 'mobile' 不是預期的 375）、modal_x = 16、modal_width = 446，
+          完全沒有 overflow。是截圖工具的顯示比例造成視覺錯覺。
+        </p>
+        <p>
+          <strong>先 inspect 實際 BoundingClientRect 再下排版判斷。</strong>
+          截圖看起來壞掉不等於真的壞掉，視覺縮放比例會說謊。
+        </p>
+
+        <h2>Phase 2.1：公式分層先寫 Markdown，不直接改程式碼</h2>
+        <p>
+          100 條公式要分 Free / Pro 兩層。分層比例最終是 Free 59 / Pro 41，
+          按「會在國高中課本看到」全 Free、「大三以上 + 業界專用」全 Pro 的原則切分。
+          E=mc² 雖然名氣大但放 Pro——「破解愛因斯坦最有名方程式」是強付費鉤子。
+        </p>
+        <p>
+          但這 41 條 Pro 的分類沒有直接寫進 builtInFormulas 程式碼——
+          而是寫進 docs/MONETIZATION-PHASE-2-TIER-SPLIT.md（148 行 Markdown）。
+          原因很直接：使用者要調整名單時不需要 revert 程式碼，改 Markdown 即可，
+          等確認後再批次寫入 <code>tier: 'pro'</code> 欄位。
+          <strong>結構性大改動，先用文件層討論完再落程式。</strong>
+        </p>
+
+        <h2>Phase 3：十篇文章的選題邏輯</h2>
+        <p>
+          /formulas/ 子站建在靜態 HTML 架構裡，新增 formula.css（240 行）加入公式專用樣式：
+          formula-box、變數表、iframe 容器、警示框、卡片 grid。
+          索引頁 90 條未寫公式標 is-placeholder 灰卡，不占文章 token。
+        </p>
+        <p>
+          十篇選題按「高搜尋量 + 覆蓋 6 分類」：勾股定理、二次函數、歐姆定律、複利終值、
+          72 法則、pH 值、動能、波速（Wi-Fi / 5G 連結時事）、BMI（全球搜尋量第一健康公式）、
+          E=mc²（Pro 鉤子）。第一篇（勾股）寫 1500 字完整版作為黃金示範，
+          後九篇精煉到 800-1200 字維持 token 預算，單 session 完成十篇。
+        </p>
+        <p>
+          iframe deep link 用 <code>?formula=N</code> query param，加 16 行 JS：
+          頁面載入時 parse query → 切到公式 tab → setTimeout 80ms 後 trigger 卡片 click → 自動開 modal。
+          完整 embed mode（隱藏 header / sidebar）留後續。
+          「點 iframe 直接看到目標公式」已能滿足 SEO 文章的試算需求，MVP 原則套用在新功能同樣有效。
+        </p>
+
+        <h2>三次 commit，兩個 repo，一輪 push</h2>
+        <p>
+          整個 session 的程式碼最終壓縮成三筆 commit：
+          Phase 1 Sponsor（v3.7.0，boboidvtw.github.io，160 行）、
+          Phase 2.1 + 3.2（v3.7.1，同 repo，164 行）、
+          Phase 3.1-3.4（bobo-labs，1708 行，10 篇 + CSS + sitemap + robots.txt）。
+          兩個都是公開 repo，push 前用 AskUserQuestion 拿核可。
+        </p>
+        <p>
+          驗證清單全部過：sw.js = sigma-calc-v3.7.1、?formula=11 自動開勾股定理 modal、
+          ?formula=71 自動開動能 modal、Bobo Labs /formulas/ 各頁 200、console 零 error。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>決策前置收完</strong>：三 Phase 並行時，一輪 AskUserQuestion 把所有阻塞性決策全收完。比「做到哪、問到哪」省下大量 context switching 成本。</p>
+          <p><strong>Markdown 先行</strong>：結構性大改動（公式分層 41 條）先寫文件讓人審閱，確認後再一次性落程式。文件改比 code revert 成本低幾個數量級。</p>
+          <p><strong>hash 路由驗證要跨 microtask</strong>：hashchange 是 microtask，同步斷言永遠在事件 handler 前。加 setTimeout(50) 是正確的等待點，不是 workaround。</p>
+          <p><strong>截圖說謊，BoundingClientRect 不說謊</strong>：viewport preset 不等於你以為的寬度，視覺「溢出」可能只是縮放比例問題。先 inspect 再判斷。</p>
+          <p><strong>借舊 class 不開新設計系統</strong>：一個新功能的 modal 借用現有 .help-modal layout，過早抽 base class 是浪費。等三個 modal 都需要統一再一次抽。</p>
+          <p><strong>內容生產要先建模板再批量產出</strong>：10 篇公式文章，第 1 篇 1500 字黃金示範，第 2-10 篇套模板 800-1200 字。單 session 完成，token 預算可控。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-27 · ∑ Calc v3.7.0-v3.7.1 · Bobo Labs /formulas/ 子站初版 · 10 篇 SEO 文章 + sitemap + robots.txt · 3 commits / 2 repos
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
