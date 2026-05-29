@@ -12,3 +12,7 @@
 # Auto-drafted articles awaiting human approval（章程「本地草稿」自主範圍）
 # 由 /bobo-draft-pending 每晚 22:00 寫入；早上人工 review 後才搬到 writing/
 writing/_pending/
+
+# 縱深防禦：ops 產物永不入站台 repo（章程紅線）。
+# headless skill 若誤用相對路徑寫 ops log 時擋下，避免運維記錄公開外洩。
+memory/
