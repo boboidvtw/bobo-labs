@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-29** — 由 /boboweb 核可 1 篇文章：
+  `2026-05-27-supercalc-monetization-phase1.html`（三件事一次做完 — ∑ Calc 贊助按鈕、公式分層 markdown、/formulas/ 子站初版十篇；AskUserQuestion 一輪收四個阻塞決策後六小時無中斷推進）。
+  Index Writing 區依時間倒序插入。
+  Promoted 1 draft from `_pending/` via /boboweb on 2026-05-29 (∑ Calc monetization Phase 1-3:
+  sponsor button, formula tiering, and /formulas/ subsite launch).
 - **2026-05-26** — 由 /boboweb 核可 3 篇文章：
   `2026-05-25-grid-bot-tick-verified.html`（grid bot tick 修復盤中驗證 — BUY 0%→100% PENDING，模擬 SELL 賣空限制，4/29 以來靜默失敗解謎）、
   `2026-05-24-auto-publish-pipeline.html`（日誌堆著不上站 — 三個零件把 journal→文章流程自動化，自動化拆 A/B/C，gitignored 隔本地與對外效果）、
