@@ -20,6 +20,15 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-05-29** — 由 /boboweb 第二輪核可 5 篇 /formulas/ 子站文章：
+  `formulas/arithmetic-mean.html`（#13 數學 Free · 平均值為何說謊、中位數什麼時候誠實）、
+  `formulas/distance-formula.html`（#25 數學 Free · 勾股定理的座標版本）、
+  `formulas/mortgage-payment.html`（#40 金融 Free · 等額本息背後的 30 年數學）、
+  `formulas/newtons-second-law.html`（#70 物理 Free · F=ma 為何力會改變運動）、
+  `formulas/universal-gravitation.html`（#79 物理 Free · 為何月球不會掉下來）。
+  formulas/index.html：3 個 placeholder 替換為 active card、2 張新卡片（#13、#40）插入 active 區末端、#79 萬有引力 Tier 從 Pro→Free（採文章 eyebrow 為準）；物理分類計數 12F/9P→13F/8P、數學註腳 26→25 條、金融註腳 8→7 條。同輪清掉 `writing/_pending/_patch_articles.py` 一次性補丁腳本。
+  Promoted 5 /formulas/ articles via /boboweb second round on 2026-05-29 (math/finance/physics, all Free)
+  and cleaned up one-shot _patch_articles.py from _pending/.
 - **2026-05-29** — 由 /boboweb 核可 1 篇文章：
   `2026-05-27-supercalc-monetization-phase1.html`（三件事一次做完 — ∑ Calc 贊助按鈕、公式分層 markdown、/formulas/ 子站初版十篇；AskUserQuestion 一輪收四個阻塞決策後六小時無中斷推進）。
   Index Writing 區依時間倒序插入。
