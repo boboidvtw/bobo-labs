@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>平均值：日常最熟悉、卻最容易被誤用的統計量 · Bobo Labs</title>
+  <meta name="description" content="平均值看起來簡單，卻最容易誤導決策。本文從兩數平均推到 n 個數的算術平均，再講「平均薪資」為何不能信、平均值 vs 中位數 vs 眾數該怎麼選。" />
+  <meta property="og:title" content="平均值：日常最熟悉、卻最容易被誤用的統計量" />
+  <meta property="og:description" content="從兩數平均到 n 個數，平均值為什麼會說謊？中位數什麼時候比較誠實？" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/arithmetic-mean.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/arithmetic-mean.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "平均值：日常最熟悉、卻最容易被誤用的統計量",
+    "description": "兩數平均到 n 個數的完整推演、實際應用與互動試算。",
+    "url": "https://labs.moneyai168.com/formulas/arithmetic-mean.html",
+    "datePublished": "2026-05-28",
+    "inLanguage": "zh-Hant",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" },
+    "about": { "@type": "Thing", "name": "Arithmetic mean" }
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/formulas/">Formulas</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">
+        Formula · 數學 · #13
+        <span class="formula-tier formula-tier--free">Free</span>
+      </p>
+      <h1 class="article-title">平均值：日常最熟悉、卻最容易被誤用的統計量</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-05-28</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        新聞說「全國平均薪資 5.8 萬」，你和身邊朋友的薪水都沒到 —— 平均值在說謊嗎？
+        其實它沒說謊，是<strong>你誤解了它的角色</strong>。
+        平均值是「把總和重新均分」，不是「中間那一個人的薪水」。
+        本文從最簡單的兩數平均開始，推到 n 個數的算術平均，再講為什麼新聞應該同時公布中位數。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">兩數平均：x̄ = (x₁ + x₂) / 2</div>
+          <div class="formula-box-note">n 個數平均：x̄ = (x₁ + x₂ + … + xₙ) / n</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>x₁, x₂, …</td><td>每一筆資料的數值</td><td>視資料而定（薪資 NT$、身高 cm、考試分數）</td></tr>
+            <tr><td>n</td><td>資料筆數</td><td>正整數</td></tr>
+            <tr><td>x̄</td><td>算術平均值（讀作「x bar」）</td><td>與資料同單位</td></tr>
+          </tbody>
+        </table>
+
+        <h2>意義：平均值是「均分」，不是「典型」</h2>
+        <p>
+          想像三個人吃飯，A 出 200、B 出 300、C 出 700，總共付了 1200 元。
+          如果三人平分這頓飯，每人「應該」付 1200 ÷ 3 = 400 元 —— 這就是<strong>平均值</strong>。
+          它的本質是：把所有人的錢倒進同一個籃子、再平均分回每個人。
+          注意 400 元並不<em>等於</em>任何人實際付的金額（A 付 200、B 付 300、C 付 700，沒人剛好付 400）。
+        </p>
+        <p>
+          這就是平均值的關鍵性質：<strong>它不必等於資料中的任何一筆，它代表的是「總體被均分後」每個成員的份額</strong>。
+          當資料分布對稱（左右兩側差不多）時，平均值會接近「中間那一個」，這就是它常被當作「典型值」的原因。
+          但當資料有極端值偏向一邊（例如極少數人賺很多），平均值就會被那些極端值往那邊拉，不再代表「中間」。
+        </p>
+
+        <h2>從兩數推到 n 個數：累加 ÷ 個數</h2>
+        <p>
+          兩數平均 (x₁+x₂)/2 是最直觀的版本 —— 把兩個數加起來除以 2。
+          推廣到 n 個數時，邏輯一樣：把所有數加起來，再除以個數：
+        </p>
+        <p>
+          x̄ = (x₁ + x₂ + … + xₙ) / n = (1/n) · Σxᵢ
+        </p>
+        <p>
+          Σ（讀作 sigma）是「加總」的數學符號。
+          這就是<strong>算術平均（arithmetic mean）</strong>的標準形式。
+          ∑ Calc 內建的 <code>?formula=13</code> 計算機是兩數版本（最常用），更多筆資料時可以手動加總後除以筆數，或用試算軟體（Excel <code>AVERAGE()</code>、Google Sheets <code>=AVERAGE()</code>）。
+        </p>
+
+        <h2>實際應用</h2>
+
+        <h3>1. 為什麼「平均薪資」總比你想像高？</h3>
+        <p>
+          假設一個小公司 9 個員工月薪都是 4 萬，老闆月薪 100 萬。
+          總薪資 = 9 × 4 + 100 = 136 萬，平均薪資 = 136 / 10 = <strong>13.6 萬</strong>。
+          但 10 個人裡有 9 個都領 4 萬 —— 平均值嚴重高估了「典型員工」的薪水。
+        </p>
+        <p>
+          這就是<strong>右偏分布</strong>：少數極大值（老闆、CEO、富豪）把平均值往上拉。
+          台灣全國「平均」薪資 5.8 萬就是這種狀況；
+          中位數薪資（把所有人從低到高排，正中間那一個）大約只有 4.3 萬。
+          當資料有明顯偏態，<strong>中位數比平均值更代表「中間的人」</strong>。
+        </p>
+
+        <h3>2. 考試成績：兩個學期的學期平均</h3>
+        <p>
+          學生上學期平均 78 分、下學期平均 86 分。整年的平均是多少？
+          直覺反應 (78+86)/2 = 82，這沒錯 —— 但只有當<strong>兩學期科目數相同</strong>時才對。
+          如果上學期修 8 科、下學期修 4 科，正確算法是：
+          (78×8 + 86×4) / (8+4) = (624+344)/12 ≈ 80.67，不是 82。
+          這叫做<strong>加權平均</strong>，每筆資料按「權重」（這裡是科目數）加總。
+          忽略權重直接平均，是學生族最常踩的算數陷阱。
+        </p>
+
+        <h3>3. 運動成績與股票報酬：什麼時候要用幾何平均</h3>
+        <p>
+          股票今年漲 50%、明年跌 50%，平均報酬是 0%？錯。
+          算術平均 (50% + (−50%)) / 2 = 0%，但實際上 100 元 → 150 → 75，<strong>賠了 25%</strong>。
+          這時要用<strong>幾何平均</strong>：√(1.5 × 0.5) − 1 = √0.75 − 1 ≈ −13.4% 才反映真實年化報酬。
+          一句話：<strong>加法情境用算術平均，乘法情境（成長率、複利）用幾何平均</strong>。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>(1) 用平均代表「典型」</strong>：分布偏態時請優先看中位數。<br>
+            <strong>(2) 忽略權重</strong>：不同數量的子群體不可直接平均，要用加權平均。<br>
+            <strong>(3) 用算術平均算成長率</strong>：複利、報酬率、人口成長等乘法情境必須用幾何平均。<br>
+            <strong>(4) 平均速率的陷阱</strong>：去程 60 km/h、回程 40 km/h，平均速率不是 50，而是調和平均 2/(1/60+1/40) = 48 km/h。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的兩數平均計算機。試試 78 和 86 的平均（學期分數），或者你和另一半薪水的中點。
+          多筆資料請用試算軟體或自己手動 Σxᵢ ÷ n。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 平均值 #13</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=13" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=13" title="平均值互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/bmi.html">BMI 身體質量指數 — 個人健康的平均化指標</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 為什麼成長率不能用算術平均</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：標準差與變異數 — 即將推出</li>
+          <li>進階：中位數、眾數、四分位距 — 即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../article.js" defer></script>
+</body>
+</html>

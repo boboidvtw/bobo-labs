@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>萬有引力 F = G·m₁m₂/r²：為什麼月球不會掉下來 · Bobo Labs</title>
+  <meta name="description" content="牛頓沒被蘋果砸到，他是看到蘋果落下、想到月球也在落，才寫下萬有引力公式。本文拆解 G·m₁m₂/r² 怎麼來，講地表 g、ISS 軌道速度、逃逸速度，以及 r 是「中心距離」這個關鍵細節。" />
+  <meta property="og:title" content="萬有引力 F = G·m₁m₂/r²：為什麼月球不會掉下來" />
+  <meta property="og:description" content="從蘋果故事到 ISS 每 90 分鐘繞地球一圈，一次看懂萬有引力。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/universal-gravitation.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/universal-gravitation.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "萬有引力 F = G·m₁m₂/r²：為什麼月球不會掉下來",
+    "description": "萬有引力公式的完整推導、實際應用與互動試算。",
+    "url": "https://labs.moneyai168.com/formulas/universal-gravitation.html",
+    "datePublished": "2026-05-28",
+    "inLanguage": "zh-Hant",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" },
+    "about": { "@type": "Thing", "name": "Newton's law of universal gravitation" }
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/formulas/">Formulas</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">
+        Formula · 物理 · #79
+        <span class="formula-tier formula-tier--free">Free</span>
+      </p>
+      <h1 class="article-title">萬有引力：為什麼月球不會掉下來</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-05-28</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        牛頓沒被蘋果砸到。事實上他在自家果園散步，看到蘋果落地，腦中突然蹦出一個瘋狂的想法：<strong>月球也在落 —— 只是它同時也在往側邊飛，所以「掉」永遠掉不到地面</strong>。
+        這個直覺後來變成了 F = G·m₁m₂/r²，一條公式同時解釋蘋果為什麼掉、月球為什麼繞、星系為什麼凝聚成形。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">F = G · m₁ · m₂ / r²</div>
+          <div class="formula-box-note">兩個有質量的物體之間互相吸引的力，與質量乘積成正比、與距離平方成反比</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>F</td><td>兩物體之間的引力大小（向量沿兩中心連線方向）</td><td>牛頓 N</td></tr>
+            <tr><td>m₁, m₂</td><td>兩個物體的質量</td><td>公斤 kg</td></tr>
+            <tr><td>r</td><td><strong>兩物體中心之間</strong>的距離（不是表面距離）</td><td>公尺 m</td></tr>
+            <tr><td>G</td><td>萬有引力常數（CODATA 2018 值）</td><td>6.6743 × 10⁻¹¹ N·m²/kg²</td></tr>
+          </tbody>
+        </table>
+
+        <h2>意義：宇宙裡每對有質量的物體都在彼此吸引</h2>
+        <p>
+          公式裡<strong>沒有任何條件</strong>限制 m₁ 跟 m₂ 是什麼 —— 太陽和地球、地球和月球、你和你手上的手機、兩個遙遠星系，全都遵守同一條公式。
+          這就是「萬有」兩個字的力量：在牛頓之前，沒人想過地上的力（蘋果落下）和天上的力（月球運動）是<em>同一種</em>力。
+          物理學的「統一」這件事，從這條公式開始。
+        </p>
+        <p>
+          引力的大小由兩件事決定：
+          <strong>(1) 質量越大，引力越強</strong>（兩個質量相乘，雙倍質量 → 雙倍引力）；
+          <strong>(2) 距離越遠，引力越弱，且以平方反比衰減</strong>（距離拉到 2 倍 → 引力變 1/4；距離 10 倍 → 引力變 1/100）。
+          平方反比這件事不是巧合，它跟<strong>球面面積擴散</strong>有關 —— 引力線從一個點往外發散，
+          在距離 r 的球面上總共要鋪滿 4πr² 的面積，所以單位面積的「引力強度」必然以 1/r² 衰減。
+        </p>
+
+        <h2>從萬有引力推出地表 g：為什麼是 9.8 m/s²</h2>
+        <p>
+          站在地表上，你受到地球的引力 F = G·M·m/R²，
+          其中 M 是地球質量 ≈ 5.972 × 10²⁴ kg、R 是地球半徑 ≈ 6.371 × 10⁶ m、m 是你的質量。
+          套<a href="/formulas/newtons-second-law.html">牛頓第二定律</a> F = m·g（這裡的 g 是地表重力加速度），把 m 約掉：
+        </p>
+        <p>
+          g = G·M / R² = (6.6743e−11) × (5.972e24) / (6.371e6)² ≈ <strong>9.82 m/s²</strong>
+        </p>
+        <p>
+          這就是高中物理課本裡 g ≈ 9.8 的真正來源。
+          注意 g 跟<em>你的</em>質量 m 完全沒關係 —— 所以伽利略的「比薩斜塔實驗」結論是對的：在沒空氣阻力時，鐵球和羽毛同時落地。
+        </p>
+
+        <h2>實際應用</h2>
+
+        <h3>1. 月球為什麼不會掉下來：它一直在「掉」</h3>
+        <p>
+          月球受地球引力一直在朝地球加速。如果它本來靜止，早就掉下來了。
+          但月球有<strong>切線方向</strong>的速度（大約每秒 1 km），所以它<em>同時</em>在朝地球落、又在往側邊飛。
+          兩個運動疊加的結果，就是它沿著弧線繞地球轉。
+          想像你把球綁在繩上甩，球一直想沿切線飛走，繩子一直把它拉回中心 —— 軌道運動本質上就是「永遠在落、但永遠落不到」。
+        </p>
+        <p>
+          這就是 ISS 國際太空站每 90 分鐘繞地球一圈的物理：它離地表約 400 km（r = 6.771 × 10⁶ m），
+          要圓周運動 v²/r = G·M/r²，解出 v = √(G·M/r) ≈ <strong>7.67 km/s</strong>（時速約 27,600 km）。
+          以這個速度繞地球一周 2πr = 4.25 萬 km，所需時間 ≈ 92 分鐘。太空人每天看 16 次日出。
+        </p>
+
+        <h3>2. 逃逸速度：要多快才能擺脫地球？</h3>
+        <p>
+          地球表面要把物體丟到無窮遠（不再回來），動能必須能克服引力位能：
+          ½·m·v² ≥ G·M·m/R，解出 v = √(2·G·M/R) ≈ <strong>11.2 km/s</strong>（時速 4 萬 km）。
+          這就是<strong>逃逸速度</strong>，火箭離地需要的最低初速度。
+          黑洞之所以叫黑洞，是因為它的逃逸速度超過光速 —— 連光都跑不掉。
+        </p>
+
+        <h3>3. 你跟你的咖啡杯之間：理論上也在互相吸引</h3>
+        <p>
+          你 70 kg、咖啡杯 0.3 kg、距離 0.5 m：
+          F = (6.67e−11) × 70 × 0.3 / 0.25 ≈ <strong>5.6 × 10⁻⁹ N</strong>。
+          這個力大約等於一根頭髮重量的億分之一 —— 完全測不到，被任何空氣擾動淹沒。
+          這就是為什麼日常生活感受不到「萬物相吸」 —— 不是公式錯，是 G 實在太小。
+          只有當其中一邊質量達到「行星等級」（10²⁴ kg 起跳）時，這個力才開始有感。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>(1) r 用錯</strong>：r 是<em>兩物體中心</em>的距離，不是表面距離。算地表物體受地球引力時，r = 地球半徑 + 物體離地高度，不是只有高度。<br>
+            <strong>(2) 重力 ≠ 萬有引力</strong>：地表「重力」是萬有引力<em>扣掉地球自轉造成的離心效應</em>後剩下的有效重力，所以赤道 g 比兩極小一點點（約 0.5%）。<br>
+            <strong>(3) 把 G 跟 g 搞混</strong>：大寫 G 是萬有引力常數（普世值 6.6743e−11），小寫 g 是地表重力加速度（9.8 m/s²，會隨星球變）。火星上 g ≈ 3.71，月球上 g ≈ 1.62。<br>
+            <strong>(4) 強場與高速情況</strong>：當引力極強（黑洞附近）或物體高速運動（接近光速）時，牛頓萬有引力公式有可量測偏差，需要愛因斯坦的<a href="/formulas/emc2.html">廣義相對論</a>。日常與工程精度內，牛頓公式完全夠用，GPS 才需要 GR 微秒級修正。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的萬有引力計算機（G 已內嵌成精確值，你只需填 m₁、m₂、r）。
+          試試：太陽 (1.989 × 10³⁰ kg) 對地球 (5.972 × 10²⁴ kg)、距離 1.496 × 10¹¹ m，
+          引力約 3.54 × 10²² N —— 就是這個力把地球綁在軌道上 46 億年。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 萬有引力 #79</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=79" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=79" title="萬有引力互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/newtons-second-law.html">牛頓第二定律 F=ma — 引力造成的加速度</a></li>
+          <li><a href="/formulas/emc2.html">質能等價 E=mc² — 引力的相對論版本之門</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 — 軌道運動的另一面</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：克卜勒三大定律與軌道週期 — 即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../article.js" defer></script>
+</body>
+</html>

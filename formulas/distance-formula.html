@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>兩點距離公式：勾股定理的座標版本 · Bobo Labs</title>
+  <meta name="description" content="d = √((x₂−x₁)² + (y₂−y₁)²) 不是新公式，是勾股定理穿了座標的衣服。本文從直角三角形推導，講到地圖直線距離、機器學習 KNN、為什麼經緯度不能直接套這條公式。" />
+  <meta property="og:title" content="兩點距離公式：勾股定理的座標版本" />
+  <meta property="og:description" content="從勾股定理推到 Euclidean distance，再講為什麼地球上兩城市距離不能用這條算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/distance-formula.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/distance-formula.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "兩點距離公式：勾股定理的座標版本",
+    "description": "兩點距離公式的完整推導、實際應用與互動試算。",
+    "url": "https://labs.moneyai168.com/formulas/distance-formula.html",
+    "datePublished": "2026-05-28",
+    "inLanguage": "zh-Hant",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" },
+    "about": { "@type": "Thing", "name": "Euclidean distance" }
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/formulas/">Formulas</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">
+        Formula · 數學 · #25
+        <span class="formula-tier formula-tier--free">Free</span>
+      </p>
+      <h1 class="article-title">兩點距離公式：勾股定理的座標版本</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-05-28</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        如果你看到 d = √((x₂−x₁)² + (y₂−y₁)²) 覺得有點熟悉，那是因為它<strong>根本就是勾股定理</strong>，只是穿上了 (x, y) 座標的衣服。
+        了解這個血緣關係之後，你會發現從國中座標幾何、到 Google Maps 直線距離、到機器學習的 K 近鄰演算法，背後都是同一條公式。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">d = √((x₂ − x₁)² + (y₂ − y₁)²)</div>
+          <div class="formula-box-note">平面上兩點 (x₁, y₁) 與 (x₂, y₂) 的距離</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>x₁, y₁</td><td>第一個點的 x、y 座標</td><td>長度（公尺、像素、任意一致單位）</td></tr>
+            <tr><td>x₂, y₂</td><td>第二個點的 x、y 座標</td><td>同上</td></tr>
+            <tr><td>d</td><td>兩點間的直線距離（永遠 ≥ 0）</td><td>同 x, y</td></tr>
+          </tbody>
+        </table>
+
+        <h2>推導：把兩點之間畫出一個直角三角形</h2>
+        <p>
+          平面上隨便取兩個點 P₁(x₁, y₁) 與 P₂(x₂, y₂)。
+          從 P₁ 畫一條水平線、從 P₂ 畫一條垂直線，這兩條線會在 (x₂, y₁) 交會。
+          現在出現了一個直角三角形：
+        </p>
+        <p>
+          <strong>水平邊長</strong> = |x₂ − x₁|（兩點 x 座標差的絕對值）<br>
+          <strong>垂直邊長</strong> = |y₂ − y₁|（兩點 y 座標差的絕對值）<br>
+          <strong>斜邊</strong> = P₁ 到 P₂ 的直線距離 d
+        </p>
+        <p>
+          套<a href="/formulas/pythagorean-theorem.html">勾股定理</a> c² = a² + b²：
+        </p>
+        <p>
+          d² = (x₂ − x₁)² + (y₂ − y₁)²
+        </p>
+        <p>
+          兩邊開方（距離永遠非負，取正根）：
+        </p>
+        <p>
+          d = √((x₂ − x₁)² + (y₂ − y₁)²)
+        </p>
+        <p>
+          注意：差的平方 (x₂−x₁)² 和 (x₁−x₂)² 相等，所以<strong>誰減誰沒差</strong>，最後都會被平方變正。
+          也因為這個性質，距離公式自動滿足對稱性 d(P₁, P₂) = d(P₂, P₁) —— 你從 A 走到 B 和從 B 走到 A 一樣遠。
+        </p>
+
+        <h2>實際應用</h2>
+
+        <h3>1. 螢幕觸控與遊戲 AI：點到底點到了什麼？</h3>
+        <p>
+          手機螢幕上有一顆按鈕在 (200, 500)，使用者觸點落在 (215, 510)，
+          距離 d = √(15² + 10²) = √325 ≈ 18 px。
+          系統會設一個「容差半徑」（通常 44 px 以上符合 Apple HIG 觸控目標標準），
+          只要 d 小於這個半徑就算「點到了」。這就是按鈕、連結、地圖標記的命中判定背後的數學。
+        </p>
+        <p>
+          遊戲也一樣：兩個角色距離小於 5 個單位才能近戰攻擊、敵人 AI 偵測範圍 30 公尺、爆炸傷害以距離平方反比衰減 —— 每一個 if 判斷後面都是這條公式。
+        </p>
+
+        <h3>2. 機器學習的 K 近鄰（KNN）演算法</h3>
+        <p>
+          假設你蒐集了一堆水果的「重量」與「直徑」，標記哪些是蘋果、哪些是橘子。
+          現在拿到一顆未知水果，量出 (重量, 直徑)，要判斷它是蘋果還是橘子。
+          KNN 的做法：把這顆未知水果看成 (x, y) 平面上的一個點，計算它跟所有已知水果的距離，找出最近的 K 顆（例如 K=5）。
+          這 5 顆裡如果蘋果多就判蘋果，橘子多就判橘子。
+          整個演算法的核心就是<strong>兩點距離公式</strong> —— 只是 (x, y) 換成 (重量, 直徑) 而已。
+          推廣到 n 維特徵時，只要把更多項加進根號內：d = √(Σ(xᵢ − yᵢ)²)。
+        </p>
+
+        <h3>3. 三維距離：把公式推廣到立體空間</h3>
+        <p>
+          空間中兩點 P₁(x₁, y₁, z₁) 與 P₂(x₂, y₂, z₂)，
+          距離公式直接多加一項：
+        </p>
+        <p>
+          d = √((x₂−x₁)² + (y₂−y₁)² + (z₂−z₁)²)
+        </p>
+        <p>
+          這就是 3D 遊戲、CAD 軟體、無人機定位用的公式。
+          連 GPS 算「衛星到接收器距離」時，本質上也是把地心當原點建立 3D 座標系後的歐氏距離。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>(1) 直接套在經緯度上</strong>：(經度差)² + (緯度差)² 開根號得到的不是兩城市的距離。
+            地球是球面，要用<strong>Haversine 公式</strong>（球面三角學）才正確。
+            短距離（< 100 km）誤差還能忍，跨洲就會錯到離譜（赤道 1° 經度 ≈ 111 km，但兩極 1° 經度 ≈ 0 km）。<br>
+            <strong>(2) 混淆歐氏距離與曼哈頓距離</strong>：城市裡開車不能切對角線，得照街區走，
+            這時要用 |x₂−x₁| + |y₂−y₁|（曼哈頓距離 / 計程車距離）。
+            機器學習做特徵相似度時也常用，對極端值更穩健。<br>
+            <strong>(3) 忘記開根號</strong>：如果你只是要比較「誰比較近」、不需要實際距離，可以省下開根號的計算（平方後比大小結果一樣），這在效能敏感的程式裡很有用 —— 但別把 d² 拿來當 d 報出去。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的兩點距離計算機。
+          試試 (0,0) 到 (3,4) ——這就是經典的 3-4-5 勾股數，答案是 5。
+          或試你家門牌座標到公司大樓座標的直線距離（用 Google Maps 抓 lat/lng 後乘上 111000 約略換算成公尺，短距離可用）。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 兩點距離 #25</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=25" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=25" title="兩點距離互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 兩點距離的源頭</a></li>
+          <li><a href="/formulas/quadratic-function.html">二次函數 — 平面座標的另一個主角</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：Haversine 球面距離 — 即將推出</li>
+          <li>進階：曼哈頓距離與其他距離度量 — 即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../article.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>月繳貸款公式：等額本息背後的 30 年數學 · Bobo Labs</title>
+  <meta name="description" content="買房簽 30 年房貸前你必須先看懂這條公式。本文拆解 P·r·(1+r)ⁿ / ((1+r)ⁿ−1) 怎麼來、為什麼前幾年都在繳利息、提前還款為何最初期最有效。" />
+  <meta property="og:title" content="月繳貸款公式：等額本息背後的 30 年數學" />
+  <meta property="og:description" content="拆解房貸月繳公式，把銀行 30 年期 1500 萬房貸的真實成本算給你看。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/mortgage-payment.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/mortgage-payment.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "月繳貸款公式：等額本息背後的 30 年數學",
+    "description": "月繳貸款公式的完整推導、實際試算與互動計算機。",
+    "url": "https://labs.moneyai168.com/formulas/mortgage-payment.html",
+    "datePublished": "2026-05-28",
+    "inLanguage": "zh-Hant",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" },
+    "about": { "@type": "Thing", "name": "Mortgage payment formula" }
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/formulas/">Formulas</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">
+        Formula · 金融 · #40
+        <span class="formula-tier formula-tier--free">Free</span>
+      </p>
+      <h1 class="article-title">月繳貸款公式：等額本息背後的 30 年數學</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-05-28</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        房仲告訴你「1500 萬房貸，30 年期，月繳大約 7 萬」。
+        這個 7 萬怎麼來的？銀行為什麼前幾年收的幾乎都是利息？提前還款為什麼一定要趁早？
+        答案全在這條公式裡。看懂它，你會發現買房不是「省吃儉用 30 年」，而是<strong>一場跟複利的算術博弈</strong>。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">月繳金額 M = P · r · (1+r)ⁿ / ((1+r)ⁿ − 1)</div>
+          <div class="formula-box-note">等額本息（每月固定繳同樣金額）的標準公式</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>貸款本金（你跟銀行借的錢）</td><td>NT$（或任意貨幣）</td></tr>
+            <tr><td>r</td><td><strong>月利率</strong>（年利率 ÷ 12，並轉成小數）</td><td>小數（2% 年利 → 0.02/12 ≈ 0.001667）</td></tr>
+            <tr><td>n</td><td>總期數（年數 × 12）</td><td>月數（30 年 = 360 期）</td></tr>
+            <tr><td>M</td><td>每月固定還款金額</td><td>NT$</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.92em; color:var(--muted, #888); margin-top:0.5em;">
+          ∑ Calc 為了方便輸入，內部會自動把使用者輸入的「年利率%」（如 2 表示 2%）換算成月利率小數 0.02/12，所以你只要填年利率原始數字即可，不用自己除。
+        </p>
+
+        <h2>意義：把「現在的一筆錢」和「未來 360 次小額還款」畫等號</h2>
+        <p>
+          銀行借你 P 元，你在未來 n 期裡每期還 M 元。對銀行來說，這 360 次未來收款<strong>折現到今天</strong>必須等於 P，
+          才是公平交易（不然銀行賠錢或你賠錢）。
+          「折現」就是把未來的錢用利率打折扣回今天 —— 一年後的 1.02 元 = 今天的 1 元（年利率 2% 時）。
+        </p>
+        <p>
+          數學上，這就是把每期 M 元用 r 折回去：
+          P = M/(1+r) + M/(1+r)² + … + M/(1+r)ⁿ
+        </p>
+        <p>
+          這是個首項 M/(1+r)、公比 1/(1+r) 的等比級數，總和有閉式：
+          P = M · (1 − (1+r)⁻ⁿ) / r
+        </p>
+        <p>
+          把 M 解出來：
+          M = P · r / (1 − (1+r)⁻ⁿ) = P · r · (1+r)ⁿ / ((1+r)ⁿ − 1)
+        </p>
+        <p>
+          公式右邊那一坨 r·(1+r)ⁿ/((1+r)ⁿ−1) 叫做<strong>資本回收因子（Capital Recovery Factor）</strong>，
+          它把「現在一筆錢」轉成「等額多期還款」 —— 整個房貸、車貸、租賃市場都靠這個因子在運作。
+        </p>
+
+        <h2>實際試算：1500 萬房貸 30 年</h2>
+
+        <h3>1. 月繳金額長什麼樣</h3>
+        <p>
+          P = 15,000,000、年利率 2%、n = 360 月：<br>
+          r = 0.02/12 ≈ 0.001667<br>
+          (1+r)ⁿ = (1.001667)³⁶⁰ ≈ 1.8194<br>
+          M ≈ 15,000,000 × 0.001667 × 1.8194 / (1.8194 − 1) ≈ <strong>55,447 元</strong>
+        </p>
+        <p>
+          30 年總繳金額 = 55,447 × 360 ≈ <strong>1996 萬</strong>。
+          意思是：你借 1500 萬，最後總共要還回去近 2000 萬，<strong>500 萬全是利息</strong>。
+          這就是房貸真實的「總成本」 —— 銀行廣告不會明寫，但公式不會說謊。
+        </p>
+
+        <h3>2. 為什麼前幾年都在繳利息</h3>
+        <p>
+          第 1 期還款 55,447 元，但本金 1500 萬乘月利率 0.001667 = 25,000 元當期利息。
+          所以這 55,447 元裡，<strong>只有 30,447 元真正還到本金，剩下 25,000 元給銀行當利息</strong>。
+        </p>
+        <p>
+          第 360 期（最後一期）剩下的本金已經很少，利息部分幾乎為零，55,447 元幾乎全部用來還本金。
+          畫圖出來就是經典的「利息曲線前高後低、本金曲線前低後高」 —— 銀行先把利息收滿，本金留到後面。
+          這就是為什麼<strong>愈早提前還款省愈多利息</strong>：前 5 年提前還 100 萬，比後 5 年提前還 100 萬省下的利息差好幾倍。
+        </p>
+
+        <h3>3. 信用卡循環利息：同一條公式，更狠的數字</h3>
+        <p>
+          信用卡循環利率年利 15%，月利率 = 0.15/12 = 0.0125。
+          積欠 10 萬元、只繳最低應繳，假設每月最低繳 3000 元，要幾個月才還完？
+          解 n：100,000 = 3000 · (1 − 1.0125⁻ⁿ) / 0.0125
+          → 1.0125⁻ⁿ = 1 − 100,000·0.0125/3000 = 0.5833
+          → n = ln(0.5833) / ln(1.0125)⁻¹ ≈ <strong>43.5 個月（近 4 年）</strong>。
+          總繳 = 3000 × 43.5 ≈ 13 萬，<strong>多付 3 萬利息</strong>。
+          這還是假設你期間沒再刷卡 —— 實際上多數人卡債滾雪球停不下來，根源就是這條公式 r 太大導致 (1+r)ⁿ 暴衝。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>(1) 年利率 vs 月利率</strong>：公式裡的 r 是<em>月</em>利率。如果你直接代入 0.02 而不是 0.02/12，結果會錯到變天文數字。<br>
+            <strong>(2) 等額本息 vs 等額本金</strong>：等額本息每月還相同金額 M；等額本金則每月還相同本金，利息隨剩餘本金遞減，所以前期繳得多、後期繳得少。長期總利息<em>等額本金較低</em>，但前期負擔重。<br>
+            <strong>(3) 忽略其他費用</strong>：實際房貸還要加開辦費、徵信費、估價費、火險地震險、履約保證費。
+            買房請另外計入這些一次性與年費，公式只算「本利」，不算「總購屋成本」。<br>
+            <strong>(4) 寬限期假設</strong>：銀行常見「前 1-3 年只繳息不還本」的寬限期方案，寬限期結束後 n 變小但 P 還沒減，月繳會跳一級。試算時要分段算，不能單次套公式。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的月繳貸款計算機。填入 P（本金）、年利率%、期數（月數），它會自動處理利率換算並算出 M。
+          試試：500 萬本金、年利率 1.85%、240 期（20 年）—— 月繳大約 25,000 元，總繳 600 萬，利息 100 萬。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 月繳貸款 #40</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=40" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=40" title="月繳貸款互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 房貸的反向版本（你變成銀行）</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 估算複利倍增年數的快捷方式</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：年金現值與年金終值 — 即將推出</li>
+          <li>進階：實質年利率 EAR vs 名目利率 — 即將推出</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../article.js" defer></script>
+</body>
+</html>
