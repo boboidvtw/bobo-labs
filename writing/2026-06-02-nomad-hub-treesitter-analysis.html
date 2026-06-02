@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>先 spike 再選路 — nomad-hub Analysis tab 從失效 CLI 到 tree-sitter 知識圖 · Bobo Labs</title>
+  <meta name="description" content="原本「uv run understand 永遠失敗」的結論是錯的。勘查發現 @understand-anything/core 是已 build 的 TS 套件，可從 Node 直接呼叫結構層：零 LLM、零認證、deterministic。commit 0876f25，測試 198→213，三個坑：~ 路徑未展開、Python import 邊 0 條、測試污染真實 data/。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-02-nomad-hub-treesitter-analysis.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-02</p>
+      <h1 class="article-title">先 spike 再選路 — nomad-hub Analysis tab 從失效 CLI 到 tree-sitter 知識圖</h1>
+      <p class="article-lede">
+        原本記錄的結論是「Understand Anything 沒有 CLI，uv run understand 永遠失敗，此路不通」。
+        今天重新勘查推翻了這個假設：它有已 build 的 TypeScript 套件 <code>@understand-anything/core</code>，
+        可以直接從 Node 呼叫結構層，零 LLM、零認證、deterministic。
+        選定途徑 B，TDD 五步把 Analysis tab 跑起來，測試 198→213，順帶踩了三個具體的坑。
+      </p>
+
+      <div class="article-body">
+        <h2>假設為什麼是錯的</h2>
+        <p>
+          前一天留下來的記錄寫：「Understand Anything 無 CLI，uv run understand 失敗」。
+          這個結論其實跳過了一步：沒有 CLI 不代表套件不能用，只代表它沒有命令列入口點。
+        </p>
+        <p>
+          今天把 pnpm workspace 目錄掃一遍，發現 <code>@understand-anything/core</code> 是個獨立 TS 套件，
+          <code>dist/index.js</code> 存在且已 build。核心能力被分成兩層：
+          結構層（TreeSitterPlugin、GraphBuilder、SearchEngine、fingerprint）完全離線、deterministic；
+          語意層只負責 build prompt 和 parse response，LLM 呼叫是外部的事，core 本身不碰。
+          再寫一個唯讀 spike 驗證：Node 可以 import、init 只需 20–34ms、symbols 提取正確、
+          <code>build()</code> 輸出標準 KnowledgeGraph。
+        </p>
+        <p>
+          關鍵發現：<code>require.resolve</code> 是 module-relative，從 core dist 位置解析它自己的
+          <code>node_modules</code>，因此 nomad-hub 從任意目錄呼叫都能跑。這個 cwd 獨立性是整個途徑成立的前提，
+          所以 spike 要優先驗這一點，再提議任何實作計畫。
+        </p>
+
+        <h2>四個方向為什麼選途徑 B</h2>
+        <p>
+          開工指引列了四個方向：A. 接 claude -p headless 做語意分析、B. Node 呼叫 core 結構層、
+          C. 嵌入 Understand Anything dashboard、D. 其他。
+        </p>
+        <p>
+          A 最先排掉：headless 認證在前幾天已踩過多層環境污染問題，而且每次分析都要呼叫 LLM、非 deterministic、速度慢。
+          C 也排掉：dashboard 是 React 19 + Vite SPA，目前未 build，系統中連一份 knowledge-graph.json 都沒有。
+          B 通過 spike 驗證，離線、deterministic、已知 cwd 獨立性成立，選這個。
+        </p>
+
+        <h2>TDD 五步</h2>
+        <p>
+          第一步：<code>scripts/analyze.mjs</code>，遞迴掃原始碼（從 <code>builtinLanguageConfigs</code> 動態取有 tree-sitter 的語言，
+          skip node_modules/.venv 等），用 TreeSitterPlugin 逐檔、GraphBuilder.addFileWithAnalysis
+          建 file→function/class contains 邊 + addImportEdge 建依賴邊，輸出 KnowledgeGraph JSON。
+          唯一硬編碼是 <code>UA_CORE_PATH</code>（抽常數允許 env override）和 UA_MAX_FILES（2000）。
+        </p>
+        <p>
+          第二步：<code>core/analysis_runner.py</code>，對齊 gemma.py 風格，模組級 <code>run_analysis</code>、
+          自訂 AnalysisError、可注入 script/node/timeout 參數。TDD：先寫 7 個測試，再實作。
+          第三步：改寫 <code>routes_analysis.py</code>，用 runner 替換舊的 <code>uv run understand</code> subprocess，
+          回 <code>{status, project_id, graph}</code>，補 8 個 route 測試。
+          第四步：前端 <code>analysis.js</code>（從 index.html 內聯 JS 抽出，約 200 行）+ self-host
+          <code>vendor/d3.v7.min.js</code>（v7.9.0，280KB）：統計卡 + D3 force-graph 雙視圖。
+          第五步：回歸 + preview 端到端目視。
+        </p>
+
+        <h2>三個坑與根因</h2>
+        <p>
+          <strong>坑一：~ 路徑未展開。</strong>registry 存的是 <code>~/程式倉庫/nomad-hub</code>，
+          Python <code>Path.is_dir()</code> 與 Node <code>statSync</code> 都不認 shell 的 <code>~</code>，
+          分析直接報「路徑不存在」。問題在 preview 首次真實分析才暴露，因為 mock 測試傳的是 tmp_path 絕對路徑，
+          根本測不出來。修法：runner 統一 <code>Path(project_path).expanduser()</code> 後才檢查並傳給 Node，
+          一個責任點，不在 mjs 各自展開。
+        </p>
+        <p>
+          <strong>坑二：import 邊解析全錯，兩個語言各有原因。</strong>Python 的 import 是點分模組名
+          <code>nomad_hub.api.routes_x</code> 而非相對路徑，我的解析器當成路徑比對，全部 miss，0 邊。
+          修：從 root 做映射，對應到 <code>&lt;root&gt;/nomad_hub/api/routes_x.py</code> 或 <code>/__init__.py</code>。
+          TypeScript ESM 的 <code>import "./types.js"</code>，實體檔是 <code>types.ts</code>（ESM 慣例帶 .js 副檔名），
+          直接比對永遠 miss。修：先 stem 化（剝 .js/.jsx 再補 .ts/.tsx）再比對。
+          修前：Python 0 邊 / TS 2 邊；修後：Python 59 邊 / TS 263 邊。
+        </p>
+        <p>
+          <strong>坑三：route 測試污染真實 data/。</strong>routes_analysis 用固定路徑 <code>data/analysis/</code> 寫快取，
+          測試跑起來會寫進真實 repo 目錄。修：monkeypatch <code>get_analysis_dir</code> 指向 tmp_path；
+          並把 <code>data/analysis/</code> 加進 .gitignore（per-project 產物、含絕對路徑，比照 data/handoff/）。
+        </p>
+
+        <h2>結果</h2>
+        <p>
+          preview 端到端，對 nomad-hub 自身跑：54 個檔 / 222 個函式 / 69 個類別 / 62 條依賴邊。
+          圖有兩個視圖：「檔案依賴圖」54 節點/62 邊（app.py 是樞紐，模組依賴清晰），
+          「完整結構」345 節點/353 邊（三色節點，function/class 以 contains 星狀 cluster 展開）。
+          視圖切換、拖曳縮放、≤80 節點顯示 label 全通，無 console 錯誤。
+          測試 198→213，analysis_runner 和 routes_analysis 各達 100% 覆蓋。
+        </p>
+        <p>
+          關於 D3 選擇 self-host（280KB）而非 CDN：離線結構分析是這個 tab 的賣點，
+          靠 CDN 斷網就畫不出圖，反差太諷刺。
+          預設「檔案依賴圖」而非「完整結構」也是設計決策：335 節點畫全會糊，
+          file+imports 視圖優先讓人看清模組依賴，再由使用者選擇切換。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>「沒有 CLI」不等於「不能用」</strong>：先查套件是否已 build、有沒有可 import 的 dist，再下結論。誤判封閉了一個其實可行的方向。</p>
+          <p><strong>spike 先驗、再提案</strong>：途徑 B 成立的前提是「cwd 獨立性」——Node 從任意目錄呼叫 core 都能跑。這種前提不驗就提案，等實作到一半發現不成立比發現得早要貴。</p>
+          <p><strong>mock 測試測不出真實資料的假設</strong>：~ 路徑問題在 7 個 unit test 全過後才被 preview 端到端目視抓出。系統邊界（真實 registry 路徑格式）必須用真實資料跑一次才算驗過。</p>
+          <p><strong>Python import 解析與 TypeScript ESM 副檔名是兩個不同的坑</strong>：前者是點分模組名 vs 路徑的語意差異，後者是 .js 慣例與 .ts 實體的不一致。各自有明確的修法，不要把它們混在一起。</p>
+          <p><strong>測試污染來自寫死路徑</strong>：凡是需要「寫進某目錄」的 route，route test 一定要 monkeypatch 那個目錄，並把 per-project 產物加進 .gitignore。不然本地跑出來的快取會混進 git status。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-02 · nomad-hub Analysis tab · commit 0876f25 · 測試 198→213 · 54 檔 / 222 函式 / 69 類別 / 322 邊
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
