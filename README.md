@@ -20,6 +20,10 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-03** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-06-02-nomad-hub-treesitter-analysis.html`（先 spike 再選路 — nomad-hub Analysis tab 從失效 CLI 到 tree-sitter 知識圖；沒有 CLI ≠ 不能用，spike 驗 cwd 獨立性，TDD 五步，測試 198→213）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-06-03.
 - **2026-05-29** — 由 /boboweb 第二輪核可 5 篇 /formulas/ 子站文章：
   `formulas/arithmetic-mean.html`（#13 數學 Free · 平均值為何說謊、中位數什麼時候誠實）、
   `formulas/distance-formula.html`（#25 數學 Free · 勾股定理的座標版本）、
