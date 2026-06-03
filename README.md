@@ -20,6 +20,10 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-03** — 由 /boboweb 補發 5 篇積壓 daily log（修 canonical 治本後）：
+  `2026-06-01-nomad-hub-discover-complete.html`、`2026-05-31-nomad-hub-discover-registry.html`、`2026-05-30-nomad-hub-phase5-week1.html`、`2026-05-29-bobo-autopublish-v2.html`、`2026-05-29-boboweb-decision-rules.html`。
+  根因：/bobo-draft-pending 模板未生成 `<link rel="canonical">`，autopublish QA gate 的 structure 檢查連續擋下 → 草稿堆積。已修模板加 canonical 規則，並回補 5 篇 head 的 canonical（另修 2026-06-01 一篇缺漏的 viewport meta）。Index Writing 區依時間倒序插入。
+  Backfilled 5 stuck daily-log drafts via /boboweb after fixing the canonical root cause (draft template now emits canonical; QA gate no longer blocks). Also restored a missing viewport meta on the 2026-06-01 article.
 - **2026-06-03** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-06-02-nomad-hub-treesitter-analysis.html`（先 spike 再選路 — nomad-hub Analysis tab 從失效 CLI 到 tree-sitter 知識圖；沒有 CLI ≠ 不能用，spike 驗 cwd 獨立性，TDD 五步，測試 198→213）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
