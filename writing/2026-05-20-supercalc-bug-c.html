@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>一條純 CSS 修復：手機的閉合括號去哪了？· Bobo Labs</title>
+  <meta name="description" content="≤768px 時 .main-sidebar display:none，讓 sin( cos( 等所有需要閉合括號的函式在手機上永遠回 Error。一條 bottom-fixed 浮動列、DOM 零改動，Bug C 就這樣結案。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-20-supercalc-bug-c.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-20</p>
+      <h1 class="article-title">一條純 CSS 修復：手機的閉合括號去哪了？</h1>
+      <p class="article-lede">
+        ∑ Calc 側欄有五顆按鍵：π、e、(、)、,。這五顆是手機使用者唯一能輸入閉合括號的方式。
+        但 ≤768px 時 .main-sidebar 整組 display:none，那五顆鍵就這樣消失了。
+        sin( 按下去、永遠拿到 Error——這個 bug 不是今天才有的，只是今天才修。
+      </p>
+
+      <div class="article-body">
+        <h2>問題有多嚴重</h2>
+        <p>
+          所有需要閉合括號的函式——sin(、cos(、log(、exp(、asin(——在手機或平板上
+          全部失效。按下函式鍵後運算式進去了，但右括號打不到，最後一律 Error。
+          計算機的主場景是手機，這個缺口從 v3.x 有側欄以來就存在。
+        </p>
+        <p>
+          更大的問題是：這不是「一個按鍵消失」，是整個 .main-sidebar 消失。
+          裡面除了 π e ( ) , 之外，還有支援函數說明和即時匯率。
+          所以不能只拿掉 768px 的 display:none——那會把說明和匯率全部塞進手機畫面，
+          變成一個比原來問題更醜的問題。
+        </p>
+
+        <h2>四個方案，選最後一個</h2>
+        <p>
+          想到四種修法：移除 display:none 讓整個 sidebar 自然顯示、讓 sidebar 按 natural flow
+          排到計算機下方、把 sidebar 用 sticky 貼在計算機內部、把五顆鍵做成 bottom-fixed 浮動列。
+        </p>
+        <p>
+          第一種直接違反「不要塞進畫面」的前提。第二種讓使用者按 sin( 後還要滑動去找 )，
+          體驗差。第三種 DOM 必須改動（sidebar 是計算機的 sibling，不在同個 scroll container）。
+          第四種是行動端鍵盤 app 的業界標準做法：拇指可達、滾動不消失、純 CSS。
+        </p>
+        <p>
+          最後選 bottom-fixed。整個修復是 CSS-only，HTML 一行沒動。
+        </p>
+
+        <h2>實作細節：nth-child 精準命中要隱藏的部分</h2>
+        <p>
+          .main-sidebar 在 @media (max-width: 768px) 裡改成 position: fixed; bottom: 0; left: 0;
+          right: 0; z-index: 90。然後用結構選擇器隱藏不需要在手機出現的部分：
+          .main-sidebar &gt; .panel:first-child &gt; h3（「常用按鈕」標題）、
+          支援函數說明的 nth-child(3) 欄位、以及整個匯率 panel。
+          這三條 CSS 讓浮動列只露出五顆鍵，其他東西不顯示。
+        </p>
+        <p>
+          觸控規格：min-height: 44px（Apple HIG 的最小觸控目標）。
+          iPhone Home Indicator：padding-bottom: env(safe-area-inset-bottom)，
+          讓按鍵不被實體手勢列遮住。body 加 padding-bottom: calc(72px + env(safe-area-inset-bottom))，
+          讓 footer 和廣告不被浮動列蓋住。z-index 90 低於 modal 的 1000，
+          彈出視窗正常覆蓋。
+        </p>
+        <p>
+          nth-child 路徑的代價：一旦改動 HTML 結構，這幾條 CSS 可能默默失效。
+          commit message 裡寫清楚「靠 nth-child 選取、改 DOM 前需重驗浮動列」——
+          不然三個月後看不懂自己為什麼用選擇器而不是 class。
+        </p>
+
+        <h2>驗證：三個 viewport、兩個 theme</h2>
+        <p>
+          375×812（iPhone 標準）：tap sin(、4、5、tap )（sidebar 浮動列）、tap =，
+          顯示 0.707106781187。sin(45°) 在 degree 模式的正確值。
+        </p>
+        <p>
+          同一個 viewport，切到「工程」tab：nCr(、5、,（sidebar）、2、)（sidebar）、=，
+          顯示 10。nCr(5,2) 正確。
+        </p>
+        <p>
+          1280×800（桌機）：sidebar 回到 position: static，h3、支援函數說明、匯率全部顯示，
+          body padding-bottom 回 20px。零回歸。☀️ 淺色和 🌙 深色主題切換各自的背景和陰影都正確。
+        </p>
+        <p>
+          Service Worker cache-first 站，每次改前端都要 bump CACHE_NAME，
+          不然舊版使用者的瀏覽器永遠不會重拉新版。這次從 v3.5.1 bump 到 v3.5.2，
+          已成部署的 SOP。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>bottom-fixed 是手機鍵盤的標準解</strong>：拇指可達、滾動不消失、DOM 不動，這三點加起來比任何其他方案都乾淨。</p>
+          <p><strong>min-height: 44px + env(safe-area-inset-bottom)</strong>：行動端觸控介面的兩個必備常數，記起來每次都要加。</p>
+          <p><strong>nth-child 是高風險選擇器</strong>：DOM 沒有可靠 class 時才用；用了就要在 commit message 寫清楚，否則日後重構會默默破壞。</p>
+          <p><strong>cache-first 站每次前端改動都要 bump CACHE_NAME</strong>：忘了 bump，修了等於沒修，舊使用者永遠看不到。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-20 · ∑ Calc v3.5.2 · Bug C 手機浮動列修復 · commit bff8c73
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

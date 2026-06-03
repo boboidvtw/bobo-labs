@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三個從上線就存在的 bug — ∑ Calc v3.5.3 深審紀錄 · Bobo Labs</title>
+  <meta name="description" content="SEO 教學區從未對使用者渲染、自建公式可執行任意 JavaScript、函數繪圖把 y= 誤判成參數。這三個 bug 在 v3.5.3 之前一直活著，深審才揪出來。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-20-supercalc-v353-audit.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-20</p>
+      <h1 class="article-title">三個從上線就存在的 bug — ∑ Calc v3.5.3 深審紀錄</h1>
+      <p class="article-lede">
+        上次深審過 Bug C 之後，下一件事是把剩下的功能逐一跑過——繪圖、統計、3D、公式庫、Pro gate。
+        這輪審查沒跑完幾個功能，就發現了三個 CRITICAL 或 MEDIUM 級別、自站上線以來從未被修過的問題。
+        其中最嚴重的那個讓 SEO 教學區和版權頁尾從來沒有對使用者渲染過。
+      </p>
+
+      <div class="article-body">
+        <h2>F1：modal 的閉合標籤寫錯了，footer 被吞進去</h2>
+        <p>
+          graphModal（函數繪圖的彈窗）有一個 &lt;/div&gt; 閉合標籤放錯位置。
+          原本應該在第 2050 行關掉 modal content，但實際上延伸到第 2096 行，
+          把 &lt;section id="guide"&gt;（SEO 教學專欄）和 &lt;footer&gt;（版權/商標/條款/聯絡）
+          都包進 modal 內部。
+        </p>
+        <p>
+          modal 關閉時，這兩個元素跟著 display:none——也就是說，99% 的使用時間裡，
+          SEO 教學內容和 footer trust signals 從來沒被渲染過。
+          modal 開啟時它們變成 flex row 被擠成 344px 寬（應是 1100px）。
+          curl 線上版確認這個 bug 從 launch 起就一直存在。
+          修法：把 &lt;/div&gt; 從第 2096 行移到第 2050 行，section 和 footer 回到 body 直接子元素。
+        </p>
+        <p>
+          發現這個 bug 的契機：審 modal 時習慣先列出 modal 的直接子元素。
+          modal 應該只有一個 content child，但發現有三個，就立刻警覺。
+          往後審任何 modal，先 dump children 結構，是值得記下來的做法。
+        </p>
+
+        <h2>F2：自建公式輸入欄直接拼進 onclick，CWE-79 Stored XSS</h2>
+        <p>
+          公式庫允許使用者建立自訂公式，名稱和表達式存在 localStorage。
+          渲染公式卡片時，程式碼用樣板字串把 f.name 直接拼進 onclick 屬性裡：
+          onclick="selectFormula('${f.name}', ...)"。
+        </p>
+        <p>
+          攻擊路徑：公式名稱填入 test', '', []); window.__xss_fired__ = true; selectFormula(0, 'h，
+          加入後點擊那個公式，任意 JavaScript 就執行了。localStorage 跨 session 保存，
+          污染是持久性的。實際上，這個入口可以竊取 localStorage 裡存的所有 Pro 授權狀態、
+          匯率緩存，或覆寫 gate 邏輯。
+        </p>
+        <p>
+          修法分兩步。第一步：新增 escapeFormulaHtml()，對五個字符做 HTML escape：
+          &amp; &lt; &gt; &quot; '。這五個是 HTML attribute 上下文裡的危險字符，少任何一個都還有注入面。
+          第二步：把 onclick="${userInput}" 模式整個移除，改用 data-formula-id 和
+          data-formula-action 屬性，在 innerHTML 設定後用 addEventListener 綁定事件，
+          handler 從 closure 取 formula 物件、使用者輸入完全不進入 JS 解析路徑。
+        </p>
+        <p>
+          內建公式（builtInFormulas）用同樣的 unsafe 拼接，但內容完全由 dev 控制、
+          沒有用戶注入面，這次不動以免擴大改動風險。技術債已記錄。
+        </p>
+
+        <h2>F3：函數繪圖把 y= 前綴當成自由參數</h2>
+        <p>
+          使用者自然輸入 y=x^2 加入函數圖。結果清單顯示「y = y=x^2」，
+          多出一個 y slider（繪圖系統把 y 當成自由參數 a、b 之類）。
+          問題在 tryAdd() 沒有在解析表達式前處理常見前綴，
+          y 也不在 RESERVED 字符集內所以被判為參數。
+        </p>
+        <p>
+          修法：tryAdd() 在送進 addGraphFunction() 之前，先用
+          expr.replace(/^\s*(?:y|f\s*\(\s*x\s*\))\s*=\s*/i, '') 把前綴 strip 掉。
+          驗證：x^2+y^2（含 y 但沒有 = 號的表達式）不受影響，y slider 仍正確產生。
+        </p>
+
+        <h2>深審的節奏</h2>
+        <p>
+          這三個問題不是跑個別測試案例跑出來的，是逐功能走了一遍才碰到的。
+          F1 是看 modal children 數量時警覺，F2 是試著用自建公式時動手 PoC，
+          F3 是試著輸入 y=x^2 時發現異常。這種走法有個前提：每個功能區域都要真的用，
+          而不是只看程式碼。看程式碼容易把「設計意圖」和「實際行為」混淆。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>審 modal 先 dump children</strong>：modal 的直接子元素數量出乎意料，往往代表閉合標籤跑錯位置。早檢查，比跑完整驗證再回頭找省很多時間。</p>
+          <p><strong>escapeFormulaHtml 五字元缺一不可</strong>：&amp; &lt; &gt; &quot; ' 在 HTML attribute 上下文裡每一個都有注入路徑，只 escape 引號是不夠的。</p>
+          <p><strong>inline onclick="${userInput}" 是 anti-pattern</strong>：現代做法是 data-* 屬性加 addEventListener，使用者輸入永遠不進入 JS 解析路徑。重構成本低，安全性質變。</p>
+          <p><strong>逐功能走比讀程式碼更容易發現 latent bug</strong>：F1 的 DOM 結構問題在程式碼審查裡不容易看出來，但用了一次 modal 之後 children 數量就暴露了。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-20 · ∑ Calc v3.5.3 · 2 CRITICAL + 1 MEDIUM · commit 5fb0bd6
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
