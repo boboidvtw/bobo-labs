@@ -20,6 +20,8 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-03** — sitemap.xml 全面補齊（SEO 基建，變現第一步「裝儀表」）：URL 從 16 → 44（formulas 10→15 全收錄、writing 4→27 全收錄），修正 daily log 的 lastmod。為提交 Google Search Console 鋪路，讓 Google 看得到全部內容。
+  Rebuilt sitemap.xml for full coverage: 16 → 44 URLs (all 15 formula articles + all 27 writing posts), with correct lastmod dates. Prep for Google Search Console submission so Google can index everything.
 - **2026-06-03** — 由 /boboweb 補發 5 篇積壓 daily log（修 canonical 治本後）：
   `2026-06-01-nomad-hub-discover-complete.html`、`2026-05-31-nomad-hub-discover-registry.html`、`2026-05-30-nomad-hub-phase5-week1.html`、`2026-05-29-bobo-autopublish-v2.html`、`2026-05-29-boboweb-decision-rules.html`。
   根因：/bobo-draft-pending 模板未生成 `<link rel="canonical">`，autopublish QA gate 的 structure 檢查連續擋下 → 草稿堆積。已修模板加 canonical 規則，並回補 5 篇 head 的 canonical（另修 2026-06-01 一篇缺漏的 viewport meta）。Index Writing 區依時間倒序插入。
