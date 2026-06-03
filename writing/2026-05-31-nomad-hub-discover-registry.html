@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>emoji 炸了 JSON、parser 改壞了中文 — scan→import 閉環四個 phase · Bobo Labs</title>
+  <meta name="description" content="Claude Code 連續 parse 失敗追到 emoji 根因、改正則去配合測試結果反而弄壞真實中文資料、以及 scan→import registry 閉環的四個 phase 如何一步步收攏。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-31-nomad-hub-discover-registry.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-31</p>
+      <h1 class="article-title">emoji 炸了 JSON、parser 改壞了中文 — scan→import 閉環四個 phase</h1>
+      <p class="article-lede">
+        從一個 Claude Code「tool call could not be parsed」報錯開始排查，
+        找到的根因是 fixture 裡的密集 emoji 讓 JSON 序列化破損。
+        修了 emoji 問題之後，為了讓 fixture 乾淨而收窄了 parser 正則——
+        結果真實中文資料源 11 個 active 專案瞬間變 0。
+        這天的核心成果是 scan→import registry 閉環四個 phase，
+        但這兩個插曲才是讓人印象更深的部分。
+      </p>
+
+      <div class="article-body">
+        <h2>emoji 為什麼會讓 tool call parse 失敗</h2>
+        <p>
+          症狀是 Claude Code 在開發過程中連續出現 "tool call could not be parsed (retry failed)"。
+          中文字完全沒問題，只有 emoji 會觸發。
+        </p>
+        <p>
+          根因：fixture 裡有密集的 emoji（🟢🟡🔴📜⚙️），
+          JSON 序列化時這些字符的轉義不完整，導致參數破損，tool call 解析失敗。
+        </p>
+        <p>
+          解法三層：第一層，簡化 fixture 移除 emoji；第二層，遇到 parse 錯就直接在終端跑 pytest，
+          不透過 Claude Code 的 tool；第三層，如果原始碼裡一定要有 emoji，
+          用 unicode escape 寫（比如 \U0001F7E2 代替 🟢），原始碼保持 ASCII clean，執行時才是真 emoji。
+        </p>
+        <p>
+          第三層是最系統性的解法：把展示層（視覺 emoji）和資料層（ASCII 原始碼）分開。
+        </p>
+
+        <h2>改 parser 配合 fixture，結果真實資料壞了</h2>
+        <p>
+          修完 emoji 問題後，fixture 裡的 emoji 都移除了，只剩英文 header。
+          原本 parser 匹配 "### 🟢 Active"，改成正則 (?:🟢\s+)?Active——emoji 可有可無。
+          fixture 全綠，覺得沒問題了。
+        </p>
+        <p>
+          但真實的 PROJECT_MAP-ZH.md header 是中文：「### 🟢 主動開發中」。
+          正則要求英文 Active，中文完全不匹配——ZH active 從 11 筆掉到 0 筆，
+          system 從 12 筆掉到 0 筆。Discover 標籤頁的中文專案全部消失，
+          merge 邏輯全部 fallback 到英文，沒有任何 error，只是靜靜地全空了。
+        </p>
+        <p>
+          正確的正則：(?:🟢|Active)——emoji OR 英文，而不是英文 required。
+          但更重要的教訓是：改 parser 或正則去「配合測試 fixture」時，
+          必須用真實資料源跑一次驗證，不能只看 fixture 綠燈。
+          fixture 是你寫的，它當然通過——但真實資料是你沒控制過的。
+        </p>
+
+        <h2>產品邊界：nomad-hub 寫什麼、不寫什麼</h2>
+        <p>
+          Discover 標籤頁來自原本的 nomad-dashboard，原始設計裡有一個 /api/update 端點，
+          會把整個 dashboard 狀態覆寫回 ~/.gemini/ 目錄下的雙語源檔。
+          這是破壞性的跨生態操作——把 nomad-hub 的狀態覆寫進 Gemini 的目錄，
+          兩個系統的資料就糾纏在一起了。
+        </p>
+        <p>
+          第一個反應是把 saveToServer 全部降級成唯讀——但這樣 Discover 就沒有匯入功能了。
+          正確答案是：nomad-hub 寫自己的 data/projects.json，不寫 Gemini 的源檔。
+          兩個生態的資料各管各的，閉環在自己內部。
+        </p>
+        <p>
+          這個邊界決定定義了接下來四個 phase 的架構方向。
+        </p>
+
+        <h2>scan→import 閉環：四個 phase</h2>
+        <p>
+          Phase 1：registry 寫入層。新增 add/update/remove/save 方法，
+          用 temp 檔 + os.replace 原子寫入，ensure_ascii=False 保留中文。
+        </p>
+        <p>
+          Phase 2：scan 的比對基準改成 registry。原本 scan 的「未登錄」是跟 PROJECT_MAP 比，
+          改成跟 data/projects.json 比——只有 registry 裡沒有的才算未登錄。
+          這樣 scan 的結果才跟「我的應用知道什麼」一致，而不是跟 Gemini 知道什麼一致。
+        </p>
+        <p>
+          Phase 3：CRUD API。POST /api/projects（建立）、PUT /api/projects/{id}（更新）、
+          DELETE /api/projects/{id}（刪除）。slug 格式，409 衝突處理，
+          partial update 用 model_copy + exclude_unset。
+        </p>
+        <p>
+          Phase 4：前端「匯入」按鈕改打 POST /api/projects，匯入後重新 scan。
+          前端點擊 → API → registry 寫入 → scan 重算 → 結果即時更新。閉環完整。
+        </p>
+        <p>
+          端到端驗證：真實前端 fn + 真實 server，scan 找到 3 個未登錄、匯入其中 1 個、
+          registry 從 16 筆變 17 筆、重新 scan 剩 2 個未登錄、匯入項消失。
+          測後 git checkout data/projects.json 還原——git 本身就是備份和自清理工具。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>改 parser 配合 fixture 是危險的</strong>：fixture 是你寫的，會通過；
+          真實資料是你沒控制過的，可能靜靜地全壞。改 parser 後必須用真實資料源跑驗證。</p>
+          <p><strong>emoji 在 JSON 序列化裡是隱藏的炸彈</strong>：原始碼要用 emoji 就用 unicode escape，
+          保持 ASCII clean。fixture 裡的 emoji 最好全部移除。</p>
+          <p><strong>產品邊界要在開始前定清楚</strong>：nomad-hub 只寫自己的 registry，
+          不寫跨生態的源檔。邊界模糊會讓兩個系統的資料糾纏，任一側修改都可能污染另一側。</p>
+          <p><strong>git checkout 是最乾淨的測試自清理</strong>：目視驗證寫入 registry 後，
+          用 git checkout data/projects.json 一行還原，不需要手動 undo，也不會污染真實資料。</p>
+          <p><strong>scan 的比對基準要是「我的系統知道什麼」</strong>：不是「Gemini 知道什麼」，
+          不是「磁碟上有什麼」。比對基準定錯，scan 結果就跟不上應用的真實狀態。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-31 · nomad-hub · scan→import registry 閉環 · 9 commit / 86→151 測試 / 90% 覆蓋
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

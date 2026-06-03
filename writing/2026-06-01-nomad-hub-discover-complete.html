@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>先讀前端再定範圍 — nomad-hub Discover 7 端點的移植 SOP · Bobo Labs</title>
+  <meta name="description" content="單日 8 commit，測試 151→198，Discover tab 7 個端點全移植完成。先確認 Understand Anything 根本沒有 CLI（省下白工）、handoff 重導向避免跨生態污染、gemma 範圍縮小一半、UI 目視揪出 API 測試沒抓到的 bug。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-01-nomad-hub-discover-complete.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-01</p>
+      <h1 class="article-title">先讀前端再定範圍 — nomad-hub Discover 7 端點的移植 SOP</h1>
+      <p class="article-lede">
+        nomad-hub Discover 標籤頁的後端原本是另一個應用裡的 Python server，
+        有 7 個端點、複雜的 Gemini 生態硬編碼、AI 對話、CodeGraph、skills 掃描。
+        今天用一個穩定下來的移植 SOP 把它全部搬完：8 commit，151 → 198 個測試，88% 覆蓋率。
+        最重要的不是完成了多少，而是在開工前發現了一條死胡同，省下了白工。
+      </p>
+
+      <div class="article-body">
+        <h2>開工先驗，而不是開工先做</h2>
+        <p>
+          開工選項裡有一個「Analysis 標籤頁整合」。開始之前先查：
+          Understand Anything 的三個 package.json 的 bin 欄位全是 None、沒有 cli.js。
+          它是 Claude Code plugin + React dashboard，根本沒有 CLI 入口。
+          nomad-hub 的 Analysis tab 裡預計呼叫的 uv run understand 指令，永遠會失敗。
+        </p>
+        <p>
+          花了 10 分鐘查清楚這件事，省下替一個跑不起來的功能補測試和移植後端的幾個小時。
+          「驗可行性」比「往前做假設是可行的」便宜得多，差別在願不願意先停下來查。
+        </p>
+
+        <h2>移植 SOP：先讀前端消費邏輯再定範圍</h2>
+        <p>
+          這次移植下來的穩定流程：讀前端怎麼呼叫端點（fetch 的 URL 和預期的 response shape）
+          → 讀原始 server.py handler → 移植成 core/ 模組和 routes_*.py
+          → 測試（mock，不依賴真實環境）→ preview 目視（API 層 + iframe 真實 UI）。
+        </p>
+        <p>
+          「先讀前端消費邏輯」這一步很關鍵。原始 server.py 可能有很多 handler，
+          但前端實際用到幾個？用什麼 shape 的回應？只移植「前端真正呼叫的部分」，
+          範圍就縮小了，且不會移植進來一堆沒人用的邏輯。
+        </p>
+
+        <h2>gemma 看起來最複雜，但前端只用了 chat</h2>
+        <p>
+          gemma 在原始 server.py 裡有：chat（SSE 串流）、5 個 sessions CRUD、provider 偵測。
+          看起來最複雜。但讀這版前端 app-nomad-dashboard.js，只有一個 fetch('/api/gemma/chat')，
+          等 res.json()，取 {response} 欄位。不用 sessions，不用 SSE 串流。
+        </p>
+        <p>
+          實際要移植的：無狀態單輪、轉發請求到 AI 服務、收集 SSE text 組裝成一個 JSON 回應。
+          範圍從「5 個 sessions + SSE 管理」縮到「一個無狀態 proxy 轉發」。
+          先讀真實消費者再定範圍，不要被原始 server 的全部 handler 嚇到。
+        </p>
+
+        <h2>skills_and_mcp：這是改寫，不是移植</h2>
+        <p>
+          原始 scan_skills 和 scan_mcp_servers 全是 Gemini 硬編碼路徑：
+          ~/.gemini/config/plugins、~/.hermes/config.yaml。
+          nomad-hub 是 Claude 生態的應用，不該掃 Gemini 的資料夾。
+        </p>
+        <p>
+          改寫成掃 ~/.claude/skills-library/{category}/{skill}/SKILL.md，
+          加上 ~/.claude.json 和 ~/.claude/mcp.json 的 mcpServers。
+          實測結果：190 個 skills、1 個 MCP server。
+          這個改寫讓 skills_and_mcp 端點真正屬於 Claude 生態，而不是 Gemini 的鏡像。
+        </p>
+
+        <h2>handoff global：最重要的一個安全決策</h2>
+        <p>
+          原始 /api/handoff 裡的 global 模式，會把內容寫進 ~/.gemini/memory/project_context.md。
+          這是跨生態的破壞性寫入——nomad-hub 的操作改動了 Gemini 的全域記憶。
+        </p>
+        <p>
+          改成：global 寫 nomad-hub 自己的 data/handoff/ 目錄，data/handoff/ 加進 .gitignore。
+          用實測確認：POST global 之後，Gemini 全域檔的 mtime 完全沒變（測試在 17:55，
+          Gemini 檔還是停在 09:56）。
+          這個驗證不是「應該沒問題」，是「有 mtime 證據」。
+        </p>
+
+        <h2>API 200 加測試綠，UI 還是壞的</h2>
+        <p>
+          CodeGraph 端點的 API 測試全過，200 OK，JSON 格式正確。
+          但進 iframe 真實點「搜尋」，前端報錯：cgResults.forEach is not a function。
+        </p>
+        <p>
+          根因：前端的 renderCgResults 預期一個陣列（.forEach/.length），
+          但移植時依照原始 server.py 回了包裝物件 {total, page, per_page, nodes}。
+          API 200 加測試綠不等於 UI 會動——前端和後端的 contract 是 response shape，
+          而 response shape 只有在 UI 真實呼叫時才能完整驗。
+        </p>
+        <p>
+          解法：route 層 unwrap 回 result["nodes"] 裸陣列，core 層保留 dict（資訊豐富、可測）。
+          這個 bug 沒有端到端目視是找不到的。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>先驗可行性，再開工</strong>：10 分鐘查清楚一個工具有沒有 CLI，
+          省下替一個跑不起來的功能補測試的幾個小時。驗可行性永遠比假設可行便宜。</p>
+          <p><strong>先讀前端消費者再定範圍</strong>：原始 server 可能有 20 個 handler，
+          前端實際用幾個、用什麼 shape——只看這個，範圍才是準的。</p>
+          <p><strong>API 200 + 測試綠 ≠ UI 會動</strong>：前後端 contract 是 response shape，
+          shape 只有在 UI 真實呼叫時才能完整驗。目視不可省，是補 API 測試抓不到的 class of bug。</p>
+          <p><strong>跨生態寫入需要有 evidence 的驗證</strong>：mtime 對比是具體 evidence；
+          「應該沒問題」不是。涉及系統邊界的操作，驗收要拿得出數字。</p>
+          <p><strong>改寫不是移植</strong>：端點的邏輯如果跟生態不符（Gemini 路徑 vs. Claude 路徑），
+          就是改寫，要完整考慮新生態的實際結構，不能照原始邏輯搬。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-01 · nomad-hub · Discover 7 端點全完成 · 8 commit / 151→198 測試 / 88% 覆蓋率
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

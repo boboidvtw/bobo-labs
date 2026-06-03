@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>全自主發布 v2.0：差點外洩的 ops log · Bobo Labs</title>
+  <meta name="description" content="把人工核可這道關卡拿掉，讓 AI 直接 push 部落格——聽起來很美。但空跑驗證時，git status 冒出一個不該存在的目錄，讓整個計畫暫停：一個相對路徑 bug 本來會把所有內部運維記錄暴露在公開的 GitHub Pages。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-29-bobo-autopublish-v2.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-29</p>
+      <h1 class="article-title">全自主發布 v2.0：差點外洩的 ops log</h1>
+      <p class="article-lede">
+        把人工核可這道關卡拿掉，讓 AI 直接 push 部落格——聽起來很美。
+        但空跑驗證時，<code>git status</code> 冒出一個不該存在的 <code>memory/</code> 目錄，
+        讓整個計畫暫停：一個相對路徑 bug 本來會把所有內部運維記錄暴露在公開的 GitHub Pages 上。
+      </p>
+
+      <div class="article-body">
+        <h2>目標：把唯一的人工關卡自動化掉</h2>
+        <p>
+          Bobo Labs 的內容流程原本是三段排程：
+          18:00 掃 journal 落差 → 22:00 草擬文章到 <code>_pending/</code> → 翌日人工核可才 push。
+          最後那一步「人工核可」是刻意保留的安全閥，但它讓「全自主」只差一口氣。
+        </p>
+        <p>
+          今天的目標是把人工核可換成 5 道 QA gate：
+          紅線硬擋（grep 敏感詞）、HTML 結構驗證、無佔位字串、不覆蓋既有文章、LLM 自評。
+          全過才 push；任一不過留在 <code>_pending/</code>，等人工處理。
+          每次 push 上限 2 篇，避免洗版。
+        </p>
+
+        <h2>發現 bug：git status 冒出 memory/</h2>
+        <p>
+          建好 autopublish skill 後，先在 <code>_pending/</code> 空的狀態跑一次端到端空跑——
+          這是最安全的驗證方式：沒有草稿意味著即使流程全對也不會發布任何東西，
+          但仍然會走完所有路徑，包括 ops log 的寫入。
+        </p>
+        <p>
+          跑完之後執行 <code>git status</code>，看到這個：
+        </p>
+        <p>
+          <code>?? memory/</code>
+        </p>
+        <p>
+          <code>memory/</code> 目錄不應該出現在站台 repo 裡。Ops log 是內部稽核檔，
+          裡頭有每次 AI 自動操作的紀錄，包括草稿標題、決策理由、commit hash——
+          這些放上 GitHub Pages 就是公開資訊。
+        </p>
+
+        <h2>根因：headless claude 的 cwd 是 wrapper 的 cd 目標</h2>
+        <p>
+          Skill 裡的 ops log 路徑用的是相對路徑 <code>memory/ops/bobo_ops_log.jsonl</code>。
+          在互動模式的 Claude Code 裡，這條路徑解析到 <code>~/.claude/projects/.../memory/ops/...</code>，完全正確。
+        </p>
+        <p>
+          但 launchd 呼叫的 wrapper script 會先 <code>cd</code> 到站台根目錄再啟動
+          headless <code>claude -p</code>。Headless 模式下，
+          claude 的工作目錄就是 wrapper 的 <code>cd</code> 目標——也就是站台根。
+          相對路徑 <code>memory/ops/...</code> 就解析成了
+          <code>bobo-labs-site/memory/ops/...</code>，寫進了站台 repo。
+        </p>
+        <p>
+          這個 bug 沒有任何警告。寫入成功、沒有 exception——只是寫到了完全錯誤的地方。
+          靠空跑 + 立刻看 <code>git status</code> 才抓到。
+        </p>
+
+        <h2>修法：絕對路徑 + .gitignore 雙保險</h2>
+        <p>
+          修法有兩層，缺一不可：
+        </p>
+        <p>
+          <strong>治本</strong>：把 skill 裡所有「站台根以外」的路徑全部改成絕對路徑。
+          任何要寫到 <code>~/.claude/...</code> 的地方不能用相對路徑，因為 headless 模式下
+          <code>~/.claude/</code> 和站台根不是同一個起點。
+        </p>
+        <p>
+          <strong>兜底</strong>：在站台 repo 的 <code>.gitignore</code> 加上 <code>memory/</code>。
+          即使未來有哪個路徑又寫錯，git 不會追蹤這個目錄，也不會 commit 進去、不會 push 到 GitHub Pages。
+        </p>
+        <p>
+          兩層同時到位。只靠 <code>.gitignore</code> 不夠，因為 ops log 可能永遠寫不到對的地方；
+          只靠絕對路徑也不夠，因為下次寫新 skill 可能又犯同樣的錯。
+        </p>
+
+        <h2>ops log 的可靠性：不該是唯一依據</h2>
+        <p>
+          修好之後重新驗證，也順手翻了歷史 ops log——發現過去幾次 launchd 自動跑的
+          draft-pending 記錄裡有缺漏。ops log 的 append 在 headless 模式不夠穩定：
+          有時成功、有時沉默失敗，不報錯。
+        </p>
+        <p>
+          這讓 ops log 的定位變得清晰：它是 best-effort 的稽核輔助，不是保證。
+          真正的回滾依據是 git 歷史和 commit message——
+          只要 commit message 寫清楚「via /bobo-autopublish」，
+          <code>git log --grep autopublish</code> 就能重建完整的自動操作時間線，
+          不依賴 ops log 是否有記到。
+        </p>
+
+        <h2>待驗證的環節</h2>
+        <p>
+          空跑驗證了「安全退出 + 路徑正確 + git clean」，
+          但完整的 publish 路徑（有真實草稿 → QA gate 通過 → push → 部署驗證）今天沒跑過。
+          明早 06:00 排程觸發時，如果今晚 22:00 draft-pending 產出合格草稿，
+          就是第一次真實 end-to-end 驗證。
+        </p>
+
+        <h2>四條教訓</h2>
+        <div class="takeaway">
+          <p><strong>Headless claude 的 cwd = wrapper 的 cd 目標</strong>：不是 <code>~/.claude/</code>，也不是 home。任何 skill 裡要寫到站台根以外的地方，路徑必須絕對，這是首要檢查項。</p>
+          <p><strong>絕對路徑 + .gitignore 雙保險</strong>：絕對路徑治本（寫到正確的地方），.gitignore 兜底（萬一再出錯，git 不追蹤）。任一單獨都不夠穩。</p>
+          <p><strong>空跑是最安全的端到端驗證</strong>：讓流程在沒有真實輸入的狀態跑完，驗 noop 安全退出 + 揪路徑 bug，零誤發風險。有比空跑更便宜的驗證方式嗎？</p>
+          <p><strong>ops log 是輔助，git 歷史才是保證</strong>：headless LLM 的寫入不可靠。把回滾依據放在 commit message 上，git log --grep 能重建自動操作時間線，不依賴 ops log。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-29 · Bobo Labs 自主發布 v2.0 · 5 QA gate · 空跑驗證通過
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

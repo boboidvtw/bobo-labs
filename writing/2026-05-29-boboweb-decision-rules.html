@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>_pending/ 不只有草稿：兩輪 /boboweb 揭示的分流規則 · Bobo Labs</title>
+  <meta name="description" content="今天上午跑兩輪發布。第一輪盤點 _pending/ 發現混了 writing 草稿、formula 文章、補丁腳本三種東西。第二輪發現 index.html 的規劃 Tier 和已完成文章的 Tier 對不上。兩個邊界案例，各需要一條明確規則。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-29-boboweb-decision-rules.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-29</p>
+      <h1 class="article-title">_pending/ 不只有草稿：兩輪 /boboweb 揭示的分流規則</h1>
+      <p class="article-lede">
+        今天上午跑兩輪發布。第一輪盤點 <code>_pending/</code> 發現裡面混了 writing 草稿、
+        5 篇 formula 文章、1 個補丁腳本——三種完全不同的東西。
+        第二輪發現 <code>formulas/index.html</code> 的規劃 Tier 和已完成文章的 Tier 對不上。
+        兩個邊界案例，各需要一條明確規則才能處理。
+      </p>
+
+      <div class="article-body">
+        <h2>_pending/ 是 gitignored 的 sandbox，不只給 writing 草稿</h2>
+        <p>
+          原本的設計是：夜間 draft-pending 把 writing 草稿寫到 <code>_pending/</code>，
+          翌日發布工具盤點、核可後 move 到 <code>writing/</code>。
+          邏輯很乾淨——直到第一輪盤點看到的不只是 writing 草稿：
+        </p>
+        <p>
+          1 篇 <code>YYYY-MM-DD-*.html</code>（writing 草稿，目標路徑 <code>writing/</code>）、
+          5 篇沒有日期前綴的 <code>*.html</code>（formula 文章，目標路徑 <code>formulas/</code>）、
+          1 個 <code>_patch_articles.py</code>（補丁腳本，doc string 明示「住在 _pending/ 直到跑完」）。
+        </p>
+        <p>
+          這不是 bug——<code>_pending/</code> 本來就是 gitignored sandbox。
+          任何流程需要「暫存等核可」的東西都可以放這裡。
+          問題是發布工具需要能分辨這三種東西，才能決定每種怎麼處理。
+        </p>
+
+        <h2>分流依據：讀 canonical link，不要猜檔名</h2>
+        <p>
+          第一個直覺是看檔名：有日期前綴的是 writing、沒有的是其他。
+          但這個規則太脆弱——如果哪天 writing 文章也沒有日期前綴，就誤判了。
+        </p>
+        <p>
+          更穩的依據是 HTML 裡的 <code>&lt;link rel="canonical"&gt;</code>。
+          每篇文章都有 canonical URL，它明確聲明這篇文章的權威路徑，而且是作者寫的、不會猜錯。
+          讀 canonical：
+        </p>
+        <p>
+          canonical 指向 <code>/writing/...</code> → writing 草稿，走 writing 發布流程。
+          canonical 指向 <code>/formulas/...</code> → formula 文章，另外處理。
+          <code>.py</code>、<code>.sh</code>、<code>_*.md</code> → 工具或稽核檔，列給人工決定。
+        </p>
+        <p>
+          這一輪的實際處理：writing 草稿由第一輪發布，formula 文章和補丁腳本列給使用者，
+          取得授權後走第二輪。
+        </p>
+
+        <h2>Tier 衝突：文章 eyebrow 是 ground truth</h2>
+        <p>
+          第二輪處理 formula 文章時，把 5 篇文章映射到 <code>formulas/index.html</code>
+          的 placeholder 卡片。其中 4 篇一對一比對無問題；第 5 篇 <code>universal-gravitation</code>（#79 萬有引力）出現衝突：
+        </p>
+        <p>
+          index.html placeholder 標的是 <strong>Pro</strong>。
+          但文章本身的 eyebrow 寫的是 <strong>Free</strong>。
+        </p>
+        <p>
+          兩個資訊源，哪個算數？
+          Placeholder 是規劃階段的意圖——在文章還沒寫出來的時候，對 Tier 的預估。
+          文章 eyebrow 是作者在寫完文章之後最終決定的分類，寫進了 HTML 原始碼。
+          時間上更晚，決定者是同一個人，應該採文章 eyebrow。
+        </p>
+        <p>
+          規則是：<strong>文章 eyebrow 是 Tier ground truth；index.html placeholder 的 Tier 是預估，衝突時跟隨文章。</strong>
+        </p>
+
+        <h2>Tier 改變會 ripple 到計數</h2>
+        <p>
+          把 #79 從 Pro 改成 Free，不能只改 placeholder 那一行。
+          <code>formulas/index.html</code> 裡有分類計數：物理類別顯示「12 Free / 9 Pro」。
+          Tier 一改，計數變成「13 Free / 8 Pro」，兩個數字都需要同步更新。
+          如果只改 placeholder line 忘了計數，頁面資訊就不一致。
+        </p>
+        <p>
+          這次發現的 patch 策略表：
+          placeholder 存在且 Tier 一致 → 直接替換為 active 卡，計數不動；
+          placeholder 存在但 Tier 不一致 → 替換 + 同步 Tier + 更新計數；
+          無 placeholder（新公式）→ 在 active 區尾端插入新卡 + 計數 +1。
+        </p>
+
+        <h2>今天確認的三條規則</h2>
+        <div class="takeaway">
+          <p><strong>_pending/ 是全局 sandbox，發布工具要能分流</strong>：不能假設裡面只有 writing 草稿。任何流程都可能把等核可的東西放進來。盤點時先分類，再依類型決定處理路徑。</p>
+          <p><strong>分流依據讀 canonical link，不猜檔名</strong>：canonical URL 是作者明確聲明的權威路徑，比檔名前綴更穩定。讀 canonical 比解析檔名規則更不容易出錯。</p>
+          <p><strong>文章 eyebrow 是 Tier ground truth</strong>：index.html placeholder 是規劃時的預估；文章本身是最終決定。改 Tier 時記得 ripple 到分類計數，不能只改 placeholder 那一行。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-29 · Bobo Labs /boboweb 兩輪 · 6 篇文章 promote · 6 URL 全 200/SSL=0
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

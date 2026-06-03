@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>從兩個視窗到一個控制台 — nomad-hub Phase 5 Week 1 三天紀錄 · Bobo Labs</title>
+  <meta name="description" content="Day 1 用 iframe 整合雙標籤頁、Day 2 把覆蓋率補到 97%、Day 3 完成 subprocess 啟停控制。三天踩了 FastAPI route 順序、Pydantic v2、CSS 深色模式、side_effect mock 四個坑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-30-nomad-hub-phase5-week1.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-30</p>
+      <h1 class="article-title">從兩個視窗到一個控制台 — nomad-hub Phase 5 Week 1 三天紀錄</h1>
+      <p class="article-lede">
+        nomad-dashboard（Port 8091）跟 nomad-hub（Port 8092）本來是兩個獨立應用。
+        Phase 5 Week 1 的目標：合而為一，統一入口，加上真正能用的啟停控制。
+        Day 1 用 iframe 完成雙標籤整合；Day 2 把測試覆蓋率補到 97%；
+        Day 3 實裝 subprocess 管理層。三天 18 → 47 個測試，踩了四個值得記下來的坑。
+      </p>
+
+      <div class="article-body">
+        <h2>Day 1：為什麼選 iframe 而不是全部重寫</h2>
+        <p>
+          nomad-dashboard 有 11 個複雜功能：Gemma-4 AI 對話、GitHub 狀態掃描、
+          MCP server 清單、CodeGraph 視覺化……完整移植估計要 8+ 小時。
+          目標是單一入口，不是重寫整個應用。
+        </p>
+        <p>
+          決定：把 nomad-dashboard 整個包進 iframe，放進 nomad-hub 的 Discover 標籤頁。
+          nomad-hub 自己的 Control 標籤頁負責啟停、日誌、監控。
+          後端統一到 Port 8091，舊的 nomad-dashboard 進程可以停掉。
+          這樣一個小時就能做完，而且所有舊功能完整保留。
+        </p>
+        <p>
+          這個決定的關鍵在於釐清「整合」的定義。整合不一定是遷移——
+          讓兩個系統共存在一個 UI 框架裡，往往比遷移快得多且更穩。
+        </p>
+
+        <h2>FastAPI route 順序：一個隱藏的優先級陷阱</h2>
+        <p>
+          Day 1 最花時間的不是邏輯，是一個 FastAPI 的基本特性撞出的 404。
+          /health 端點怎樣都回 404，但明明加了 @app.get("/health")。
+        </p>
+        <p>
+          根因：app.mount("/", StaticFiles(...)) 掛在最後，
+          但 FastAPI/Starlette 的優先級是「最後掛載的贏」——mount 會吃掉所有未匹配的請求。
+          /health 在路由列表裡排在 mount 之後，永遠到不了。
+        </p>
+        <p>
+          正確順序：直接路由（@app.get / @app.post）→ router includes → mount。
+          記住：specific → routers → mounts。任何有 StaticFiles 的 FastAPI 應用都要注意這件事。
+          IDE 不會警告，404 也不會給你線索，只能靠理解機制。
+        </p>
+
+        <h2>另外三個坑：Pydantic、CSS、iframe 路徑</h2>
+        <p>
+          <strong>Pydantic v2 ConfigDict。</strong>
+          舊的 class Config: 在 Pydantic v2 已棄用，要改成 model_config = ConfigDict(...)。
+          這個 deprecation warning 不會讓測試紅，但長期看版本鎖不住就會出問題。
+          主要依賴的大版本更新值得單獨一次掃描。
+        </p>
+        <p>
+          <strong>CSS 深色模式壓過淺色設計。</strong>
+          開發機的系統設定是深色模式，@media (prefers-color-scheme: dark) 優先級高，
+          整個預覽一片黑，什麼都看不見。解法：根變數改成 oklch(100% 0 0) 純白，
+          媒體查詢只是選擇性調整，不改根本預設。
+          設計系統應該有「絕對底線」，主題放在上面疊加。
+        </p>
+        <p>
+          <strong>iframe 內相對路徑指向錯誤。</strong>
+          iframe 載入 /discover/index.html，相對路徑 styles.css 會去找 /discover/styles.css，
+          但實際檔名叫 styles-nomad-dashboard.css。改成絕對路徑 /discover/styles-nomad-dashboard.css 解決。
+          iframe 內的相對路徑參考 iframe 的 HTML 路徑，不是主文檔——這跟直接開 HTML 的行為不同。
+        </p>
+
+        <h2>Day 2：97% 覆蓋率，剩下的 5 行是什麼</h2>
+        <p>
+          Day 2 目標是把覆蓋率從 82% 補到 85%+，最後做到 97%。
+          剩下 5 行覆蓋不到：if __name__ == "__main__" 守衛（main guard）、
+          一條防禦性 registry 非空檢查、以及三條邊界條件。
+          這類行在 pytest 裡結構上就是測不到的，不是 bug，是覆蓋率分析的天花板。
+        </p>
+        <p>
+          測試新增的關鍵：用 Mock uvicorn.run()，讓 serve 命令不真的啟動 HTTP server；
+          用 capsys 捕捉 stdout 驗 version 命令的輸出。
+          CLI 測試跟業務邏輯測試的結構不同，主要是在 mock 外部 I/O。
+        </p>
+
+        <h2>Day 3：subprocess.Popen vs run，PID 檔為什麼用 JSON</h2>
+        <p>
+          subprocess.run 等進程結束才返回，適合「跑一次、等結果」的命令。
+          subprocess.Popen 立刻返回並給你 PID，進程在後台繼續跑——適合長期服務。
+          Day 3 的啟停控制需要：起動後立刻返回 PID 給 API、進程繼續在後台執行，
+          所以用 Popen 是唯一選擇。
+        </p>
+        <p>
+          PID 檔案的格式選 JSON 而非純數字。純數字省空間，但 JSON 可以帶 command、start_time、
+          甚至未來的 status。多那 20 bytes 換來的是：debug 時一眼看清楚這個 PID 在跑什麼。
+          未來加 audit log 也不需要改格式。
+        </p>
+        <p>
+          進程存活檢查用 ps -p {pid}，returncode 0 表示進程存在，1 表示不存在。
+          標準 POSIX 方式，不需要引入 psutil 這個額外依賴。
+        </p>
+
+        <h2>test_stop_success 為什麼一直失敗</h2>
+        <p>
+          stop() 方法內部呼叫 is_running() 兩次：第一次檢查是否在跑（不在跑就直接返回失敗）；
+          第二次確認 stop 後是否真的停了。測試只 mock 了一次，返回 True——
+          但第二次呼叫 is_running() 用的是同一個 mock 還是 True，
+          意思是「kill 之後還在跑」，導致 stop 回報失敗。
+        </p>
+        <p>
+          解法：用 side_effect=[True, False] 讓 mock 在第一次呼叫回 True、第二次回 False。
+          這個技巧是：當一個方法被呼叫多次且預期回不同值時，side_effect list 是精確控制的方式，
+          比 return_value 更能描述「時序」。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>FastAPI route 順序：specific → routers → mounts</strong>：
+          app.mount("/") 會吞掉所有未匹配請求，加在後面的路由永遠到不了。
+          有 StaticFiles 的應用，路由順序是隱藏的高衝擊陷阱。</p>
+          <p><strong>整合不一定是遷移</strong>：用 iframe 保留 11 個複雜功能花了 1 小時；
+          完整遷移估計 8+ 小時。目標是「單一入口」，不是「單一代碼庫」。</p>
+          <p><strong>設計系統的底線應該是無條件的</strong>：根變數用 100% 純白，
+          媒體查詢往上疊加主題。不要假設預設主題會被尊重。</p>
+          <p><strong>side_effect list 控制時序</strong>：一個 mock 被多次呼叫且預期不同返回值時，
+          用 side_effect=[v1, v2, ...]，比 return_value 精確描述「誰在什麼順序回什麼」。</p>
+          <p><strong>PID 檔用 JSON，多 20 bytes 換可讀性</strong>：帶著 command 欄位，
+          debug 和未來擴展都更容易。純數字的省空間根本不在這個情境的 cost 考量裡。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-30 · nomad-hub Phase 5 Week 1 Day 1-3 · FastAPI + subprocess 管理 · 47/47 測試 / 97% 覆蓋率
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
