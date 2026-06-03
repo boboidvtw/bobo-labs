@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-04** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-05-20-supercalc-v353-audit.html`（v3.5.3 深審：SEO 教學區從未渲染、Stored XSS、y= 前綴誤判三個 latent bug）、
+  `2026-05-20-supercalc-bug-c.html`（純 CSS 修復手機閉合括號消失，bottom-fixed 浮動列零 DOM 改動）。
+  Index Writing 區依時間倒序插入同日條目前。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM 自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-04.
 - **2026-06-03** — sitemap.xml 全面補齊（SEO 基建，變現第一步「裝儀表」）：URL 從 16 → 44（formulas 10→15 全收錄、writing 4→27 全收錄），修正 daily log 的 lastmod。為提交 Google Search Console 鋪路，讓 Google 看得到全部內容。
   Rebuilt sitemap.xml for full coverage: 16 → 44 URLs (all 15 formula articles + all 27 writing posts), with correct lastmod dates. Prep for Google Search Console submission so Google can index everything.
 - **2026-06-03** — 由 /boboweb 補發 5 篇積壓 daily log（修 canonical 治本後）：
