@@ -7,6 +7,7 @@
   <meta name="description" content="Deploy 顯示「佈署完成！成功:4」，16 秒後委託追蹤全部變 CANCELLED。查 DB 才發現，這個 bug 從 2026-04-29 就存在，423 筆委託全部被交易所靜默拒絕。根本原因：round(price, 2) 沒有對齊台股升降單位。" />
   <link rel="stylesheet" href="../styles.css" />
   <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
   <div class="reading-progress" aria-hidden="true"></div>

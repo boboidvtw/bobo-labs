@@ -23,7 +23,7 @@
   <url><loc>https://labs.moneyai168.com/formulas/universal-gravitation.html</loc><lastmod>2026-05-29</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/wave-speed.html</loc><lastmod>2026-05-28</lastmod><priority>0.8</priority></url>
 
-  <!-- Writing (dev journal; lower priority) -->
+  <!-- Writing (dev journal) -->
   <url><loc>https://labs.moneyai168.com/writing/2026-05-14-nomad-recon-sprint-d.html</loc><lastmod>2026-05-14</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-15-skills-governance-v1.html</loc><lastmod>2026-05-15</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-15-test-the-tests.html</loc><lastmod>2026-05-15</lastmod><priority>0.5</priority></url>
@@ -31,7 +31,9 @@
   <url><loc>https://labs.moneyai168.com/writing/2026-05-18-pages-cert-stuck.html</loc><lastmod>2026-05-18</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-18-skills-40-eval.html</loc><lastmod>2026-05-18</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-20-bobo-labs-publish-flow.html</loc><lastmod>2026-05-20</lastmod><priority>0.5</priority></url>
+  <url><loc>https://labs.moneyai168.com/writing/2026-05-20-supercalc-bug-c.html</loc><lastmod>2026-05-20</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-20-supercalc-day.html</loc><lastmod>2026-05-20</lastmod><priority>0.5</priority></url>
+  <url><loc>https://labs.moneyai168.com/writing/2026-05-20-supercalc-v353-audit.html</loc><lastmod>2026-05-20</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-21-formula-audit.html</loc><lastmod>2026-05-21</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-21-supercalc-click-test.html</loc><lastmod>2026-05-21</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-05-22-skills-governance-audit-and-llm.html</loc><lastmod>2026-05-22</lastmod><priority>0.5</priority></url>

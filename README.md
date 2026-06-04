@@ -25,8 +25,11 @@ CNAME               Custom domain (labs.moneyai168.com)
   `2026-05-20-supercalc-bug-c.html`（純 CSS 修復手機閉合括號消失，bottom-fixed 浮動列零 DOM 改動）。
   Index Writing 區依時間倒序插入同日條目前。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM 自評）自動上線。
   Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-04.
-- **2026-06-03** — sitemap.xml 全面補齊（SEO 基建，變現第一步「裝儀表」）：URL 從 16 → 44（formulas 10→15 全收錄、writing 4→27 全收錄），修正 daily log 的 lastmod。為提交 Google Search Console 鋪路，讓 Google 看得到全部內容。
-  Rebuilt sitemap.xml for full coverage: 16 → 44 URLs (all 15 formula articles + all 27 writing posts), with correct lastmod dates. Prep for Google Search Console submission so Google can index everything.
+- **2026-06-04** — 變現策略階段 0「裝儀表」（三項）：
+  ① sitemap.xml 全面補齊 16 → 46 URL（formulas 全 15 篇、writing 全 29 篇，補回先前漏掉的 2 篇 05-20 文章），修正 lastmod，為 Google Search Console 提交鋪路。
+  ② 全站 46 頁注入 Cloudflare Web Analytics（零 cookie，符合隱私導向），開始量測頁面流量與來源。
+  ③ 15 篇 formula 文章的 CTA 連結埋 UTM（utm_source=bobolabs），為「formulas → ∑ Calc」跨站轉換歸因鋪路。
+  Stage 0 "instrumentation" for monetization: rebuilt sitemap to true full coverage (16 → 46 URLs), added cookieless Cloudflare Web Analytics to all 46 pages, and UTM-tagged the 15 formula CTA links for cross-site conversion attribution.
 - **2026-06-03** — 由 /boboweb 補發 5 篇積壓 daily log（修 canonical 治本後）：
   `2026-06-01-nomad-hub-discover-complete.html`、`2026-05-31-nomad-hub-discover-registry.html`、`2026-05-30-nomad-hub-phase5-week1.html`、`2026-05-29-bobo-autopublish-v2.html`、`2026-05-29-boboweb-decision-rules.html`。
   根因：/bobo-draft-pending 模板未生成 `<link rel="canonical">`，autopublish QA gate 的 structure 檢查連續擋下 → 草稿堆積。已修模板加 canonical 規則，並回補 5 篇 head 的 canonical（另修 2026-06-01 一篇缺漏的 viewport meta）。Index Writing 區依時間倒序插入。
