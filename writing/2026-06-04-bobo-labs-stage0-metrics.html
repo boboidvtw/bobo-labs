@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>先裝儀表，再說賺錢 — Bobo Labs 變現零階段紀實 · Bobo Labs</title>
+  <meta name="description" content="GSC 顯示 0 頁索引，網站存在卻對 Google 形同透明。在盲飛下討論「賺錢策略」只是猜測。先做一件事：sitemap 從 16 補到 46 個 URL、全站注入 CF Web Analytics、formula CTA 埋 UTM，用數字建立基準線。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-04-bobo-labs-stage0-metrics.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-04</p>
+      <h1 class="article-title">先裝儀表，再說賺錢 — Bobo Labs 變現零階段紀實</h1>
+      <p class="article-lede">
+        有人問「Bobo Labs 怎麼賺錢？」我打開 Google Search Console，看到一個數字：
+        已編入索引頁數 0。網站存在，Google 卻沒收進搜尋。
+        在這個基礎上討論「賺錢策略」，全是猜測。
+        所以先做一件事：裝好儀表，建立數字，再說其他的。
+      </p>
+
+      <div class="article-body">
+        <h2>First Principles：Bobo Labs 在漏斗的哪一層？</h2>
+        <p>
+          先釐清這個站的定位，才能判斷該做什麼。Bobo Labs（labs.moneyai168.com）
+          設計上不是直接賺錢的終點，它是 ∑ Calc 付費漏斗的流量入口——
+          Content Engine 的第三層。金流終點在 ∑ Calc，月費 2.99 USD。
+        </p>
+        <p>
+          所以「Bobo Labs 要怎麼賺錢」這個問題，正確框架是：
+          <strong>Bobo Labs 怎麼把人送到 ∑ Calc？</strong>
+          轉換率、流量、客單價三個變數，現在全是未知數或極小值。
+          在這三個數都不知道的情況下，任何「最佳化」都是拍腦袋。
+        </p>
+        <p>
+          公式漏斗（/formulas/ 底下 15 篇 + 90 個佔位頁）才是引擎核心，
+          因為搜尋意圖明確（「怎麼算複利」「BMI 公式」），入站就帶著需求。
+          技術日誌（writing/ 的 29 篇）受眾窄、無 CTA，
+          SEO 價值本來就低，不是現在優先攻的點。
+        </p>
+
+        <h2>致命盲點：0 頁索引</h2>
+        <p>
+          打開 GSC 看到的現實：已編入索引 0 頁、未編入索引 8 頁、
+          近兩個月網頁搜尋點擊幾乎 0。
+          sitemap 提交後 GSC 顯示「探索到 46 頁」，
+          但探索到（Discovered）和已編入索引（Indexed）是兩件不同的事。
+        </p>
+        <p>
+          探索是 Google 爬蟲記下「這個 URL 存在」，索引是「把這頁內容收進搜尋資料庫」。
+          0 索引比「沒流量」更底層——沒索引的頁，不會出現在任何搜尋結果裡。
+          這也解釋了為什麼之前 AdSense 申請被拒（「缺乏價值的內容」）。
+          Google 對這個站的認知幾乎是空白。
+        </p>
+
+        <h2>三件儀表工作</h2>
+        <p>
+          沒數據就沒辦法決策。選擇不急著生內容，先把資料管道接好。
+        </p>
+        <p>
+          <strong>sitemap 從 16 補到 46 個 URL。</strong>
+          原本 sitemap.xml 只有首頁和少數幾頁，formulas 全 15 篇、writing 全 29 篇全部補進去。
+          Python idempotent 腳本批次生成，跑完線上驗證 46 個 URL、XML well-formed、HTTP 200。
+          提交 GSC 後顯示「已順利處理完畢，探索到 46」。
+        </p>
+        <p>
+          <strong>全站 46 頁注入 Cloudflare Web Analytics beacon。</strong>
+          選 CF Web Analytics 而非 GA 的理由是：已有 CF 帳號、免費、零 cookie。
+          這個站的網域沒有走 CF proxy（server header 顯示 GitHub.com），
+          所以 beacon 沒辦法自動注入，要手動加到每一頁的 &lt;head&gt;。
+          同樣用 Python 批次腳本處理，idempotent 設計（已有 beacon 就跳過）。
+        </p>
+        <p>
+          <strong>15 篇 formula CTA link 埋 UTM 參數。</strong>
+          每篇 formula 頁底部有連到 ∑ Calc 的連結，加上
+          utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib。
+          只動 link，不動 iframe 嵌入——link 點擊代表主動跳出，是高意圖轉換訊號；
+          iframe 是被動嵌入，加 UTM 對 referral 歸因沒幫助。
+        </p>
+
+        <h2>踩到的坑</h2>
+        <p>
+          sitemap 第一版生出 44 個 URL，但 writing/ 目錄其實有 29 篇，不是 27。
+          漏掉 2 篇的原因：用目視數 ls 輸出。
+          <strong>宣告「已完整涵蓋」之前先 wc -l 嚴格核對，別依賴目視。</strong>
+        </p>
+        <p>
+          lastmod 函式用 <code>[[ =~ ]]</code> 取檔名日期，在 zsh 環境下 BASH_REMATCH 不填（zsh 用 $match），
+          導致所有 writing/ 頁的 lastmod 全空。
+          改成 <code>grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}'</code>，shell 無關，不再依賴 BASH_REMATCH。
+          <strong>這個環境的 Bash tool 受 zsh 影響，正則匹配避免用 BASH_REMATCH。</strong>
+        </p>
+        <p>
+          push 時看到一個陌生 commit c03a957，不是自己的工作。
+          第一反應是 git 分歧，查了 git log --graph 和 rev-list --left-right，
+          發現是自主排程的 autopublish 在工作期間補了兩篇積壓的 writing draft，
+          git 全程線性、無分歧。
+          <strong>陌生 commit 先查清楚，autopublish 排程會在手動 session 期間動 repo。</strong>
+          剛好也解釋了坑一的 2 篇為什麼在第一次 sitemap 生成後才出現。
+        </p>
+
+        <h2>GSC 不知道「探索到」和「已索引」的差別</h2>
+        <p>
+          很多人把 sitemap 提交完、看到「成功」就以為工作做完了。
+          GSC 的「探索到」只是說爬蟲知道這些 URL 存在，
+          後面還有評估內容品質、決定是否索引的流程。
+          0 頁索引的站提交 sitemap 之後，索引數字不會立刻跳上去。
+          Google 要爬、要評估、要收進資料庫，這是時序問題。
+        </p>
+        <p>
+          下一步是對 GSC 網址審查，主動對 3-5 篇高搜尋意圖的 formula 頁（複利、BMI、房貸）
+          提交「要求建立索引」，每日有配額，集中火力用在最有機會的頁面上。
+          索引數字動了，才能看 GSC 成效報表，才能知道哪些關鍵字有曝光，
+          才能決定下一步要寫哪些 formula，不用盲寫 90 篇佔位頁。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>測量先於策略</strong>：不知道現在的數字，所有「最佳化」都是猜測。收入 = 流量 × 轉換率 × 客單價，三個變數全是未知數時，先裝儀表。</p>
+          <p><strong>「探索到」不等於「已索引」</strong>：GSC 探索是步驟一，索引是步驟二。sitemap 提交後顯示「已順利處理完畢」，不等於任何頁面出現在搜尋結果。</p>
+          <p><strong>zsh 裡 BASH_REMATCH 不填</strong>：這個環境的 Bash tool 受 zsh 影響，[[ =~ ]] 的匹配組用 $match，不用 BASH_REMATCH。shell 無關的 grep -oE 更穩定。</p>
+          <p><strong>批次腳本要 idempotent</strong>：重跑不能壞掉。「已有 beacon 就跳過」、「已有 UTM 就跳過」的判斷讓腳本可以安全多次執行。</p>
+          <p><strong>陌生 commit 先查清楚再判斷</strong>：自主排程和手動工作會交織在同一個 repo，不是所有陌生 commit 都是問題，但要先看清楚。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-04 · Bobo Labs labs.moneyai168.com · sitemap 16→46 URL · GSC 基準線 0 已索引頁 · CF Web Analytics + UTM 全站埋入
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

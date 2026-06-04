@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>description 相似不等於功能重複 — Skills 去重第三輪教訓 · Bobo Labs</title>
+  <meta name="description" content="Team 3 個 skills 合一、agent 3 個合一都很順，social 組差點也合了——讀了原始內容才發現 social-graph-ranker 是共用引擎，被兩個 workflow skill 當 primitive，和 eval-harness 是同一模式。差一點砍掉一個正確的分層設計。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-04-skills-dedup-shared-engine.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-04</p>
+      <h1 class="article-title">description 相似不等於功能重複 — Skills 去重第三輪教訓</h1>
+      <p class="article-lede">
+        Skills 去重第三輪，183 → 179。Team 3 合 1、agent 3 合 1 都很順。
+        Social 組差點也合了——讀了原始內容才看到：
+        social-graph-ranker 的 frontmatter 明白寫「reusable graph-ranking engine itself」，
+        被兩個 workflow skill 當共用 primitive。
+        合了就砍掉一個正確的分層。
+      </p>
+
+      <div class="article-body">
+        <h2>開工先校正：記憶說有兩個 trash 夾，實況只剩一個</h2>
+        <p>
+          記憶裡寫「兩個 trash 夾待清理」，開工後實測發現 _184436 早已永久刪除，
+          只剩 _210019_converge（548K）。如果直接照記憶的清單做，
+          第一步就會找不到不存在的目錄。
+        </p>
+        <p>
+          這不是第一次遇到這種問題。長期 plan 在執行前，先盤點程式碼實況，
+          才能知道哪些事情已經發生、哪些假設已經過期。
+          <strong>記憶記的是當時的快照，不是現在的狀態。</strong>
+        </p>
+
+        <h2>Team 3→1：三章合一</h2>
+        <p>
+          task-coordination-strategies、team-composition-patterns、team-communication-protocols
+          三個 skills。讀完三者後判斷它們是同一工作流的三章：
+          Compose（怎麼組隊）→ Coordinate（怎麼分工協調）→ Communicate（怎麼協作溝通）。
+          版本都是 v1.0.2，彼此只用「Related Skills」互引，沒有獨立的指令綁定，
+          沒有共用 primitive 角色。
+        </p>
+        <p>
+          把三者重寫成一份三段式 playbook 合進 team-composition-patterns，
+          frontmatter description 擴充涵蓋三個面向，version 升到 1.1.0，
+          加「Consolidates the former…」出處記錄。
+          parallel-feature-development 原本引用其中兩個，改成引用合併後的單一 skill。
+        </p>
+
+        <h2>Agent 3→1：零引用、零指令，直接折入</h2>
+        <p>
+          agentic-engineering、ai-first-engineering、enterprise-agent-ops 三個 skills。
+          三者皆 ECC origin、零交叉引用、零指令依賴、文件都短（50-63 行）。
+          主題各有面向（執行層 / 團隊流程 / 生產維運），但彼此間沒有消費關係。
+        </p>
+        <p>
+          enterprise-agent-ops 雖然主題最獨立（生產維運），
+          但因為零依賴，作為子章節完整折入 agentic-engineering 不損失任何內容。
+          這類合併的判準：內容可以完整遷移 + 沒有其他 skill 依賴它 + 不是共用引擎。
+        </p>
+
+        <h2>Social 組：差一點就砍掉共用引擎</h2>
+        <p>
+          connections-optimizer 和 social-graph-ranker，description 都在說「社交圖譜」相關的事。
+          乍看是重疊。但讀原始內容之前，先做了交叉引用掃描：
+        </p>
+        <p>
+          social-graph-ranker 被 connections-optimizer 和 lead-intelligence 兩個 skill 引用。
+          一個 skill 被多個 workflow 引用，這是共用引擎的訊號，不是重疊的訊號。
+        </p>
+        <p>
+          讀 social-graph-ranker 的 frontmatter：
+          「reusable graph-ranking engine itself, not the broader outreach workflow layered on top」，
+          還有專節「When To Use This Standalone」。
+          這個 skill 知道自己的角色——它刻意抽出來，讓上層的 workflow 共用。
+        </p>
+        <p>
+          強行合進 connections-optimizer 的後果：
+          lead-intelligence 的引用鏈斷掉，共用引擎的角色消失，兩個 workflow 都要各自維護一份數學邏輯。
+          description 相似是假象，底下是互補的分層，不是重疊。
+          <strong>合併前必讀內容，description 相似不是充分條件。</strong>
+        </p>
+
+        <h2>共用引擎模式</h2>
+        <p>
+          這個模式在這份 skills 庫已經出現過兩次：eval-harness 和 x-api 被退回時也是同樣理由——
+          「被多個 workflow 當 primitive 引用的共用引擎，不該合進單一 workflow skill」。
+        </p>
+        <p>
+          判斷方式：掃有哪些 skill 的 SKILL.md 引用了它。被一個引用可能只是個別關聯；
+          被兩個以上引用，幾乎確定是共用層，合併要三思。
+        </p>
+
+        <h2>Edit 之前必須 Read：harness 的 file-state 追蹤</h2>
+        <p>
+          本輪要修改 parallel-feature-development 裡的兩行引用。
+          做法：先 grep 找到要改的行，確認內容正確，然後直接 Edit。
+          harness 拒絕了，原因：Read 工具未曾讀取這個檔案，Edit 被擋下。
+        </p>
+        <p>
+          harness 追蹤 file-state 的設計是這樣的：grep 命中行不等於「已讀」這個檔案，
+          Edit 之前必須 Read，確保操作是在已知的基礎上進行。
+          <strong>grep 找到位置只是定位，不等於取得讀取狀態。先 Read，再 Edit。</strong>
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>description 相似 ≠ 功能重複</strong>：合併前必讀內容。description 是摘要，不是全貌；同一領域詞彙出現在兩個 skill 裡，不代表它們做同樣的事。</p>
+          <p><strong>共用引擎模式：被多個消費者引用的 primitive 不該合進單一 workflow</strong>：合了之後其他消費者的引用鏈就斷了，共用的優勢也消失。掃引用數量是快速判斷的方法。</p>
+          <p><strong>Edit 之前必須 Read</strong>：grep 命中是定位，不是讀取。harness 追蹤 file-state，未 Read 的檔案無法 Edit。流程是：grep 定位 → Read → Edit。</p>
+          <p><strong>長期計畫執行前先盤點實況</strong>：記憶記的是當時的快照，不是現在的狀態。開工前對照程式碼，找出記憶裡已經過期的假設。</p>
+          <p><strong>決策性提問中斷時，用前置分析 + 預設安全選項代替</strong>：本輪兩次 AskUserQuestion 串流中斷。換策略：在提問前把所有分析做完、把預設值設為最保守的選項，中斷也不會卡住決策。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-04 · Claude Code skills 庫管理 · 183→179 skills（-4）· team 3→1 + agent 3→1 合併，social 組撤回保留
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
