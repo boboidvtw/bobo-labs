@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-05** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-04-bobo-labs-stage0-metrics.html`（GSC 0 頁索引紀實：sitemap 16→46、CF Web Analytics 全站注入、UTM 基準線建立）、
+  `2026-06-04-skills-dedup-shared-engine.html`（Skills 去重第三輪 183→179：description 相似不等於功能重複，共用引擎模式辨認）。
+  Index Writing 區依時間倒序插入頂部。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM 自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-05.
+
 - **2026-06-04** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-05-20-supercalc-v353-audit.html`（v3.5.3 深審：SEO 教學區從未渲染、Stored XSS、y= 前綴誤判三個 latent bug）、
   `2026-05-20-supercalc-bug-c.html`（純 CSS 修復手機閉合括號消失，bottom-fixed 浮動列零 DOM 改動）。
