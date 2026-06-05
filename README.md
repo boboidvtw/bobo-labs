@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-06** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-04-nomad-hub-gemma-multiturn.html`（Gemma 多輪持久對話 UI + v0.2.0 切版：雙模式設計、首則自動命名 session、__version__ 單一來源）、
+  `2026-06-04-nomad-hub-frontend-test-vm.html`（Node vm sandbox 為純 Python 專案加前端守衛測試：portOwnerLabel 四態覆蓋、pytest 整合、先紅後綠驗證）。
+  Index Writing 區依時間倒序插入頂部（同日既有文章之前）。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM 自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-06.
+
 - **2026-06-05** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-04-bobo-labs-stage0-metrics.html`（GSC 0 頁索引紀實：sitemap 16→46、CF Web Analytics 全站注入、UTM 基準線建立）、
   `2026-06-04-skills-dedup-shared-engine.html`（Skills 去重第三輪 183→179：description 相似不等於功能重複，共用引擎模式辨認）。
