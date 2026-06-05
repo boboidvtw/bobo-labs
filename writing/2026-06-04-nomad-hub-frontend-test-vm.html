@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>用 Node vm 為沒有 JS 測試框架的專案加前端守衛測試 · Bobo Labs</title>
+  <meta name="description" content="健康面板顯示「❌ portOwnerLabel is not defined」——後端 304 tests 全綠，函式根本沒定義過。沒有 JS 測試框架的 Python 專案怎麼補前端 ReferenceError 守衛？答案是 Node vm 模組，融入 pytest 跑，不引入任何新框架依賴。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-04-nomad-hub-frontend-test-vm.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-04</p>
+      <h1 class="article-title">用 Node vm 為純 Python 專案加前端守衛測試</h1>
+      <p class="article-lede">
+        健康面板突然顯示「❌ portOwnerLabel is not defined」，看起來像服務卡住。
+        後端 304 tests 全過，health endpoint 回 200，服務其實完全健康。
+        問題是上個 session 做完後端、前端忘了配套——呼叫端有了，函式從來沒寫。
+        沒有 JS 測試框架的 Python 專案，這種缺口要怎麼補守衛？
+      </p>
+
+      <div class="article-body">
+        <h2>根因：「編輯到一半中斷」的典型樣貌</h2>
+        <p>
+          上個 session 做了 port 歸屬偵測的後端升級——health checker 現在會回 port_owner 欄位，
+          值可以是 owned/foreign/free/unknown 四種狀態。後端的 304 tests 全部覆蓋、全綠。
+          前端的 app.js 也更新了呼叫端：
+        </p>
+        <p>
+          app.js:310 呼叫 portOwnerLabel(data.port_owner, data.port_available)。
+          但全 repo grep portOwnerLabel，只有這一行。函式從來沒定義。
+        </p>
+        <p>
+          使用者點「💓 健康狀態」，template literal 求值時碰到未定義函式，拋 ReferenceError，
+          被 try/catch 接住，面板渲染成「❌ portOwnerLabel is not defined」。
+          看起來像 bug，其實後端完全健康。
+          這個情況之所以潛伏那麼久是因為後端有測試、前端沒有——green CI 給了錯誤的安全感。
+        </p>
+
+        <h2>Node vm 的解法：不引入 JS 框架</h2>
+        <p>
+          nomad-hub 是純 Python pytest 環境，沒有 Jest 或其他 JS 測試框架。
+          如果為了一個前端守衛去引入 Jest，會帶來新的 package.json、node_modules、
+          不同的測試命令——整個環境變複雜了。
+        </p>
+        <p>
+          Node 內建的 vm 模組提供一條更輕的路：建立一個 sandbox context，
+          把整支 app.js 作為字串載入進去執行，然後直接呼叫 sandbox 上的函式做斷言。
+          不需要瀏覽器，不需要 DOM 模擬（除了幾個 no-op stub），不需要任何新依賴。
+          整個測試用 subprocess.run 跑一段 Node 腳本，用 pytest 收結果。
+          Node 缺失時 pytest.mark.skipif 讓模組跳過，不影響純 Python 環境的綠燈。
+        </p>
+
+        <h2>為什麼只需要 stub 一個 document</h2>
+        <p>
+          app.js 頂層唯一真正的副作用是檔尾一行：
+          document.addEventListener('DOMContentLoaded', ...)。
+          把 document stub 成帶 no-op addEventListener/querySelectorAll/getElementById 的物件，
+          整支 app.js 就可以乾淨載入進 vm context 而不崩潰。
+        </p>
+        <p>
+          一個細節：vm context 中 function 宣告（function foo() {}）會掛上 sandbox global，
+          但 let/const 宣告不會。所以 sandbox.portOwnerLabel 取得到，
+          但 let myVar = ... 形式的變數取不到。這對這個場景不是問題，
+          但如果日後要測 let/const 定義的函式，需要用不同的方式匯出。
+        </p>
+
+        <h2>RED 證明：測試要先在目標 bug 狀態失敗</h2>
+        <p>
+          好的守衛測試要先驗證自己在 bug 狀態下確實失敗，不然測試可能只是個假陽性的綠燈。
+        </p>
+        <p>
+          驗法：暫時移除函式定義，跑同一個 harness。
+          預期退出碼 1，log 出現「GUARD CAUGHT: portOwnerLabel is not defined」。
+          確認後把函式加回來，測試變綠。這個「先紅後綠」的確認步驟是讓守衛測試可信的前提。
+        </p>
+
+        <h2>靜態路徑是另一個陷阱</h2>
+        <p>
+          測試時需要知道 app.js 的 URL 才能用 curl 確認更新。
+          直覺猜 /static/app.js——錯的。HTML 用相對引用 app.js?v=1.1.0，
+          FastAPI StaticFiles mount 讓它服務於根路徑 /app.js，不是 /static/app.js。
+          確認靜態資源路徑要看 HTML 的 src 屬性，不是猜 mount 結構。
+        </p>
+        <p>
+          每次改 JS 後記得 bump ?v= cache bust 參數，不然瀏覽器可能吃到上一版的快取，
+          看到的不是新的行為。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>後端綠不代表前端沒洞</strong>：後端 304 tests 全過是後端的覆蓋，不是前端的。前端函式沒定義，後端測試不會知道。兩層都要有守衛。</p>
+          <p><strong>Node vm 是不引入框架的前端測試路</strong>：stub 最少的 DOM 接口，載入 JS 到 sandbox，直接呼叫函式做斷言。比引入 Jest 輕很多，融入 pytest 流程，一把 uv run pytest 全跑。</p>
+          <p><strong>function 宣告 vs let/const 在 vm 的行為不同</strong>：function 宣告掛在 sandbox global，let/const 不掛。設計 vm 測試時要知道自己要測的函式用哪種形式宣告。</p>
+          <p><strong>守衛測試要先在 bug 狀態下失敗</strong>：新增守衛測試時，暫時製造 bug（移除函式定義），確認測試確實紅燈，再還原。這是讓測試可信的最基本步驟。</p>
+          <p><strong>靜態路徑看 HTML，不猜 mount 結構</strong>：/static/app.js 和 /app.js 在 FastAPI 下是不同的，取決於 StaticFiles 的 mount path。確認實際路徑才能 curl 到正確的資源。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-04 · nomad-hub · commit a8a85b8 · 304→307 tests · Node vm 前端守衛 · portOwnerLabel 四態覆蓋
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

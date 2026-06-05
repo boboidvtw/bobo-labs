@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>從快問快答到多輪持久對話 — nomad-hub Gemma UI + v0.2.0 發版 · Bobo Labs</title>
+  <meta name="description" content="後端 session CRUD 上週就緒，前端一直缺——這次補上 Gemma 多輪對話 UI，左欄管 session 歷史，右欄繼續對話，無 session 時退回快問快答模式。完工後把 CHANGELOG [Unreleased] 切成 v0.2.0，打下 repo 第一個 git tag。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-04-nomad-hub-gemma-multiturn.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-04</p>
+      <h1 class="article-title">從快問快答到多輪持久對話 — nomad-hub Gemma UI + v0.2.0</h1>
+      <p class="article-lede">
+        Gemma 的後端 session CRUD 在六天前就交付了——list、create、history、PUT、DELETE，
+        chat 帶 session_id 自動寫入歷史全都有。前端一直停在快問快答的單輪模式，
+        等著有人補上左欄 session 側欄和右欄對話的雙欄佈局。
+        這次補完前端，並把這三週累積的功能切成第一個正式版本：v0.2.0。
+      </p>
+
+      <div class="article-body">
+        <h2>雙模式設計：有 session 和沒 session 的行為不同</h2>
+        <p>
+          Gemma 分頁改成兩欄：左欄是 session 側欄，有「➕新對話」按鈕和對話清單，
+          每一筆顯示相對時間徽章，可以刪除；右欄維持原本的訊息流加輸入框。
+        </p>
+        <p>
+          關鍵的設計選擇是雙模式：有 active session 時，對話走持久化路徑——
+          每次送出訊息帶 session_id，user 和 assistant 兩輪都寫入 DB 歷史。
+          沒有 active session（或使用者點「離開對話」回無狀態狀態）時，退回快速問答模式，
+          訊息不落地，頁面刷新後什麼都不剩。
+          這避免了功能混淆：需要持久記憶時用 session，想快速試東西時就不選 session。
+        </p>
+        <p>
+          首則訊息自動命名 session——取前 24 字 PUT 更新 title，讓側欄清單可讀而不是一堆「新對話 #1234」。
+          「清除對話」按鈕改成「離開對話」，因為清除語意是刪資料，但實際上只是回到無 session 狀態。
+          命名語意要準確，不然使用者會以為自己刪掉了歷史。
+        </p>
+
+        <h2>preview harness 的埠衝突：繞而不是修</h2>
+        <p>
+          開發過程中 preview harness 持續報「Port configured is already in use」，
+          試過 8092、8779，用 uv run 或 venv binary，有沒有 --port 都一樣失敗。
+          研判是 harness 預留 config 埠和子程序綁定衝突，或是不注入 PORT env。
+        </p>
+        <p>
+          決定繞，不追根因。因為 nomad-hub 本來就有 launchd 持續跑著的 live 8091 實例，
+          而 StaticFiles 在 FastAPI 下是即時讀磁碟的——改完 HTML/JS 後直接去 8091 curl 或開瀏覽器，
+          不需要重啟服務，新的靜態檔立刻生效。這反而比 preview harness 更接近 production 行為。
+          做 E2E 驗證時加 ?v=bump 的 cache bust 確保瀏覽器不吃舊快取。
+        </p>
+
+        <h2>切 0.2.0：CHANGELOG 積壓三週的功能</h2>
+        <p>
+          CHANGELOG [Unreleased] 從 0.1.0 版（2026-05-30）開始積累，現在已有：
+          Analysis 結構層和語意層、背景 job 系統、語意進度細分、launchd 部署、
+          OpenAPI 文件化、E2E Playwright 套件、gemma sessions CRUD，加上這次的多輪 UI。
+          按 semver 邏輯，新增了多個 feature 但沒有 breaking change，切 MINOR → 0.2.0。
+        </p>
+        <p>
+          版本號有一個常見的漂移問題：app.py 裡硬編了一個版本字串（line 48），
+          pyproject.toml 和 __init__.py 是另外兩個。三個地方分開管理遲早會不同步。
+          這次一併修掉：FastAPI app version 改成 from nomad_hub import __version__，
+          只剩一個 source of truth。循環匯入不會發生，因為 __version__ 在 __init__.py 第 3 行就定義，
+          早於任何 api 匯入。
+        </p>
+        <p>
+          切版本後必須重生 docs/openapi.json，否則 test_artifact_in_sync 會因 info.version 漂移而失敗。
+          這是版本切換的標準收尾動作，不做就會 CI 紅燈。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>雙模式明確勝過模式混用</strong>：持久化和快問快答是不同的使用場景，讓使用者選擇而不是猜測目前是哪種模式，行為要可預期。無 session 時完全不落地，有 session 時完全持久，沒有中間狀態。</p>
+          <p><strong>命名語意要對齊行為</strong>：「清除對話」暗示刪資料；「離開對話」暗示切換狀態。功能一樣，但使用者的預期完全不同。用錯詞會讓人不敢點。</p>
+          <p><strong>live 實例比 preview harness 更有用</strong>：StaticFiles 即時讀磁碟，改完直接看 live 8091 反而驗得比 preview 更接近 production。不是所有開發工具都比直接用系統省時間。</p>
+          <p><strong>版本號只能有一個 source of truth</strong>：三個地方各自管版本是技術債，最慢在切版本時會爆。改成引用 __version__ 是 0 成本的一次性修復，不要等。</p>
+          <p><strong>切版本後記得更新 artifact</strong>：openapi.json 裡有 info.version，切版本就要重生。把這個步驟加進切版本的收尾 checklist，讓測試守護機制才有意義。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-04 · nomad-hub v0.2.0 · 2 commit daf51ba, 33f0e72 · tag v0.2.0（首個 git tag）· 290 unit + 4 e2e
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
