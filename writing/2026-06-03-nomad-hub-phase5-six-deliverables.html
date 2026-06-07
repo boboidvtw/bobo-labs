@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>清單掃空：六項交付的 nomad-hub Phase 5 收尾 · Bobo Labs</title>
+  <meta name="description" content="把 reference_next_steps 積累的六個「下一步」在一個 session 全部清空：launchd 自啟、OpenAPI 文件化、E2E Playwright、語意 job 進度細分、per-endpoint summary、gemma sessions CRUD。290 tests，4 e2e，93% coverage。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-03-nomad-hub-phase5-six-deliverables.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-03</p>
+      <h1 class="article-title">清單掃空：六項交付的 nomad-hub Phase 5 收尾</h1>
+      <p class="article-lede">
+        reference_next_steps 上積著六個「之後再做」：launchd 自啟、OpenAPI、E2E、語意進度、
+        per-endpoint summary、gemma sessions CRUD。通常這種清單會拖——
+        每一項看起來都是一個獨立的小 project，不知道從哪個開始。
+        這次連續五輪「問方向 → 實作 → 雙驗證 → commit → 更新記憶」把六項全部清掉。
+        測試從 256 長到 290，覆蓋率 93%。
+      </p>
+
+      <div class="article-body">
+        <h2>launchd 自啟：不含機密的 plist template</h2>
+        <p>
+          讓 nomad-hub 開機自動服務於 127.0.0.1:8091、崩潰自動重啟。
+          關鍵設計原則是佔位符版 plist：所有路徑（uv 絕對路徑、工作目錄、log 目錄）
+          用 __UV_BIN__/__WORKDIR__/__LOG_DIR__ 佔位，安裝腳本 sed 套入。
+          plist 本身不含任何機密，可以安全 commit 進 repo。
+        </p>
+        <p>
+          幾個防坑設計：--no-reload 避免 launchd 下的 reloader subprocess 問題、
+          uv 用絕對路徑呼叫（launchd 的 PATH 極簡，不能靠 shell lookup）、
+          log 同時接 stdout 和 stderr（uvicorn 寫 stderr，看到 0 bytes stdout 不代表沒跑）、
+          KeepAlive 加 ThrottleInterval=10（崩潰重啟有緩衝，不會瘋狂循環）。
+          驗收方式：殺掉 pid，確認 ~10 秒後被自動重生到新 pid。
+        </p>
+
+        <h2>OpenAPI 文件化：artifact 不過期測試</h2>
+        <p>
+          FastAPI 本就自動生成 /openapi.json，任務轉為「讓 openapi.json 成為一級交付物」——
+          提供 CLI 匯出指令，並把 docs/openapi.json 加進 repo 做版本追蹤。
+        </p>
+        <p>
+          artifact 過期問題是這裡最值得記的設計：如果 schema 改了但 committed openapi.json 沒更新，
+          怎麼被測試抓到？一開始想用文字比對，但 JSON 序列化有 whitespace/encoding 差異，
+          容易出現格式假失敗。改用 dict 比對：json.load(committed_file) == app.openapi()。
+          只抓真實 schema drift，對格式差異完全免疫。收工流程現在有一條規則：
+          改路由後必跑 nomad-hub openapi -o docs/openapi.json，否則 staleness 測試會擋。
+        </p>
+
+        <h2>E2E Playwright：不動 registry 的隔離測試</h2>
+        <p>
+          E2E 測試的 conftest.py 用 session fixture 自己起 nomad-hub 子進程，
+          選一個閒置 port，輪詢 /health 等服務就緒，整個 E2E suite 用唯讀流程——
+          不動 registry，不寫任何狀態。
+        </p>
+        <p>
+          marker 隔離是另一個實用做法：pytest marker 標 e2e，addopts -m 'not e2e' 讓一般 pytest 預設排除，
+          保持 CI 快速。要跑 E2E 時明確傳 -m e2e，並加 --no-cov（不能用 -p no:cov，
+          因為 addopts 裡有 --cov，衝突只能用 --no-cov 覆蓋）。
+        </p>
+
+        <h2>語意 job 進度細分：關注點分離</h2>
+        <p>
+          原本語意分析的 job 狀態只有 running/completed/failed，前端不知道進行到哪裡。
+          改成 6 階段：analyzing → prompting → summary → layers → tour → applying。
+        </p>
+        <p>
+          架構選擇有意思：pipeline 的階段知識（每個階段叫什麼、順序怎麼排）放在 runner 裡，
+          job manager 只做通用的進度儲存——它接受 verbatim 的字串，不認識「semantic stages」這個概念。
+          這讓 job manager 可以被其他類型的 job 複用，而不需要知道任何業務邏輯。
+          晚到的進度回報不會復活或污染已終結的 job（只在 running 狀態才更新）。
+        </p>
+
+        <h2>SQLite CURRENT_TIMESTAMP 的秒級陷阱</h2>
+        <p>
+          gemma sessions CRUD 的 list_sessions 要依「最近更新」排序，
+          用 ORDER BY updated_at DESC。測試通過，但發現同秒建立的兩個 session 排序不穩定。
+        </p>
+        <p>
+          根因：SQLite CURRENT_TIMESTAMP 是秒級解析度。同一秒內的兩筆記錄 updated_at 完全相同，
+          ORDER BY 結果不可預測。治本：改用 strftime('%Y-%m-%d %H:%M:%f','now')，
+          取得毫秒精度的時間戳。DEFAULT 值語法要用括號：DEFAULT (strftime(...))，
+          不然 SQLite 會報 syntax error。
+        </p>
+        <p>
+          同時發現一個 lazy init 的好處：GemmaSessionStore 原本在 create_app() 時就建 DB 連線和表，
+          導致每個測試中呼叫 create_app() 預設路徑都會在真實 data/ 建立檔案，污染測試目錄。
+          改成 lazy init——建構子不碰磁碟，第一次查詢才 ensure_initialized()——讓 chat-only 的測試
+          不觸碰 session 路徑，DB 檔案從來不出現在測試環境。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>plist template 用佔位符，路徑不硬編</strong>：路徑因機器而異，hardcode 進 plist 就不能 commit 進 repo，也不能給別人用。佔位符 + 安裝腳本的組合讓 launchd 配置可以被版本管理。</p>
+          <p><strong>artifact 同步用 dict 比對，不用文字比對</strong>：JSON 格式差異（空格、key 順序）會讓文字比對誤失敗。dict 比對只測真實的 schema 差異，是比較乾淨的 staleness 守護。</p>
+          <p><strong>SQLite 排序要考慮時間精度</strong>：CURRENT_TIMESTAMP 是秒級的，同秒內排序不穩定。需要可靠排序時改用 strftime('%f') 取毫秒，或用應用層時間戳。</p>
+          <p><strong>共用資源用 lazy init，不在 create_app 時初始化</strong>：eager init 讓所有 create_app 呼叫者都污染真實資源。lazy init 只在真正需要時才碰磁碟，測試隔離乾淨。</p>
+          <p><strong>連續五輪節奏讓清單不堆積</strong>：問方向 → 實作 → 雙驗證 → commit → 更新記憶，每輪原子完整，不留「完成 80% 的半成品」。清單積壓通常是因為每輪結束時沒有真正收尾。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-03 · nomad-hub Phase 5 · 6 commit · 256→290 tests · 93% coverage · 4 e2e
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

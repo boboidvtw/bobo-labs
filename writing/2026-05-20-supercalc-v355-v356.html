@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新增 25 條公式，撞見兩個一直都在的 engine bug · Bobo Labs</title>
+  <meta name="description" content="加入普朗克公式 6.626e-34*f 時，計算結果是錯的。往 engine 追，找到兩個 latent bug：科學記號的 e 被 regex 吃掉、toFixed(12) 把極小數直接歸零。v3.5.5 修完 bug、v3.5.6 再做 12 個邊界案例的 audit。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-20-supercalc-v355-v356.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-20</p>
+      <h1 class="article-title">新增 25 條公式，撞見兩個一直都在的 engine bug</h1>
+      <p class="article-lede">
+        原本是個低風險任務：加 20 條公式、新增健康分類、把 SEO 內容增補一下。
+        結果加入普朗克公式 6.626e-34*f 時，顯示前次計算殘留的 0.5。
+        往 engine 追，找到兩個從 v1.x 就有的 latent bug，
+        只是以前沒有公式用到這個字符組合所以從來沒人觸發。
+      </p>
+
+      <div class="article-body">
+        <h2>Bug 1：regex lookbehind 沒排除數字，把科學記號的 e 吃掉</h2>
+        <p>
+          計算引擎在 evaluate 之前，把表達式裡的獨立 e 替換成 Math.E（約 2.718）。
+          原本的 regex 是 (?&lt;![a-zA-Z])e(?![a-zA-Z0-9])，lookbehind 的意思是「e 左邊不是字母」。
+        </p>
+        <p>
+          問題在 lookbehind 只排除字母，沒排除數字。對 6.626e-34：
+          e 左邊是 6（數字，lookbehind 通過）、e 右邊是 -（非字母數字，lookahead 通過）—— 匹配。
+          結果 6.626e-34 被替換成 6.626Math.E-34，eval 直接 throw。
+        </p>
+        <p>
+          這個 bug 的影響面比想像中大。所有含科學記號的物理常數都中標：
+          普朗克常數 6.626e-34、萬有引力常數 6.674e-11、庫倫常數 8.99e9，
+          加上使用者自建公式裡的 1.5e3 這類輸入。
+          修法：把 lookbehind 改為 (?&lt;![a-zA-Z0-9])，加入數字排除。
+          改完之後 e^2=7.389（Math.E 仍正確）、exp(、sin(e) 等表達式全部正常。
+        </p>
+
+        <h2>Bug 2：toFixed(12) 對極小數字 underflow 為零</h2>
+        <p>
+          修完第一個 bug 之後，普朗克 6.626e-34*f 在 f=5e14 時應該得到 3.313e-19，
+          但顯示 0。再往下追。
+        </p>
+        <p>
+          原本 engine 的最後一步：parseFloat(result.toFixed(12))。
+          問題是 (3.313e-19).toFixed(12) 回傳字串 "0.000000000000"——前 12 位全是零——
+          parseFloat 後就是 0。這是 JavaScript toFixed 的 underflow 行為：
+          小數點後 12 位不夠放下極小數，就全部歸零，不報錯。
+        </p>
+        <p>
+          修法：在 toFixed 之前加一個判斷：如果結果的絕對值小於 1e-6 或大於等於 1e15，
+          改用 toPrecision(10) 保留科學記號格式，直接回傳字串。
+          對一般範圍的數字還是走 toFixed(12) 規整顯示。
+          修完之後 3.313e-19 正確顯示，萬有引力算出 1.982e+20 也正確。
+        </p>
+
+        <h2>20 條新公式，這次加了「健康」分類</h2>
+        <p>
+          兩個 engine bug 修完才進行公式新增，是對的順序——先確認 engine 健全，
+          再加表達式，省得被新舊問題混在一起。
+        </p>
+        <p>
+          這輪加入的 20 條分布在五個領域：數學 7 條（海倫公式、扇形面積弧長、等差等比和、向量長度內積）、
+          金融 2 條（實質年利率 EAR、損益平衡點 BEP）、工程 2 條（LC 諧振頻率、RC 截止頻率）、
+          物理 5 條（向心加速度、簡諧週期、彈簧位能、普朗克 E=hf、動摩擦力），
+          以及全新的健康分類 4 條（BMI、BMR 男、BMR 女、Karvonen 目標心率）。
+          公式庫從 63 條增到 83 條，健康是第 6 個分類。
+        </p>
+        <p>
+          驗證重點：普朗克 f=5e14 → 3.313e-19 J（修 bug 後第一個正確的測試）、
+          BMI(70, 170) → 24.22（體重公斤/身高公尺²）、
+          BMR 男(70, 170, 30) → 1617.5 kcal/day（Mifflin-St Jeor 公式）。
+        </p>
+
+        <h2>v3.5.6：12 個邊界案例的 engine audit</h2>
+        <p>
+          v3.5.5 修完兩個 latent bug 之後，接下來做 engine audit——確認修完之後沒有引入新問題，
+          也確認還有沒有其他邊界陷阱。
+        </p>
+        <p>
+          12 個案例覆蓋：大整數（170! = 7.257e+306、171! → Error、nCr(170,85) = 9.144e+49）、
+          浮點誤差（0.1+0.2 = 0.3，toFixed 自動規整）、浮點極限（sin(180°) = 1.22e-16，
+          這是 floating point epsilon 量級的殘渣，design intent、不修）、
+          除法零（1/0 → Error）、log/sqrt 邊界（log(0)、sqrt(-1) → Error）、
+          factorial 非整數（2.5! → Error）、mod 零（5 mod 0 → Error）。
+          12 個全部行為正確，engine 健全，沒有新增需要修的項目。
+        </p>
+        <p>
+          唯一留下的 Known issue：nCr(200, 100) → Error，因為 factorial(200) 就是 Infinity，
+          Infinity/Infinity = NaN。改用逐項累乘的算法可以算到 n&gt;1000，但實際使用率低，暫不動。
+        </p>
+
+        <h2>v3.5.6 再加 5 條健康公式</h2>
+        <p>
+          audit 之後趁熱繼續擴充健康分類，從 4 條到 9 條：
+          TDEE 每日總消耗男女各一條（嵌入 BMR 公式，使用者填 4 個參數直接得結果）、
+          體脂率 Deurenberg 男女各一條（同樣嵌入 BMI）、每日水分需求（體重 kg × 30 ml）。
+        </p>
+        <p>
+          設計上選擇把 BMR 和 BMI 展開嵌入，而非要求使用者先算出 BMR 再代入 TDEE。
+          公式庫的設計不支援 chain 計算，嵌入式雖然表達式略長，但「一次填完即得」的體驗比較好。
+          驗證：TDEE 男(70,170,30,1.55) = 2507.125，等於 BMR 1617.5 × 1.55，精確。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>加新資料也可能觸發 latent bug</strong>：普朗克是第一個含「數字前綴科學記號+e 後接 -」的內建公式。這種組合從來沒人試過，bug 就這樣活到今天。任何新的表達式路徑都有可能踩到舊問題。</p>
+          <p><strong>toFixed 的 underflow 不會報錯</strong>：(1e-20).toFixed(12) 靜靜地回傳 "0.000000000000"。用 toFixed 做顯示整理的地方都要想到極端值——threshold 判斷加 toPrecision 是標準解法。</p>
+          <p><strong>regex lookbehind 的邊界字符集要想完整</strong>：「左邊不是 identifier 字符」≠「左邊不是字母」，要包含數字和底線。寫 lookbehind 時把「我要排除的 set」完整列出來再寫。</p>
+          <p><strong>Audit before adding</strong>：v3.5.6 先做 12 case audit 確認 engine 健全，再加 5 條複雜公式。反過來做的話，新公式裡的 edge case 和既有 bug 混在一起更難定位。</p>
+          <p><strong>負面結果也值得記錄</strong>：「audit 沒發現新問題」和「沒做 audit」在 changelog 裡是完全不同的訊息。前者是主動確認健全，後者是不知道。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-20 · ∑ Calc v3.5.5+v3.5.6 · 公式庫 63→88 條 · 2 latent engine bug 修復 · commits b7944d8, e31c317
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

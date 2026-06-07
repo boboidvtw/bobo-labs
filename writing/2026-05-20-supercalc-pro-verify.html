@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>∑ Calc Pro 7 個賣點，一天全部親自驗收 · Bobo Labs</title>
+  <meta name="description" content="切線、積分、斜率場、交點求解、統計、3D 表面繪圖、SVG 匯出——用合法 trial 路徑把七個 Pro 功能逐一跑到數學精確。順手拆解了兩個對 Object.freeze 和 localStorage 的誤解。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-20-supercalc-pro-verify.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-20</p>
+      <h1 class="article-title">∑ Calc Pro 7 個賣點，一天全部親自驗收</h1>
+      <p class="article-lede">
+        README 主打七個 Pro 功能，上一段時間一直有兩個掛著「待 Pro 功能驗證」的標記：
+        統計（Phase 7）和 3D 表面繪圖（Phase 8）。理由是 ProManager.isProActive 被 Object.freeze 凍結、
+        無法 mock。這個說法是錯的。找到正確路徑之後，一個下午把七個功能從頭跑到數學精確。
+      </p>
+
+      <div class="article-body">
+        <h2>兩個被當作阻塞的誤解</h2>
+        <p>
+          第一個誤解：Object.freeze(ProManager) 讓 isProActive() 無法繞過。
+          事實是 freeze 只凍結物件本身——不能新增或覆寫 ProManager.isProActive 這個 property，
+          但不凍結函式的內部邏輯。isProActive() 每次呼叫都讀 localStorage，
+          只要改 localStorage 就改行為，根本不需要 mock 函式本身。
+        </p>
+        <p>
+          第二個誤解：在 localhost 啟動 trial 會消耗使用者的七天試用名額。
+          localStorage 以 origin 為邊界完全隔離，localhost:8765 和 boboidvtw.github.io 是兩個不同的 origin。
+          在 localhost 做任何事都不會影響 production 環境的 trial 狀態。
+          ProManager.startTrial() 是設計上公開的 Pro 入口，用它驗證比暴力 defineProperty 更正確。
+        </p>
+
+        <h2>統計 Phase 7：四種圖、一個邊界案例</h2>
+        <p>
+          Histogram：輸入 50 個鐘形分布數值，n=50、mean=5.518、σ=1.749、min=1.20、max=9.50，
+          13 個 bin 加起來 Σ=50，視覺上正確的鐘形。
+        </p>
+        <p>
+          Scatter + regression：11 點 y≈2x+1 加一些噪聲，11 點正確解析，迴歸線渲染出來。
+          Boxplot：13 個值含三個 outlier（15、18、20），箱型圖結構正確。
+          邊界案例：空字串送入 draw，不 throw、顯示「輸入資料」提示文字，空資料處理乾淨。
+        </p>
+
+        <h2>3D Phase 8：五種表達式、三種渲染模式</h2>
+        <p>
+          sin(x)*cos(y) 表面：32×32 resolution，彩虹色高度 mapping，HUD 顯示旋轉角度和縮放比例。
+          x²-y² 鞍面：重新計算後 hash 完全不同（zRange [-9, 9]），確認不是前一次的快取殘留。
+        </p>
+        <p>
+          同一個表達式切換 wireframe（只看線骨架）和 contour（色階分層），視覺明顯區分。
+          視角旋轉 rotY+=0.5、rotX+=0.3，canvas 像素 hash 改變，確認 canvas 真的更新了。
+          wheel zoom 把 deltaY=-100 送進去，zoom 從 1.0 到 1.1。
+          錯誤處理：輸入 @@invalid#$%，顯示「3D 表達式無法解析」，
+          state 保留前一個合法表達式。全程 console 零 error。
+        </p>
+
+        <h2>Phase 5：切線、積分、斜率場，數學精確到小數三位</h2>
+        <p>
+          切線：sin(x) 在 x=1 的切線斜率標籤顯示 f'(1.00)=0.540。
+          cos(1) ≈ 0.5403，精確到三位。在 x=2 再加一條，toggle off x=1 那條，只剩 x=2，
+          切線管理邏輯正確。
+        </p>
+        <p>
+          積分：sin(x) 上的 [1, 3] 積分，顯示 ∫=1.530。
+          閉式解是 -cos(3)+cos(1) ≈ 1.530，精確到三位。積分區域著色可見。
+        </p>
+        <p>
+          斜率場：選 sin(x) 後全平面出現紫色小箭頭，方向反映 cos(x)（sin 的導數）。
+          再點一次 toggle off，斜率場消失。這三種工具同時顯示在同一個 canvas 上，互不干擾。
+        </p>
+
+        <h2>Phase 6：sin(x) ∩ cos(x) 在 [-10, 10] 內的六個交點</h2>
+        <p>
+          理論上 sin(x) 和 cos(x) 在 [-10, 10] 的交點是 x = π/4 + nπ，
+          n ∈ {-3, -2, -1, 0, 1, 2}，共六個。
+          交點求解找到 6 個，x 值與 (n+0.25)π 對齊到 ≥ 1e-8，
+          y 值全是 ±0.7071068（√2/2，sin(π/4) 的精確值）。
+          六個橘色 circle 標記出現在正確位置，座標標籤上下交錯排列。
+        </p>
+
+        <h2>SVG 匯出：24757 字節合法 XML</h2>
+        <p>
+          攔截 Blob 取得 SVG 字串，大小 24757 字節。
+          DOMParser 解析無 parserError，命名空間 http://www.w3.org/2000/svg 正確，
+          尺寸 width=720 height=420。
+          內含：2 個 &lt;path&gt;（sin + cos 曲線）、30 個 &lt;text&gt;（軸刻度+函數名+交點座標）、
+          24 條 &lt;line&gt;（軸線+grid）、6 個 &lt;circle&gt;（Phase 6 的交點標記）。
+          檔名格式 graph_2026-05-20-04-40-36.svg。
+        </p>
+
+        <h2>為什麼 canvas 像素 hash 比截圖差異更有效率</h2>
+        <p>
+          截圖 diff 要存兩張圖、比對像素、有時因渲染時機不同產生假陰性。
+          canvas 32×32 sample + hash 的做法：取畫布中心 32×32 pixels，
+          把像素值算成 hash，比較兩次結果。一行程式碼就能確認「這次 render 和上次不同」。
+          不需要存圖，不需要視覺比對，不會被 timing 問題干擾。
+          驗證「3D 旋轉後 canvas 確實更新」就是靠這個確認的。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>Object.freeze 不等於無法測試</strong>：freeze 只封物件表面，函式內部的 localStorage 存取還是動態的。遇到「frozen 無法 mock」就先看函式內部讀什麼來源。</p>
+          <p><strong>localhost 和 production 的 localStorage 完全隔離</strong>：不同 origin，不同 storage。在本地做任何 trial 操作都不會污染正式環境。</p>
+          <p><strong>數學正確性是 Pro 功能最重要的驗證項目</strong>：切線斜率、積分值、交點座標都要對照閉式解驗過。「有畫出東西」和「畫對了」是兩件事。</p>
+          <p><strong>canvas pixel hash 是低成本的視覺回歸驗證</strong>：比截圖 diff 快、比純「有執行」更嚴格，適合確認「兩次 render 真的不同」。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-20 · ∑ Calc v3.5.4 · Pro Phase 5/6/7/8 + SVG 全 7 功能驗收 · 零 code change
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
