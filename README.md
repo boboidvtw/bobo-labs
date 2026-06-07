@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-07** — 由 /boboweb 人工核可解套 3 篇 QA 卡關草稿並補齊 sitemap：
+  `2026-05-20-supercalc-pro-verify.html`（∑ Calc Pro 7 個賣點端到端驗收）、
+  `2026-05-20-supercalc-v355-v356.html`（科學記號 e 與 toFixed underflow 兩個 latent engine bug）、
+  `2026-06-03-nomad-hub-phase5-six-deliverables.html`（Phase 5 六項交付收尾）。
+  三篇皆遭 autopublish QA gate 誤判卡死（token/secret 關鍵字命中、一處錯字），確認無紅線後人工修用詞發布。順帶補齊 sitemap 落差 46→53 URL（autopublish 發文流程未同步 sitemap，含 6/4 漏的 4 篇），writing 36 篇全涵蓋。
+  Unblocked 3 QA-stuck drafts via /boboweb (keyword false-positives + a typo; fixed wording after confirming no red-line content) and backfilled sitemap 46→53 URLs covering all 36 writing posts on 2026-06-07.
+
 - **2026-06-06** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-04-nomad-hub-gemma-multiturn.html`（Gemma 多輪持久對話 UI + v0.2.0 切版：雙模式設計、首則自動命名 session、__version__ 單一來源）、
   `2026-06-04-nomad-hub-frontend-test-vm.html`（Node vm sandbox 為純 Python 專案加前端守衛測試：portOwnerLabel 四態覆蓋、pytest 整合、先紅後綠驗證）。
