@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>15 篇公式頁的 SEO 地基：4 個孤兒頁 + 麵包屑一次解決 · Bobo Labs</title>
+  <meta name="description" content="從一個 tool-call JSON 崩潰查出 \. 是非法 escape，到重掃找出 4 個孤兒頁，再用冪等 Python 腳本一次補齊 BreadcrumbList 和內部連結矩陣。15 篇全部閉合，沒有 30 次手動 Edit。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-07-formula-seo-breadcrumb.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-07</p>
+      <h1 class="article-title">15 篇公式頁的 SEO 地基：4 個孤兒頁 + 麵包屑一次解決</h1>
+      <p class="article-lede">
+        接上一個 session 掃描中斷的任務。重掃才知道：前次說「0 互連」是 grep pattern 的 bug，
+        不是頁面的現實。真實狀況是 4 個孤兒頁 + 稀疏的互連網絡 + 缺少 BreadcrumbList schema。
+        一支冪等 Python 腳本，15 篇全部補齊，commit +123 行、0 刪除。
+      </p>
+
+      <div class="article-body">
+        <h2>tool-call 崩潰不是斷線，是 \. 在 JSON 裡是非法 escape</h2>
+        <p>
+          上個 session 在 grep 掃描 15 篇公式頁的互連時崩潰，錯誤訊息是
+          「The model's tool call could not be parsed (retry also failed)」。
+          排除斷線和 quota 之後，根因落在 grep pattern：
+          `href="[a-z0-9-]+\.html"` 裡的 `\.` 是反斜線加點——
+          JSON 只認 `\\`、`\"`、`\/`、`\n`、`\t` 這些 escape，
+          `\.` 不在清單裡，序列化時直接報 parse error。
+        </p>
+        <p>
+          正確寫法是 `[.]html`——在字元類裡，點號是字面量，不需要 escape，
+          也就沒有序列化問題。這是除了 emoji 之外讓 tool-call 崩潰的第三種觸發源，
+          只要在 grep pattern 裡混入 `\.`，就會重現。
+        </p>
+
+        <h2>重掃的真相：0 互連是假象，4 個孤兒頁是真問題</h2>
+        <p>
+          用安全 pattern 重掃 15 篇，發現上次的「0 互連」結論完全是誤判——
+          當時的 pattern 沒有涵蓋 `/formulas/` 絕對路徑，
+          讓已存在的連結全部漏計。真實狀況是：15 篇已有稀疏互連，
+          但有 4 個孤兒頁（連出 0）：bmi、ohms-law、ph-value、wave-speed。
+        </p>
+        <p>
+          這個教訓和 6/4 的 sitemap 漏算同源：「宣告完整前先嚴格 count」。
+          兩次都是因為工具本身有 bug（pattern 或計算邏輯），
+          讓快照和現實產生落差，然後照錯誤的快照去做事。
+        </p>
+
+        <h2>內部連結矩陣：誠實串接，不硬造主題關聯</h2>
+        <p>
+          15 篇按主題分成三個群組，加一條跨科指標鏈：
+          金融三角（compound-interest、rule-of-72、mortgage-payment）；
+          物理網狀（emc2、kinetic-energy、newtons-second-law、universal-gravitation、wave-speed）；
+          數學三角（pythagorean-theorem、distance-formula、quadratic-function）；
+          跨科指標鏈（arithmetic-mean ↔ bmi ↔ ph-value ↔ ohms-law）。
+        </p>
+        <p>
+          4 個孤兒頁沒有同科鄰居，用「同為簡單線性或指標公式」的理由串接——
+          這是誠實的關聯，不是硬拉。造假的 SEO 主題連結短期或許有用，
+          長期是技術債，要清也費事。
+        </p>
+        <p>
+          矩陣設計完後做數學閉合驗算：每頁連出 ≥2、被連 ≥2。
+          初版 arithmetic-mean 和 ohms-law 各只有 1 個 inbound，
+          補了 compound-interest→arithmetic-mean 和 wave-speed→ohms-law 兩條才閉合。
+          這種計數驗算，在頁面數不多時用紙筆列表就夠，省去工具的噪音。
+        </p>
+
+        <h2>冪等 Python 腳本代替 30 次手動 Edit</h2>
+        <p>
+          15 篇各補互連 + 各注入 BreadcrumbList，如果手動 Edit 是 30 次操作起跳，
+          出錯機率也等比上升。寫一支 `/tmp/bobo_seo_links.py`，不可變風格：
+          逐檔讀入 → 轉換 → 寫出，轉換函式有雙重冪等守衛：
+          P0 只補 OUTBOUND 矩陣中「href 尚不存在」的連結；
+          P1 只在「BreadcrumbList 字串不存在」時才注入。
+          跑兩次結果相同，不需要擔心重複執行。
+        </p>
+        <p>
+          結果：15 篇 BreadcrumbList 全注入、11 篇補了真連結、
+          4 篇本已完整（腳本輸出「連結無新增」）。
+          commit 1c272bf：15 檔 +123 行、0 刪除。
+        </p>
+
+        <h2>BreadcrumbList：讓搜尋引擎讀懂頁面層級</h2>
+        <p>
+          BreadcrumbList JSON-LD 描述的是「首頁 → 公式庫 → 該公式」三層結構，
+          Google 解析後可能在 SERP 顯示麵包屑路徑，讓使用者在點進來之前就知道頁面的位置。
+          這份 schema 插在既有 TechArticle ld+json 之後、
+          Cloudflare Analytics script 之前，與 TechArticle 並存，不是替代。
+        </p>
+        <p>
+          對症之前 AdSense 被拒與 Google Search Console「探索但未索引」的問題：
+          那兩個反映的是內容品質和索引信號不足。
+          BreadcrumbList 改善搜尋引擎對層級的理解；
+          內部連結讓 link equity 在 15 篇間流動，提升 topical authority 判讀。
+          沒有辦法保證立即提升排名，但這兩項是結構性的地基，
+          缺了它們後面的 GSC 提交和 sitemap 優化都會打折扣。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>`\.` 在 JSON 裡是非法 escape</strong>：grep pattern 放進 tool-call 時，反斜線加點會讓序列化 parse 失敗。安全替代方案是 `[.]`——在字元類裡點號是字面量，不需要 escape。</p>
+          <p><strong>宣告「0 互連」前先確認 pattern 對</strong>：兩次失誤（互連漏計、sitemap 漏算）都源於工具本身有缺陷，讓人誤信了錯誤的 snapshot。count 要嚴格，不能省。</p>
+          <p><strong>冪等守衛是批次腳本的必要條件</strong>：「只補不存在的東西」讓腳本可以安全重跑，不需要在每次執行前手動確認狀態。</p>
+          <p><strong>誠實的主題關聯優於硬造</strong>：4 個孤兒頁用「同為指標公式」串接，是真實關聯，不是 SEO 關鍵字塞入。虛假的主題連結是技術債，清理成本遠高於不做。</p>
+          <p><strong>數學閉合驗算不需要工具</strong>：每頁 inbound/outbound 計數用列表手算即可，省去自動化的複雜性，這個規模不需要它。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-07 · bobo-labs formulas · commit 1c272bf · 15 篇 +123 行 · BreadcrumbList 全注入
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>把防呆放在行動點 — stop_flag cool-down 從治標到治本 · Bobo Labs</title>
+  <meta name="description" content="在 menubar 的 _decide_catch_up 裡加了 cool-down，但 14:30 streamlit 還是 15 秒後復活。原因不是 cool-down 壞掉——是另一個未知 caller 繞過了它。防呆的位置決定能擋多少 caller；把它移到 start_bot.sh 才是兜底。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-05-stock-grid-bot-race-fix.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-05</p>
+      <h1 class="article-title">把防呆放在行動點 — stop_flag cool-down 從治標到治本</h1>
+      <p class="article-lede">
+        6/4 14:30 停止 Streamlit 後 24 秒，它又復活了。前天才在 menubar 的
+        <code>_decide_catch_up</code> 加了 stop_flag cool-down——那個 fix 有沒有生效？
+        有，但只擋了 menubar 自己。還有另一個未知 caller 繞過了它。
+        防呆的位置決定能擋多少 caller；把它移到所有啟動路徑的收斂點，才叫兜底。
+      </p>
+
+      <div class="article-body">
+        <h2>事後乾跑機制引發的 race</h2>
+        <p>
+          事件鏈來自 6/3 補的「事後乾跑」機制：menubar 的 KeepAlive=true 讓它在任何退出後自動被 launchd 重拉，
+          重拉時 <code>__init__</code> 呼叫 <code>_maybe_catch_up_start()</code>，
+          條件成立就啟動 Streamlit。
+        </p>
+        <p>
+          6/4 14:30:07 stop_bot.sh 關掉了 Streamlit。14:30:30，menubar 被 KeepAlive 重拉，
+          <code>__init__</code> 跑一遍，<code>_decide_catch_up</code> 檢查時間——
+          此時 <code>datetime.now()</code> 可能是 14:29:xx（系統時鐘抖動 / NTP 微秒延遲），
+          通過了 <code>now.time() &lt; dtime(14, 30)</code> 的守衛，補跑了 Streamlit。
+        </p>
+        <p>
+          初版 fix（commit ff9294e）：在 <code>_decide_catch_up</code> 加入 stop_flag 年齡檢查，
+          stop_bot.sh 停止後寫入 <code>logs/stop_flag.timestamp</code>，
+          300 秒 cool-down 內 menubar 的補跑邏輯會被擋下。
+        </p>
+
+        <h2>6/5 驗收：fix 生效，但 Streamlit 還是 15 秒後復活</h2>
+        <p>
+          開工第一件事：<code>ps -o lstart= -p $(pgrep -f "streamlit run main.py")</code>。
+          輸出顯示 Streamlit 啟動時間是 <code>Fri Jun 5 14:30:22 2026</code>——14:30 的那個，跨日活到今天。
+        </p>
+        <p>
+          <code>bot_20260605.log</code> 完整事件鏈：14:30:07 stop_bot.sh 寫入 stop_flag，
+          14:30:22 有一行「🚀 啟動中」。stop_flag 確實寫進去了（fix 這部分有效），
+          但 15 秒後還是有人啟動了 Streamlit。
+        </p>
+        <p>
+          六層排查：macOS 重開機？否（連續 7 天 uptime）。menubar init 重跑？否（PID 31202 從 10:38 活著，
+          <code>lstart</code> 驗證）。menubar timer/button？否（<code>_refresh</code> 只刷 title）。
+          launchd start.plist 14:30 觸發？否（<code>launchctl print</code> runs=7，對得上 7 次 08:00）。
+          sleep/wake 事件？否。Amy 手動？否。
+        </p>
+        <p>
+          擴大 <code>log show</code> 視窗找到真相：14:30:21 出現一個 <code>python3.14</code> process，
+          接著 <code>launchctl list</code>，接著 <code>bash</code> 執行 start_bot.sh。
+          是某個 python3.14（Homebrew Python 3.14，不是 menubar 的 Python 3.9）呼叫了 start_bot.sh。
+          身份未知，但特徵很明顯：會先跑 <code>launchctl list</code> 確認 service 狀態再決定啟動，
+          是自動化框架的行為模式。
+        </p>
+
+        <h2>根本洞察：防呆位置決定能擋多少 caller</h2>
+        <p>
+          ff9294e 的 cool-down 寫在 menubar 的 <code>_decide_catch_up</code> 裡，只能擋 menubar 自己。
+          對其他 caller 完全無感。
+        </p>
+        <p>
+          <code>start_bot.sh</code> 是所有重啟路徑的共同收斂點——menubar、launchd 排程、手動執行、
+          未知 caller，最終都要呼叫這個 shell script。把 cool-down 內嵌到這裡，
+          等於給所有 caller 加了一道共同的兜底防線。
+        </p>
+        <p>
+          修法（commit 74ead03）：在 start_bot.sh 開頭讀取 stop_flag，計算 flag age，
+          300 秒內直接 <code>exit 0</code> 並留下 audit trail：
+          「⛔ stop_flag 在 Xs 前剛主動關（&lt; 300s cool-down）、拒絕啟動」。
+          過了 cool-down 或 flag 不存在，才繼續後面的啟動邏輯，並 <code>rm -f "$STOP_FLAG"</code>。
+          flag 損壞（非數字）也不 crash，視同無 flag。
+        </p>
+        <p>
+          <code>STOCKGRIDBOT_DRY_RUN</code> 環境變數讓測試不實際啟動 Streamlit；
+          <code>BOT_DIR</code> 可覆蓋讓測試隔離路徑。5 條 subprocess 測試（30s flag / 400s flag /
+          無 flag / 邊界 300s / 損壞 flag）全 PASS，原有 41 條零改動通過，共 46/46。
+        </p>
+
+        <h2>defense in depth：兩層不是重複，是縱深</h2>
+        <p>
+          ff9294e 的 menubar cool-down 沒有移除，它是第一道攔截——在邏輯層提早判斷。
+          74ead03 的 start_bot.sh cool-down 是第二道兜底——在執行點攔截任何 caller。
+          任何在 cool-down 窗口內呼叫的 caller，都會在 bot_log 留下「⛔ 拒絕啟動 + Xs 前主動關」，
+          日後若想查 caller 身份，交叉比對時間點即可。
+        </p>
+        <p>
+          <code>ps STARTED</code> 欄位（例如「2:30PM」）沒有日期，跨日 process 會讓人誤判為「今天啟動」。
+          務必用 <code>ps -o lstart= -p &lt;pid&gt;</code> 取帶日期的啟動時間。這個教訓這週踩了兩次。
+        </p>
+
+        <h2>TDD 推進：測試時間不是隨便挑的</h2>
+        <p>
+          為 race window 場景寫測試時，第一版把 <code>now</code> 設在 14:30:30，
+          結果測試 GREEN 了但目標路徑根本沒走到——<code>_decide_catch_up</code> 先看時段，
+          14:30 之後就被「盤後不補」的 guard 擋下，stop_flag 檢查壓根沒執行。
+        </p>
+        <p>
+          改把 <code>now</code> 設在 09:30 和 13:00（盤中），繞過所有前置 guard，
+          才真正測到 stop_flag 路徑。寫測試前先讀完整個 guard 執行順序，
+          找出目標分支前需要繞過哪些 guard，再決定 now 值。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>防呆的位置決定能擋多少 caller</strong>：寫在 caller 內部只擋自己；寫在行動的執行點才能擋所有 caller。把 cool-down 放在 start_bot.sh，比放在 menubar 裡效力大得多。</p>
+          <p><strong>defense in depth 不是重複，是縱深</strong>：兩層 cool-down 各有作用——第一層提早攔截、第二層兜底，任一層失效還有另一層。越是難追的 race，越需要縱深。</p>
+          <p><strong>ps STARTED 不帶日期，跨日 process 一定用 lstart</strong>：<code>ps -o lstart= -p &lt;pid&gt;</code> 才會顯示「Thu Jun 4 14:30:30」，不是只有「2:30PM」。</p>
+          <p><strong>TDD 中 now 值不是隨便挑的</strong>：先讀完整個 guard 執行順序，找出目標分支前需要通過哪些 guard，再決定測試的時間值。</p>
+          <p><strong>audit trail 比報警更持久</strong>：每次拒絕啟動都寫進 bot_log，未來查 caller 身份時有據可查，比當下報警後就消失的訊息更有診斷價值。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-05 · stock_grid_bot · 2 commits（ff9294e, 74ead03）· 46/46 tests PASS
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
