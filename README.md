@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-08** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-07-formula-seo-breadcrumb.html`（15 篇公式頁補齊 BreadcrumbList + 內部連結，冪等 Python 腳本一次搞定 4 個孤兒頁）、
+  `2026-06-05-stock-grid-bot-race-fix.html`（stop_flag cool-down 從 menubar 移到 start_bot.sh 兜底，46/46 tests PASS）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-08.
+
 - **2026-06-07** — 由 /boboweb 人工核可解套 3 篇 QA 卡關草稿並補齊 sitemap：
   `2026-05-20-supercalc-pro-verify.html`（∑ Calc Pro 7 個賣點端到端驗收）、
   `2026-05-20-supercalc-v355-v356.html`（科學記號 e 與 toFixed underflow 兩個 latent engine bug）、
