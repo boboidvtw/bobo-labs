@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>防呆寫在哪才能擋所有 caller — stock_grid_bot start_bot.sh 兜底防線 · Bobo Labs</title>
+  <meta name="description" content="14:30 驗收失敗：ff9294e 冷卻修復上線翌日，bot 仍在冷卻窗口內 15 秒重啟。六層排查找出身份不明的 python3.14 caller。核心洞察：防呆寫在 caller 裡只能擋自己；要擋所有人，必須寫在動作的執行點。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-05-stock-grid-bot-cooldown.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-05</p>
+      <h1 class="article-title">防呆寫在哪才能擋所有 caller — stock_grid_bot start_bot.sh 兜底防線</h1>
+      <p class="article-lede">
+        14:30 驗收失敗：昨天剛上線的 ff9294e 冷卻修復，照理應該擋下 5 分鐘內的重啟，
+        卻在 15 秒後看到新的 streamlit 行程出現。六層排查之後，
+        真兇是個身份不明的 python3.14——找不到它從哪來，
+        但找到了它一定會走的路：start_bot.sh。
+      </p>
+
+      <div class="article-body">
+        <h2>14:30 驗收：預期的靜止沒有出現</h2>
+        <p>
+          開工第一步是 ground truth 核查：`ps -o lstart= -p $(pgrep -f "streamlit run main.py")`
+          回傳 `Fri Jun 5 14:30:22 2026`。bot_log 把事件鏈說得更清楚：
+          14:30:07 寫入 stop_flag（ff9294e 的修復確實生效），14:30:22 bot 重啟。
+          stop_flag 寫入到重啟只差 15 秒，300 秒的冷卻窗口形同虛設。
+        </p>
+        <p>
+          問題出在 ff9294e 的設計位置：冷卻邏輯寫在 menubar 的 `_decide_catch_up` 方法裡，
+          只能攔 menubar 自己觸發的 `_maybe_catch_up_start`。
+          其他 caller 呼叫 start_bot.sh，menubar 完全不知情。
+        </p>
+
+        <h2>六層排查：排到最後只剩一個謎</h2>
+        <p>
+          逐一確認六個可能的重啟來源。
+          macOS 重開機（`sysctl kern.boottime`：5/29 09:23 起連續 7 天未重啟）——排除。
+          menubar 的 `_maybe_catch_up_start`（PID 31202 從 10:38 連續活著 4 小時 39 分、
+          is_running=True 已擋住）——排除。
+          menubar timer 或 button callback（Read 程式碼確認 `_refresh` 只刷標題、
+          start_bot button 需要手動點）——排除。
+        </p>
+        <p>
+          launchd start.plist 14:30 觸發（runs=7 對得上 5/29 後每天一次 08:00 排程，
+          log show 無 14:30 觸發紀錄）——排除。
+          其他 LaunchAgent 或 crontab（全機 grep `start_bot\|streamlit run` 只有三個
+          stockgridbot plist、crontab 只有 gemini log rotation）——排除。
+          sleep/wake 事件（log show + pmset 在 14:30 附近無紀錄）——排除。
+        </p>
+        <p>
+          剩下唯一可能：有個不知身份的 user-space 工具在呼叫 start_bot.sh。
+          把 log show 視窗拉到 14:30:19–22，時間序列出現了：
+          python3.14（Homebrew 版、非 menubar venv 的 Python 3.9）→
+          launchctl list → bash → start_bot.sh → nohup 啟動 streamlit PID 78559。
+          行為模式是「先 launchctl list 確認服務狀態、再觸發啟動」——這是自動化框架的特徵，
+          但身份沒有辦法從日誌再往上追。
+        </p>
+
+        <h2>PPID=1 為什麼不能反推 caller</h2>
+        <p>
+          直覺是讀 streamlit 的父行程 ID。但 `nohup ... &` 執行後，
+          子行程會被 reparent 到 launchd（PID 1），PPID 就失去診斷意義。
+          要找上游 caller，只能靠 log show 的時間序列：把 python3.14 spawn →
+          launchctl list → bash 這條事件鏈，用時間戳對齊拼出來。
+        </p>
+        <p>
+          此外，zsh 對 log show 的 `--predicate` 引號處理有個坑：
+          直接帶單引號會報「too many arguments」，改用 `/usr/bin/log` 絕對路徑才繞過。
+        </p>
+
+        <h2>核心洞察：防呆的位置決定能擋多少 caller</h2>
+        <p>
+          ff9294e 的冷卻寫在 menubar 內部，只能擋 menubar 自己。
+          start_bot.sh 是所有重啟路徑的共同收斂點——無論是 menubar、launchd、
+          未知的 python3.14 還是任何尚未出現的 caller，最終都要走這支腳本。
+          把冷卻邏輯移到這裡，就能擋住所有人，包括那個找不到來源的那個。
+        </p>
+        <p>
+          決策選項有四：繼續追兇身份、排查 Hammerspoon 等候選、
+          改用 `log stream` 下次 14:30 時即時監聽、或直接在 start_bot.sh 加兜底防線。
+          選最後一項。追兇是診斷問題；加兜底是解決問題。兩者可以分開，
+          但若先解決，診斷就從「緊急」降為「有空再查」。
+        </p>
+
+        <h2>start_bot.sh 的 bash 冷卻邏輯</h2>
+        <p>
+          改動的核心是三個步驟：讀 STOP_FLAG 的時間戳（Unix epoch）、
+          計算距現在的秒數（FLAG_AGE）、FLAG_AGE 小於 COOLDOWN_SEC 就拒絕並 exit 0。
+          exit 0 而非 exit 1 是有意為之——這不是錯誤，是合法的保護行為，
+          不該讓呼叫方誤判為腳本崩潰。拒絕時不清 flag，讓審計訊息保留在 bot_log，
+          未來若要追查 caller 身份，可以從這裡的時間戳交叉比對。
+        </p>
+        <p>
+          `COOLDOWN_SEC="${STOCKGRIDBOT_COOLDOWN_SEC:-300}"` 讓測試可以縮短等待時間。
+          `BOT_DIR="${BOT_DIR:-/path/to/bot}"` 讓測試把讀寫重導向 tmpdir，
+          而非真實的 bot 目錄，測試跑完不會污染 production 的 stop_flag 狀態。
+        </p>
+
+        <h2>五條測試把每個邊界都走過一次</h2>
+        <p>
+          tests/test_start_bot_cooldown.py 用 subprocess 呼叫真實 bash script，
+          透過 BOT_DIR 環境變數把讀寫隔離在 pytest 的 tmpdir：
+          （a）30 秒舊 flag → 拒絕、flag 保留；
+          （b）400 秒舊 flag → 通過、flag 清除；
+          （c）無 flag → 通過；
+          （d）邊界 300 秒 → 通過（不擋，等於或超過才放行）；
+          （e）flag 內容損毀（非數字）→ 不 crash，視為無 flag。
+          5 條新增，加上既有 41 條，全場 46 pass。
+        </p>
+        <p>
+          menubar 層的 ff9294e 冷卻保留——那是提早攔截；
+          start_bot.sh 層的 74ead03 冷卻是最後防線。
+          兩層並存，任何一個 caller 在冷卻窗口內呼叫都會被攔，
+          並留下帶時間戳的 audit trail。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>防呆的位置決定覆蓋範圍</strong>：寫在 caller 內部只能擋自己；寫在「動作的執行點」才能擋所有 caller。start_bot.sh 是所有重啟路徑的共同收斂點，防線就應該在那裡。</p>
+          <p><strong>PPID=1 不能反推 caller</strong>：nohup 啟動的行程 reparent 到 launchd（PID 1），PPID 失去追蹤價值。要追上游，改用 log show 時間序列比對。</p>
+          <p><strong>先解決問題，後追根因</strong>：身份不明的 caller 需要「下次 14:30 時 live 監聽」才能查清楚，但加兜底防線今天就能做。診斷和修復可以分兩件事。</p>
+          <p><strong>audit trail 兼具診斷價值</strong>：「⛔ stop_flag 在 Xs 前剛主動關」這條 log，除了防止重啟，也是未來追查 caller 身份的時間戳錨點。</p>
+          <p><strong>BOT_DIR 隔離是 bash 測試的標準姿勢</strong>：讓腳本讀環境變數來覆蓋路徑，測試就能在 tmpdir 安全跑，不污染 production 狀態。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-05 · stock_grid_bot · commit 74ead03 · 46 tests pass · COOLDOWN_SEC=300
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

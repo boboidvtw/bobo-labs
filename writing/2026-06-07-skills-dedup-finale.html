@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skills 程式庫去重收尾：驗而後刪的操作手冊 · Bobo Labs</title>
+  <meta name="description" content="5 天把 198 個 skills 精簡到 179 個。最後一步是永久刪除保留觀察期的 trash 夾——「倖存者確認 + 觀察期滿 + rm -rf」的三段安全刪除法，加上一條 grep substring 假陽性讓你誤以為還有殘依賴的教訓。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-07-skills-dedup-finale.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-07</p>
+      <h1 class="article-title">Skills 程式庫去重收尾：驗而後刪的操作手冊</h1>
+      <p class="article-lede">
+        去重專案從 2026-06-03 跑到 06-07，把 198 個 skills 精簡到 179 個。
+        最後一步是永久刪除兩個保留觀察期的 trash 夾，共 8 件。
+        這一步做得比想像中繁瑣——不是按 rm -rf 的問題，而是「怎麼知道可以安全刪」的問題。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼不直接刪：觀察期的邏輯</h2>
+        <p>
+          上一輪（06-04）合併 team / agent skill 群組時，把被折入的 4 件移進 .skills-trash/，
+          而不是直接 rm -rf。原因有兩個：(1) 合併的正確性需要在實際使用中驗證；
+          (2) 當時 AskUserQuestion 工具中斷兩次 + operator 收工，沒有完成二次確認這道安全鎖。
+        </p>
+        <p>
+          觀察期的時間窗口是 3 天（06-04 → 06-07）。這 3 天如果沒有人拿到舊 skill 名找不到、
+          如果 team-composition-patterns 和 agentic-engineering 實際跑起來沒問題，
+          那就可以說「合併線上實證完整，回滾需求消除」，才永久刪除。
+        </p>
+
+        <h2>刪前驗證：8 件哪些倖存、哪些已消失</h2>
+        <p>
+          刪之前先確認 active library 的狀態：
+        </p>
+        <p>
+          倖存 skill（應在）：baoyu-imagine、baoyu-image-cards、deep-research、skill-stocktake、
+          team-composition-patterns（v1.1.0，441 行，含三段 playbook Part1/2/3）、
+          agentic-engineering（147 行，AI-First + Enterprise Agent Operations 兩子章節）。全部在。
+        </p>
+        <p>
+          被折入的 skill（應消失）：4 個已從 active library 移除，確認不在。
+          這 8 個狀態核實無誤，才執行 rm -rf。
+        </p>
+
+        <h2>grep substring 假陽性：continuous-learning 的教訓</h2>
+        <p>
+          驗斷依賴時我跑了一輪 grep，找有沒有哪個 active skill 還在引用被移除的 skill 名。
+          其中 <strong>continuous-learning</strong> 命中了 5 處，第一直覺：糟糕，還有殘引用。
+        </p>
+        <p>
+          逐行看下去，5 處全是 <strong>continuous-learning-v2</strong>——v2 版本、不同 skill。
+          精確查（加上 boundary 排除 -v2 後綴）零命中，證實 continuous-learning v1 沒有殘引用。
+        </p>
+        <p>
+          教訓：<strong>驗斷依賴時，skill 名含有後綴（-v2、-v3）的必須加 boundary 排除母字串</strong>。
+          pure grep substring 會讓你誤以為有問題。這類假陽性在去重後期最容易出現，
+          因為版本遷移通常保留了名稱前綴的相似性。
+        </p>
+
+        <h2>「仍被引用」≠ 斷依賴</h2>
+        <p>
+          另一個細節：grep 命中了 task-coordination-strategies 等已移除的 skill 名。
+          但這次逐行驗明，全部都是倖存 skill 內部的「合併歷史註記」——
+          例如 team-composition-patterns 第 9 行有「Consolidates the former task-coordination-strategies」，
+          agentic-engineering 第 9 行類似。
+        </p>
+        <p>
+          這種引用不是技術依賴，是刻意保留的可追溯線索——讓未來的人知道這個 skill 從哪裡合併來的。
+          這不是技術債，是文件化。「命中 = 依賴」的假設在去重後期不成立。
+          要區分「呼叫引用」和「歷史備註引用」，要讀上下文，不能只靠命中行數判斷。
+        </p>
+
+        <h2>全程結算</h2>
+        <p>
+          去重專案 06-03 ~ 06-07，共 5 天：skill 總數 198 → 179（淨減 19）。
+          三組待辦：team 群組折入 team-composition-patterns ✓；agent 群組折入 agentic-engineering ✓；
+          social 群組撤回保留（social-graph-ranker 是 connections-optimizer + lead-intelligence 的共用
+          graph-ranking 引擎，語意上不該強合）。
+          原始去重清單清空、兩個 trash 夾永久清除、.skills-trash 歸零，專案正式關閉。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>可逆移動 → 觀察期 → 驗證 → 永久刪</strong>：這四步比直接 rm 多了兩個安全閘門。在刪除邏輯上有合理成本的操作，這套流程值得跑完整。</p>
+          <p><strong>grep substring 驗依賴一定要加 boundary</strong>：continuous-learning 命中 5 處全是 continuous-learning-v2 的例子說明了問題所在。精確查法：先命中，再排除後綴變體，零命中才算真的沒有殘引用。</p>
+          <p><strong>合併歷史備註 ≠ 技術依賴</strong>：「Consolidates the former X」是文件，不是 import。命中關鍵字後要讀上下文才能判斷性質。</p>
+          <p><strong>不合並不丟臉</strong>：social 群組的 social-graph-ranker 最後撤回不合，原因是它是兩個 skill 的共用 engine，強合反而破壞語意。撤回是正確決定，不是失敗。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-07 · Claude Code skills-library · skill 總數 198 → 179（淨減 19）· commit 7625b75
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
