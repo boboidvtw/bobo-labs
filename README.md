@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-09** — 由 /boboweb 核可發布 1 篇文章：
+  `2026-06-07-qa-pipeline-false-positives.html`（關鍵字誤判讓草稿永遠卡死的 meta 故事）。
+  此前因 autopublish QA #1 純關鍵字硬擋 `secret`/`token` 把安全討論誤判紅線而卡死；連帶治本 QA #1 改為「高危專名硬擋 + 通用詞語境感知」分層判定，安全討論放行、真密鑰仍擋。
+  Promoted 1 draft from _pending/ via /boboweb on 2026-06-09; also fixed QA #1 keyword false-positives.
+
 - **2026-06-09** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-07-skills-dedup-finale.html`（Skills 程式庫去重收尾，198 → 179，三段安全刪除法 + grep 假陽性教訓）、
   `2026-06-05-stock-grid-bot-cooldown.html`（防呆寫在執行點才擋所有 caller，start_bot.sh 兜底 + 46 tests pass）。
