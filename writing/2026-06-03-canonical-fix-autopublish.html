@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>grep 命中不等於結構正確 — autopublish canonical 系統性 bug 排查 · Bobo Labs</title>
+  <meta name="description" content="五篇好草稿卡在 _pending 動不了。QA gate 說 canonical 缺失，但 grep 明明有找到。兩個診斷衝突，其中一個在說謊——查出來的根因是 canonical 只出現在內文，head 裡從來就沒有過。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-03-canonical-fix-autopublish.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-03</p>
+      <h1 class="article-title">grep 命中不等於結構正確 — canonical 系統性 bug 排查</h1>
+      <p class="article-lede">
+        五篇草稿卡在 _pending 一週沒動。bobo-autopublish QA gate 每次都擋下，
+        理由是「head 缺少 canonical tag」。但 grep 跑出來有命中，看起來不是缺。
+        兩個診斷衝突——有一個在說謊。查出來的答案讓人覺得理所當然，
+        但花了一陣子才正確讀懂 ops log 裡那句 「mentions canonical in text only」。
+      </p>
+
+      <div class="article-body">
+        <h2>草稿堆積的連鎖起因</h2>
+        <p>
+          bobo-labs 的發布流程分兩層：/bobo-draft-pending 自動草擬草稿到 _pending/，
+          /bobo-autopublish 的 QA gate 審過後才 mv 到 writing/ 正式上站。
+          兩層分工清楚，但有一個系統性缺口：草擬模板完全沒有 canonical 生成邏輯。
+        </p>
+        <p>
+          canonical tag 是 SEO 的基礎——告訴搜尋引擎「這個頁面的正式 URL 是什麼」，
+          防止重複內容問題。autopublish 的 QA gate 把它列為必要結構要素，缺了就擋。
+          結果每篇草稿從一生出來就缺 canonical，每篇都過不了 QA，六篇連環積壓。
+        </p>
+
+        <h2>矛盾：grep 說有，QA 說沒有</h2>
+        <p>
+          開工檢查時，對 boboweb-decision-rules.html 跑 grep canonical，有命中。
+          但 ops log 顯示「structure check: canonical missing (mentions canonical in text only)」。
+          看起來很矛盾——工具說有，log 說沒有。
+        </p>
+        <p>
+          逐行查證之後，真相很直白：boboweb-decision-rules.html 裡，
+          「canonical」這個字串全部出現在內文——h2 標題、code 範例、takeaway 段落。
+          head 區確實從來就沒有 link tag。
+          QA gate 的 structure check 看的是位置，不是關鍵字是否存在。
+          grep 命中關鍵字，但沒說明在哪裡命中。
+        </p>
+
+        <h2>治本 vs 治標：兩件事都要做</h2>
+        <p>
+          autopublish 的設計原則是「只 QA + promote，不修改草稿內容」。
+          這個設計選擇合理：如果 autopublish 自動修改草稿，那每次發布的內容就不再是人工確認過的版本。
+          但這也意味著，缺 canonical 的草稿即使每天 06:00 定時跑，也永遠過不了 QA、永遠不會自動發。
+        </p>
+        <p>
+          所以要雙管齊下。治未來：修 bobo-draft-pending 模板，
+          在 meta description 之後、link stylesheet 之前，
+          加 canonical 生成規則，URL 的檔名要和草稿檔名完全一致。
+          治積壓：五篇既有草稿逐一手動補 head 的 canonical，再順手查其他 head 要素。
+        </p>
+        <p>
+          補 canonical 時還發現 2026-06-01 那篇的 viewport meta 被誤植成 name="version"——
+          這是模板偶發的生成瑕疵，補 canonical 時順手揪出來一起修。
+          對每篇補完之後做 QA 自檢，確認 canonical 指向自身且 viewport 存在，5/5 PASS，才進入發布流程。
+        </p>
+
+        <h2>ops log 裡的那句話值得細讀</h2>
+        <p>
+          「mentions canonical in text only」——這句 log 其實說得很精準。
+          canonical 有提到（mentions），但只在文字裡（in text）。
+          不是沒有，是放錯位置了。
+        </p>
+        <p>
+          如果只看「mentions」就以為「有」，就會誤診。
+          ops log 是給機器和人看的，設計好的 log 會盡量把診斷說清楚，
+          但需要讀者有足夠的 context 才能正確解讀「在哪裡有」這層語意。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>grep 命中 ≠ 結構正確</strong>：關鍵字存在是一回事，出現在正確的位置是另一回事。診斷 HTML 結構問題時要問「在哪裡命中」，不只是「有沒有命中」。</p>
+          <p><strong>系統性缺口要治根、不只治症</strong>：每篇草稿補 canonical 是治症；修模板讓未來的草稿自帶 canonical 才是治根。兩件事都要做，先後順序可以商量，但不能只做一件。</p>
+          <p><strong>QA gate 不該修改被審的檔案</strong>：如果 QA 自動修復草稿，那確認對象就不再是人工寫的那個版本。QA 只擋不修，是設計原則而非限制。</p>
+          <p><strong>補結構時順手做完整性掃描</strong>：補 canonical 的時候順手掃了其他 head 要素，找到一個 viewport 誤植。補丁時機是做完整檢查最自然的節點。</p>
+          <p><strong>log 裡的括號說明往往是關鍵</strong>：「canonical missing (mentions canonical in text only)」——括號裡的備註才是真正的診斷，主句是結論。讀 log 要讀完整，不能只看第一個結論字。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-03 · Bobo Labs autopublish · 6 篇積壓 → 5 發 1 棄 · commit c5cacf4, 3d79822
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

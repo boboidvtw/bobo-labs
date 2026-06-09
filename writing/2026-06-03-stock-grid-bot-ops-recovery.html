@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>排程錯過、session 失憶 — 三層補強讓交易機器人重新可信 · Bobo Labs</title>
+  <meta name="description" content="macOS 關機整夜讓 launchd 排程靜靜消失、Streamlit 跨次重啟清空 session_state 讓監看邏輯提早退出。沒有任何錯誤訊息，只有靜默。補了三處設計空洞：診斷日誌、process-restart cfg fallback、事後乾跑機制。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-03-stock-grid-bot-ops-recovery.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-03</p>
+      <h1 class="article-title">排程錯過、session 失憶 — 三層補強讓交易機器人重新可信</h1>
+      <p class="article-lede">
+        macOS 關機整夜讓 launchd 排程在早上 8:00 靜靜消失——不是失敗，是根本沒跑。
+        Streamlit 跨次重啟清空 session_state，監看邏輯在第一行就提早退出，
+        後端委託照常存在，本地卻一無所知。沒有任何錯誤訊息，只有靜默。
+        補了三處設計空洞，讓整個系統從「可能不在跑」變成「一定有辦法恢復」。
+      </p>
+
+      <div class="article-body">
+        <h2>事件鏈：一台筆電關機換來整個交易日的監控空缺</h2>
+        <p>
+          5/28 14:30 正常停止後，Mac 直接關機。5/29 09:23 開機，
+          sysctl kern.boottime 顯示開機時間比 8:00 的 launchd 排程晚。
+          macOS launchd 的 StartCalendarInterval 不會補跑錯過的觸發——
+          這跟 Linux 上的 anacron 不同。排程不是失敗、是從來沒觸發。
+          整個交易日，Streamlit 沒跑，監看靜默，沒有任何地方留下「今天沒啟動」的紀錄。
+        </p>
+        <p>
+          補法很直接：在 menubar app 的 <code>__init__</code> 末尾加一個
+          <code>_maybe_catch_up_start()</code>——menubar 設定了 KeepAlive=true + RunAtLoad=true，
+          是開機後第一個活著的觸發點。只要 menubar 活著，它就能代替錯過的排程補跑。
+          決策邏輯抽成純函式 <code>_decide_catch_up(now, is_running)</code>，方便 unit test。
+        </p>
+
+        <h2>launchd_stop.log 永遠 0 bytes，不是 bug</h2>
+        <p>
+          排查時發現 <code>launchd_stop.log</code> 一直是 0 bytes，直覺反應是「服務沒跑到」。
+          花了時間才意識到，這是 stop_bot.sh 設計使然：所有 echo 都 redirect 到
+          <code>bot_YYYYMMDD.log</code>，零 stdout，launchd 自然收不到任何輸出、log 檔永遠空。
+        </p>
+        <p>
+          但進一步查 <code>bot_20260526.log</code>、<code>bot_20260527.log</code>、<code>bot_20260528.log</code>，
+          連續三天 14:30 都有觸發紀錄——launchd stop 機制完全健康，問題在診斷工具，不在排程本身。
+          修法：在 stop_bot.sh 頭尾各加一行 stdout echo（「invoked」/「exited」），
+          未來 <code>launchd_stop.log</code> 就會留下排程觸發證據，不再是 0 bytes 誤導視線。
+        </p>
+        <p>
+          <strong>教訓：判斷 launchd 服務是否觸發，先看腳本有沒有輸出到 stdout，再看 log 大小。</strong>
+          空 log 不等於服務沒跑，可能只是腳本不輸出到 stdout。
+        </p>
+
+        <h2>比「沒跑」更危險：跑了但什麼都沒做</h2>
+        <p>
+          更隱蔽的問題藏在 Streamlit 的 <code>fragments.py</code> 第 88-91 行：
+        </p>
+        <p>
+          <code>cfg = st.session_state.get(f"grid_cfg_{iid}")</code><br />
+          <code>if not cfg:</code><br />
+          &nbsp;&nbsp;&nbsp;&nbsp;<code>st.info("尚未佈署網格...")</code><br />
+          &nbsp;&nbsp;&nbsp;&nbsp;<code>return</code>
+        </p>
+        <p>
+          <code>session_state</code> 是 process-lifetime。任何 process restart——menubar 補跑、
+          Streamlit crash、手動重啟——都會清空它。cfg 不存在 → fragment 第 3 行就 return →
+          下面的事件 drain 跳過 → 自動補格完全停止。後端委託還在，本地監看消失，
+          兩邊靜默地不同步。
+        </p>
+        <p>
+          <strong>這比「Streamlit 沒跑」還糟</strong>：Streamlit 活著、UI 正常，
+          只是什麼事都不做，而且看不出來。
+        </p>
+
+        <h2>cfg fallback：從持久化紀錄重建狀態</h2>
+        <p>
+          治本的方法是讓 fragment 在 cfg 不存在時，從持久化來源重建，而不是直接 return。
+        </p>
+        <p>
+          關鍵觀察：<code>grid_anchor_*</code> 已經是 file-backed JSON（<code>user_settings.json</code>），
+          包含 cfg 需要的所有欄位（interval / mode / shares_per_grid / min_reserve）。
+          唯一缺的 <code>deploy_id</code> 在資料庫的最新 PENDING row 查得到。
+          零 schema 改動，零新檔，純組合既有資源。
+        </p>
+        <p>
+          純函式 <code>_build_cfg_from_anchor(anchor, deploy_id)</code> 邊界條件清楚：
+          anchor 缺 → None、deploy_id 缺 → None、interval 損壞 → None（寧可 fail-safe 不誤建）。
+          mode / shares_per_grid / min_reserve 缺則走 default。
+          這個 fallback 讓 process restart 後，fragment 自動恢復追蹤，
+          而不需要人工 Cancel+Deploy。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>launchd StartCalendarInterval 不補跑</strong>：筆電關機再開，錯過的觸發就是錯過了。給筆電設計的 daily schedule 必須有 fallback 觸發點（開機時檢查 / 事後乾跑 / 兩個觸發點疊加）。</p>
+          <p><strong>空 log 不等於服務沒跑</strong>：先看腳本有沒有 stdout 輸出，再下結論。診斷工具不正確等於排查一開始就走錯方向。</p>
+          <p><strong>session_state 不是資料庫</strong>：任何重要狀態放 session_state，等於每次 process restart 就會消失。重要狀態應放 file 或 db，並寫 fallback 邏輯從持久化來源重建。</p>
+          <p><strong>比「沒跑」更危險的是「跑了但靜默失效」</strong>：UI 正常、服務活著、但關鍵邏輯提早 return——這種靜默失效比崩潰更難察覺，也更難修復。設計時要思考 restart 後狀態如何回來。</p>
+          <p><strong>零 schema 改動的 fallback</strong>：治本不一定需要新欄位或新架構。先盤點現有持久化資源，往往可以零改動地組合出 fallback。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-03 · stock_grid_bot · 2 commits（acd02b5, d101e14）· 32/32 tests PASS
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
