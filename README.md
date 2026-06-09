@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-10** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-03-stock-grid-bot-ops-recovery.html`（launchd 排程不補跑 + session_state 跨 restart 消失 + 靜默失效比崩潰危險，三層補強讓交易機器人重新可信）、
+  `2026-06-03-canonical-fix-autopublish.html`（grep 命中 ≠ 結構正確，canonical 放錯位置不是缺少，QA gate 只擋不修，log 括號說明是真診斷）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-10.
+
 - **2026-06-09** — 由 /boboweb 核可發布 1 篇文章：
   `2026-06-07-qa-pipeline-false-positives.html`（關鍵字誤判讓草稿永遠卡死的 meta 故事）。
   此前因 autopublish QA #1 純關鍵字硬擋 `secret`/`token` 把安全討論誤判紅線而卡死；連帶治本 QA #1 改為「高危專名硬擋 + 通用詞語境感知」分層判定，安全討論放行、真密鑰仍擋。
