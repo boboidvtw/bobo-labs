@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>彈藥備齊了但 Google 沒收到：Bobo Labs 第一次叩關索引 · Bobo Labs</title>
+  <meta name="description" content="Bobo Labs 站台上線兩個月、40 篇文章線上、SEO 評分全達標——但 Google 索引數是 0。原因不是技術問題，是沒有人去 GSC 按那個按鈕。5 篇理財公式集群進了等候佇列，0 索引的瓶頸終於扣了板機。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-10-bobo-labs-gsc-first-index.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-10</p>
+      <h1 class="article-title">彈藥備齊了但 Google 沒收到：Bobo Labs 第一次叩關索引</h1>
+      <p class="article-lede">
+        Bobo Labs 上線兩個月，40 篇文章線上、sitemap 提交、SEO 技術評分全達標——
+        但 Google Search Console 的「已索引網頁」數字是 0。
+        問題不是技術，是沒人去 GSC 點「要求建立索引」。
+        今天補上了這一步：5 篇理財公式集群進了等候佇列，
+        變現漏斗最上游的卡點終於扣了板機。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼會有「0 索引」這個卡點</h2>
+        <p>
+          Bobo Labs 的技術基礎在 6/7-6/8 全部就位：5 篇公式文章
+          canonical link 正確、breadcrumb structured data 合規、
+          sitemap 自動重生並指向這些 URL、curl 全 200 ssl=0。
+          Google 爬得到、格式正確、技術障礙清零。
+        </p>
+        <p>
+          但 Google 的自然爬蟲對新站台不是即時的。新頁面需要等 Googlebot
+          自己找到並排上爬蟲佇列，可能是幾天、可能是幾週。
+          「要求建立索引」功能是告訴 Google：<strong>這個 URL 現在值得爬，請優先排隊</strong>。
+          不按，就只能等。
+        </p>
+        <p>
+          等待期間每天看 GSC 數字是 0，不是因為 SEO 失敗——是因為從來沒有扣那個板機。
+          兩個月內把技術弄好，最後一步是 GSC 的人工動作，而這個動作必須本人登入操作。
+        </p>
+
+        <h2>選哪 5 篇，為什麼這 5 篇</h2>
+        <p>
+          優先選「理財公式」topical cluster：compound-interest（複利）、
+          mortgage-payment（房貸還款）、bmi（BMI 計算）、
+          pythagorean-theorem（畢氏定理）、rule-of-72（72 法則）。
+        </p>
+        <p>
+          複利、房貸、72 法則形成一個主題緊密的理財計算集群，
+          彼此之間有自然的主題關聯，有助於提高 topical authority。
+          BMI 和畢氏定理搜尋量高、競爭清楚，能提供早期曝光數據。
+          這 5 篇也是 ∑ Calc Freemium 導流的核心——從 Bobo Labs formula 文章
+          deep link 到 supercalc 對應功能，是整個變現漏斗的入口。
+        </p>
+
+        <h2>GSC 操作紀律</h2>
+        <p>
+          按「要求建立索引」之後，GSC 顯示「要等候」——這是正常狀態，不是出錯。
+          Google 收到請求後派爬蟲，從排隊到真的爬到、再到編入索引，
+          需要數小時到數天。送出後無法加速，也不應該反覆按同一個 URL。
+        </p>
+        <p>
+          GSC 每日配額大約 10-12 次。這次用了 5 次，5 篇集群已足，
+          不需要繼續補更多 URL——剩餘配額留給真正需要緊急索引的情況。
+          反覆對同一 URL 按請求，Google 可能視為濫用，降低對這個網域的信任度。
+        </p>
+
+        <h2>下一步看什麼數字</h2>
+        <p>
+          索引是非同步的。不需要每小時刷 GSC——看「索引 → 網頁」報表，
+          等數字從 0 往上動（哪怕先變 1）就是催索引成功的信號。
+          數字動了之後，再切到「成效」報表看哪些 formula 關鍵字開始有曝光，
+          用真實的搜尋數據決定接下來要深化哪些 formula 頁面。
+          這才進入「數據驅動寫什麼」的階段，不用再憑猜測排優先順序。
+        </p>
+        <p>
+          整個 Bobo Labs 的變現漏斗設計是：formula 文章 SEO 導流 →
+          deep link 進 ∑ Calc 對應功能 → free/pro 轉換。
+          前面兩個月建的是管道，今天算是第一次開閘。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>技術就緒不等於 Google 知道</strong>：sitemap 提交、技術 SEO 達標是必要條件，不是充分條件。Google 的自然爬蟲對新站不是即時的，「要求建立索引」是打破等待的正規做法。</p>
+          <p><strong>GSC 操作是非冪等的</strong>：按一次就進佇列，重複按不加速反而可能被視為濫用。操作後放手等，不要反覆確認。</p>
+          <p><strong>用 topical cluster 集中火力</strong>：索引請求有每日配額限制，優先提交主題緊密的集群，比散射一堆不相關 URL 更有 topical authority 的效果。</p>
+          <p><strong>「人工必做」的步驟要明確標記</strong>：建自動化流程時，有些步驟只有本人登入才能做（如 GSC 操作）。這類步驟要明確從自動化清單中排除，並記錄在開工指引裡，避免遺漏。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-10 · Bobo Labs · 5 篇理財公式集群 · GSC 首次索引請求
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
