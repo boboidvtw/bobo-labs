@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-11** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-06-10-bobo-labs-gsc-first-index.html`（技術 SEO 就緒兩個月 GSC 索引仍 0，首次手動叩關 5 篇理財公式集群，topical cluster 策略 + 配額管理）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-06-11.
+
 - **2026-06-10** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-03-stock-grid-bot-ops-recovery.html`（launchd 排程不補跑 + session_state 跨 restart 消失 + 靜默失效比崩潰危險，三層補強讓交易機器人重新可信）、
   `2026-06-03-canonical-fix-autopublish.html`（grep 命中 ≠ 結構正確，canonical 放錯位置不是缺少，QA gate 只擋不修，log 括號說明是真診斷）。
