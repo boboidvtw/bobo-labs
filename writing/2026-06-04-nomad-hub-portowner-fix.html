@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>後端測試全綠、前端靜悄悄崩潰：一個從未定義的函式 · Bobo Labs</title>
+  <meta name="description" content="nomad-hub 健康面板點了一下就回 ReferenceError，後端 304 tests 全過。根因：後端改了 port 歸屬 API、前端呼叫點漏寫對應函式。順手補上 Node vm sandbox 讓 Python pytest 跑前端 JS 守衛測試。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-04-nomad-hub-portowner-fix.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-04</p>
+      <h1 class="article-title">後端測試全綠、前端靜悄悄崩潰：一個從未定義的函式</h1>
+      <p class="article-lede">
+        nomad-hub 健康面板點了一下，回 ❌ portOwnerLabel is not defined。後端
+        304 個測試全部通過、live 服務健康、API 回傳格式正確。問題不在後端——
+        上個 session 升級 port 歸屬偵測時，後端寫完了，前端呼叫點漏寫對應函式。
+        這是「編輯到一半中斷」最經典的樣子。
+      </p>
+
+      <div class="article-body">
+        <h2>症狀：看起來卡住，其實是 ReferenceError 被 catch 吃掉</h2>
+        <p>
+          點「💓 健康狀態」後面板顯示 ❌ portOwnerLabel is not defined，不是 loading，
+          也不是空白。像是什麼東西壞掉但說不出哪裡壞。
+        </p>
+        <p>
+          先確認後端：live 服務在 port 8091 回 200、health endpoint 正確帶回
+          port_owner 欄位（nomad-hub=owned、supercalc=free）、全域 304 tests passed。
+          後端沒事。全專案 grep portOwnerLabel，<strong>只有一處呼叫，從未有定義</strong>。
+        </p>
+        <p>
+          上個 coding session 做了 port 歸屬偵測升級。前端在 app.js 第 310 行
+          呼叫 portOwnerLabel(data.port_owner, data.port_available) 也是那時加的——
+          但函式本體忘了寫。template literal 求值碰到未定義函式，丟 ReferenceError，
+          被 try/catch 接住後顯示錯誤字串。看起來「卡住」，其實只是沒人注意到的 undefined。
+        </p>
+
+        <h2>為什麼 304 個測試沒擋住這個 bug</h2>
+        <p>
+          repo 的測試框架是純 Python pytest。後端有 304 個測試，覆蓋 health_checker 的
+          port_owner 四態（owned/foreign/free/unknown）以及各 API 端點的回傳格式。
+          這些測試全過，因為後端邏輯確實沒問題。
+        </p>
+        <p>
+          前端是 vanilla JS，repo 裡沒有 JS 測試框架。portOwnerLabel 這個函式
+          只會在瀏覽器真實執行時爆。沒有任何 CI 流程能在上線前攔住它。
+          這就是「後端覆蓋全綠、前端 ReferenceError 漏網」的結構性原因——
+          測試的邊界在哪，盲點就在邊界的另一側。
+        </p>
+
+        <h2>修法：補寫函式 + cache bust</h2>
+        <p>
+          portOwnerLabel(owner, available) 對映後端四態：
+          owned 顯示「(本專案使用中)」/ foreign 顯示「(被其他程式佔用)」/ free 顯示「(空閒)」/
+          unknown 或 null 時降級讀舊的 port_available 布林。
+          語意與後端 health_checker.check_port_owner() 的 docstring 對齊，讓前後端說同一套語言。
+        </p>
+        <p>
+          同時把 index.html 的 app.js 版本號從 ?v=1.1.0 改 ?v=1.1.1。
+          上個 session 測試期間瀏覽器可能快取了壞版——同版號的 URL 瀏覽器不會重新抓，
+          修復等於沒做。版本號變更要和程式碼修復同一個 commit。
+        </p>
+
+        <h2>關鍵洞察：Node vm sandbox 讓 Python pytest 跑 JS 守衛</h2>
+        <p>
+          這個 bug 存在，是因為 repo 沒有 JS 測試框架。解法不一定要引入 Vitest 或 Jest。
+        </p>
+        <p>
+          Node 內建 vm 模組可以當沙箱：載入整支 app.js，stub 一個最小的 document
+          （只需 addEventListener/querySelectorAll/getElementById 的 no-op 就夠），
+          在沙箱 global 裡呼叫 portOwnerLabel 驗四態輸出。
+          app.js 頂層唯一的副作用是檔尾一行 document.addEventListener('DOMContentLoaded', ...)，
+          stub 掉就能乾淨載入整支檔案。
+        </p>
+        <p>
+          vm context 裡 function 宣告會掛上 sandbox global，let/const 不會——
+          所以直接 sandbox.portOwnerLabel 取得函式參考。
+          測試掛進既有 pytest：node 缺失時 skipif 跳過，不污染純 Python 環境的綠燈；
+          有 node 時三個 JS 守衛全跑，融入同一個 uv run pytest 指令。
+        </p>
+        <p>
+          最後用「RED 證明」收尾：把函式暫時移除，跑同一組測試，退出碼 1 且印
+          GUARD CAUGHT: portOwnerLabel is not defined。確認測試在 bug 狀態確實 fail，
+          不是寫了等於沒寫。恢復函式後 307 passed（304 + 3 個新 JS 守衛）。
+        </p>
+
+        <h2>還踩了哪些坑</h2>
+        <p>
+          靜態檔路徑猜錯：一開始以為 app.js 在 /static/app.js，curl 回 0 位元組。
+          HTML 引用相對路徑 app.js?v=1.1.0，實際服務於根路徑 /app.js 而非 /static/ 下。
+          驗證靜態服務前先確認 mount 路徑。macOS 沒有 timeout 指令——同一個坑踩過不止一次，
+          pytest 和 curl 直接跑就好。editable install 加上 StaticFiles 即時讀磁碟，
+          改完檔案對 live 服務立即生效，不用重啟；快取問題靠 ?v= bump 處理。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>後端全綠不等於前端沒 bug</strong>：測試邊界在哪，盲點就在哪的另一側。前後端語言不同時，前端的 ReferenceError 不會在 Python CI 裡現身。</p>
+          <p><strong>Node vm sandbox 是輕量的跨語言守衛</strong>：不需引入 Jest/Vitest，用 vm 模組 + stub document，Python pytest 就能把前端 JS 函式拉進測試範圍，融入現有工具鏈。</p>
+          <p><strong>RED 證明是必要儀式</strong>：先讓測試在 bug 狀態 fail，確認它有識別能力，再恢復修復。通過的測試只有在知道它有能力失敗時才算可信。</p>
+          <p><strong>API 契約變更要同步前端</strong>：後端新增欄位時，grep 前端呼叫點確認配套函式已寫。後端測試只覆蓋一側，前端的漏寫要靠人或守衛測試攔。</p>
+          <p><strong>cache bust 要和修復同一個 commit</strong>：版本號沒 bump，瀏覽器吃舊快取，修復對使用者不可見。版本號變更與對應的修復應同一次提交。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-04 · nomad-hub v1.1.1 · 307 tests passed · commit a8a85b8
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

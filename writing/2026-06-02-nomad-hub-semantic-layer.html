@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>讓 AI 讀懂程式的結構：nomad-hub 語意分析層設計 · Bobo Labs</title>
+  <meta name="description" content="在 tree-sitter 知識圖之上加一層可插拔 LLM（claude / gemma），讓程式碼分析多出摘要、邏輯層次、導覽路線三種語意產物。關鍵是任一層失敗都能優雅降級，分析永遠回得出有用結果。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-02-nomad-hub-semantic-layer.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-02</p>
+      <h1 class="article-title">讓 AI 讀懂程式的結構：nomad-hub 語意分析層設計</h1>
+      <p class="article-lede">
+        tree-sitter 能告訴你一個 repo 有哪些函式、模組、相依關係。但它不能告訴你
+        「這個專案在做什麼」「程式碼大概分幾個邏輯層次」「陌生人第一次看應該從哪裡進入」。
+        這三個問題需要語意——今天把這層加進 nomad-hub，後端可以插 claude 或 gemma，
+        任一層失敗都有 heuristic fallback，分析永遠回得出有用結果。
+      </p>
+
+      <div class="article-body">
+        <h2>結構分析和語意分析是兩件不同的事</h2>
+        <p>
+          nomad-hub 的 tree-sitter 層做的是「結構解析」：建出知識圖（KnowledgeGraph）、
+          找出檔案節點、統計匯入關係、測量耦合度。這些全是確定性運算，不需要 LLM，速度快、結果穩定。
+        </p>
+        <p>
+          但有三類問題結構分析回答不了：(1) 這份 repo 的自然語言摘要；
+          (2) 程式碼邏輯上分幾層（API / domain / infra / util 這類人類直覺的分層）；
+          (3) 從哪個檔案進去讀最有效率。這三個問題需要「理解」，不只是「解析」。
+          語意層就是為此存在。
+        </p>
+
+        <h2>可插拔後端：claude subprocess vs gemma HTTP</h2>
+        <p>
+          設計上最重要的決定是「不綁死單一 LLM」。claude 透過 subprocess 呼叫，
+          用 stdin 傳 prompt（避開長 prompt 的 argv 字數限制），環境變數
+          <strong>NOMAD_CLAUDE_BIN</strong> 讓呼叫方可以注入任何 wrapper binary，
+          nomad-hub 本體完全不碰認證細節。gemma 走既有的本地 HTTP server（port 8095），
+          複用 gemma.py 的 chat 介面。
+        </p>
+        <p>
+          底層的 <strong>llm_runner.py</strong> 只公開一個介面：<strong>invoke(prompt, backend)</strong>。
+          所有失敗都收斂為 <strong>LLMUnavailable</strong>，讓上層決定降級策略，
+          runner 自己不做策略判斷。這讓後端的切換對呼叫端完全透明。
+        </p>
+
+        <h2>三個語意產物與各自的 fallback</h2>
+        <p>
+          語意層產出三種東西：
+        </p>
+        <p>
+          <strong>summary</strong>（專案摘要）：用自然語言描述這個 repo 在做什麼。
+          LLM 失敗時沒有 fallback——空字串。理由是強迫給一個機器生成的假摘要還不如讓前端顯示「未生成」。
+        </p>
+        <p>
+          <strong>layers</strong>（邏輯層次）：LLM 版能識別出 7 個語意層次（API、Domain、Infrastructure、
+          Config、Scripts、Tests、Utils）；heuristic 版用檔案路徑關鍵字規則，固定回 3 層。
+          claude 版和 heuristic 版的差距是 7 vs 3——LLM 品質明顯勝出。
+        </p>
+        <p>
+          <strong>tour</strong>（導覽路線）：推薦陌生人依序閱讀的檔案清單。
+          LLM 版生成 17 個步驟，各步驟有文字說明；heuristic 版算出 115 個（把所有節點都排進去），
+          數量多但完全沒有敘述，對新人用處有限。
+        </p>
+        <p>
+          layers 和 tour 都有 heuristic fallback，summary 沒有。這個設計讓降級後仍有可用的輸出，
+          前端靠「來源徽章」（LLM vs heuristic）讓使用者知道當前結果是哪個品質。
+        </p>
+
+        <h2>同步等 77 秒太長：改成背景 Job + 輪詢</h2>
+        <p>
+          首版直接做同步 API：POST /semantic，伺服器等 LLM 跑完才回 response。
+          問題出在 claude 要 77 秒（3 次 haiku call），gemma 要 190 秒（3 個大 prompt）。
+          前端乾等將近 3 分鐘，這不可用。
+        </p>
+        <p>
+          改法是引入 <strong>SemanticJobManager</strong>：POST 立即回 `{status: "running", started: ...}`，
+          背景 thread 執行語意分析，前端每 3 秒 GET /semantic/status 輪詢。
+          Job manager 有 <strong>single-flight</strong> 設計——同一個專案如果已在跑，
+          重複 POST 不會觸發第二次 LLM 呼叫，直接回 running 狀態。
+        </p>
+        <p>
+          快取設計讓重啟不丟結果：job 跑完，產物寫進 {id}-semantic.json；
+          重啟後 GET status 若 in-memory 沒有 job 紀錄，會去查快取檔，有就回 completed。
+        </p>
+
+        <h2>三條路徑的端對端實測</h2>
+        <p>
+          驗證跑了三條路徑：
+        </p>
+        <p>
+          <strong>降級路徑</strong>（無可用 LLM）：3 個產物全觸發 LLMUnavailable，
+          回 summary=None、layers=3 heuristic、tour=115 heuristic。4 秒、deterministic。
+          這條路徑讓系統在完全沒有 LLM 的環境也能運作。
+        </p>
+        <p>
+          <strong>claude 真實呼叫</strong>：全 LLM 來源、零錯誤、摘要描述精準、
+          frameworks 正確（FastAPI / Typer / Uvicorn）、7 層 vs heuristic 3 層、
+          17 步導覽 vs heuristic 115 步。77 秒。
+        </p>
+        <p>
+          <strong>gemma（本地 HTTP）</strong>：全 LLM 來源、繁中摘要、frameworks 正確；
+          layers 因 gemma 3 的 pattern matching 能力弱，全部歸入 'Other'（這是合理的品質差距）。190 秒。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>結構 ≠ 語意</strong>：tree-sitter 解析出精確的知識圖，但「這個專案是什麼」需要 LLM 才能回答。兩層各司其職、不相互替代。</p>
+          <p><strong>降級策略讓 LLM 成為可選項</strong>：layers 和 tour 有 heuristic fallback，summary 沒有。區別在於「沒有就沒有」比「給個沒意義的假答案」誠實。</p>
+          <p><strong>single-flight 防重複觸發</strong>：LLM 呼叫貴又慢，同一個 job 在進行中時，後續 POST 應直接回 running 而非重跑。77 秒 / 190 秒的情境下這個保護非常重要。</p>
+          <p><strong>可注入的 binary 路徑讓認證邏輯外部化</strong>：NOMAD_CLAUDE_BIN 讓系統本體完全不碰 auth 細節，呼叫方負責注入有認證能力的 wrapper。這是乾淨的責任邊界。</p>
+          <p><strong>快取 + 輪詢讓長時間 job 可用</strong>：同步 API 對 77-190 秒的任務是死路。背景 job + 每 3 秒輪詢 + 重啟後讀快取，讓長時間 LLM 呼叫變成可用的 UX。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-02 · nomad-hub v0.2.x · commit d45cb2d（語意層）+ 506477c（背景 job）· 測試 213→256
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
