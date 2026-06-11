@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-12** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-04-nomad-hub-portowner-fix.html`（後端 304 tests 全綠但前端 ReferenceError，Node vm sandbox 跨語言守衛，RED 先讓測試 fail，cache bust 同 commit）、
+  `2026-06-02-nomad-hub-semantic-layer.html`（tree-sitter 知識圖加 LLM 語意層，可插拔 claude/gemma，降級 heuristic 保底，背景 job 避免同步等 77 秒）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-12.
+
 - **2026-06-11** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-06-10-bobo-labs-gsc-first-index.html`（技術 SEO 就緒兩個月 GSC 索引仍 0，首次手動叩關 5 篇理財公式集群，topical cluster 策略 + 配額管理）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
