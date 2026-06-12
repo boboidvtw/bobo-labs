@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>headroom M7：把壓縮引擎長成真正的 Rust axum HTTP proxy · Bobo Labs</title>
+  <meta name="description" content="M7 是 headroom 學習重建的關鍵一步——把只能接受 stdin 的壓縮引擎長成一個真正可跑的 HTTP proxy，接收 Claude API 請求、壓縮、轉發、原樣串流 SSE 回應。過程踩了四個 Rust 特有地雷。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-12-headroom-m7-axum-proxy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-12</p>
+      <h1 class="article-title">headroom M7：把壓縮引擎長成真正的 Rust axum HTTP proxy</h1>
+      <p class="article-lede">
+        M0–M6 建好的壓縮引擎只接受 stdin、只能用 CLI 呼叫。
+        M7 讓它長出 HTTP：用 axum 0.7 接收 Claude API 請求、
+        過壓縮 pipeline、把 SSE 串流按事件邊界重切後轉發回去。
+        全程 TDD，七個整合測試一次全綠，過程踩了四個 Rust 特有地雷。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼 SSE 重切器必須先改再測 proxy？</h2>
+        <p>
+          原本的 SSE splitter（<code>feed</code> 方法）吐事件時會丟掉邊界字節——
+          它知道 <code>\n\n</code> 是一個 SSE 事件邊界，但吐出去的 frame 不帶這個邊界，
+          只有事件內容。用它重組回程的 bytes 就會不一致。
+        </p>
+        <p>
+          新 API <code>split_frames</code> 吐「含原始邊界的 frame」。
+          不變量可以直接測：<code>concat(frames) + take_remaining() == 所有輸入</code>。
+          任何一個 byte 都不能少。重構成功的標準是舊的 4 個測試一個不動照過，
+          4 個新測試也全綠——只有這樣才算「安全重構」而不是「換一種寫法猜看看」。
+        </p>
+
+        <h2>整合測試：問引擎本人，不要預設期望值</h2>
+        <p>
+          Python 版的 proxy 測試用 <code>httpx.MockTransport</code> 假裝網路，
+          全程在 process 內跑。Rust 版的策略不同：
+          mock axum server 綁 <code>127.0.0.1:0</code> 隨機埠、
+          proxy 把請求轉發到這個本地 server、server 攔下實際收到的 method / uri / headers / body。
+          走真正的 TCP 網路棧，streaming 路徑才測得到，<code>rechunk_sse</code> 不是在內存裡跑的。
+        </p>
+        <p>
+          期望值的設定方式：
+          直接呼叫 <code>process_request(MESSY)</code> 問引擎本人「你會把這個輸入變成什麼」，
+          proxy 測試用那個答案當 expected。<strong>proxy 測試不該有引擎邏輯的意見，
+          只測「proxy 有沒有把引擎說的話完整送達」。</strong>
+        </p>
+        <p>
+          七個整合測試涵蓋：全路徑 fallback 轉發、POST body 過 pipeline、
+          hop-by-hop headers 過濾（<code>connection</code> / <code>transfer-encoding</code> 等）、
+          回程 stream 不攢整包、SSE 且無 content-encoding 才重切。
+        </p>
+
+        <h2>四個 Rust 特有地雷</h2>
+        <p>
+          <strong>地雷一：MutexGuard 不能跨 await。</strong>
+          CcrStore 的鎖必須在 <code>await</code> 點之前釋放，否則編譯器會說
+          <code>MutexGuard</code> 不是 <code>Send</code>，整個 future 就不能跨線程。
+          解法是用大括號把鎖的存活範圍縮小到 <code>await</code> 之前。
+          這不是 workaround，是正確設計：pipeline 是同步呼叫，鎖確實在 await 前就該釋放。
+        </p>
+        <p>
+          <strong>地雷二：reqwest bytes_stream 不保證 Unpin。</strong>
+          <code>unfold</code> 的 async 閉包要 <code>.next()</code> 需要流是 Unpin，
+          reqwest stream 不是。解法是 <code>Box::pin</code>，因為
+          <code>Pin&lt;Box&lt;S&gt;&gt;</code> 恆 <code>Unpin</code>。
+        </p>
+        <p>
+          <strong>地雷三：reqwest 刻意 default-features=false。</strong>
+          不開 <code>gzip</code> feature 就不會自動解壓。
+          自動解壓後 body 和 <code>content-encoding</code> header 就不一致，
+          byte-faithful 轉發直接破功。壓縮後的流要原樣穿過代理，
+          不能讓 reqwest 在背後悄悄解開。
+        </p>
+        <p>
+          <strong>地雷四：SSE 重切要躲開有 content-encoding 的流。</strong>
+          如果上游回應帶 <code>content-encoding: gzip</code>，
+          事件邊界（<code>\n\n</code> / <code>\r\n\r\n</code>）在密文裡找不到，
+          splitter 會緩衝到天荒地老。這種流必須原樣轉發，不能進 rechunk 路徑。
+          判斷條件：SSE（<code>content-type: text/event-stream</code>）
+          且無 content-encoding，才重切。
+        </p>
+
+        <h2>串流結束前要沖洗殘料</h2>
+        <p>
+          上游最後一包 SSE 資料如果沒帶結尾邊界，
+          splitter 的緩衝區裡還有剩餘 bytes 沒吐出去。
+          stream 結束（<code>None</code>）時要呼叫 <code>take_remaining()</code> 把殘料補吐，
+          否則最後幾個 byte 就消失了。
+          這也是 M7 第一步先把 SSE API 改掉的原因——
+          舊版沒有 <code>take_remaining</code>，強行用舊版 proxy 是不可能 byte-faithful 的。
+        </p>
+
+        <h2>數字與下一步</h2>
+        <p>
+          M7 完成後：Python 30 / Rust 40（新增 SSE 3 + proxy 7）/ parity gate 4 fixtures，
+          clippy 0 warnings，全綠。
+          commit <code>bf024e4</code>（feat）+ <code>54aad4a</code>（docs），已推上 fork。
+        </p>
+        <p>
+          M7 解鎖了真流量實測——現在可以把 proxy 指向真實的 Anthropic API，
+          用真實的 <code>claude-haiku</code> 請求驗證快取命中率和壓縮省錢的實際數字。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>SSE 重組的不變量要可測</strong>：concat(frames) + take_remaining() == 原始輸入，任何一個 byte 都不能少。先測這個不變量，proxy 才能放心用這個 API。</p>
+          <p><strong>整合測試問引擎本人當期望值</strong>：proxy 測試不該寫死「引擎應該輸出 X」，直接呼叫引擎問它。引擎邏輯改了，proxy 測試自動跟上，不會變成脆測試。</p>
+          <p><strong>reqwest default-features=false 是有意識的選擇</strong>：gzip 自動解壓是 convenience，但在 byte-faithful proxy 裡是破壞者。選技術棧時要知道每個 feature flag 在做什麼。</p>
+          <p><strong>Rust async 的 MutexGuard 存活範圍必須主動縮小</strong>：不是 workaround，是正確設計的表達——讓鎖的存活時間精確反映實際需求。</p>
+          <p><strong>byte-faithful 代理的核心約束傳染給所有決策</strong>：自動解壓不行、SSE 重切要躲壓縮流、殘料要沖洗——每個決策都是同一個原則的衍生。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-12 · headroom fork (boboidvtw/headroom) · Rust 40 tests / Python 30 tests / parity 4 fixtures · M7 完成
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>把 1200 個 Python 檔案的 codebase 裝進知識圖 — Understand Anything 外掛設定 · Bobo Labs</title>
+  <meta name="description" content="nomad-hub 長到 1200 個 .py 檔案，靠記憶導航開始跟不上自己寫的東西。Understand Anything 外掛把 codebase 解析成可搜尋的知識圖——這篇記錄安裝、快取架構，和它的七階段分析流程。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-31-understand-anything-plugin.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-31</p>
+      <h1 class="article-title">把 1200 個 Python 檔案的 codebase 裝進知識圖</h1>
+      <p class="article-lede">
+        nomad-hub 長到 1200 個 .py 檔案、16 個子專案管理器，靠記憶在 FastAPI 路由和 core 模組間導航，
+        效率開始掉。問題不是「忘了在哪」，是「沒有一張圖讓我看清楚整個系統的依賴結構」。
+        Understand Anything 外掛的設計就是解這個問題——把 codebase 解析成節點和邊組成的知識圖，
+        再用互動式儀表板讓你搜尋、瀏覽、導覽。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼 1200 個檔案需要知識圖</h2>
+        <p>
+          nomad-hub 是個 FastAPI 後端，管理 16 個子專案的啟停、健康偵測、版本追蹤。
+          最早只有幾百行，現在已有完整測試套件、LLM 語意分析層、launchd 自動部署。
+          每次要改一個模組，先要把它的依賴關係在腦中重建一遍。
+        </p>
+        <p>
+          知識圖解決的是這個重建成本。把 import 關係、模組層次、API 入口全部顯式化，
+          讓「這個函式被誰呼叫」「改這個 schema 會影響哪些路由」變成一個查詢而非一次推演。
+        </p>
+
+        <h2>外掛是什麼、怎麼裝</h2>
+        <p>
+          Understand Anything（github.com/Lum1104/Understand-Anything）是一個開源 Claude Code 外掛。
+          它不依附 Claude 官方的延伸系統，而是把自己複製進 Claude Code 的本地 plugin cache，
+          由 Claude Code 在啟動時掃描並註冊 skill。
+        </p>
+        <p>
+          安裝分兩步：clone 專案後跑 pnpm install（394 個依賴，@understand-anything/core 自動構建），
+          然後把 understand-anything-plugin 子目錄複製到 Claude Code plugin cache 的版本路徑下。
+          版號必須一致——package.json 的 2.7.5 和 .claude-plugin/plugin.json 的 2.7.5 要完全對齊，
+          否則 Claude Code 啟動掃描時會跳過這個目錄。
+        </p>
+        <p>
+          快取複製完成後必須開新的 Claude Code 會話才能用，因為 skill 是在啟動時掃描的，
+          不是熱載入的。這是外掛架構的一個固有限制，不是 bug。
+        </p>
+
+        <h2>七階段分析流程</h2>
+        <p>
+          外掛的核心是一條 7 phase 的分析 pipeline：
+        </p>
+        <p>
+          Phase 0（Pre-flight）驗證專案根目錄和 worktree 狀態。
+          Phase 1（Project Scan）枚舉所有檔案、偵測主要語言、估算複雜度。
+          Phase 2（File Analysis）用 LLM agents 批量解析每個檔案的結構——1200 個 .py 分批處理，每批調用一次 LLM。
+          Phase 3（Import Map）根據靜態解析建立模組依賴圖。
+          Phase 4（Architecture Inference）推斷 API/Service/Data 各層的邊界。
+          Phase 5（Tour Builder）根據依賴順序自動生成導覽路線。
+          Phase 6（Graph Review）對整張圖做完整性驗證。
+        </p>
+        <p>
+          整個流程的輸出是一個 .understand-anything/knowledge-graph.json，包含幾百到幾千個節點，
+          每個節點代表一個檔案、類別或函式，邊代表 import 或呼叫關係。
+          儀表板從這份 JSON 渲染出互動式圖形——75% 畫布加 360px 右側欄，支援模糊搜尋和語意搜尋。
+        </p>
+
+        <h2>外掛架構的設計選擇</h2>
+        <p>
+          外掛分三層：skills（Claude Code slash commands）、agents（各司其職的 LLM 分析子代理）、
+          packages/core（搜尋類型和 schema 的共用庫）。
+          skill 和 agent 分離意味著每個分析步驟可以獨立測試，
+          也可以在不同的工具組合下替換。
+        </p>
+        <p>
+          有八個 skill 分別對應不同的分析需求：
+          /understand（完整分析）、/understand-dashboard（開啟儀表板）、
+          /understand-diff（評估一個檔案改動會影響哪些下游）、
+          /understand-chat（在知識圖上問問題）。
+          diff 影響分析特別有用——改 core/registry.py 之前，先問一下哪些模組和測試會受到牽連。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>版號對齊是硬性前提</strong>：package.json 和 plugin.json 的版號必須完全一致，差一個字母 Claude Code 就不認這個 plugin。版號不是可選項，是識別機制。</p>
+          <p><strong>新 session 才能看到新 skill</strong>：Claude Code 在啟動時掃描 plugin，不是熱載入。複製 plugin 後必須開新 session，用同一個 session 測是測不到的。</p>
+          <p><strong>靜態解析 + LLM 分析分兩層</strong>：Phase 1-3 是純靜態（tree-sitter 或 import 解析），Phase 2-5 才有 LLM 介入。這讓基礎結構圖在沒有 LLM 時也能跑出來。</p>
+          <p><strong>知識圖不是文件的替代品</strong>：它解決的是「依賴邊界在哪」的問題，不是「這段邏輯在做什麼」的問題。後者還是得看 code 和 commit message。</p>
+          <p><strong>大型 codebase 的分析時間要有預期</strong>：1200 個 .py 分批 LLM 分析，預估 10-20 分鐘。這不是 bug，是吞吐量。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-31 · nomad-hub · 1200 個 .py 檔案 · 16 個子專案管理器 · 7 phase 分析 pipeline
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
