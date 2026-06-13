@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三組 curl 確認 headroom proxy：cache 不破、省 81.6% token、SSE 照穿 · Bobo Labs</title>
+  <meta name="description" content="headroom M7 proxy 接上真 Anthropic API 的三組對照實驗：相同 body 兩次請求 cache_read 11685（全命中）；300 行 tool_result 壓縮後 input_tokens 從 10516 降到 1939（省 81.6%）；SSE 串流事件序完整穿過，cache 照命中。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-12-headroom-live-traffic.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-12</p>
+      <h1 class="article-title">三組 curl 確認 headroom proxy：cache 不破、省 81.6% token、SSE 照穿</h1>
+      <p class="article-lede">
+        headroom M7 proxy 從 localhost 指向真實 Anthropic API，跑三組對照實驗。
+        不經 Claude CLI，直接 curl——控制變因最乾淨。
+        三組全過：cache 在 pipeline 動過 body 之後仍然全命中、
+        壓縮讓 input_tokens 從 10516 降到 1939（省 81.6%）、
+        SSE 串流事件序完整穿過且 cache 同時命中。
+        北極星不再是理論，是真 API 上的數字。
+      </p>
+
+      <div class="article-body">
+        <h2>實驗 A：pipeline 動過 body 之後 cache 還命中嗎？</h2>
+        <p>
+          headroom 的最核心假設是「確定性」：同樣的輸入，永遠產出同樣的 bytes。
+          只要確定性成立，Anthropic API 的 prompt cache 就能正常工作——
+          因為 cache 的 key 是 body 的 hash，hash 不變 cache 就命中。
+        </p>
+        <p>
+          實驗 A 用一個大 system prompt（約 12k tokens，帶 cache_control）送兩次相同請求。
+          第一次：cache_creation: 11685，第二次：cache_read: 11685——完全命中。
+          這同時驗證了 pipeline 的確定性：body 確實被 pipeline 處理過（register_ccr_tool 加了工具），
+          但「同輸入 → 永遠同 bytes → hash 相同 → cache 命中」這條鏈成立。
+        </p>
+
+        <h2>實驗 B：壓縮真的省錢，而且模型還答對</h2>
+        <p>
+          實驗 B 比較「直連 vs 經 proxy」的 input_tokens。
+          測試資料是 300 行的 tool_result（約 18KB），內含模擬的應用程式日誌。
+          直連：input_tokens 10516。經 proxy 壓縮後：input_tokens 1939，減少 81.6%。
+        </p>
+        <p>
+          但省了 token 不代表答對。壓縮策略是 head 20 行 + tail 10 行 + squeeze 標記——
+          用結構性截取保留日誌的開頭和尾巴。問題是「這份日誌有沒有 error？」
+          模型在壓縮後的版本裡正確回答了這個問題，沒有呼叫 ccr_retrieve 工具取回原始內容。
+          壓縮沒有讓模型犯錯，至少在這類「存在性判斷」問題上。
+        </p>
+
+        <h2>實驗 C：SSE 串流和 cache 可以同時存在</h2>
+        <p>
+          stream: true 會讓 API 改用 SSE 格式回應，headroom 需要把串流重新切割後轉發。
+          實驗 C 確認兩件事：SSE 的事件序列完整（message_start → content_block_start →
+          content_block_delta → content_block_stop → message_delta → message_stop）；
+          cache 在串流模式下同樣命中。
+        </p>
+        <p>
+          這個實驗排除了「streaming 和 caching 互斥」的擔憂。
+          在 Anthropic API 的現有 beta flags 組合下，兩者可以同時運作。
+        </p>
+
+        <h2>北極星指標公式：看總和，別只看單欄</h2>
+        <p>
+          Anthropic API 的計費有三個 token 欄位：input_tokens（全價）、
+          cache_creation（1.25×，建立快取的成本）、cache_read（0.1×，命中時的折扣）。
+        </p>
+        <p>
+          只看 input_tokens 會誤判：有 cache_creation 發生時，那次請求其實比沒有 cache 更貴。
+          只有在後續請求用 cache_read 命中，整批請求的總成本才下降。
+          正確的北極星指標是看「多輪對話的加總」：總成本 = Σ(input × 1.0 + cache_creation × 1.25 + cache_read × 0.1)。
+          這是跨輪次評估 proxy 效益的正確單位。
+        </p>
+
+        <h2>Haiku 4.5 的 cache 門檻是 4096 tokens</h2>
+        <p>
+          實驗過程中發現，prompt 太短時 cache_creation 是 0——不是沒觸發，是 API 靜默略過了。
+          Anthropic 的各模型有不同的 prompt cache 最低門檻：
+          Opus 4096 tokens、Sonnet 4.6 是 2048 tokens、Sonnet 4.5 是 1024 tokens、
+          Haiku 4.5 是 4096 tokens。
+          設計測試時 prompt 要夠大，不到門檻的請求不會建立 cache，也就無從驗證 cache 行為。
+        </p>
+
+        <h2>為什麼要做「重序列化對照組」之後才下結論</h2>
+        <p>
+          實驗過程中有一個差點誤判的時刻：把錄下的 body 重新序列化之後重放，命中了 cache。
+          一度以為「API 是 content-level hashing、格式不影響」。
+        </p>
+        <p>
+          事後驗證：Claude Code 本來就送 compact JSON，Python round-trip 之後 bytes 完全相同
+          （只有 stream 旗標 2 bytes 的差異）。那次命中只是「同 bytes 命中自己」，
+          不是「不同格式也能命中」。
+          錯誤結論是因為沒有確認「實驗裡的差異真的存在」就下結論。
+          下結論前先驗證前提——這不只是科學原則，也是 debug 的基本工作。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>確定性是 cache 的基礎</strong>：同輸入必須永遠產出同 bytes，cache key（body hash）才不會每次都不同。pipeline 的所有操作都要保持這個性質。</p>
+          <p><strong>壓縮省 token 的同時要驗模型答題品質</strong>：81.6% token 減少有意義，但如果模型因此答錯就沒有意義。存在性判斷問題可以用截取策略通過，但邊界案例需要 ccr_retrieve 補完。</p>
+          <p><strong>北極星看多輪總成本，不看單次 input_tokens</strong>：cache_creation 讓建立 cache 的那輪更貴，cache_read 讓後續輪次很便宜。平均成本要跨多輪計算。</p>
+          <p><strong>Haiku 4.5 cache 門檻 4096 tokens</strong>：不到門檻的 prompt 靜默略過 cache，不報錯也不建立。設計 cache 實驗要確認 prompt 夠大。</p>
+          <p><strong>下結論前先確認前提差異存在</strong>：「命中了」不代表「因為這個改動命中了」。排除「兩組其實是同 bytes」的可能性，才能做出有意義的結論。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-12 · headroom · M7 Axum proxy · 真實 Anthropic API 實驗 · cache_read 11685 全命中 · input_tokens 10516→1939（-81.6%）
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

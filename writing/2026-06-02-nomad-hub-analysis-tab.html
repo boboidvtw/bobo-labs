@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>tree-sitter 拆結構、LLM 賦語意：nomad-hub Analysis tab 兩個 session 完工 · Bobo Labs</title>
+  <meta name="description" content="用 tree-sitter 做離線確定性結構分析，再加 claude/gemma 可插拔語意層（graceful degradation）——Analysis tab 從零到背景 job，兩個 session、213→256 tests。最大教訓：mock 測試用絕對路徑，preview 端到端才會踩到 ~ 未展開的 bug。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-02-nomad-hub-analysis-tab.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-02</p>
+      <h1 class="article-title">tree-sitter 拆結構、LLM 賦語意：nomad-hub Analysis tab 兩個 session 完工</h1>
+      <p class="article-lede">
+        Understand Anything 的核心能力分兩層：tree-sitter 做確定性結構分析（離線、零 LLM），
+        LLM 做語意摘要、層次推斷、導覽路線（可選、可降級）。
+        兩個 session 把這兩層都接上，最後加了背景 job + 輪詢，
+        讓 77 秒的 claude 呼叫不卡住前端。測試從 213 到 256，全部 100%。
+      </p>
+
+      <div class="article-body">
+        <h2>選途徑前先 spike 驗證前提</h2>
+        <p>
+          Analysis tab 有幾個實作方向可選：跑 claude -p headless、嵌入 Understand Anything dashboard、
+          或直接從 Node 呼叫 @understand-anything/core 的 tree-sitter 解析器。
+        </p>
+        <p>
+          在提案之前先跑了一個唯讀 spike：能不能從外部 import @understand-anything/core？
+          init 花多久？驗證結果：可以 import、init 只需要 20–34 ms、
+          正確提取 symbols、build() 產出標準 KnowledgeGraph。
+          最重要的是確認了「cwd 獨立」：core 的 require.resolve 是相對自己的 dist 位置解析，
+          從任意目錄呼叫都沒問題。
+        </p>
+        <p>
+          這是整個途徑能成立的前提。不驗這個就直接實作，代價是中途發現相依路徑無法在 nomad-hub 下解析。
+          spike 的成本是十分鐘，省下的是整個途徑走錯的風險。
+        </p>
+
+        <h2>~ 路徑未展開：mock 測試測不到的 bug</h2>
+        <p>
+          實裝完成後跑 preview，第一次真實分析失敗，回報「路徑不存在」。
+          registry 裡存的是 ~/程式倉庫/nomad-hub，但 Python 的 Path.is_dir() 和 Node 的 statSync
+          都不認識 shell 的 ~ 符號——它不是標準路徑，是 shell 的展開約定。
+        </p>
+        <p>
+          修法：在 analysis_runner.py 統一用 Path(project_path).expanduser() 展開後再傳給 Node。
+          展開只在一個地方做（runner），不分散到 mjs 各自處理——單一責任點。
+        </p>
+        <p>
+          為什麼測試沒抓到？因為 mock 測試傳的是 tmp_path（絕對路徑），不含 ~。
+          只有真實 registry 資料才會踩到這個 bug。
+          這是「preview 端到端不可省」的又一個例子。
+        </p>
+
+        <h2>import 邊解析：Python 點分模組 vs JS ESM .js 副檔名</h2>
+        <p>
+          GraphBuilder 有一個 addImportEdge，負責建立模組間的依賴關係。
+          但修前的 Python import 邊是 0 條、TS import 邊只有 2 條——顯然解析全錯。
+        </p>
+        <p>
+          Python 的問題：import 是點分模組格式（nomad_hub.api.routes_x），
+          不是相對路徑（./routes_x）。從點分格式映射回檔案路徑，
+          需要把 . 換成 /，加上 root 前綴，試 .py 和 /__init__.py 兩種可能。
+        </p>
+        <p>
+          TypeScript ESM 的問題：import "./types.js" 的實體檔是 types.ts（ESM 慣例帶 .js 副檔名）。
+          直接比對 .js 當然 miss，要先剝掉 .js/.jsx 後綴，換成 .ts/.tsx 再比對。
+        </p>
+        <p>
+          修後：Python 0→59 邊，TypeScript 2→263 邊。知識圖從幾乎沒有依賴邊，變成有意義的模組關係圖。
+        </p>
+
+        <h2>為什麼 D3 要 self-host？</h2>
+        <p>
+          Analysis tab 的核心賣點是離線確定性分析——不需要 LLM、不需要外部服務。
+          但如果 D3 從 CDN 引入，斷網就畫不出圖，這個賣點就自我矛盾了。
+          所以把 D3 v7.9.0（280KB）vendor 進 repo，確保離線環境也能渲染知識圖。
+        </p>
+        <p>
+          預設視圖選「檔案依賴圖」（只顯示 file 節點和 import 邊），
+          而不是「完整結構」（含 function/class 節點，335 個節點）。
+          335 個節點同時顯示，label 會糊掉看不清楚。
+          可以切換到完整結構，但預設給清晰的模組依賴視圖。
+        </p>
+
+        <h2>可插拔 LLM 語意層：永遠有 heuristic 降級</h2>
+        <p>
+          語意層有三個產物：專案摘要（summary）、邏輯層次（layers）、導覽路線（tour）。
+          後端可選 claude（預設）或 gemma，任一產物失敗都獨立降級為 heuristic——
+          三個產物彼此獨立，一個 LLM 呼叫失敗不影響其他兩個。
+        </p>
+        <p>
+          實測數字：用 claude（3 次 Haiku 呼叫，77 秒），layers 是 7 個邏輯層次、tour 是 17 步；
+          降級 heuristic（4 秒，deterministic），layers 是 3 個、tour 是 115 步（按檔案數順序）。
+          LLM 品質明顯優於 heuristic，但 heuristic 確保分析永遠完成。
+          gemma（190 秒）的 layers 因小模型 pattern 識別弱，全歸 Other——
+          這是預期內的品質差異，不是 bug。
+        </p>
+
+        <h2>77 秒的同步呼叫不能讓前端乾等</h2>
+        <p>
+          同步端點讓前端等 77 秒（claude）或 190 秒（gemma）才收到回應。
+          改成背景 job + 輪詢：POST /semantic 立即回 {status: running}，
+          前端每 3 秒 poll GET /semantic/status，完成後渲染結果。
+        </p>
+        <p>
+          Job manager 實作了 single-flight（防止連點重複觸發 LLM）和 per-project 狀態追蹤。
+          重啟後的 in-memory 狀態消失，但如果 data/analysis/{id}-semantic.json 快取檔存在，
+          GET /semantic/status 就回 completed——讓 job 狀態在重啟後仍能查到（靠快取檔，不靠記憶體）。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>提案前先 spike 驗關鍵前提</strong>：「node 能不能從外部呼叫 core？」這個問題只需要十分鐘驗，省下整個途徑走錯的風險。</p>
+          <p><strong>~ 路徑在 Python 和 Node 都不認</strong>：Path.is_dir() 和 statSync 不做 shell 展開。接受 user 資料的地方統一做 expanduser()，不要假設使用者輸入的是絕對路徑。</p>
+          <p><strong>mock 測試用 tmp_path，target 測試用真實 registry</strong>：mock 測試抓不到「含 ~ 的路徑」這類 bug，preview 端到端才會踩到。</p>
+          <p><strong>可插拔 + 永遠降級</strong>：三個產物各自獨立，失敗各自降級 heuristic。降級不是妥協，是讓系統永遠能回傳有用結果的設計。</p>
+          <p><strong>背景 job 要解決 single-flight 問題</strong>：使用者連點「分析」不應該觸發多個 LLM 呼叫。per-project single-flight 加 thread-safe job manager，是長時間操作的標準模式。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-02 · nomad-hub Phase 5 · Analysis tab · tree-sitter（54 檔 / 222 函式 / 69 類別 / 62 依賴邊）· 語意層（claude 77s / gemma 190s）· 213→256 tests
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
