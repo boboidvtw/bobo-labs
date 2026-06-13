@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-14** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-12-headroom-live-traffic.html`（curl 三組實測 · cache 全命中 · input_tokens 省 81.6% · SSE 照穿）、
+  `2026-06-02-nomad-hub-analysis-tab.html`（tree-sitter 離線確定性分析 · LLM 語意降級 · 213→256 tests）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-14.
+
 - **2026-06-13** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-12-headroom-m7-axum-proxy.html`（axum HTTP proxy · SSE 重切不變量 · byte-faithful 七個整合測試全綠）、
   `2026-05-31-understand-anything-plugin.html`（1200 個 .py 知識圖 · 7 phase pipeline · import 依賴顯式化）。
