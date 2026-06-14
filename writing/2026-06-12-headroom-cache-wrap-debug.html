@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>錄音重放法找出快取殺手 — wrap Claude Code 後 cache 全歸零調查 · Bobo Labs</title>
+  <meta name="description" content="把真實 Claude Code session 導過 Rust proxy 後，Turn 2 的 cache_read 從 63695 掉到 0。兇手是 tools 陣列多了 1 個工具。最有價值的不是答案，是找到它的三步偵錯法：錄音 proxy → 離線重放 → stage bisect。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-12-headroom-cache-wrap-debug.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-12</p>
+      <h1 class="article-title">錄音重放法找出快取殺手 — wrap Claude Code 後 cache 全歸零調查</h1>
+      <p class="article-lede">
+        headroom M7 把真實 Claude Code session 導過 Rust proxy 後，Turn 2 的
+        <code>cache_read</code> 從直連的 63695 掉到 0。問題很確定是 proxy 造成的，
+        但 proxy 裡有 4 個變換步驟，哪個是兇手？
+        用「錄音 + 離線重放 + stage bisect」三步把嫌疑縮到 1 行，
+        過程還踩了一個差點讓我下錯結論的實驗設計陷阱。
+      </p>
+
+      <div class="article-body">
+        <h2>現象與挑戰</h2>
+        <p>
+          在同一台機器、同一個 API key、同一個對話歷史，Turn 2 的快取表現：
+          直連 API → <code>cache_read: 63695</code>；經 proxy → <code>cache_read: 0</code>。
+          兩者差距剛好是全部的 token 數，不是部分 miss，是全滅。
+        </p>
+        <p>
+          麻煩在於：你不能直接看 proxy 在傳什麼。Claude Code 的 request body
+          體積很大（整個上下文 + tools），我需要能在不動 proxy 邏輯的前提下，
+          完整捕捉每次 Claude Code 送出的 bytes，之後再慢慢分析。
+        </p>
+
+        <h2>步驟一：錄音 proxy</h2>
+        <p>
+          不動原來的 M7 proxy，在前面再加一個「錄音 proxy」：
+          標準函式庫的 <code>http.server</code> + <code>urllib</code>，攔截每個請求，
+          把 request body 與 headers 分開存成 JSON 檔，然後原封不動轉發給 M7。
+          憑證欄位不落地——只記 body，headers 另存一份（authentication 欄位單獨排除）。
+        </p>
+        <p>
+          錄音 proxy 本身不做任何轉換，所以快取命中率跟直連幾乎一致——
+          這讓錄音 proxy 也成為「乾淨對照組」，同時收下兩批資料：
+          Claude Code 真實送出的 bytes，以及 M7 轉換後送到 API 的 bytes。
+        </p>
+
+        <h2>步驟二：離線重放</h2>
+        <p>
+          有了錄好的 body 之後，可以離線重放：把每個 body 餵進 pipeline（模擬 M7 的轉換），
+          得到轉換後的版本，再用 curl 帶完整 headers 重打 API，觀察快取命中。
+        </p>
+        <p>
+          重放時有一個關鍵細節：必須帶上 Claude Code 本身傳的 <code>anthropic-beta</code>
+          header，包含 <code>context-management</code>、<code>prompt-caching-scope</code>
+          等 feature flag，少一個就會直接收到 400。
+          這些 flag 決定了 API 端如何解析 cache_control 欄位，差一個 flag 就是不同的快取行為。
+        </p>
+
+        <h2>步驟三：stage bisect</h2>
+        <p>
+          M7 pipeline 有 4 個轉換步驟：stabilize → compress → register → serialize。
+          把 pipeline 切成幾段，每段單獨重放，看哪段開始讓快取掛掉。
+        </p>
+        <p>
+          結果很快收斂：「只做 register」的 pair 重放 → 快取全滅；
+          「只做 stabilize + compress（不 register）」的 pair → 快取命中正常。
+          兇手鎖定是 <code>register_ccr_tool</code>——在 tools 陣列末端加了 1 個工具。
+        </p>
+
+        <h2>兇手是 1 個工具，但為什麼？</h2>
+        <p>
+          Anthropic 的 prefix cache 按渲染序逐 byte 比對前綴，
+          tools 是前綴最前面的一段。多了 1 個工具，整段 tools 就不同了，
+          後面的 system prompt 和 messages 雖然一樣，也救不回來。
+        </p>
+        <p>
+          更耐人尋味的是：Claude Code 自己發出的跨 process 流量，
+          即便 Agent tool description 的 agent 清單每次啟動順序都不一樣（2588 bytes 差異），
+          API 端還是給了 ~30k 的部分命中——這個容錯機制的細節不公開，
+          疑似跟 <code>prompt-caching-scope-2026-01-05</code> beta 有關。
+          但 <code>register_ccr_tool</code> 增加的那 1 個工具，
+          偏偏破壞了這個容錯：部分命中從 30k 變成 0。
+        </p>
+
+        <h2>差點下錯結論的實驗</h2>
+        <p>
+          調查中間，對「只做 reserialize（不改邏輯、只把 JSON 解析再序列化）」的 pair 重放，
+          結果快取全命中，一度以為「API 做的是 content-level hash、格式不影響快取」。
+        </p>
+        <p>
+          事後才驗清楚：Claude Code 本來就送 compact JSON，Python round-trip
+          後的 bytes 跟原始完全一樣（差 2 bytes 是 streaming flag），
+          那次命中只是「用同樣的 bytes 命中了自己剛剛打進去的快取」。
+          根本沒有任何「格式容忍」——是前提條件不成立，導致實驗失去意義。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>錄音 proxy 讓偵錯和執行分離</strong>：需要捕捉憑證敏感的 HTTP 流量時，「先錄下 body，之後離線重放」比「直接 debug live 流量」更安全、更可重現。</p>
+          <p><strong>下結論前先確認對照組真的有差異</strong>：「reserialize 命中了」看起來是結論，但前提是 bytes 要不同。bytes 完全相同時，命中的是自己——不是 API 的格式容忍。</p>
+          <p><strong>stage bisect 把問題縮到最小</strong>：4 個步驟不用逐一猜，切成兩半驗一半，幾輪就能鎖定。把 pipeline 設計成可單獨重放是關鍵前提。</p>
+          <p><strong>cache 容錯邊界要實測，不能靠推理</strong>：Claude Code 跨 process 有 ~30k 部分命中，但多 1 個工具就讓它歸零。這種非線性的容錯邊界，只有實驗才找得到。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-12 · headroom 學習分支 · M7 wrap Claude Code 實測 · cache_read 63695 → 0 bug 調查
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

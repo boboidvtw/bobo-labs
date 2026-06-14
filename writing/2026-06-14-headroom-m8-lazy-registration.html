@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>headroom M8：懶得掛工具，快取就保住了 · Bobo Labs</title>
+  <meta name="description" content="在 tools 加 1 個工具就讓跨 process 快取歸零，解法出乎意料地簡單：只在真正壓縮時才掛。M8 把這個決定往上推到 orchestration 層，Python TDD 先行、Rust 跟進，parity gate 用數字確認 bug 修掉了。同場加映：單 process 多輪實測，Turn 2 cache_read 100% 命中。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-14-headroom-m8-lazy-registration.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-14</p>
+      <h1 class="article-title">headroom M8：懶得掛工具，快取就保住了</h1>
+      <p class="article-lede">
+        2026-06-12 的調查找到了兇手：<code>register_ccr_tool</code> 每次請求都在 tools 陣列加 1 個工具，
+        害跨 process 的 ~30k 部分命中容錯失效，<code>cache_read</code> 全歸零。
+        M8 的解法只有一句話：不需要壓縮時就不要掛工具。
+        過程最有意思的部分是「把決定往上推一層」的架構移動，
+        以及 parity gate 用一個數字（436 → 436）確認 bug 消失了。
+      </p>
+
+      <div class="article-body">
+        <h2>問題根因回顧</h2>
+        <p>
+          headroom 的 <code>ccr_retrieve</code> 工具讓模型能主動召回被壓縮的上下文。
+          問題在於，原設計在每個請求都把這個工具注入 tools 陣列——
+          即使這次請求根本沒做任何壓縮，工具也會在那裡。
+        </p>
+        <p>
+          tools 陣列是 prefix cache 最前面的一段。多了 1 個工具，整段前綴就不同了，
+          API 端對跨 process 流量的部分命中容錯機制就失效了。
+          多數 session 不需要壓縮，卻全數付出了「tools 前綴變動」的代價。
+        </p>
+
+        <h2>設計移動：決定從 building block 上移到 orchestration</h2>
+        <p>
+          關鍵洞察是：<code>register_ccr_tool</code> 本身沒問題，問題是「何時呼叫它」。
+          原本這個決定在 building block 層（register 永遠被呼叫）；
+          M8 把它往上移到 orchestration 層，讓 compress 的結果決定要不要 register。
+        </p>
+        <p>
+          新的 pipeline 順序：<code>stabilize → compress → （有壓縮才）register</code>。
+          「有沒有壓縮」的訊號用 identity 傳遞——Python compress 若沒有壓任何東西，
+          回傳原物件本身（<code>result is original</code>）；
+          Rust 版本回傳 <code>Cow::Borrowed</code>（不可變借用）。
+          orchestration 層只看這個訊號，不需要 compress 函式知道 register 的存在。
+        </p>
+
+        <h2>工具放尾端，前綴保留更多</h2>
+        <p>
+          如果 compress 觸發了，tool 還是要掛。這時掛在 tools 陣列的哪個位置，
+          對快取影響截然不同。
+        </p>
+        <p>
+          Prefix cache 是逐 byte 前綴比對，從 <code>{"tools":[</code> 這個位置開始算。
+          如果把 <code>ccr_retrieve</code> 插到前面（例如排序到最前），
+          從 tools 第一個元素就開始分岔——後面所有 bytes 都在不同前綴上。
+          改放尾端：client 既有的 tools 維持 byte-identical，
+          divergence point 推到最後，保住更多前綴。
+          工具插哪裡，決定了快取能保住多少。
+        </p>
+
+        <h2>補齊 Python orchestration 層</h2>
+        <p>
+          M8 前，Python 沒有統一的 pipeline 函式——
+          步驟順序只內聯在 parity 測試腳本的 shell 命令裡。
+          這意味著 M7 proxy 要呼叫 Python pipeline 時，需要知道每個步驟的名字和順序。
+        </p>
+        <p>
+          M8 新增 <code>src/headroom_lite/pipeline.py::process_request</code>，
+          讓 Python 有了對稱於 Rust 的 <code>pipeline::process_request</code> 的 orchestration 入口。
+          M7 proxy 的 <code>proxy.rs:84</code> 透過這個入口接線，lazy registration 自動繼承進去，
+          不需要再動 proxy 層的代碼。
+        </p>
+
+        <h2>TDD：Python 先行，Rust 跟進，parity 把關</h2>
+        <p>
+          Python 7 個測試案例（涵蓋：不壓縮不掛工具、壓縮才掛、工具位置在尾端、
+          多次呼叫冪等性等），先寫測試、確認 RED（<code>ModuleNotFoundError</code>），
+          再寫實作讓它變 GREEN。全套 37 個測試通過。
+        </p>
+        <p>
+          Rust 對應的 4 個 pipeline 測試案例，含新增的 lazy-skip 情境。
+          全套 41 個測試通過，零 warning。
+        </p>
+        <p>
+          最有說服力的是 parity gate：5 個 fixtures 逐 byte 比對 Python 和 Rust 的輸出。
+          其中 <code>02_sacred_markers</code> 這個 fixture：舊版會把輸入從 436 bytes 變成 775 bytes
+          （無條件塞了 ccr 工具），新版從 436 → 436（乾淨穿透，沒有壓縮就沒有任何變化）。
+          那個 436 → 436，就是 bug 修掉的最直接證據。
+        </p>
+
+        <h2>單 process 多輪實測：理論與真實對齊</h2>
+        <p>
+          理論是：「確定性轉換在同一個 process 內不會破壞快取」。
+          M7 proxy 跑起來後，餵 2 輪 Claude Code session：
+          Turn 1 請模型記住數字 42，Turn 2 問那個數字是什麼。
+        </p>
+        <p>
+          Turn 1：<code>cache_read: 0</code>、<code>cache_creation: 63719</code>（建立快取）。
+          Turn 2：<code>cache_read: 63719</code>、<code>cache_creation: 412</code>（100% 前綴命中）。
+          proxy 觀測線的兩輪 bytes 計數完全一致（in == out），確認 proxy 是 byte-faithful 穿透。
+          成本 $0.088、耗時 6 秒。
+        </p>
+        <p>
+          這也帶出一個副洞察：真實 Claude Code 流量，引擎多半是 no-op passthrough——
+          Claude Code 本身就送規範化請求、自帶 cache_control，
+          stabilize 和 compress 步驟都不觸發。
+          M8 的 lazy 設計確保這種情況下工具不被掛上去，proxy 完全透明。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>決定往上推一層，building block 就能保持純粹</strong>：register_ccr_tool 本身無罪，有罪的是「永遠呼叫它」的決定。把「何時呼叫」上移到 orchestration，building block 的單元測試不用動，proxy 層也不用知道細節。</p>
+          <p><strong>工具放尾端，divergence point 往後推</strong>：prefix cache 從頭比，插前面從第一個 byte 就分岔。尾端插入讓現有工具維持 byte-identical，快取保住更多。</p>
+          <p><strong>parity gate 用數字說話</strong>：436 → 436（不 436 → 775）這個數字對比，比任何文字描述都更直接說明 bug 修掉了。測試的輸出設計成可閱讀的數字差異，code review 時一眼就看懂。</p>
+          <p><strong>in-process 多輪 vs cross-process 是兩個威脅模型</strong>：前者靠確定性轉換保快取，後者靠不動 tools 保前綴容錯。分開驗、分開設計，不要用同一個實驗同時證兩件事。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-14 · headroom 學習分支 realign-rewrite-learn · M8 lazy registration · Python 37 + Rust 41 tests · parity 5 fixtures
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
