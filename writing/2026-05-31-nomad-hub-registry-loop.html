@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>emoji 弄壞 JSON 序列化，順帶釐清 nomad-hub 讀寫邊界 · Bobo Labs</title>
+  <meta name="description" content="從一個 Claude Code tool-call parse 錯誤排查開始，做完 Discover tab 後端整合、釐清唯讀 vs 回寫的產品邊界，最後實作 scan→import 寫進 nomad-hub 自己 registry 的四 phase 閉環。9 commit，測試 86→151 通過，90% 覆蓋率。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-05-31-nomad-hub-registry-loop.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-05-31</p>
+      <h1 class="article-title">emoji 弄壞 JSON 序列化，順帶釐清 nomad-hub 讀寫邊界</h1>
+      <p class="article-lede">
+        起點是 Claude Code 連續吐出 "tool call could not be parsed (retry failed)"。
+        找到根因是 emoji 在 JSON 序列化時轉義不完全。從這個 bug 一路做下去，
+        完成了 Discover tab 後端整合、搞清楚唯讀 vs 回寫的產品邊界，
+        最後用四個 phase 實作了 scan→import 寫進 nomad-hub 自己 registry 的完整閉環。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼 emoji 會讓 tool call 無法 parse？</h2>
+        <p>
+          Claude Code 的 tool-call 參數走 JSON 序列化。test fixture 裡含密集 emoji（🟢🟡🔴📜⚙️），
+          序列化後轉義不完全，導致參數字串破損——Claude Code 收到破損的 JSON，
+          parse 失敗後重試，兩次都失敗就丟出 "retry failed"。
+        </p>
+        <p>
+          有趣的是，中文不會觸發這個問題，只有 emoji 會。解法有三層可選：
+          從 fixture 移除 emoji（最快）；遇錯改直接在終端跑 pytest（繞過 tool-call 路徑）；
+          或把 emoji 用 unicode escape 寫（\U0001F7E2），原始碼 ASCII-clean，執行時才還原成真 emoji。
+        </p>
+
+        <h2>改 parser 適配 fixture 是一個陷阱</h2>
+        <p>
+          為了配合「無 emoji fixture」，我把 parser 改成 `(?:🟢\s+)?Active`（emoji AND 英文）。
+          fixture 全綠，但真實的 ZH 源檔失效了。
+        </p>
+        <p>
+          真實 PROJECT_MAP-ZH.md 的 header 是 `### 🟢 主動開發中`（中文），
+          新正則只認 emoji OR "Active"，中文完全 miss——ZH active 從 11 條變 0 條，
+          system 從 12 條變 0 條，整個 Discover 中文介面消失。
+        </p>
+        <p>
+          正確的正則是 emoji OR 英文（`(?:🟢|Active)`），兩者擇一。
+          更重要的教訓是：改 parser 去配合測試 fixture 之後，必須用真實資料源跑一次驗證。
+          `python -c` 直接 parse 真實檔、數每個 section 的筆數，比看 fixture 綠燈可靠。
+        </p>
+
+        <h2>產品邊界：nomad-hub 應該寫哪裡？</h2>
+        <p>
+          原本的 nomad-dashboard 有一個 /api/update，把整個 dashboard 狀態覆寫回
+          ~/.gemini/PROJECT_MAP.md——跨生態、破壞性的寫入。
+          我一度把所有回寫全部禁掉，降級成純唯讀。
+        </p>
+        <p>
+          但這個判斷是錯的。nomad-hub 和 Gemini 是兩個分開的生態，
+          nomad-hub 的寫入應該進 nomad-hub 自己的 data/projects.json，
+          不是禁止寫入，也不是寫進 Gemini 源檔。
+          這個邊界釐清之後，後續的四 phase 閉環方向才對了。
+        </p>
+
+        <h2>四個 phase 完成 scan→import 閉環</h2>
+        <p>
+          Phase 1：registry 寫入層。add/update/remove/save 四個操作，
+          原子寫入（tmp 檔 + os.replace），ensure_ascii=False 確保 JSON 存中文不轉義。
+        </p>
+        <p>
+          Phase 2：/api/scan 改以 registry 為基準。「未登錄」的定義改成「registry 沒有的」，
+          而不是「PROJECT_MAP 沒有的」——分清楚哪個才是 nomad-hub 自己的真相來源。
+        </p>
+        <p>
+          Phase 3：標準 CRUD。POST/PUT/DELETE /api/projects，slug id 設計（底線轉連字號），
+          409 防重複，partial update 用 model_copy(update=..., exclude_unset=True)。
+        </p>
+        <p>
+          Phase 4：前端「匯入」按鈕接 POST /api/projects，匯入後自動重新 scan。
+          端到端驗證：scan 找到 3 個未登錄 → 匯入 claudecode_project → registry 從 16 到 17 →
+          重新 scan 剩 2 個、已匯入項消失。測試完用 git checkout data/projects.json 還原（git 就是備份）。
+        </p>
+
+        <h2>cache-busting：改靜態 JS 不夠，還要清 iframe 的 cache</h2>
+        <p>
+          改了前端 JS 之後，瀏覽器吃舊快取。加了 ?v= 版本號，結果 iframe 裡的 HTML
+          本身也被 disk cache 住——連 HTML 都要 cache-bust，不只是 JS 檔案。
+          這在一般頁面不常見，但 iframe 因為走獨立的 HTTP 請求，disk cache 積得更厚。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>emoji 在 JSON tool-call 參數是 parse 地雷</strong>：序列化轉義不完全，用 unicode escape（\U0001F7E2）或在 fixture 完全移除 emoji。中文不受影響。</p>
+          <p><strong>改 parser 配合 fixture 之後，必須用真實資料驗</strong>：fixture 全綠不代表真實資料也通。`python -c` 直接 parse 源檔數筆數，這個步驟不能省。</p>
+          <p><strong>讀寫邊界要明確宣告</strong>：nomad-hub 的 registry 是 nomad-hub 自己的，不是 Gemini 生態的延伸。跨生態寫入是紅線，寫進自己的 data/ 是正確邊界。</p>
+          <p><strong>os.replace 是原子寫入的標準做法</strong>：寫 tmp 檔再 replace，防止寫到一半崩潰留下半份資料。</p>
+          <p><strong>目視驗證後用 git checkout 自清理</strong>：測試時的真實寫入用 git 還原，乾淨、可重複、不污染真實資料。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-05-31 · nomad-hub Phase 5 · 9 commits · 86→151 tests · 90% 覆蓋率
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

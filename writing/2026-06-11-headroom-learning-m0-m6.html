@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>七個 milestone 重建 headroom：從 passthrough 到全 Rust pipeline · Bobo Labs</title>
+  <meta name="description" content="一天之內用 TDD 走完七個 milestone，把 Claude API 快取壓縮代理從 Python FastAPI 移植到 Rust，並建立跨語言 byte-for-byte parity gate。最大教訓是「語意相等 ≠ bytes 相等」在三個不同地方踢到同一顆石頭。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-11-headroom-learning-m0-m6.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-11</p>
+      <h1 class="article-title">七個 milestone 重建 headroom：從 passthrough 到全 Rust pipeline</h1>
+      <p class="article-lede">
+        headroom 是一個坐在 Claude API 前的代理，負責壓縮過大的 tool_result、
+        讓 prompt cache 保持命中。我花一天時間用 TDD 從零重建它——
+        Python 先行、Rust 跟上、最後用 parity gate 腳本化驗收，
+        七個 milestone 全部走完。最大的收穫不是程式碼，是同一個 bug 連踢三次才真正記住。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼要重建，而不是直接延伸現有程式碼？</h2>
+        <p>
+          這個 fork（boboidvtw/headroom）已有 1465 個 commits，PR-A1 到 G3
+          的大部分功能早就實作了。原本的計劃是看著 issue 繼續往下走，
+          但盤點後發現 issues 是兩週前建的舊追蹤項，
+          真正的缺口只剩 Phase H（Python 退役）和幾個 CI gate。
+        </p>
+        <p>
+          重新和使用者確認方向後，答案是「從頭重做」——不是清空重寫，
+          而是在 <code>rewrite/</code> 子目錄從零建核心精華，
+          現有成熟程式碼當解答本。這是學習導向的重建，不是工程改版。
+        </p>
+
+        <h2>M0–M2：快取的根本是確定性，不是壓縮</h2>
+        <p>
+          M0 建最薄的 passthrough：FastAPI + httpx，把 request body 原封不動轉發。
+          就是這步讓 M0 教訓刻進腦子：<strong>快取不是「存起來」，是「逐字節前綴比對」</strong>。
+          把 body 用 <code>json.dumps</code> 重序列化一次就全 miss，
+          因為 Python dict 不保證 key 順序、且 Unicode 跳脫序列（<code>\u</code> 開頭）與空格規則都可能不一樣。
+          想讓快取命中，proxy 必須輸出 byte-for-byte 相同的內容。
+        </p>
+        <p>
+          M1 加 live-zone 壓縮（只壓 <code>messages[-1]</code> 的 user tool_result）。
+          選擇「只壓最後一輪」的鐵律是確定性：client 每輪重送完整歷史，
+          同樣的輸入必須得到同樣的輸出，標記放 sha256 而不是時間戳。
+        </p>
+        <p>
+          M2 是 SSEByteSplitter + MessageAccumulator——接收 streaming 回應、
+          逐字節緩衝到完整才 decode。第一個地雷：<code>errors="ignore"</code>
+          會靜默吞掉被切半的 emoji（編號 P1-8），變成 silent data corruption。
+          正確做法是緩衝到有完整 UTF-8 序列才 decode，不丟 bytes。
+        </p>
+
+        <h2>M3：「語意相等 ≠ bytes 相等」第一次踢到</h2>
+        <p>
+          M3 做 tools 確定性正規化：按名字排序 tool 定義、遞迴排序 schema keys，
+          再自動放置 cache_control 標記（client 已放任何標記 = 神聖不可侵犯）。
+        </p>
+        <p>
+          實作時用 <code>normalized != tools</code> 偵測是否有變更。
+          Python dict 的 <code>==</code> 不看 key 順序——排序後被誤判「沒改」而放行原文。
+          RED 測試當場抓到。修法是比 <code>json.dumps</code> 後的字串。
+          <strong>語意相等（dict 值一樣）和 bytes 相等（序列化後一樣）是兩件事。</strong>
+        </p>
+
+        <h2>M4：content-addressed 儲存與「沒壓就不註冊」的陷阱</h2>
+        <p>
+          M4 是 CcrStore：content-addressed HashMap，把被壓縮掉的大段 tool_result
+          存起來，再透過 <code>ccr_retrieve</code> 工具讓模型按需取回。
+          每個請求都會呼叫 <code>register_ccr_tool</code> 把工具插到 tools 清單。
+        </p>
+        <p>
+          鐵律 4 / B7：<strong>「沒壓縮就不註冊工具」</strong> 會讓 tools 定義在請求間閃爍——
+          有壓縮時工具出現、沒壓縮時消失。tools 段是快取最前面的大塊，一閃爍快取就全 bust。
+          正確做法是無條件每請求都註冊，讓 tools 段穩定。
+          可逆性（壓縮過的東西能取回）才是壓縮的免死金牌，不是節省工具數量。
+        </p>
+
+        <h2>M5：Rust port 與「同輸入、SHA-256 完全一致」</h2>
+        <p>
+          M5 把 M0–M4 的核心邏輯 port 到 Rust（<code>rust-lite/</code>）。
+          Rust 這邊有幾個生存前提：
+          <code>serde_json</code> 需要開 <code>arbitrary_precision</code>
+          （避免 <code>1.50</code> 被解析成 <code>1.5</code>）和 <code>preserve_order</code>
+          （讓 JSON 序列化的 key 順序跟輸入相同）。
+          <code>Cow::Borrowed</code> 型別讓「原始 bytes 沒有被動到」從文字說明升格成型別可驗證的事實。
+        </p>
+        <p>
+          驗收標準是跨語言 parity：同樣的輸入丟給 Python pipeline 和 Rust pipeline，
+          輸出 SHA-256 必須完全一致。30 個 Python 測試 + 11 個 Rust 測試全綠。
+        </p>
+
+        <h2>M6：「語意相等 ≠ bytes 相等」第三次踢到</h2>
+        <p>
+          M6 把 M3（tools 正規化）和 M4（CcrStore）port 到 Rust，
+          再加 parity gate 腳本（<code>scripts/parity.sh</code> + 4 個 fixture）一鍵驗收。
+        </p>
+        <p>
+          這次 Rust 的地雷是 <code>serde_json::Value</code> 的 <code>==</code>——
+          <code>preserve_order</code> 的 IndexMap 相等語意不看 key 順序，
+          但快取前綴看字節順序，變更偵測必須比 <code>serde_json::to_vec</code> 後的 bytes。
+          M0 教訓第三次，換了語言但本質相同。
+        </p>
+        <p>
+          另一個 Rust 特有地雷：Python 版在 <code>_squeeze_text</code> 行數門檻一過
+          就立刻呼叫 <code>store.put(text)</code>，即使之後 fallback 放棄壓縮。
+          Rust 若把 <code>put</code> 放在 <code>filter(|s| s.len() &lt; text.len())</code>
+          之後，罕見路徑 parity 就不齊。<strong>移植時「副作用發生點」要逐字對齊，不只對齊回傳值。</strong>
+        </p>
+        <p>
+          M6 完成後：Python 30 tests + Rust 30 tests + parity gate 4 fixtures，全通。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>語意相等 ≠ bytes 相等</strong>：Python dict <code>==</code>、Rust <code>Value ==</code>、JSON round-trip，三個地方犯同一個錯。快取靠 bytes 比對，所有「有沒有改變」的判斷都要比序列化後的字串。</p>
+          <p><strong>標記放 sha256 不放時間戳</strong>：時間戳每次不同、確定性就沒了。快取代理的核心約束是同輸入永遠同輸出，標記也不例外。</p>
+          <p><strong>可逆性才是壓縮的通行證</strong>：「壓了能取回」讓快取安全；「沒壓就不插工具」讓 tools 閃爍反而 bust 快取，邏輯正好反過來。</p>
+          <p><strong>Rust 移植要逐字對齊副作用時機</strong>：回傳值對齊只是開始，副作用（put / register）的觸發時序一偏，罕見路徑的 parity 就會悄悄斷掉。</p>
+          <p><strong>解答本策略有效</strong>：不清空現有程式碼、在子目錄從零建，每次遇到問題都能「問」現有實作。邊做邊對照比對著空氣自以為的效率高很多。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-11 · headroom fork (boboidvtw/headroom) · Python 30 tests + Rust 30 tests + parity gate 4 fixtures · M0–M6 全完成
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

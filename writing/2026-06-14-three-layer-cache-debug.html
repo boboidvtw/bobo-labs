@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>健康檢查全綠，功能卻壞了 11 天：三層快取與 ground truth 除錯 · Bobo Labs</title>
+  <meta name="description" content="一個大小寫 typo（大寫 I 被當成小寫 l）讓第三方 SDK 靜默失效 11 天，而 curl 健康檢查全程顯示綠燈。這篇拆解為什麼字串存在不等於功能可用、Service Worker／HTTP／CDN 三層快取為何要分別清、指紋驗證為何抓不到中段錯字，以及用排除法加兩版本對照實驗鎖定真相的方法論。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-14-three-layer-cache-debug.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-14</p>
+      <h1 class="article-title">健康檢查全綠，功能卻壞了 11 天</h1>
+      <p class="article-lede">
+        有一個第三方 JavaScript SDK，載入時要拿一個公開識別字串去它的伺服器換認證。
+        某次「修復」把那個字串裡的一個大寫 <code>I</code> 改成了長得幾乎一樣的小寫 <code>l</code>，
+        SDK 從此每次都 <code>onerror</code> 載入失敗——而我的健康檢查 <code>curl</code> 全程顯示綠燈，
+        足足 11 天沒人發現。這篇是那 11 天的解剖：為什麼「字串存在」不等於「功能可用」，
+        三層快取為何要分開清，以及怎麼用實驗把真相逼出來。
+      </p>
+
+      <div class="article-body">
+        <h2>一個你幾乎看不見的 typo</h2>
+        <p>
+          先看這兩段字串，它們只差中間一個字元：
+        </p>
+        <p>
+          <code>...-eIlo-...</code>（原本正確的：e、大寫 I、小寫 l、o）<br />
+          <code>...-eIIo-...</code>（被改錯的：e、大寫 I、大寫 I、o）
+        </p>
+        <p>
+          在多數等寬字型裡，小寫 <code>l</code> 和大寫 <code>I</code> 幾乎無法分辨。
+          錯誤發生在第 66 個字元——不是開頭、不是結尾，正好埋在最難用肉眼掃描的中段。
+          更糟的是，這次改動還是頂著「P0 修復」的名義進去的：當時把一段「截圖誤抄的反例」
+          當成了正確值的記憶，於是把對的改成了錯的。一行、一個字元，功能就無聲死亡。
+        </p>
+
+        <h2>為什麼健康檢查騙過了所有人</h2>
+        <p>
+          我有一套上線後的健康檢查，四條 <code>curl</code>，當時全綠：設定檔有部署、版本號正確、
+          關鍵 HTML 區塊存在、設定條目數量符合。看起來無懈可擊。
+        </p>
+        <p>
+          問題在於 <code>curl</code> 加 <code>grep</code> 只能驗證一件事：
+          <strong>某個字串存在於 HTTP 回應裡</strong>。它驗不到的東西太多了——
+          那段 JavaScript 在瀏覽器裡能不能真正執行、第三方 SDK 會不會接受這個識別字串、
+          <code>window</code> 上的物件有沒有真的掛上去。字串「在那裡」和功能「能用」之間，
+          隔著整個 runtime。
+        </p>
+        <p>
+          這就是脆弱訊號（fragile signal）的典型：一個指標看起來在量你關心的事，
+          其實量的是它的影子。修法是給關鍵路徑補一層真實的冒煙測試——
+          用無頭瀏覽器真的把頁面打開、真的去抓 runtime 物件存不存在。
+          字串檢查可以當第一道快速門檻，但不能當作可以宣告「healthy」的最後一道。
+        </p>
+
+        <h2>三層快取，三套清除規則</h2>
+        <p>
+          找到錯字、改成正確值、推上線——以為結束了，回訪的使用者卻還是壞的。
+          因為一個前端字串的修正，要穿過三層各自獨立的快取，每一層的失效觸發條件都不同。
+        </p>
+        <table class="article-table">
+          <thead>
+            <tr><th>快取層</th><th>它的 key 是什麼</th><th>怎樣才會失效</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CDN 邊緣節點</td>
+              <td>完整 URL（含查詢字串）</td>
+              <td>等 <code>max-age</code> 自然到期（可能數分鐘）</td>
+            </tr>
+            <tr>
+              <td>瀏覽器 HTTP 快取</td>
+              <td>完整 URL（含查詢字串）</td>
+              <td>URL 改變——改查詢字串或改路徑</td>
+            </tr>
+            <tr>
+              <td>Service Worker 快取</td>
+              <td>快取名稱 + URL</td>
+              <td>改快取名稱，SW 啟用時清掉舊的</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          實測過程能直接看到這三層的獨立性。把 Service Worker 註銷、清掉它的快取，
+          重新載入後舊的 SW 還是接管、跑的還是錯誤版本——證明只改檔案內容不夠，
+          必須同時更動快取名稱，逼 SW 在啟用時丟掉舊快取。
+        </p>
+        <p>
+          但即使 SW 升級了、SW 快取清乾淨了，瀏覽器自己的 HTTP 快取仍然鎖著
+          <code>檔名?v=舊版本</code> 這個 URL key，回的還是舊內容。用
+          <code>fetch(url, { cache: 'no-store' })</code> 拿到的是新版，用帶舊版本號的 URL 拿到的卻是舊版——
+          兩個 fetch 同一支檔案、結果不同，HTTP 快取層的存在與獨立性就這樣被直接證明了。
+        </p>
+        <p>
+          所以規則是：任何前端變更，至少要更新 Service Worker 的快取名稱（擋住「SW 餵舊檔」）；
+          如果變更影響到某支檔案的內容，還要同時更新它在 HTML 裡
+          <code>&lt;script src="檔名?v=版本"&gt;</code> 的查詢字串（擋住「HTTP 快取搶在 SW 前面餵舊檔」）。
+          兩層都 bump，回訪流量才真的拿到新版。
+        </p>
+
+        <h2>指紋驗證的中段盲區</h2>
+        <p>
+          我原本有一套防呆：對公開識別字串記錄「末 6 碼 + 總長度」當指紋，啟動時比對。
+          理論上字串被改動就會被抓到。但這次它徹底失靈：
+        </p>
+        <ul>
+          <li>錯字在第 66 個字元，屬於中段</li>
+          <li>末 6 碼兩個版本完全相同</li>
+          <li>總長度兩個版本都是 82，完全相同</li>
+        </ul>
+        <p>
+          指紋過了、長度過了、SDK 還是載不起來。教訓很清楚：
+          「末 N 碼 + 長度」只能擋頭尾截斷或長度異常，對中段的單字元替換完全無感。
+          要真的防住，得用全文雜湊（例如後端回傳 SHA-256 讓前端啟動時比對），
+          或者乾脆把終極防線交給「SDK 真的載入成功」這個冒煙測試。
+          指紋是門檻，不是防線。
+        </p>
+
+        <h2>記憶不是真相，原始紀錄才是</h2>
+        <p>
+          這次能破案，靠的是翻出當初首次上線那天的部署驗證紀錄——白紙黑字寫著正確值、
+          而且寫著「SDK 載入成功」。對照之下，後來那次「修復」引用的，
+          其實是同一份筆記裡「某某值曾被誤抄」的反例段落。
+        </p>
+        <p>
+          這是筆記最危險的地方：<strong>反例段落最容易被後人讀成正確值</strong>。
+          一份寫著「正確是 A，曾經有人誤抄成 B」的筆記，幾週後再讀，
+          很可能只記得 B 而把它當成 A。防護是給每一條「正確值」配上來源證據連結——
+          沒有當天部署驗證佐證的值，就不允許被單獨引用。
+        </p>
+
+        <h2>怎麼把真相逼出來：排除法 + 對照實驗</h2>
+        <p>
+          鎖定根因的流程，本質是一連串排除：
+        </p>
+        <ol>
+          <li><strong>排除環境</strong>：用一個已知會成功的設定值動態載入同一個 SDK，成功——證明瀏覽器、網路、跨域都沒問題，問題在那個值本身。</li>
+          <li><strong>排除部署延遲</strong>：用帶時間戳的查詢字串強制繞過快取去抓檔案，確認線上跑的確實是新部署的內容，不是還沒生效。</li>
+          <li><strong>對照實驗</strong>：在同一個頁面、同一個來源下，把「錯的值」和「對的值」各自動態載入一次 SDK，一個 <code>onerror</code>、一個成功掛上物件。到這裡真相再無懸念。</li>
+        </ol>
+        <p>
+          兩版本並排對照是最有說服力的一步——它把「我覺得是這個值的問題」變成
+          「同樣的環境、只換這一個變數，結果相反」。能設計出只改一個變數的對照，
+          就不用再爭論。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>字串存在 ≠ 功能可用</strong>：curl 加 grep 只驗 HTTP 層字串，驗不到 runtime 能不能跑、第三方會不會接受。關鍵路徑要有真實瀏覽器的冒煙測試，才能宣告 healthy。</p>
+          <p><strong>三層快取分開清</strong>：CDN、瀏覽器 HTTP 快取、Service Worker 快取各自獨立、key 不同。前端變更至少更新 SW 快取名稱；影響檔案內容時還要 bump 該檔的查詢字串版本。</p>
+          <p><strong>指紋擋不了中段錯字</strong>：末 N 碼加長度只能擋頭尾與長度異常。中段單字元替換要靠全文雜湊或真實載入測試。</p>
+          <p><strong>反例段落是筆記的陷阱</strong>：「曾被誤抄成 B」幾週後很容易被讀成「正確是 B」。每個正確值都該綁來源證據，否則不准單獨引用。</p>
+          <p><strong>只改一個變數的對照實驗，勝過一切推測</strong>：同環境、同來源，只換可疑的那一個值，結果相反，爭論就結束了。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-14 · 一次 typo 引發的 11 天靜默失效調查 · 三層快取與 ground truth 三角驗證方法論
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

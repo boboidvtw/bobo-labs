@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>描述 QA 誤判的文章，被 QA 誤判擋下 · Bobo Labs</title>
+  <meta name="description" content="autopublish QA gate 把一篇講 secret 誤判的草稿連續數天 blocked——文章在討論「QA 誤判」這個主題，引用了觸發誤判的詞，結果被自己在描述的 bug 卡住。治標是改用詞繞過，治本是讓 QA 分辨「談論 secret」和「洩漏 secret」的差異。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-09-bobo-labs-qa-context-aware.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-09</p>
+      <h1 class="article-title">描述 QA 誤判的文章，被 QA 誤判擋下</h1>
+      <p class="article-lede">
+        Bobo Labs 的 autopublish 每天凌晨 6 點自動跑，候選草稿過 QA gate 才能上站。
+        某篇草稿連續數天 blocked——不是文章真的有問題，而是這篇文章在討論
+        「QA 誤判」這個主題，引用了那些觸發誤判的詞，結果被自己在描述的 bug 卡住了。
+        這是一個需要治本的情況。
+      </p>
+
+      <div class="article-body">
+        <h2>哪篇卡住，為什麼卡</h2>
+        <p>
+          開工巡檢：autopublish 回報 published=2 blocked=2 deferred=4。
+          blocked 清單裡有一篇 2026-06-07-qa-pipeline-false-positives.html，
+          主題正是「autopublish QA 的 false positive 問題」。
+        </p>
+        <p>
+          QA #1（防洩漏檢查）命中 secret 這個字。讀全文找命中位置，四處全是誤判：
+          Cloudflare beacon token（每頁都有的公開遙測識別碼）、
+          引用 6/7 session 被誤判的原句「無 secret 的 plist」、
+          「plist 用佔位符所以沒有真實密鑰」的安全實踐正面描述。
+          文章本身沒有任何洩漏。
+        </p>
+
+        <h2>治標 vs 治本的岔路</h2>
+        <p>
+          治標：把文章裡的 secret 換成「機密」、token 換成「令牌」，繞過 QA。
+          問題是這篇文章的原意正是展示「純關鍵字掃描把安全語境誤判為洩漏」，
+          改掉這些詞，文章就失去了它在描述的那個案例。
+          逐篇改用詞是 O(n) 成本——每次寫到類似主題都要再繞一次。
+        </p>
+        <p>
+          治本：改 QA gate 讓它分辨「談論 secret」和「洩漏 secret」。
+          一次修，下一篇同類文章自動通過。
+        </p>
+
+        <h2>兩層設計：高危專名硬擋，通用敏感詞看語境</h2>
+        <p>
+          原始 QA #1 是純關鍵字 grep，secret/token/密鑰 出現即 blocked，不管上下文。
+          改為兩層：
+        </p>
+        <p>
+          <strong>1a — 高危專名，無條件擋</strong>：一份明確的系統專名硬名單——特定下單服務、
+          認證標準縮寫、鍵值儲存命名空間、金流服務名、部署 CLI、內部路徑等。這些專名在公開技術文中沒有正當理由出現——grep 到即 blocked，沒有例外。
+        </p>
+        <p>
+          <strong>1b — 通用敏感詞，語境感知</strong>：secret/token/密鑰/金鑰/api_key/password。
+          讀上下文裁決：賦值形式或緊鄰 20+ 字元 base64/hex 長串 → 真洩漏，擋；
+          自然語言安全語境（否定句如「無 secret」、佔位符說明、公開遙測描述）→ 放行；
+          拿不準從嚴 blocked，在 ops log 記錄裁決理由。
+        </p>
+        <p>
+          設計上刻意保留 1a 作為兜底硬名單：1b 放寬通用敏感詞時，
+          真正危險的系統專名仍無條件擋。語境感知不是全面放鬆，
+          而是精確到「通用詞有模糊空間」那一層，不碰有明確意義的專名。
+        </p>
+
+        <h2>驗證：用卡死篇當迴歸測試</h2>
+        <p>
+          改規則後，對卡死的文章重跑新 QA：先跑 1a 確認零命中高危專名，
+          確認沒有用高危詞的前提下才進 1b；再對四處 1b 命中逐一裁決，全判放行。
+          QA #2-5（canonical、viewport、無 noindex、無佔位符、字元數）全達標。
+        </p>
+        <p>
+          用被擋的文章本身當測試用例，有個內建的反向驗證：
+          治本沒做到位，文章仍然會被擋。通過就是治本有效的證明。
+        </p>
+
+        <h2>隔天實戰驗收</h2>
+        <p>
+          隔天（6/10）開工巡檢，autopublish ops log 顯示 QA 1b 語境感知正確放行了
+          Cloudflare beacon token，ops log 記錄 qa_1b_notes: CF beacon 公開遙測。
+          規則在真實自動排程下生效，不只在手動測試裡有效。
+          「啟示 9 的語境感知在實戰生效」——這句話在 ops log 裡出現比任何手動測試都更有說服力。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>描述 bug 的文章最容易觸發那個 bug</strong>：QA 防洩漏，但討論洩漏的文章會引用相關詞。測試用例要包含「合法討論敏感詞」的情境，不只是「有敏感詞就算通過」。</p>
+          <p><strong>治標 vs 治本的判讀：改用詞 or 改規則</strong>：如果改用詞會破壞文章的原意，應該改規則。逐篇繞過是 O(n) 成本，改規則是一次性修復。</p>
+          <p><strong>語境感知要有硬名單兜底</strong>：給通用敏感詞語境豁免時，必須同時維護一份高危專名的無條件擋名單，確保語境放寬不會誤放真洩漏。兩層各有不可取代的角色。</p>
+          <p><strong>用被擋的用例當迴歸測試</strong>：被擋的文章是最真實的測試用例。治本後它通過 = 有效；它仍被擋 = 規則還不夠。比新寫測試用例更接近真實場景。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-09 · Bobo Labs autopublish QA gate · 語境感知兩層架構
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

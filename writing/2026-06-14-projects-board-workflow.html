@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>在 Claude Code 裡「釘選」專案：用 memory 檔做跨對話看板 · Bobo Labs</title>
+  <meta name="description" content="Claude Code 終端沒有視覺看板 UI，而 TodoWrite 只在當次對話有效、關掉就消失。想要一份能跨對話固定存在、隨手更新進度的專案清單，答案是會被每次開場自動載入的 memory 檔。這篇記錄怎麼用一份看板檔加一個更新儀式達成釘選，以及為什麼缺的從來不是新工具。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-14-projects-board-workflow.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-14</p>
+      <h1 class="article-title">在 Claude Code 裡「釘選」專案</h1>
+      <p class="article-lede">
+        一個看似簡單的問題：在 Claude Code 這種終端介面裡，怎麼「固定」住手上的幾個專案，
+        並在完成一段工作後更新進度？沒有拖拉的看板、沒有側邊欄。
+        答案不是去找新工具，而是用一個對的地方放一份清單，配上一個固定的更新動作。
+      </p>
+
+      <div class="article-body">
+        <h2>先搞清楚什麼東西能跨對話活下來</h2>
+        <p>
+          終端裡的 AI 助理，每開一個新對話就是一張白紙。要「釘選」一份清單，
+          它必須在每次開場都自動回到視野裡。盤點下來，能跨對話持久存在的只有兩種東西：
+          每次開場會被自動載入的 memory 檔，以及專案根目錄的指示檔。
+          其他都是當次對話的暫存，關掉即逝。
+        </p>
+        <p>
+          這一條直接淘汰了任務清單工具（TodoWrite 這類）。它非常適合追蹤「這次對話內」
+          的多步驟進度，但它的生命週期就是一次對話——關掉視窗，清單就沒了，
+          無法承擔「長期釘選」的角色。用對工具的前提是先認清它的生命週期。
+        </p>
+
+        <h2>關鍵轉折：缺的不是工具，是儀式</h2>
+        <p>
+          往下挖才發現，基礎建設其實早就存在——我的 memory 索引檔裡早有一個
+          「進行中專案」區段，本質上就是一份釘選清單。真正缺的不是一個新檔案、新工具，
+          而是兩件事：一個<strong>單一入口的看板視圖</strong>，
+          以及一個<strong>固定的更新儀式</strong>。
+        </p>
+        <p>
+          這是很容易踩錯的地方。遇到「我想要 X 功能」時，直覺是去找或造一個叫 X 的工具；
+          但很多時候你要的東西已經散落在現有結構裡，缺的只是把它收攏成一個入口、
+          再加上一個讓它保持新鮮的習慣。先問「我是不是已經有了，只是沒整理」，
+          往往比「我該裝什麼」更省事。
+        </p>
+
+        <h2>做法：一份看板檔 + 自動載入 + 連結回詳情</h2>
+        <ol>
+          <li>
+            建立一份專屬的看板檔，把「進行中專案」逐一整理成可勾選的清單。
+            每個專案配上狀態標籤（進行中／就緒／阻塞／已完成）、一句進度摘要，
+            以及指回該專案詳細記憶檔的連結。看板只放「一眼掌握 + 下一步」，
+            細節留在各自的詳情檔，避免看板本身變肥。
+          </li>
+          <li>
+            在每次開場會自動載入的索引檔頂部，加一行指向這份看板的索引。
+            這一步是「釘選」真正生效的關鍵——讓看板每次開新對話都自動回到視野。
+          </li>
+          <li>
+            把這份看板納入既有的設定同步流程，讓它跟著版本控管走，不會只活在單一機器上。
+          </li>
+        </ol>
+        <p>
+          清單用純文字的勾選框（已完成與未完成）表達進度，狀態用文字標籤而非顏色，
+          掃一眼就知道每個專案卡在哪、下一步是什麼。
+        </p>
+
+        <h2>差點犯的錯：用 emoji 當狀態燈</h2>
+        <p>
+          一開始我想用彩色圓點當狀態燈，紅黃綠很直覺。
+          但這被一條既有的規則擋了下來——memory 檔裡一律禁用 emoji。
+          原因是這些檔案會被序列化進工具呼叫的參數，emoji 在某些序列化情境會引發編碼問題，
+          風險不值得那點視覺效果。於是改用純文字標籤。
+        </p>
+        <p>
+          這也是一個小提醒：好看的呈現方式，要先過得了「它會被機器怎麼處理」這一關。
+          在人讀的地方 emoji 沒問題，但在會被程式吞進去、再吐出來的結構化檔案裡，
+          樸素的純文字反而最穩。
+        </p>
+
+        <h2>更新儀式：讓看板保持新鮮</h2>
+        <p>
+          看板的價值全繫於它夠不夠新。所以配一個固定動作：完成一段工作後，
+          用一句「更新某專案進度」觸發助理去打勾、改狀態、更新摘要。
+          收工時也順帶帶過看板，確保它反映的是當下真實狀態。
+        </p>
+        <p>
+          把更新動作綁進既有的收工流程，看板就成了收工的自然產物，
+          而不是另一件要記得做的雜事。會被遺忘的儀式等於沒有儀式——
+          讓它搭在你本來就會做的事情上，才活得久。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>先認清工具的生命週期</strong>：當次對話的暫存工具承擔不了長期釘選。要跨對話，就放在會自動載入的持久檔裡。</p>
+          <p><strong>缺的常常是入口與儀式，不是新工具</strong>：先問「我是不是已經有了，只是沒整理成一個入口」，再決定要不要造東西。</p>
+          <p><strong>呈現方式要過得了機器這一關</strong>：會被序列化的結構化檔案裡，純文字標籤比 emoji 狀態燈穩。</p>
+          <p><strong>把儀式綁在既有習慣上</strong>：更新動作搭進收工流程，看板才會持續新鮮，而不是慢慢過期。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-14 · 用 memory 檔在終端 AI 助理裡建立可釘選的專案看板 · 單一入口加更新儀式
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
