@@ -20,6 +20,15 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-15** — 由 /boboweb 核可發布 5 篇文章：
+  `2026-06-14-three-layer-cache-debug.html`（一個 I/l typo 致第三方 SDK 靜默失效 11 天、SW/HTTP/CDN 三層快取與 ground truth 除錯方法論）、
+  `2026-06-14-projects-board-workflow.html`（用會自動載入的 memory 檔在終端 AI 助理建立跨對話專案看板）、
+  `2026-06-11-headroom-learning-m0-m6.html`（一天 TDD 重建 headroom M0–M6、跨語言 byte-for-byte parity gate）、
+  `2026-06-09-bobo-labs-qa-context-aware.html`（autopublish QA gate 高危專名硬擋＋通用敏感詞語境感知兩層）、
+  `2026-05-31-nomad-hub-registry-loop.html`（emoji 炸 JSON 序列化、nomad-hub scan→import 讀寫邊界）。
+  Index Writing 區依時間倒序插入、sitemap 重生、清空 _pending/ 待審草稿。
+  Promoted 5 drafts from _pending/ via /boboweb on 2026-06-15.
+
 - **2026-06-15** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-14-headroom-m8-lazy-registration.html`（register_ccr_tool lazy 掛工具修復跨 process 快取歸零、parity gate 436→436）、
   `2026-06-12-headroom-cache-wrap-debug.html`（錄音重放法 stage bisect 找出 cache_read 63695→0 根因）。
