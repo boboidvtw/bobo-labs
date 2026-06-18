@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>進索引不等於有流量——GSC 告訴我的兩個獨立里程碑 · Bobo Labs</title>
+  <meta name="description" content="Bobo Labs formula 頁 6/8 全數進索引，但 255 曝光一筆都不是它的。從 GSC 數字看穿假突破，解剖三層病灶（標題俏皮、意圖錯位、紅海 head term），得出一個結論：技術 SEO 達標不代表會有流量，撬動點是換戰場而不是磨技術。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-18-bobo-labs-gsc-zero-impressions.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-18</p>
+      <h1 class="article-title">進索引不等於有流量——GSC 告訴我的兩個獨立里程碑</h1>
+      <p class="article-lede">
+        Bobo Labs formula 頁 6/8 提交、全數進索引（0→5）。打開 GSC 成效報表，近 3 個月 255 曝光、3 點擊。
+        一口氣翻出去——等等，過濾到 <code>labs.moneyai168.com/formulas</code>，曝光變 0。
+        那 255 曝光是主站 WordPress 的舊流量，跟 formula 頁完全無關。
+        「已索引」和「有曝光」，原來是兩件事。
+      </p>
+
+      <div class="article-body">
+        <h2>GSC 網域資源的判讀陷阱</h2>
+        <p>
+          GSC 設定的是「網域資源」（<code>sc-domain:moneyai168.com</code>），
+          意思是整個網域的數字都混在一起：主站 WordPress、
+          <code>labs.moneyai168.com</code>、所有子域，全部算進同一個成效報表。
+        </p>
+        <p>
+          那 255 曝光來自哪裡？前 10 大查詢全是「ic design house ranking 2025」之類的關鍵字，
+          和 IC 設計行業排名有關，時間集中在今年 3 月。
+          而 formula 頁是 6/8 才進索引，時間軸根本對不上。
+          判斷 labs 子站的績效，必須過濾到 <code>labs.</code> 子域，
+          或直接看「網址」維度，才不會被主站數字騙到。
+        </p>
+
+        <h2>兩個獨立里程碑</h2>
+        <p>
+          「被收錄」是一件事：5 篇理財 formula（複利、房貸、BMI、勾股定理、72 法則）6/8 當天爬取、
+          穩定出現在索引裡。這個目標達成了。
+        </p>
+        <p>
+          「被收錄且有曝光」是另一件事：過濾到 labs/formulas 後，曝光 0、點擊 0。
+          formula 頁躺在索引裡，但沒有拿到任何搜尋曝光。
+          兩個里程碑的差距，才是真正的問題所在。
+        </p>
+
+        <h2>技術 SEO 全達標，但不是病灶</h2>
+        <p>
+          逐頁過了一遍 on-page 清單：
+          canonical 絕對 URL 正確、meta description 有誘因、H1/H2 層次清楚、
+          篇內互連做了（複利→72法則、複利→房貸、複利→算術平均幾何平均）、
+          每篇都有指向 ∑ Calc 計算機的 UTM CTA 連結、字數 8,200–12,000 字。
+          技術面沒有問題，不是技術 bug。
+        </p>
+        <p>
+          0 曝光的根因在別的地方。
+        </p>
+
+        <h2>三層病灶</h2>
+        <p>
+          <strong>第一層：標題對準俏皮，不對準搜尋意圖。</strong>
+          房貸那篇標題用「月繳貸款公式」——沒有人這樣搜，大家搜「房貸試算」「等額本息」。
+          複利那篇標題前半段塞了 P(1+r/n)^(nt) 這個符號加上愛因斯坦名言，
+          把「複利計算」這個人真正在搜的關鍵字埋掉了。
+          BMI、勾股、72 法則三篇關鍵字有進標題，相對較好。
+        </p>
+        <p>
+          <strong>第二層：知識散文對撞工具意圖。</strong>
+          搜「房貸試算」的人要的是計算機，不是歷史背景和公式推導。
+          Google 也知道這個意圖，優先推出計算機類型的頁面。
+          我寫的是「為什麼這個公式重要」，但用戶要的是「給我算一下」。
+          意圖沒有對齊，再完整的內容也進不了那個搜尋結果頁。
+        </p>
+        <p>
+          <strong>第三層：紅海 head term 配上零權重新域。</strong>
+          「複利」「房貸試算」「BMI」這些詞，被銀行、政府網站、十幾年的大型計算機站壟斷。
+          Bobo Labs 是 2026 年新上線的網域，零反向連結（AdSense 曾以「內容價值低」為由拒審）。
+          零權重新域去硬碰最競爭的關鍵字，排名必然墊底，0 曝光是結構性的必然，
+          不是偶發，不是時間不夠。
+        </p>
+
+        <h2>唯一能撬動的槓桿：換戰場</h2>
+        <p>
+          技術 SEO 再精緻也動不了排名，因為問題不在技術。
+          唯一有效的 on-page 槓桿是標題改長尾——從不可能打贏的 head term，
+          轉到新頁能擠進去的關鍵字空間。
+        </p>
+        <p>
+          具體來說，房貸那篇可以改成「房貸月繳怎麼算？等額本息公式拆解（1,500 萬 30 年實例）」；
+          複利可以改成「複利計算公式｜複利終值怎麼算（百萬 30 年實例）」。
+          改完之後盯 GSC 2–4 週，看長尾曝光是否從 0 動。
+          天花板仍是網域權重，這是涓流策略、不是爆量策略。
+        </p>
+        <p>
+          更長期的問題是：organic SEO 是否是零權重新域的對渠道？
+          還是漏斗的入口應該換一個渠道？這個問題沒有急著決定。
+          先改標題、量 2–4 週，有數據再議。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>「已索引」≠「有曝光」</strong>：兩個獨立里程碑，達到第一個不代表第二個自動跟來。別把收錄當成功終點，要分開量。</p>
+          <p><strong>GSC 網域資源會混入主站流量</strong>：判讀子站績效必須過濾子域 + 對時間軸。没有過濾的 GSC 數字只是雜訊。</p>
+          <p><strong>技術達標 ≠ 有流量</strong>：零權重域硬碰紅海 head term，on-page 再完美也是 0 曝光。排名差距是結構性的，靠調整 canonical 或 meta 補不回來。</p>
+          <p><strong>撬動點是換戰場，不是磨技術</strong>：從 head term 轉長尾才是有效變量。技術 SEO 是必要條件，不是充分條件。</p>
+          <p><strong>催索引機制有效，但揭穿了下游瓶頸</strong>：6/10 扣板機催索引 → 6/18 全數進索引，流程通了；但進索引之後排名才是下一個問題。管線正常不代表產出有價值。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-18 · Bobo Labs formula 頁 SEO 審查 · GSC 網域資源 sc-domain:moneyai168.com · 5 篇理財 formula（複利、房貸、BMI、勾股、72 法則）· 索引 0→5 / 曝光 0
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

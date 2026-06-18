@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Headroom M9＋M10：主動取回壓縮記憶，旁觀 SSE 串流 · Bobo Labs</title>
+  <meta name="description" content="M9 讓 proxy 在 server side 自行解析 ccr_retrieve、server-side resolve loop 迴圈重問直到拿到真答案，client 全程無感。M10 精讀解答本才發現 SSE 不攔截不是缺陷而是刻意選擇，改用觀察式探針做旁觀記錄。一個 session 兩個里程碑，同一個問題的定義被改寫了一次。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-18-headroom-m9-m10-ccr-sse.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-18</p>
+      <h1 class="article-title">Headroom M9＋M10：主動取回壓縮記憶，旁觀 SSE 串流</h1>
+      <p class="article-lede">
+        M9 解決的問題是：模型用 <code>ccr_retrieve</code> 工具要求取回被壓縮的上下文，
+        proxy 怎麼在 server side 替它處理完、還給它真答案？
+        M10 的開場則是一場誤判：以為 SSE 串流裡不攔截是個 gap，
+        精讀解答本之後才發現——那是刻意的架構選擇，不是遺漏。
+        一個 session 連推兩個里程碑，定義被改寫了一次。
+      </p>
+
+      <div class="article-body">
+        <h2>M9：為什麼 proxy 要自己解析 ccr_retrieve？</h2>
+        <p>
+          headroom 的設計是這樣的：對話內容太長時，proxy 把舊訊息壓縮並存入 CCR store，
+          然後注入一個 <code>ccr_retrieve</code> 工具讓模型能主動召回。
+          這樣模型在需要時可以自己要求取回，而不是等 proxy 猜測何時該展開。
+        </p>
+        <p>
+          問題是：模型回傳「呼叫 <code>ccr_retrieve</code>」這個 tool_use 之後，誰來執行？
+          最直覺的答案是 client，但那意味著 client 要知道 CCR store 的存在、
+          知道怎麼查、知道把結果送回去。設計上 client 應該全程無感。
+          所以 proxy 得自己做：攔下 tool_use、查 store、組 follow-up 訊息、重問上游，
+          把真答案送回 client，client 看到的只是一個完整的回應。
+        </p>
+
+        <h2>server-side resolve loop 怎麼收</h2>
+        <p>
+          M9 的實作分兩部分。第一部分是 <code>POST /ccr/retrieve</code> 側信道端點：
+          與 <code>/v1/messages</code> 的 forward 路由共用同一個 <code>Mutex&lt;CcrStore&gt;</code>，
+          直接查 key，命中回 200 附上內容，查無回 404。
+          用顯式路由優先，不會誤觸上游的 forward fallback。
+        </p>
+        <p>
+          第二部分是回程的 resolve loop：gate 條件是「POST /v1/messages 且回應是 JSON（非 SSE）」，
+          只有在這個條件成立時才掃 tool_use。
+          <code>extract_ccr_calls</code> 的邏輯更嚴格：只有全部的 tool_use 都是 <code>ccr_retrieve</code>，
+          才接管處理；只要其中有 client 自己的工具，就整包放行、不動任何一個。
+          這個設計確保不會吃掉 client 原本期待自己處理的 tool_use。
+        </p>
+        <p>
+          確認攔截後：把原始 assistant turn 附上去、加一筆 user tool_result 給出 CCR 內容、
+          強制 <code>stream: false</code> 重呼上游，迴圈直到回應裡沒有 <code>ccr_retrieve</code>。
+          上限 <code>MAX_RESOLVE_HOPS=8</code> 防無限迴圈。普通 JSON 回應不重序列化，逐字節穿透。
+        </p>
+        <p>
+          這塊在學習版是全新設計——精讀解答本才發現，解答本的 Rust proxy 也沒在 proxy 層做 retrieve，
+          store 只有 put/get，「honoring retrieval 在上游 Python runtime layer」。
+          M9 的 server-side resolve 是學習版自創，不是照抄。commit 和 memory 都標注了這一點，
+          避免日後誤以為這是原版設計。
+        </p>
+
+        <h2>精讀解答本：「SSE 不攔截」不是 gap，是哲學</h2>
+        <p>
+          M9 做完，下一個問題是 SSE 串流。工業版解答本的 proxy 在串流模式下不做 retrieve，
+          原本以為是遺漏、是下一個需要填的 gap。
+        </p>
+        <p>
+          精讀 <code>sse/framing.rs</code>（SseFramer）和 <code>sse/anthropic.rs</code>（AnthropicStreamState）之後，
+          答案變了。工業版的串流哲學是：bytes 原樣送給 client（byte-passthrough 是神聖不可侵犯的），
+          每個 chunk 另外 try_send 進一個有界 mpsc（深度 256），丟給獨立 spawned task 跑狀態機，
+          純粹做 telemetry 收集（usage / stop_reason / cache 指標）。
+          「never block on parser readiness、滿了就丟掉、不影響 byte path」。
+        </p>
+        <p>
+          SSE 串流裡之所以不攔截 <code>ccr_retrieve</code>，理由很清楚：
+          bytes 一旦送出去就收不回來了，要攔就必須 buffer 整個串流才能改寫，
+          那就不是串流了。工業版刻意不在串流路徑上做任何攔截，是架構抉擇，不是缺陷。
+          先讀才動手，省下了去做 buffer 攔截的那條死路。
+        </p>
+
+        <h2>M10：觀察式探針，不碰 byte path</h2>
+        <p>
+          精讀之後問攻法：要繞過 byte-passthrough 的限制硬做攔截，還是忠於解答本做旁觀？
+          選了觀察式——用 <code>sse::SseCcrProbe</code> 被動記錄串流裡出現的 <code>ccr_retrieve</code>，
+          一個 byte 都不動。
+        </p>
+        <p>
+          實作上，<code>SseCcrProbe</code> 復用 <code>SseByteSplitter</code> 切事件邊界，
+          按 index 追蹤 tool_use，<code>input_json_delta</code> 累積 partial JSON，
+          等到 <code>content_block_stop</code> 才解析出完整 key，認出 <code>ccr_retrieve</code> 就回報。
+          <code>parse_event</code> 把帶邊界的原始 chunk 剝成 (event_name, data)，
+          多行 data 依 SSE 規範用 <code>\n</code> 串接——避免 Python 版本「跨 chunk 切到 emoji」的 1,946 次 parse fail 舊問題。
+        </p>
+        <p>
+          proxy 的 <code>rechunk_sse</code> 每個 chunk 同時餵進 probe 和往 client 送，
+          偵測到 <code>ccr_retrieve</code> 就記在 stderr 觀測線。
+          學習版是單 consumer 內聯（省掉 task/mpsc），
+          與工業版 spawned task + 有界 mpsc 的差異，誠實寫進 commit 和 README，不假裝等價。
+        </p>
+
+        <h2>這個 session 的方法論</h2>
+        <div class="takeaway">
+          <p><strong>精讀解答本能把「gap」重新定義成「抉擇」</strong>：原以為 SSE 不攔截是缺陷，讀完才知道工業版刻意如此。先讀才動手，省下做錯方向的成本。</p>
+          <p><strong>無解答可抄時要明說</strong>：M9 的 server-side resolve 是學習版自創，解答本不在 proxy 層做這件事。commit 和 memory 標清楚，避免日後誤以為照抄。</p>
+          <p><strong>誠實記差異</strong>：M10 單通道 tee vs 工業版 spawned task + 有界 mpsc，功能相近但架構不同。差異寫進 commit，不試圖掩蓋。</p>
+          <p><strong>TDD 全程不例外</strong>：M9 新增 6 個測試（端點命中/404、resolve 閉環、foreign tool 放行、plain JSON byte-faithful、hop 上限）；M10 新增 5 個測試（整餵/碎 chunk 跨邊界、ccr key 萃取、foreign tool、純文字、串流 byte-faithful）。全套 Rust 52 + Python 37，零 warning，parity 5 個 fixtures byte-for-byte 通過。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-18 · headroom 學習分支 realign-rewrite-learn（fork、SSH）· M9 fd2e135+f0ada1f、M10 d5c7220+8088954 · Rust 52 / Python 37 / parity 5 fixtures
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
