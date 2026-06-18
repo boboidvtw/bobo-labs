@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-19** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-18-headroom-m9-m10-ccr-sse.html`（M9 server-side resolve loop 取回壓縮上下文、M10 觀察式 SSE probe 旁觀不攔截）、
+  `2026-06-18-bobo-labs-gsc-zero-impressions.html`（formula 頁全數進索引後 GSC 曝光仍 0，解剖三層病灶：標題意圖錯位、知識散文對撞工具意圖、零權重域硬碰紅海 head term）。
+  Index Writing 區依時間倒序插入頂端。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  1 篇擋下（redline 1a: PayPal 出現於 `window.PayPalIntegration`）。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-19.
+
 - **2026-06-18** — SEO 長尾標題實驗：`compound-interest.html` 與 `mortgage-payment.html` 的 `<title>` / meta description / og:title / JSON-LD headline / breadcrumb 由紅海 head term 改為長尾搜尋詞（複利→「複利計算公式｜複利終值怎麼算」、房貸→「房貸月繳怎麼算？等額本息公式拆解」），內文與切角保留。背景：5 篇理財 formula 已編入索引但搜尋曝光為 0，改打零權重新頁擠得進的長尾關鍵字空間。
   SEO long-tail title experiment on two formula pages (compound-interest, mortgage-payment): retargeted title/meta/og/JSON-LD from competitive head terms to long-tail queries, content unchanged. Indexed but zero-impression pages now aim at winnable long-tail keywords.
 
