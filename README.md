@@ -20,6 +20,9 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-18** — SEO 長尾標題實驗：`compound-interest.html` 與 `mortgage-payment.html` 的 `<title>` / meta description / og:title / JSON-LD headline / breadcrumb 由紅海 head term 改為長尾搜尋詞（複利→「複利計算公式｜複利終值怎麼算」、房貸→「房貸月繳怎麼算？等額本息公式拆解」），內文與切角保留。背景：5 篇理財 formula 已編入索引但搜尋曝光為 0，改打零權重新頁擠得進的長尾關鍵字空間。
+  SEO long-tail title experiment on two formula pages (compound-interest, mortgage-payment): retargeted title/meta/og/JSON-LD from competitive head terms to long-tail queries, content unchanged. Indexed but zero-impression pages now aim at winnable long-tail keywords.
+
 - **2026-06-15** — 由 /boboweb 核可發布 5 篇文章：
   `2026-06-14-three-layer-cache-debug.html`（一個 I/l typo 致第三方 SDK 靜默失效 11 天、SW/HTTP/CDN 三層快取與 ground truth 除錯方法論）、
   `2026-06-14-projects-board-workflow.html`（用會自動載入的 memory 檔在終端 AI 助理建立跨對話專案看板）、
