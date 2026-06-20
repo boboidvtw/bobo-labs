@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-21** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-06-20-headroom-m12-log-compression.html`（log 內容感知壓縮：逐行嗅探訊號/噪音，14473→1147 bytes，Python/Rust 逐字節一致）。
+  Index Writing 區依時間倒序插入頂端。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  2 篇擋下（redline 1a: `broker` ×2 in armed-gate；`PayPal` in supercalc-v382-defer `window.PayPalIntegration`）。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-06-21.
+
 - **2026-06-19** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-18-headroom-m9-m10-ccr-sse.html`（M9 server-side resolve loop 取回壓縮上下文、M10 觀察式 SSE probe 旁觀不攔截）、
   `2026-06-18-bobo-labs-gsc-zero-impressions.html`（formula 頁全數進索引後 GSC 曝光仍 0，解剖三層病灶：標題意圖錯位、知識散文對撞工具意圖、零權重域硬碰紅海 head term）。
