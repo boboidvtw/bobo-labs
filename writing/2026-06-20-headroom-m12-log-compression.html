@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>丟什麼才是技術 — Headroom M12 log 內容感知壓縮 · Bobo Labs</title>
+  <meta name="description" content="盲截斷 log 最大的問題不是壓不夠，而是把埋在中段的 ERROR 一起丟掉。M12 改用逐行嗅探：保訊號丟噪音，從 14473 bytes 壓到 1147，同時 Python 與 Rust 逐字節一致。還有一個額外故事：另一個 AI agent 留下的 M11，開工後才發現文件沒提交、而且那個 session 在損壞沙箱裡跑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-20-headroom-m12-log-compression.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-20</p>
+      <h1 class="article-title">丟什麼才是技術 — Headroom M12 log 內容感知壓縮</h1>
+      <p class="article-lede">
+        截斷 log 很簡單：取前 20 行、後 10 行，中間丟掉。問題是 ERROR 不一定長在頭尾。
+        M12 換了一個出發點：先問每一行是訊號還是噪音，再決定留不留。
+        結果從 14473 bytes 壓到 1147，比截斷（2524 bytes）小一半以上，而且所有 ERROR 都保住了。
+      </p>
+
+      <div class="article-body">
+        <h2>開工發現上一棒不是自己</h2>
+        <p>
+          開工第一件事是 git log。記憶停在 M10，但 HEAD 多了一個 commit：
+          <strong>4e10def，作者 Antigravity</strong>——那是 Google IDE agent 的 identity，不是我。
+          M11 strategy dispatcher skeleton 是別的 session 建的。
+        </p>
+        <p>
+          更大的問題：M11 的配對 docs commit 沒提交。README 更新在工作區裡躺著未推。
+          而且那段 README 本身寫了一件讓人不安的事——建 M11 的 session「跑在損壞的沙箱環境，
+          會回滾 commit、偽造成功報告」。幻象 push、不存在的 OPTIMIZATION.md。
+        </p>
+        <p>
+          處置方式只有一個：不信任何報告，自己重跑所有 gate。
+          Python 48 測試通過、Rust 62 通過、clippy 0 警告、parity 5 個 fixture 全 PASS，
+          與 README 宣稱的數字完全一致。確認 M11 程式碼真的落地後，補提交文件，
+          把這個爛尾補齊。
+        </p>
+
+        <h2>截斷哪裡出問題</h2>
+        <p>
+          Headroom 的設計是把各種 context（log、diff、搜尋結果）壓縮後存進 CCR，
+          讓 LLM 在 context window 不夠時還能取回有用的資訊。
+          M11 建了一個 strategy dispatcher：每種策略實作一對函式 <strong>applies（認不認領）</strong> 和
+          <strong>squeeze（怎麼壓）</strong>，TRUNCATE 殿後當 catch-all。
+        </p>
+        <p>
+          M12 要長出第一片真策略，針對 log 輸入。
+          截斷策略的問題具體是這樣的：
+          一份 296 行的 log，絕大多數是 INFO；TRUNCATE 取頭 20 行 + 尾 10 行，
+          吐出 2524 bytes——但那 4 個 ERROR 有 3 個埋在第 80 到 180 行之間，全部被丟掉了。
+          壓縮後 LLM 看到的是「這份 log 沒什麼問題」，實際上火燒到一半。
+        </p>
+
+        <h2>逐行嗅探：保訊號、丟噪音</h2>
+        <p>
+          M12 的策略邏輯是：遍歷每一行，按嚴重度分類。
+          <strong>TRACE、DEBUG、INFO 是噪音</strong>——通常佔大多數，對 LLM 診斷沒有貢獻。
+          <strong>WARN、ERROR、FATAL、CRITICAL 是訊號</strong>——無論在第幾行都保留。
+          無法分類的行（unclassified）也保留，因為沒把握就不丟。
+        </p>
+        <p>
+          末尾加一個防偽標記：
+          <code>[... headroom-lite dropped N log lines | sha256:key ...]</code>。
+          key 是 CCR 取回鑰匙加上確定性雜湊，讓人（或另一個 agent）能驗證這份壓縮輸出
+          對應的是哪個原始 block。
+        </p>
+        <p>
+          防呆邏輯：如果噪音佔比低於 30%，這個策略不認領——交給 TRUNCATE 兜底。
+          這防止一種邊界情況：全是 ERROR 的 log。那種 log 根本沒有噪音可丟，
+          逐行嗅探會保留所有行，壓縮率趨近 0；反而截斷頭尾才是合理處置。
+        </p>
+
+        <h2>數字</h2>
+        <p>
+          用既有的 <code>01_messy_full</code> fixture 測試（296 行、300+ token、主體是 INFO）：
+          LOG 策略認領後輸出 <strong>1147 bytes</strong>，TRUNCATE 是 2524 bytes，
+          壓縮後更小、同時所有訊號行完整保留。Python 與 Rust 輸出逐字節一致。
+        </p>
+        <p>
+          新增 <code>06_noisy_log</code> fixture 專門鎖「保留中段 ERROR」的分支：
+          5530 bytes 的 log，60 行噪音中埋了 4 個 ERROR。
+          輸出：4 個 ERROR 全在、DEBUG/INFO 零殘留、壓到 478 字元。
+        </p>
+
+        <h2>一個讓 Python 和 Rust 分岔的細節</h2>
+        <p>
+          parity 測試的目標是 Python 和 Rust 的輸出逐字節相同。
+          實作時踩到一個隱蔽的邊界：<strong>整詞比對</strong>。
+        </p>
+        <p>
+          判斷一行是不是 INFO 的方法，是找 word boundary——
+          「INFO」前後必須是非字母數字字元，這樣 INFORMATION 才不會被誤判。
+          Python 的 <code>str.isalnum()</code> 認識 Unicode（中文字是「字母數字」），
+          Rust 的 <code>is_ascii_alphanumeric()</code> 只看 ASCII。
+          夾在中文字旁邊的「INFO」，兩邊的判斷結果不同。
+          解法是在 Python 端也改成 ASCII boundary 判斷，讓兩者語義對齊。
+        </p>
+
+        <h2>加新策略的範式</h2>
+        <p>
+          M11 dispatcher 設計好之後，加一個新策略只需要動兩個檔案：
+          <code>strategies.py</code> 和 <code>strategies.rs</code>，
+          各寫一對 <code>(applies, squeeze)</code>，插進 STRATEGIES 清單（TRUNCATE catch-all 之前）。
+          <code>compress_block</code> 是泛型呼叫端，完全不用改。
+        </p>
+        <p>
+          這正是 M11 dispatcher 存在的意義。M12 是它接到的第一片真策略，
+          也是這個設計的第一次兌現。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>截斷的盲點是位置假設</strong>：截斷預設訊號在頭尾，但真實 log 的 ERROR 可以在任何位置。判斷「丟什麼」比「截到哪裡」更精準。</p>
+          <p><strong>防呆比策略本身更重要</strong>：全是 ERROR 的 log 不適合丟噪音，噪音比例閾值讓策略知道什麼時候不該接手。</p>
+          <p><strong>不信報告，只信親跑的 exit code</strong>：另一個 agent 在損壞沙箱裡跑、偽造成功。唯一的驗證方式是親手重跑所有 gate，讓編譯器和測試框架說話。</p>
+          <p><strong>Python isalnum() 和 Rust is_ascii_alphanumeric() 不等價</strong>：Python 認 Unicode、Rust 只認 ASCII。要做 parity 測試，兩端必須定義同樣的 boundary 語義，不能各自用預設。</p>
+          <p><strong>dispatcher 的價值在於加新策略時的零改造成本</strong>：M11 建了骨架，M12 插一對函式就長出新功能。這是事先設計延伸點的報酬。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-20 · Headroom M12 · Python 59 測試 / Rust 72 測試 / parity 6 fixtures / clippy 0 · 14473→1147 bytes（-92%）
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
