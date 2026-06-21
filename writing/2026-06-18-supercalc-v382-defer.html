@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>∑ Calc v3.8.2：給 5 個外部 JS 加 defer，為什麼不用 async？ · Bobo Labs</title>
+  <meta name="description" content="效能深審第一輪：以為 CSS 是大頭（62KB inline），實測 inline JS 177KB 才是真大頭。最容易動的是尾端 5 個 sync 外部 script，加 defer 解除 HTML parser 阻塞。選 defer 不選 async 的原因：5 個 Pro JS 之間有嚴格的載入順序依賴，async 會讓順序隨機、破壞模組鏈。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-18-supercalc-v382-defer.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-18</p>
+      <h1 class="article-title">∑ Calc v3.8.2：給 5 個外部 JS 加 defer，為什麼不用 async？</h1>
+      <p class="article-lede">
+        效能深審第一步是量尺寸。以為 62KB inline CSS 是最大的載入負擔，
+        打開 Chrome DevTools 之後看到：inline JS 177KB / 3,223 行，才是真大頭。
+        這次動的是尾端 5 個 sync 外部 <code>&lt;script&gt;</code>，加一個 <code>defer</code> 屬性解除對 HTML parser 的阻塞。
+        為什麼選 defer 不選 async？因為這 5 個 Pro JS 之間有嚴格的載入順序依賴。
+      </p>
+
+      <div class="article-body">
+        <h2>先把尺寸搞清楚</h2>
+        <p>
+          ∑ Calc 是一個 5,780 行的 index.html，GitHub Pages 送 gzip，透過 Fastly CDN。
+          先量網路傳輸大小：<code>index.html</code> 66KB（gzip），5 個 <code>js/*.js</code> 合計 14KB（gzip），
+          <code>sw.js</code> 0.8KB，總計約 80KB。完全在 landing page 預算之內。
+        </p>
+        <p>
+          但傳輸大小不等於 parse 成本。把 index.html 結構切開來看：
+          第 1–50 行是 head（3KB）；
+          第 51–1,627 行是 inline CSS（62KB / 1,577 行）；
+          第 1,628–2,448 行是 HTML body（57KB / 821 行）；
+          第 2,449–5,671 行是 inline JS（177KB / 3,223 行）；
+          第 5,672–5,778 行是 modal 和 5 個外部 JS。
+        </p>
+        <p>
+          原本的推測被打臉：inline CSS 62KB 看起來很大，但 inline 反而沒有 external CSS 的 fetch 延遲，
+          不阻塞 render。真正影響 TTI 的是 177KB inline JS 的同步 parse 和 execute，
+          以及尾端 5 個外部 script 對 HTML parser 的 sync 阻塞。
+        </p>
+
+        <h2>defer 和 async 的差異在哪裡</h2>
+        <p>
+          兩者都讓 script 在下載時不阻塞 HTML parse——下載是並行的。差別在執行時機和順序。
+        </p>
+        <p>
+          <code>async</code>：下載完立即執行，不管 HTML 有沒有 parse 完，也不管其他 script 的順序。
+          幾個 async script 同時下載，誰先下載完誰先跑，順序是隨機的。
+        </p>
+        <p>
+          <code>defer</code>：下載和 HTML parse 並行（和 async 一樣快），但執行被延到整個 HTML parse 完成之後、
+          <code>DOMContentLoaded</code> 觸發之前。多個 defer script 按照在 HTML 裡出現的順序執行，順序固定。
+        </p>
+        <p>
+          ∑ Calc 的 5 個 Pro JS 是強模組鏈：
+          <code>pro-ui.js</code> 期待 <code>pro-manager.js</code> 已初始化，
+          <code>pro-manager.js</code> 期待 <code>pro-config.js</code> 已設好 <code>window.PRO_CONFIG</code>。
+          用 async 的話，誰先跑誰就先找不到依賴——Pro 功能整個壞掉。
+          用 defer，文件順序就是執行順序，模組鏈不受影響。
+        </p>
+
+        <h2>和 inline JS 的互動</h2>
+        <p>
+          index.html 第 2,449–5,671 行是 177KB 的 inline JS，裡面有好幾處對 Pro 模組的引用，
+          例如第 3,035 行的注釋就寫了「pro-ui.js 與本檔載入有順序差，做 graceful retry」，
+          所有引用都用 <code>window.X && ...</code> 守衛加上 <code>setTimeout</code> retry。
+        </p>
+        <p>
+          加了 defer 之後，外部 JS 比 inline JS 晚執行（inline JS 不是 defer，HTML parse 時就同步跑）。
+          這個順序差在改動前就已存在，retry 機制也已到位，
+          不需要任何額外的程式碼變更就能正常運作。
+        </p>
+
+        <h2>Service Worker 的 cache-bust 不能省</h2>
+        <p>
+          ∑ Calc 有一條鐵則：改 <code>index.html</code> 就必須 bump SW 的 <code>CACHE_NAME</code>。
+          SW 是 cache-first 策略，不 bump CACHE_NAME 的話，回訪用戶永遠看到舊版 index.html，
+          等於加 defer 對他們完全無效。
+        </p>
+        <p>
+          這次只動了 <code>&lt;script&gt;</code> 的屬性，5 個 <code>js/*.js</code> 的內容沒有變——
+          但 index.html 變了，所以 <code>sw.js</code> 的 <code>CACHE_NAME</code> 從 <code>sigma-calc-v3.8.1</code>
+          bump 到 <code>sigma-calc-v3.8.2</code>。<code>js/*.js</code> 的 query string 版本號不用動，
+          因為檔案內容沒有變。
+        </p>
+
+        <h2>本地驗證（5 項全綠）</h2>
+        <p>
+          <code>python3 -m http.server 8765</code> 起本地伺服器，過了以下幾個檢查點：
+          SW CACHE_NAME 確認是 v3.8.2；
+          5 個 <code>&lt;script&gt;</code> 確認全帶 defer；
+          <code>window.PRO_CONFIG</code>、<code>window.ProManager</code>、<code>window.LicenseAPI</code>、
+          <code>window.PayPalIntegration</code>、<code>window.ProUI</code> 全部 object；
+          <code>ProManager.getTier()</code> 回傳 free；
+          100 條公式渲染、41 個 🔒 鎖頭顯示；
+          <code>console.error = 0</code>、<code>console.warn = 0</code>；
+          截圖 UI 完整。
+        </p>
+        <p>
+          本地 domContentLoaded 16ms（localhost 沒有網路延遲，僅供確認無回歸）。
+          真正的效益要等上線後用 pagespeed.web.dev 量 CWV field data（含 CrUX 28 天），
+          才有意義的數字。理論預測：TTI / FCP 改善 50–200ms，依用戶網路速度而定。
+        </p>
+
+        <h2>這次的限制與下次要做的事</h2>
+        <p>
+          PSI 公開 API 今天 429（quota 耗盡），所以沒有線上 CWV baseline。
+          效能深審第二輪待辦：
+          用 pagespeed.web.dev 網頁版量 v3.8.1 vs v3.8.2 的 CWV 差異（含 CrUX）；
+          掃 inline JS 177KB / 3,223 行的 dead code；
+          評估 AdSense 延遲載入的可行性；
+          5 個 js/*.js 合併為 1 個（少 4 次 HTTP 請求）的 ROI。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>大頭不一定是看起來最大的那個</strong>：inline CSS 62KB，inline JS 177KB。直覺以為 CSS 重，實測 JS 才是 parse 成本最高的。量之前別猜。</p>
+          <p><strong>defer vs async 的判斷準則</strong>：外部 script 之間有載入順序依賴 → defer；完全獨立、不在意順序 → async。Calc 的 5 個 Pro JS 是強鏈，順序不能亂，必須 defer。</p>
+          <p><strong>改 index.html 屬性也要 bump SW</strong>：不是只有內容改變才需要 bump。index.html 任何變動都要換 CACHE_NAME，否則 cache-first 的 SW 不會替換舊版。</p>
+          <p><strong>PSI 公開 API 有 quota 限制</strong>：<code>googleapis.com/pagespeedonline/v5/runPagespeed</code> 無 API key 直接 429。自動化量 CWV 需要申請 API key，或改用 pagespeed.web.dev 網頁版手動量，或本地跑 npx lighthouse。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-18 · ∑ Calc v3.8.2 · commit f6ba756 · index.html 5780 行 / inline JS 177KB / 外部 JS 5 個 × 14KB gzip · GitHub Pages + Fastly CDN
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

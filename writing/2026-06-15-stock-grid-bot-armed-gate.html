@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>機器人自己下單了：armed gate 為何是自動化系統的最後防線 · Bobo Labs</title>
+  <meta name="description" content="launchd 自啟 + 自動重建 session = 機器人在無人授權下連進正式帳戶下真單。根因不是 bug，是設計缺陷：「重建追蹤」和「實際下單」混在同一條路徑上。armed gate 把這兩件事拆開，讓下單唯一入口永遠是人類按 Deploy。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-15-stock-grid-bot-armed-gate.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-15</p>
+      <h1 class="article-title">機器人自己下單了：armed gate 為何是自動化系統的最後防線</h1>
+      <p class="article-lede">
+        沒有按任何「啟動」鍵。只是打開了一個網頁，機器人就接管了舊任務、在正式帳戶下了真單。
+        事後追因，發現根源不是 bug——是設計缺陷：「重建追蹤狀態」和「實際送出委託」共用同一條程式路徑。
+        修法只要一個判斷式：<code>_is_armed(cfg)</code>。但這個洞見來自一次差點失控的事故。
+      </p>
+
+      <div class="article-body">
+
+        <h2>事件怎麼發生的</h2>
+        <p>
+          盤前想清幾筆殭屍委託。在讀完資料庫之後，順手開了一下 UI 確認狀態。
+          幾分鐘後使用者問了一句：「機器人好像有在動？」
+        </p>
+        <p>
+          再看 db：<code>mtime</code> 從幾週前跳到了今天上午。
+          對比事前備份，幾十筆新委託在 10 分鐘內被送出。
+          全程沒有人點過 Deploy。
+        </p>
+
+        <h2>兩個「正確」的機制疊在一起</h2>
+        <p>
+          根因是兩個各自設計合理的機制撞在一起：
+        </p>
+        <p>
+          第一個：launchd 在每天早上自動啟動 Streamlit 讓 UI 待命，無需人工干預。
+          第二個（commit d101e14）：當 Streamlit 偵測到 session 狀態遺失（例如剛重啟），
+          就從資料庫讀取最近一筆未完成的 deploy，重建 session state，繼續追蹤補格邏輯。
+        </p>
+        <p>
+          這個自動重建的設計初衷是「斷線不掉單」——重連後 UI 仍然知道機器人在做什麼。
+          沒有人想到：打開網頁 = session 失憶 → 自動重建 → 讀到舊的 PENDING deploy →
+          補格邏輯啟動 → 送出真實委託。
+          全部在使用者還沒做任何互動動作前完成。
+        </p>
+
+        <h2>設計缺陷的核心：追蹤 ≠ 下單，但程式把它們混在一起</h2>
+        <p>
+          「重建追蹤」應該是唯讀操作——讓 UI 顯示正確狀態、知道機器人在哪個階段、
+          能讓使用者看到格線位置。這不需要碰到實際委託。
+        </p>
+        <p>
+          但原本的程式碼裡，「重建 session」和「補格送單」共用同一條邏輯路徑。
+          只要重建了 cfg，補格函式就可能被觸發，進而呼叫下單 API。
+          <strong>「追蹤」和「行動」沒有閘門隔開。</strong>
+        </p>
+
+        <h2>armed gate：一個判斷式分開兩件事</h2>
+        <p>
+          修法（commit 2422209）引入 <code>_is_armed(cfg)</code> 函式，
+          以及 cfg 裡的 <code>armed</code> 欄位。規則極簡：
+        </p>
+        <p>
+          只有當使用者在本次 session 親手按下 Deploy 按鈕，
+          <code>grid_panel.py</code> 的 Deploy handler 才會把 <code>armed=True</code> 寫入 cfg。
+          任何其他路徑——launchd 自啟、session 自動重建、斷線重連——產生的 cfg
+          都不帶 <code>armed</code>，或 <code>armed=False</code>。
+        </p>
+        <p>
+          補格函式 <code>_render_tracking_table</code> 在送單之前先呼叫 <code>_is_armed(cfg)</code>：
+          未授權 → 立即 <code>return</code>，唯讀追蹤，零下單。
+          授權 → 繼續補格邏輯。
+        </p>
+        <p>
+          TDD 對應：<code>tests/test_armed_gate.py</code> 新增 7 條，含「重建 cfg 永不 armed」不變量測試。
+          全套 54 條全 PASS。
+        </p>
+
+        <h2>db mtime 是最便宜的金絲雀</h2>
+        <p>
+          這次事故被發現，有一部分靠的是 db 的 <code>mtime</code>。
+          事前記下「db 自上次操作後沒動」，開完 UI 再確認一次 mtime，
+          發現它跳了——這就是破案的起點。
+        </p>
+        <p>
+          任何有持久化狀態的自動化系統，<code>mtime</code> 都是免費的異常偵測工具。
+          系統聲稱「沒做任何事」，而 mtime 說有——就值得立刻追查。
+        </p>
+
+        <h2>止血順序</h2>
+        <p>
+          事故當下的止血順序對後續調查很重要：
+          先 kill 執行體（Streamlit process），再切斷自動復活路徑（launchd service），
+          最後保全快照（db 備份）供 before/after diff 用。
+          不要先取消訂單再調查——broker 端的操作屬於財務紅線，應由人類自行操作，
+          不是自動化程式的責任。
+        </p>
+
+        <h2>同源的另一顆地雷：跨日殭屍</h2>
+        <p>
+          這次事故的放大器：資料庫裡有幾筆幾週前留下的 PENDING 委託，
+          從未被日終對帳清掉。自動重建把「最新 PENDING deploy」當成活任務接管，
+          偏偏這些殭屍的掛單價格已在市場價附近——接管即成交。
+        </p>
+        <p>
+          ROD（Rest of Day）委託理論上收盤即失效，但本機 db 沒有做日終 reconcile，
+          殭屍仍然存在。這是兩個分開的 bug，但它們的組合讓事故規模放大了。
+          日終啟動對帳（把 broker 無單但 db 顯示 PENDING 的委託標為 EXPIRED）
+          從「整潔性功能」升級為「防失控的安全措施」。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>追蹤路徑不得觸發行動</strong>：任何「重建狀態」邏輯必須與「送出委託」嚴格隔離。行動的唯一入口是人類的明確授權，不是程式的自動推論。</p>
+          <p><strong>armed gate 的設計原則</strong>：在任何自動化系統裡，「高風險操作」的授權來源必須可溯源、不可被間接路徑繞過。<code>cfg.armed = True</code> 只能由 Deploy handler 設定，其他路徑一律讀取為 False。</p>
+          <p><strong>mtime 是免費的金絲雀</strong>：聲稱「沒動過」的系統，用 mtime 驗一遍比任何 log 都快。mtime 跳了就停下來查，不要臆測。</p>
+          <p><strong>殭屍 PENDING 不只是髒資料</strong>：在有自動重建邏輯的系統裡，舊的 PENDING 狀態可能被當作「待恢復任務」接管並執行——日終清帳是安全措施，不是整潔需求。</p>
+          <p><strong>止血先於調查</strong>：緊急事故的止血順序是：砍執行體 → 切斷自動復活 → 保全快照。不要在還沒止血前就試圖理解全貌，理解需要時間，執行體在繼續運作。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-15 · stock_grid_bot · commit 2422209 armed gate · 54/54 tests PASS
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
