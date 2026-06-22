@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-23** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-06-22-headroom-m13-m14-m15.html`（JSON byte-level 照抄不重序列化：M13/M14/M15 三片壓縮策略，dispatcher 零改造五片連推）、
+  `2026-06-22-understand-anything-nomad.html`（Understand Anything 分析 nomad-dashboard 結案：234 節點 364 邊 8 架構層，磁碟才是 ground truth）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-06-23.
+
 - **2026-06-22** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-18-supercalc-v382-defer.html`（∑ Calc v3.8.2 效能深審：inline JS 177KB 是真大頭，5 個外部 script 加 defer，async 會亂序壞模組鏈）、
   `2026-06-15-stock-grid-bot-armed-gate.html`（armed gate：拆開「追蹤狀態」與「送出委託」的唯一防線）。
