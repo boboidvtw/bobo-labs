@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>磁碟才是 ground truth — Understand Anything 分析 nomad-dashboard 結案 · Bobo Labs</title>
+  <meta name="description" content="用 Understand Anything 對 nomad-dashboard 做完整知識圖分析：234 節點、364 邊、8 架構層、12 步導覽，分析了 73 個原始檔。任務完成後清理看板，才發現狀態還標著「阻塞」。磁碟上的 JSON 是 ground truth，記憶裡的狀態標籤會落後。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-22-understand-anything-nomad.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-22</p>
+      <h1 class="article-title">磁碟才是 ground truth — Understand Anything 分析 nomad-dashboard 結案</h1>
+      <p class="article-lede">
+        用 Understand Anything 對 nomad-dashboard 做完整知識圖分析，產出 234 節點、364 邊、8 架構層、12 步導覽。
+        任務完成後清理看板，才發現 PROJECTS_BOARD.md 還標著「阻塞——待新會話驗證」。
+        驗證工作是 6/21 完成的，狀態標籤遲了快一天。
+      </p>
+
+      <div class="article-body">
+        <h2>知識圖的內容</h2>
+        <p>
+          <code>.understand-anything/knowledge-graph.json</code>（2026-06-21 16:25）：
+          <strong>234 節點、364 邊、8 架構層、12 步導覽</strong>，語言設定繁體中文。
+          <code>meta.json</code> 記錄 <code>lastAnalyzedAt 2026-06-21T08:25Z</code>、
+          <code>gitCommitHash ecb81d9</code>、<code>analyzedFiles 73</code>。
+        </p>
+        <p>
+          偵測到的技術棧：LangGraph、LangChain、PyTorch、FAISS、sentence-transformers、
+          NetworkX、PaddleOCR、OpenAI。
+          Understand Anything 給的專案定性是「基於 Harness（陰影沙盒隔離）與 Loop（LangGraph 三代理人協作迴圈）的個人 AI 工作流控制面板」。
+          這個描述比自己寫的 README 第一段還精確。
+        </p>
+        <p>
+          <code>.understandignore</code> 排除了 <code>*.bak</code>、verify_*/test_* 測試腳本、
+          三個大型生成檔（agent_design_docs.html、cheatsheet.json、agent_benchmark_latest.json）。
+          <code>fingerprints.json</code>（132KB）記錄了增量指紋，下次只有變動的檔案需要重分析。
+        </p>
+
+        <h2>任務完成卻忘了更新看板</h2>
+        <p>
+          結案時打開 PROJECTS_BOARD.md，nomad-dashboard 任務還標著：
+          <strong>「[阻塞] — 待新會話驗證插件設置」</strong>。
+          但 6/21 已經能跑出完整圖，插件設置早就正常——這個阻塞標籤已經過時將近一天。
+        </p>
+        <p>
+          這個落差說明一件事：<strong>記憶裡的狀態標籤會落後於實際進度。</strong>
+          6/21 完成任務後只更新了啟動指引（reference），沒有同步回看板。
+          看板是給自己看的，但如果它比磁碟慢一天，查看時拿到的是錯誤的阻塞訊號。
+        </p>
+        <p>
+          校正：改成 <code>[已完成]</code>，加上完成日期 2026-06-21。
+          過去記錄過一個原則——驗證一個任務有沒有做完，唯一可信的來源是磁碟上的檔案，
+          不是記憶裡的印象或未同步的看板。這次又一次應驗。
+        </p>
+
+        <h2>補記一份漏寫的日誌</h2>
+        <p>
+          6/21 完成任務時只更新了 reference，沒有留完成日誌。
+          結案這天補上，把交付物清單（檔案名稱、節點數、邊數、commit hash）都寫進去。
+          晚記總比沒記好。知識圖的細節靠磁碟驗證而非記憶，補記的內容是可信的。
+        </p>
+
+        <h2>唯一後續：+1 commit，不阻塞結案</h2>
+        <p>
+          分析時的 commit 是 <code>ecb81d9</code>（2026-06-21 08:25）。
+          結案當天 11:42 多了一個 commit：
+          <code>7c5c1d2 feat(parables): daily parables tab</code>，
+          動了 6 個原始檔（server.py、index.html、js/main.js、js/components/panels.js、
+          routes/integration_routes.py、config.py）。
+          現在的知識圖落後 1 commit，parables 分頁還沒涵蓋到。
+        </p>
+        <p>
+          決定直接結案。daily-parables 是任務完成後才新增的功能，不屬原始範疇。
+          需要更新時只要在 nomad-dashboard 目錄跑 <code>/understand</code>：
+          fingerprints.json 記錄了 73 個檔案的指紋，只有那 6 個變動的檔案需要重跑，不用全量。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>磁碟才是 ground truth，看板是派生品</strong>：驗證任務完成了沒，查 knowledge-graph.json 和 meta.json，不看看板標籤。標籤是人更新的，磁碟是工具更新的。</p>
+          <p><strong>任務完成和任務紀錄是兩件事</strong>：6/21 完成任務，6/22 才補日誌。最好的流程是完成那天立刻記錄，次好的是結案時補齊，最差的是什麼都不記。</p>
+          <p><strong>增量指紋讓後續更新成本趨近於零</strong>：fingerprints.json 記錄了 73 個檔案的指紋。新 commit 只動 6 個檔，下次只重分析那 6 個——不用付全量分析的代價。</p>
+          <p><strong>後新增的功能不應回頭阻塞已完成的任務</strong>：parables tab 是任務完成後才出現的。讓它成為「結案阻塞」等於讓任何新功能都能拖延結案。界線要清楚，範疇在哪裡、任務就在哪裡結束。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-22 · Understand Anything × nomad-dashboard · 234 節點 / 364 邊 / 8 架構層 / 73 原始檔 / commit ecb81d9
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

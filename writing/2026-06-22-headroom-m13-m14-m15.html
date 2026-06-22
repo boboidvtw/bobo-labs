@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JSON parity 的正確答案是不重序列化 — Headroom M13/M14/M15 三片壓縮策略 · Bobo Labs</title>
+  <meta name="description" content="一個 session 連推 diff、search、JSON 三片內容感知壓縮策略。M15 最重要的洞見：截斷 JSON 後若走 parse→重序列化路線，Python json.dumps 把 1.10 正規化成 1.1，Rust serde_json 保留 1.10——parity 破掉。解法是根本不重序列化：byte-level 結構掃描、照抄元素切片。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-22-headroom-m13-m14-m15.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-22</p>
+      <h1 class="article-title">JSON parity 的正確答案是不重序列化 — Headroom M13/M14/M15 三片壓縮策略</h1>
+      <p class="article-lede">
+        一個 session 連推三片壓縮策略：M13 丟 diff context 行、M14 用路徑有沒有 <code>/</code> 分辨 search 和 log、
+        M15 處理 JSON——然後遇到跨語言數字正規化地雷。
+        解法不是對齊 encoder，而是根本不重序列化：byte-level 照抄元素切片，Python 和 Rust 就不可能在值上分岔。
+      </p>
+
+      <div class="article-body">
+        <h2>M13：diff 壓縮，與測試斷言子字串碰撞</h2>
+        <p>
+          unified/git diff 的結構清楚：context 行（空格開頭）提供可讀性但不含變更資訊；
+          hunk header（<code>@@</code>）和 <code>+</code>/<code>-</code> 行才是關鍵。
+          M13 把未變更的 context 行丟掉，保 hunk header、檔頭（diff/index/---/+++）、所有變更行。
+          測試：07_diff.json 從 7227 bytes 壓到 1857，Python 和 Rust 逐字節一致。
+        </p>
+        <p>
+          這片留下一個 marker naming 的陷阱。末尾標記寫的是
+          <code>dropped N diff context lines | sha256:key</code>，
+          而測試斷言用了 <code>"context line" not in out</code> 驗「context 行被丟掉了」——
+          結果 marker 文字本身也含 "context lines"，測試誤觸。
+          解法是改查 <strong>"unchanged"</strong>（context 行的語義詞），不查 marker 文字裡的用詞。
+          <strong>marker 用詞和測試斷言必須避開子字串重疊。</strong>
+        </p>
+        <p>
+          嗅探守門加了兩條防呆：輸入必須含真 <code>@@</code> hunk header（排除 markdown 的 +/- 條列）、
+          且 context 行比例至少 30%（全是變更行的 diff 根本沒噪音可丟）。
+        </p>
+
+        <h2>M14：用「路徑含 /」分辨 grep 和 log timestamp</h2>
+        <p>
+          grep/rg 輸出格式是 <code>file:lineno:content</code>。
+          最直覺的解析法是「冒號分隔、第二欄全數字就是行號」。
+          這個方法在 log 時間戳上會掛掉：<code>2026-06-20T10:30:45</code> 字面就是「欄:數字:欄」，
+          search 策略會誤認為 grep 結果，把 M12 log 策略的輸入截走，推翻已經驗過的行為。
+        </p>
+        <p>
+          解法：要求第一個 <code>:</code> 前的 file_key 含 <code>/</code>。
+          真實的 <code>grep -rn pat .</code> 路徑必帶斜線；時間戳前綴 <code>2026-06-20T10</code> 不含斜線。
+          純 ASCII byte 檢查（<code>"/" in key</code>），Python 和 Rust 完全一致，不踩 unicode 分岔。
+          08_search.json：4289→1702 bytes。
+        </p>
+        <p>
+          test_search_does_not_swallow_logs 是鎖定測試：確保既有的 log fixture（不含 <code>/</code> 的行）
+          在加了 search 策略後仍走 LOG 路徑、不回歸。
+          M13/M14/M15 三片零回歸，dispatcher 五片都通。
+        </p>
+
+        <h2>M15：為什麼 byte-level 照抄比對齊 encoder 更穩</h2>
+        <p>
+          M15 壓法：找元素最多的 array，保前 5 + 後 2 個元素、中間塞 marker 字串元素，array 外 bytes 照抄。
+          起初實作路線是 parse→截斷元素→重序列化，結果 parity 測試掛掉。
+        </p>
+        <p>
+          根因是數字正規化分岔。Python <code>json.dumps</code> 把 <code>1.10</code> 正規化成 <code>1.1</code>；
+          Rust <code>serde_json</code> 開 <code>arbitrary_precision</code> 後保留 <code>1.10</code>。
+          同一份 fixture 含 <code>1.10</code>，兩側序列化結果不同，parity 破掉。
+          對齊 encoder 可以補，但要在所有 edge case 上各自維護兩個語言的序列化設定——沒有根本解決問題。
+        </p>
+        <p>
+          換一個出發點：<strong>根本不重序列化任何值。</strong>
+          byte-level 結構掃描追蹤字串字面值（讓字串內的括號不算巢狀深度）、追蹤深度（讓逗號只切最內層），
+          記錄每個元素的 byte span，被保留的元素直接照抄原始 byte 切片。
+          唯一新寫入的只有結構字元 <code>[</code> <code>,</code> <code>]</code> 和 marker（全 ASCII 常數）。
+          這些是跨語言不可能分岔的東西。
+          09_json.json 刻意含 <code>1.10</code> 和 <code>1e10</code>：2959→1651 bytes，數字原樣保留，逐字節一致——
+          正是「照抄不重序列化」拆掉地雷的直接證明。
+        </p>
+        <p>
+          這片還踩到一個 tie-break 坑：找元素最多 array 時同票，
+          Python <code>max()</code> 保第一個、Rust <code>max_by_key()</code> 保最後一個。
+          兩邊都改成「嚴格大於才替換」，行為對齊。
+          這個 session 前後踩了三個跨語言內建語意分岔：strip vs trim（unicode 空白）、
+          max 同票取捨、json.dumps 數字正規化。對策每次都一樣——改用顯式、ASCII-only、
+          byte-level 的確定性邏輯，不依賴語言內建的隱性語意。
+        </p>
+
+        <h2>三片連推，dispatcher 架構是主要原因</h2>
+        <p>
+          M11 建的 strategy dispatcher 讓加新策略只需動 <code>strategies.py</code> 和 <code>strategies.rs</code>：
+          各寫一對 <code>(applies, squeeze)</code>、插進 STRATEGIES 清單（TRUNCATE catch-all 之前）。
+          <code>compress_block</code> 泛型呼叫端從不改動。
+          M13/M14/M15 三片都是這個模式，零改造成本——M11 的設計連續第三、四、五度兌現。
+        </p>
+        <p>
+          最終狀態：dispatcher 五片（JSON、DIFF、SEARCH、LOG、TRUNCATE）；
+          Python 59→94 tests、Rust 72→101 tests、parity 6→9 fixtures、clippy 0；
+          6 個 commit 全推 fork，origin 停在 d77265c。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>marker 用詞不能和測試斷言共用子字串</strong>：M13 marker 含 "context lines"、測試查 "context line" not in out——誤觸。改查語義詞（"unchanged"）而非 marker 文字本身。</p>
+          <p><strong>分隔格式的辨識需要結構性守門條件</strong>：「冒號分隔第二欄是數字」不足以分辨 grep 和 log timestamp。要求 file_key 含 /——這是 grep 路徑的結構性特徵，timestamp 沒有。</p>
+          <p><strong>JSON parity 的正解是照抄不重序列化</strong>：parse→重序列化一定踩語言內建的數字正規化分岔。byte-level 切片把地雷根本移走，比對齊兩個語言的 encoder 更穩。</p>
+          <p><strong>跨語言內建語意每次都要顯式對齊</strong>：strip vs trim、max 同票取捨、json.dumps 數字正規化——三個坑。對策一律是改用顯式、ASCII-only、byte-level 的確定性邏輯。</p>
+          <p><strong>dispatcher 骨架的報酬在第三片後才完全看見</strong>：一片策略時「只動兩個檔案」感覺平常，三片連推時「三片零改造成本、零回歸」才是這個設計的真實報酬。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-22 · Headroom M13/M14/M15 · Python 94 tests / Rust 101 tests / parity 9 fixtures / clippy 0 · 6 commits
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
