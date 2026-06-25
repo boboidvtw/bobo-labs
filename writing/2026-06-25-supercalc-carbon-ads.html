@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>∑ Calc 廣告路線確認：移除殭屍 AdSense、選定 Carbon Ads · Bobo Labs</title>
+  <meta name="description" content="AdSense 被拒後殘留 dead script 超過 30 天，每次 page load 浪費一次 HTTP request 卻從不顯示廣告。這次一併確認替代方案：Ezoic 2026 年門檻提升至 250K MAU、∑ Calc 不符合；改選 Carbon Ads，但先搞清楚 exclusive network 這個大地雷再動手。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-25-supercalc-carbon-ads.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-25</p>
+      <h1 class="article-title">∑ Calc 廣告路線確認：移除殭屍 AdSense、選定 Carbon Ads</h1>
+      <p class="article-lede">
+        AdSense 被拒後，那段 dead script 一直掛在 index.html 裡，整整超過 30 天。
+        每次 page load 瀏覽器仍舊送出 HTTP request，回來的是空白——廣告從沒顯示過。
+        這次終於把它清掉，同時把廣告路線談清楚：Ezoic 在 2026 年 2 月悄悄提高門檻，
+        現在要 250K 月活才能申請。∑ Calc 流量沒到。最後選定 Carbon Ads，
+        但在送出申請之前，先把 exclusive network 這個地雷講清楚。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼殭屍 script 要立刻清</h2>
+        <p>
+          AdSense 申請流程要求在 index.html 放一段 <code>&lt;script&gt;</code>，拒絕通知下來之後，
+          這段 code 就應該一起移除。但當時重心轉去其他修復，一直沒清。
+        </p>
+        <p>
+          30 天後，這段 script 每次頁面載入都發出一次對 googlesyndication.com 的 HTTP request，
+          回傳零廣告內容，然後靜默結束。使用者看不到廣告，但網路開銷真實發生。
+          Service Worker 的 <code>NETWORK_FIRST_HOSTS</code> 裡還留著 googlesyndication 的白名單，
+          意思是這個 request 每次都繞過 SW cache 直接走網路。
+        </p>
+        <p>
+          清掉它不只是美觀問題。每個 dead request 都是 FCP 前的潛在阻塞，
+          也是給未來維護自己埋的認知負擔：三個月後看到這行 script，我還記得它是廢的嗎？
+        </p>
+
+        <h2>Ezoic 被揭穿：無門檻是假的</h2>
+        <p>
+          最初的廣告替代方案清單裡有 Ezoic，印象是「無流量門檻、小站友善」。
+          但查證之後發現這個印象來自 2025 年以前的資料。
+        </p>
+        <p>
+          2026 年 2 月 19 日起，Ezoic 對新申請站台設定 250,000 月活用戶門檻。
+          舊用戶有 grandfather 條款，但 ∑ Calc 從未申請過，不適用。
+          Incubator 方案每月只開放 20 個名額，流程 6–12 週，不保證通過。
+          考量等待成本和不確定性，直接排除。
+        </p>
+        <p>
+          教訓是：任何「免門檻」「低門檻」的業務條件，必須當下查最新資料，
+          不能憑記憶中的舊規則決策。這類規則每年都可能調整，部落格文章通常不更新。
+        </p>
+
+        <h2>為什麼選 Carbon Ads</h2>
+        <p>
+          Carbon Ads 是 BuySellAds 旗下的開發者工具廣告網路。
+          它的受眾定位是英語系（US/CA/UK/AU/DE）的開發者，
+          廣告主以開發者工具、SaaS、技術服務為主。∑ Calc 的用戶畫像吻合。
+        </p>
+        <p>
+          整合方式是純 JS embed，不需要 DNS 改動，這對 GitHub Pages 部署很友好。
+          沒有明確的流量門檻，但官網說明是 careful selection 加上 capacity match，
+          送申請後 5–7 工作天回覆。
+        </p>
+        <p>
+          Pro 升級的賣點裡本來就有「無廣告」，pricing modal 也早已寫入這一項。
+          Carbon Ads 加入後，Free 版顯示開發者工具廣告、Pro 版隱藏，
+          廣告既是收入來源，也成為推升級的理由，兩件事天然對齊。
+        </p>
+
+        <h2>Exclusive network 是硬地雷</h2>
+        <p>
+          Carbon Ads 的服務條款有一條：加入後不能與其他廣告聯播網並存。
+          這是 exclusive network 架構，違反即是合約問題。
+        </p>
+        <p>
+          這條款決定了申請順序的邏輯。Carbon Ads 申請送出前，
+          必須確認站台上已沒有其他聯播網的 script——這次清掉的 AdSense dead script 正好符合。
+          若申請被拒，才能評估其他選項（BuySellAds 自助 banner、直接洽談贊助商等）。
+          不是同時試多家，而是序列決策：Carbon Ads 結果出來之前，保持乾淨。
+        </p>
+
+        <h2>本次清理範圍（commit 4f7fcf7）</h2>
+        <p>
+          移除 index.html 第 49–50 行的 AdSense <code>&lt;script&gt;</code> 兩行。
+          sw.js 同步移除 NETWORK_FIRST_HOSTS 裡的 googlesyndication 白名單，並 bump CACHE_NAME 到 v3.8.3。
+          CHANGELOG 補 [3.8.3] 條目；README / README_EN hero 版號同步。
+          另產出 docs/CARBON-ADS-APPLICATION.md，整理英文申請文案備用。
+        </p>
+        <p>
+          清理後 production 驗證：SW 版號確認 sigma-calc-v3.8.3，
+          index.html 裡 adsbygoogle / googlesyndication / ca-pub 三個關鍵字搜尋回零，
+          Worker health endpoint 確認正常。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>dead code 要即時清</strong>：被拒後殘留的 AdSense script 在功能上等於零，但每次 page load 仍發出真實 HTTP request。「以後再說」的 dead code 會越堆越多，最後沒人知道哪行還活著。</p>
+          <p><strong>業務規則必須當下查</strong>：Ezoic「無門檻」是半年前的資訊。平台門檻、費率、ToS 每年都可能改，推薦文章通常不更新，開決策前直接查官方現行條款。</p>
+          <p><strong>exclusive network 先讀 ToS</strong>：Carbon Ads 加入後不能與其他聯播網並存，違反是合約問題。任何廣告聯播網申請之前先確認是否有 exclusivity 條款，再決定申請順序。</p>
+          <p><strong>變現策略要對齊使用者當下的直覺</strong>：記憶裡寫著「跳過廣告路線」，使用者開頭就說「賺錢廣告」。先確認意圖再動手，避免做了半天白工。</p>
+          <p><strong>既有 UI 賣點要名實相符</strong>：pricing modal「無廣告」這個 Pro 賣點已存在，Carbon Ads 通過後才真正落地。中間空窗期寫著賣點但沒有廣告，是小小的不誠實，通過後要立刻補上。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-25 · ∑ Calc v3.8.3 · commit 4f7fcf7 · AdSense dead script 清除 + Carbon Ads 申請備料 · GitHub Pages boboidvtw.github.io
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
