@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-26** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-06-25-supercalc-carbon-ads.html`（∑ Calc 廣告路線確認：移除殭屍 AdSense dead script、Ezoic 門檻 250K MAU 不符、選定 Carbon Ads 並確認 exclusive network 條款）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-06-26.
+
 - **2026-06-23** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-06-22-headroom-m13-m14-m15.html`（JSON byte-level 照抄不重序列化：M13/M14/M15 三片壓縮策略，dispatcher 零改造五片連推）、
   `2026-06-22-understand-anything-nomad.html`（Understand Anything 分析 nomad-dashboard 結案：234 節點 364 邊 8 架構層，磁碟才是 ground truth）。
