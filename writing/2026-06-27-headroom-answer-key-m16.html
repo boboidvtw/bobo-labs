@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>讀懂工業版再動手 — Headroom 解答本精讀 + M16 Stack Trace 策略 · Bobo Labs</title>
+  <meta name="description" content="同一 session：先精讀工業版壓縮引擎，找出 5 個學習版沒有的關鍵概念，然後直接把洞見用進 M16 stack trace 策略的實作。從 auth-mode gating 到 byte-range surgery，研究和實作間只隔 1 小時。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-27-headroom-answer-key-m16.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-27</p>
+      <h1 class="article-title">讀懂工業版再動手 — Headroom 解答本精讀 + M16 Stack Trace 策略</h1>
+      <p class="article-lede">
+        今天的 Headroom session 把「研究」和「實作」壓縮進同一個下午。先精讀工業版壓縮引擎，
+        找出 5 個學習版完全沒有的架構概念，然後把其中一個洞見直接用進 M16 stack trace 策略的設計。
+        讀完解答本到 M16 commit push，中間沒有隔天。
+      </p>
+
+      <div class="article-body">
+        <h2>解答本比記憶裡的更深：兩層而非一層</h2>
+        <p>
+          原本我以為解答本壓縮引擎的主力是 <code>live_zone_anthropic.rs</code>，1311 行，
+          裡面裝著所有邏輯。實際讀下去才發現那只是第一層——proxy 轉接層。
+          它的工作是處理 Phase E 三件事（tools 排序、schema key 排序、cache_control 自動放置），
+          然後把真正的壓縮工作委派出去。
+        </p>
+        <p>
+          真正的壓縮邏輯在第二層：<code>headroom-core/src/transforms/live_zone.rs</code>，2884 行。
+          live-zone 偵測、byte-range surgery、dispatch 到四個獨立 compressor（SmartCrusher、LogCompressor、
+          SearchCompressor、DiffCompressor，各自 800–1700 行）。再下面還有內容偵測子系統：
+          regex 信心級聯、Magika ML 模型、diff 第二階判定。
+          我學習版的 dispatcher 是一個函式，工業版是三層獨立模組。
+        </p>
+
+        <h2>五個學習版沒有的工業概念</h2>
+
+        <p>
+          精讀最有價值的不是「看他們怎麼寫迴圈」，是找出「真實世界有、學習版沒想到」的結構差距。
+          我找到五個。
+        </p>
+
+        <p>
+          <strong>第一：auth-mode gating。</strong>
+          工業版的 Phase E 三個位元改寫只在 <code>AuthMode::Payg</code> 時執行；
+          OAuth 和 Subscription 流量全部穿透、不動。理由很硬：對訂閱/OAuth 流量改 bytes
+          會被上游視為 cache-evasion，觸發撤銷。我學習版沒有「同一條 proxy 服務不同計費身分」的需求，
+          所以從來沒想過壓縮「能不能做」還要看商業/合規身分。
+        </p>
+
+        <p>
+          <strong>第二：byte-range surgery via RawValue。</strong>
+          工業版用 <code>serde_json::value::RawValue</code> 的 borrowed slice 保留每個 block 在原 buffer 的 byte offset，
+          改寫時拼接 <code>body[..start] || replacement || body[end..]</code>，block 外的 bytes 字面 copy、永不重序列化。
+          這和我 M15 悟出的「絕不重序列化任何值」是同一條鐵律，但工業版把它泛化成整個 live-zone 的通用機制。
+          我是在單一策略內手工掃 bytes，他們是基礎建設級的 offset 追蹤。
+        </p>
+
+        <p>
+          <strong>第三：多階內容偵測信心級聯。</strong>
+          我學習版每個策略自帶 <code>applies()</code> 做 byte-prefix 啟發式硬判。
+          工業版 <code>detect_content_type</code> 有明確優先序和信心門檻：
+          JSON array conf 0.8、git diff ≥0.7、HTML ≥0.7、search ≥0.6、log/build ≥0.5。
+          每類抽樣量各異（log 取前 200 行、search 前 100、HTML 前 3000 bytes），
+          Magika ML 模型在最前面當第一階，regex 當 fallback。
+        </p>
+
+        <p>
+          <strong>第四：search vs log 時間戳陷阱的兩種正交解法。</strong>
+          我在 M14 踩過：<code>file:line:</code> 判別式會誤吃 log 時間戳 <code>10:30:45</code>。
+          我的解法：要求 file_key 含 <code>/</code>，更利的單行 predicate。
+          工業版用完全不同的路：<code>SEARCH_RESULT_PATTERN</code> 本身也會誤判時間戳，
+          但靠兩道統計閘擋下來——優先序（search ≥0.6 排在 log ≥0.5 前）加上整段抽樣聚合的 ratio 門檻。
+          真 log 裡只有零星時間戳，ratio 壓不到 0.33；真 grep 輸出 ratio 接近 1.0。
+          兩條正交解法，我用確定性、工業版用統計。學習版選前者是對的——byte 級確定性才能過 parity gate。
+        </p>
+
+        <p>
+          <strong>第五：NoOp guard。</strong>
+          工業版所有 compressor dispatch 後一律檢查 <code>result.compressed == original → NoOp</code>。
+          這和我「沒賺就不動、交 truncate 兜底」的設計完全同構。✅
+        </p>
+
+        <h2>M16 — Stack Trace 策略設計</h2>
+        <p>
+          解答本精讀完，使用者選候選 1「加第六片策略」，拍板 stack trace。
+          這是 dispatcher 的第五片內容策略，照 M12–M15 的同構模式：<code>applies</code> / <code>squeeze</code> 一對，
+          在 dispatcher 內多一個分支，dispatcher 本身不動。
+        </p>
+        <p>
+          設計關鍵是把 stack trace 切成 <strong>frame</strong>，而不是切「行」。
+          frame 標頭是去掉前綴空白後以 <code>File "</code>（Python）或 <code>at </code> 加含 <code>(</code>（Java/JS）
+          起頭的行；frame 本身包含標頭加其後縮排的非標頭續行。
+          保前 3 + 後 3 個 frame，丟中段；所有非 frame 行全留
+          （Traceback 標頭、<code>XxxError:</code> 訊息、chained-exception 分隔）。
+          marker 只在第一個丟棄處塞一次。
+        </p>
+        <p>
+          為什麼不用盲截斷？因為 truncate 在「行」邊界切，會把 <code>File "..."</code> 標頭
+          與其程式碼續行拆成兩半；tail 視窗（TAIL_LINES=10）也可能把最關鍵的 <code>XxxError:</code>
+          行擠出去。frame 感知策略永不切半個 frame，錯誤訊息行恆保留。
+        </p>
+
+        <h2>兩個實作教訓</h2>
+        <p>
+          <strong>2048 bytes 門檻坑。</strong>
+          parity 第一版全綠，但 <code>10_stacktrace.json</code> fixture 反而 1661→1671 變大、無 marker。
+          根因是 pipeline 的 <code>MIN_COMPRESSIBLE_BYTES=2048</code>——tool_result 要 ≥2048 bytes 才進壓縮；
+          15-frame 測試 content 只 1298 bytes，整段被跳過。
+          <code>squeeze</code> 函式本身直呼是正常的（1298→660），pipeline 端卻看不到效果。
+          改成 30-frame fixture（content 2483 bytes）才真正生效，pipeline 端 2906→1386（約 52%）。
+          <strong>策略單元測試綠 ≠ pipeline 端到端有壓。fixture 要過得了 pipeline 的進場門檻。</strong>
+        </p>
+        <p>
+          <strong>clippy needless_range_loop。</strong>
+          <code>for fi in HEAD..len-TAIL { frames[fi] }</code> 觸發 clippy 警告，
+          改成 <code>let last = ...; for &(s,e) in &frames[HEAD..last]</code>。
+          這是細節，但 Rust port 的 clippy 0 紀律不能破。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>讀解答本要找結構差距，不找程式碼細節</strong>：「他怎麼寫迴圈」沒有遷移價值；「他有 auth-mode gating 而我完全沒想到」才是金。</p>
+          <p><strong>壓縮能不能做，不只看技術正確，還看商業/合規身分</strong>：auth-mode gating 是真實世界才有的約束，學習環境永遠不會暴露它。</p>
+          <p><strong>同一個 false-positive 可以有正交解法，兩者都對</strong>：確定性 predicate vs 跨行統計信心各有適用場景，學習版選前者不是錯的。</p>
+          <p><strong>策略單元測試通過 ≠ pipeline 端到端有壓</strong>：fixture 要過得了 pipeline 的進場門檻（≥2048 bytes），否則測試綠了、真實壓縮卻是 NoOp。</p>
+          <p><strong>研究和實作之間的 gap 越短越好</strong>：今天讀完解答本立刻寫 M16，洞見還新鮮，連接有機；隔天再做，架構對照就要重讀一遍。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-27 · Headroom 學習重建 · Python 106 / Rust 110 / parity 10 fixtures · commits 7872ea0 + 996ad05
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
