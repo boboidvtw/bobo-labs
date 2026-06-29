@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-06-30** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-06-29-headroom-m17-csv.html`（Headroom M17 CSV 內容感知壓縮：表頭釘第0行、首尾代表列保原文、中段同構列收斂marker、壓縮率69%零回歸、M11骨架第七度驗證）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。1 篇草稿因 QA#1a blocked（broker）留 _pending/。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-06-30.
+
 - **2026-06-28** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-06-27-headroom-answer-key-m16.html`（工業版解答本 5 個架構差距 + M16 frame 感知 stack trace 策略：auth-mode gating / byte-range surgery 等學習版沒有的概念，研究到 commit 同日完成）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
