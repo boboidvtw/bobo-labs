@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>表頭不能被截斷 — Headroom M17 CSV 內容感知壓縮策略 · Bobo Labs</title>
+  <meta name="description" content="純截斷不懂「表頭是訊號」——把欄名擠出視窗，剩下數字列全無法判讀。M17 把表頭釘在第 0 行，前 3 列保原文、後 2 列保原文、中段同構列收斂成一行 marker，壓縮率 69%、零回歸、第七度驗證 M11 骨架。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-29-headroom-m17-csv.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-29</p>
+      <h1 class="article-title">表頭不能被截斷 — Headroom M17 CSV 內容感知壓縮策略</h1>
+      <p class="article-lede">
+        dispatcher 第六片內容感知策略，目標是 CSV/TSV 表格：DB 查詢結果、<code>column</code> 對齊輸出、資料表 dump。
+        問題核心只有一個：純截斷（truncate）不懂「表頭 = 訊號」——資料列一多，欄名被擠出 HEAD_LINES 視窗，
+        剩下一堆數字列全無法判讀。M17 把表頭釘在第 0 行，選代表列保住首尾語意，中段同構列壓成一行 marker。
+        全 TDD、Python 寫完 port 到 Rust、跑 parity、第七度驗證 M11 骨架沒動過。
+      </p>
+
+      <div class="article-body">
+        <h2>截斷的問題：欄名被自己的資料列擠走</h2>
+        <p>
+          Headroom 的 dispatcher 收到一段 context block，必須判斷這段是什麼格式，再套對應的壓縮策略。
+          TRUNCATE 是兜底策略——不認識格式就直接從頭截 HEAD_LINES 行。
+          在純文字或程式碼裡，這個做法合理：前幾行通常是函式簽名或說明，語意密度高。
+        </p>
+        <p>
+          但 CSV 不一樣。典型的 DB 查詢輸出長這樣：第 0 行是欄名（id, name, created_at），
+          後面是資料列，可能有幾百行。HEAD_LINES 設 40 時，60 列的表格表頭確實保住了，
+          但如果是 200 列的大表、或 HEAD_LINES 被縮小，欄名就消失了，LLM 看到的是一堆數字，
+          完全不知道這些數字代表什麼欄位。<strong>截斷不是「均勻保留」，它是「對齊開頭截」</strong>，
+          表頭在開頭、所以小表不出問題；大表一多就成了盲點。
+        </p>
+
+        <h2>設計：表頭恆保留 + 首尾代表列 + 中段 marker</h2>
+        <p>
+          M17 的壓縮邏輯分三層。第一層：<strong>表頭永遠輸出在第 0 行</strong>，不計入 HEAD/TAIL 的行數配額。
+          第二層：從資料列取前 CSV_KEEP_HEAD（= 3）列和後 CSV_KEEP_TAIL（= 2）列，作為「代表列」直接保留原文。
+          第三層：中段剩下的同構列收斂成一行 marker：
+        </p>
+        <p>
+          <code>[... dropped N table rows | sha256:KEY ...]</code>
+        </p>
+        <p>
+          KEY 對應 CCR store 裡的原文，可逆。這個三層設計讓 LLM 能看到欄名、看到首尾典型資料，
+          又知道中間有多少列被壓縮——比純截斷多了語意結構，比完整輸出少了 token 消耗。
+        </p>
+
+        <h2>強訊號嗅探：為什麼不能只靠逗號偵測</h2>
+        <p>
+          dispatcher 的偵測邏輯必須先判斷「這段是不是 CSV」，才能決定要不要套 CSV 策略。
+          最簡單的做法是「有逗號就當 CSV」，但這太粗。自然語言句子裡也有逗號，日誌訊息裡也有逗號。
+          如果偵測太寬，散文會被誤判為表格，壓縮結果就壞了。
+        </p>
+        <p>
+          M17 用的是「強訊號嗅探」：去掉尾端換行後，<strong>每一非空行都必須以同一 delimiter
+          出現相同次數且 ≥ 1</strong>，才認領為 CSV。逗號優先，再試 tab。
+          散文根本做不到每行逗號數完全一致——句子長短不同，逗號位置也不規律。
+          這條規則把誤判率壓到實務上可接受的程度。
+        </p>
+        <p>
+          保守策略：如果有內部空行（空行打破「每行非空」的條件），或引號內逗號讓計數不一致，
+          就整段落到 TRUNCATE 兜底。不試圖解析 CSV 的特殊情況，直接放棄、保守處理。
+          這個判斷我認為是對的——試圖解析帶引號的 RFC 4180 格式會引入一大塊複雜度，但收益有限。
+        </p>
+
+        <h2>parity 安全：Python 和 Rust 的 delimiter 計數要一致</h2>
+        <p>
+          M17 的 Rust port 有一個細節需要確認：delimiter 計數用的是 ASCII byte 計數，
+          而不是 Unicode 碼點計數。逗號（0x2C）和 tab（0x09）都是單 byte ASCII，
+          不是 UTF-8 的續位元組（0x80–0xBF），所以：
+        </p>
+        <p>
+          Python 的 <code>str.count(',')</code> 計算的是碼點次數，對單 ASCII 字元 == byte count。
+          Rust 的 <code>bytes().filter(|&b| b == b',').count()</code> 計算的是 byte 次數。
+          兩者對同一 ASCII 字元結果相同。這個等價關係讓 parity 測試可以直接用 byte 比較，
+          不需要額外轉換。
+        </p>
+        <p>
+          另一個 Rust 細節：<code>csv_squeeze_core</code> 在計算中段 drop 前，先確認
+          <code>data_rows &gt;= HEAD + TAIL + MIN_DROP</code>，同時避免 <code>usize</code> 下溢——
+          如果資料列太少，直接保留全部不壓，不進 marker 路徑。
+        </p>
+
+        <h2>零回歸：第七度驗證 M11 骨架</h2>
+        <p>
+          M17 加進 dispatcher 後，我把既有 10 個 parity fixture 全部重跑一遍。
+          fixture 01=1147、06=1271、07=1857、08=1702、09=1651、10=1386 字節數，
+          與 M16 之前的結果完全一致。CSV 策略沒有「偷走」任何一個原本走其他策略的 fixture。
+        </p>
+        <p>
+          新增 11_csv.json（60 列表格，3533 bytes）走完整 pipeline：
+          3533 → 1095 bytes，壓縮率約 69%，Python 和 Rust 輸出逐字節一致。
+          fixture 內容必須 ≥ 2048 bytes 才會真壓（這是 pipeline 的 MIN_COMPRESSIBLE_BYTES，
+          M16 的 stack trace fixture 教訓——小 fixture 走直接輸出路徑，結果字節數看起來「沒被壓」，
+          其實是設計行為，不是 bug）。
+        </p>
+        <p>
+          這是 M11 骨架第七度通過：只動 <code>strategies.{py,rs}</code>，
+          寫一對 <code>(applies, squeeze)</code> 加上 dispatcher 的序列註冊，
+          <code>compress_block</code> 和 dispatcher 本身完全沒動。
+          策略可以被獨立添加而不影響系統其他部分，這個性質到目前為止每次都兌現了。
+        </p>
+
+        <h2>數字總結</h2>
+        <p>
+          Python 測試：118 個（+12）。Rust 測試：121 個（strategies 從 57 增加到 68，+11）。
+          parity fixture：11 個。clippy 0 警告（-D warnings 通過）。
+          commits：b6fa1a0 feat + 44b41d9 docs，已 push 到 fork（origin/realign-rewrite-learn）。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>截斷對齊開頭，不懂「表頭是訊號」</strong>：大表資料列一多，欄名被擠走，剩下數字列無法判讀。需要明確把表頭釘在第 0 行。</p>
+          <p><strong>強訊號嗅探優於寬鬆偵測</strong>：「每行相同 delimiter 次數 ≥ 1」這條規則足以排掉散文誤判，比逐列解析 RFC 4180 引號規則的複雜度低得多。</p>
+          <p><strong>parity 安全靠等價性推導，不靠猜測</strong>：ASCII delimiter 計數在 Python str.count 和 Rust bytes().filter() 等價，這是可以推導的，不需要特殊轉換層。</p>
+          <p><strong>usize 下溢不靠 saturating，靠前置條件</strong>：data_rows &lt; HEAD + TAIL + MIN_DROP 時直接不壓，進 marker 路徑之前已保證不溢位。</p>
+          <p><strong>M11 骨架第七度兌現</strong>：只改 strategies 層、不動 dispatcher 和 compress_block，這個性質不是口號，是每次新策略實際驗收的結果。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-29 · Headroom M17 · CSV/TSV 內容感知壓縮 · Python 118 + Rust 121 tests · parity 11 fixtures · 3533→1095 bytes (~69%)
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
