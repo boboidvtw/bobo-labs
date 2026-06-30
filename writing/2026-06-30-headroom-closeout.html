@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>全綠、全同步、封存 — Headroom 學習重建完結篇 · Bobo Labs</title>
+  <meta name="description" content="M0 到 M20，Python 154 通過、Rust 154 通過、parity 14 個 fixture 全數吻合——Headroom 學習重建在此結案。記錄判定封存的推理：北極星全達成、建構面進入高原期、邊際學習價值趨近零。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-30-headroom-closeout.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-30</p>
+      <h1 class="article-title">全綠、全同步、封存 — Headroom 學習重建完結篇</h1>
+      <p class="article-lede">
+        M0 到 M20，Python 154 通過、Rust 154 通過、parity 14 個 byte-for-byte fixture 全數吻合、
+        clippy 0 warning、git 乾淨且與遠端同步停在 <code>9c4cd7a9</code>。
+        今天的 session 性質是評估而非建構：確認北極星全達成、建構面已進入高原期，
+        判定可以封存。結案不靠感覺，靠跑測試。
+      </p>
+
+      <div class="article-body">
+        <h2>先跑測試，再說「完成」</h2>
+        <p>
+          結案前我的第一步是把四個指標實測一遍，不憑記憶。
+          分支 <code>realign-rewrite-learn</code> 的 working tree 乾淨；
+          <code>git status</code> 沒有 modified、staged 或 untracked 的東西；
+          與遠端同步停在 <code>9c4cd7a9</code>，沒有待 push 的 commit。
+        </p>
+        <p>
+          測試數字：Python pytest 154 passed，耗時 0.21 秒；Rust 的拆分測試模組加起來
+          同樣 154 通過；parity gate 的 14 個 fixture 全部 byte-for-byte 一致；clippy 0 warning。
+          記憶（M20 / <code>9c4cd7a9</code>）與實測完全吻合。
+          這也是一個反向驗證：上次收工記錄是可信的。
+        </p>
+
+        <h2>北極星是否真正達成？</h2>
+        <p>
+          Headroom 學習重建的北極星是三件事：cache 不破、壓縮省錢、真 SSE 串流完整。
+          在評估 session 之前，這三件事有真流量證據嗎？有。
+        </p>
+        <p>
+          cache 不破：單 process Turn 2 觀察到 <code>cache_read=63719</code>，
+          代表所有前綴在第二輪全部命中，沒有因為壓縮改 bytes 而讓 cache 失效。
+          壓縮省錢：300 行 tool_result 的 input tokens 從 10516 降到 1939，省了 81.6%，
+          答案品質不變。真 SSE：重切器事件序列完整，沒有損失任何 token。
+          三個北極星目標全部有實測證據，不是紙上完成。
+        </p>
+
+        <h2>為什麼「現在」是結案點，不是繼續加策略</h2>
+        <p>
+          從 M12 到 M20，dispatcher 加了六片內容感知策略（log、diff、search、JSON、stack trace 加骨架），
+          每一片都是「一對 <code>(applies, squeeze)</code> + 註冊到 STRATEGIES，骨架不動」。
+          這個模式被驗證了超過十次。
+        </p>
+        <p>
+          此時繼續加策略，學到的不是新東西，是重複已經驗證的套路。
+          判定封存的標準不是「還能不能加」，而是「邊際學習價值是否趨近零」。
+          答案是肯定的。建構面已進入高原期。
+        </p>
+
+        <h2>三個候選的差異化處置</h2>
+        <p>
+          結案前還有三個選做候選，全部分析過，不是因為懶而跳過。
+        </p>
+        <p>
+          <strong>更多內容感知策略（key=value / env / .ini）</strong>：重複十度驗證過的套路，
+          只是擴覆蓋率，沒有新的學習曲線，低值。
+        </p>
+        <p>
+          <strong>SSE buffer 攔截真閉環</strong>：在 2026-06-18 精讀解答本時已確認，
+          工業版刻意不在串流裡攔截——原因是架構抉擇，不是 bug。
+          送出去的 bytes 收不回；攔就得 buffer，buffer 就毀串流。
+          這個候選的方向本身錯了，做了也是錯的。
+        </p>
+        <p>
+          <strong>續讀解答本工業壓縮引擎</strong>：這是唯一殘留真正學習價值的候選，
+          但它屬於「讀」而非「建」，不影響整個專案的完整性。
+          四個 compressor 內部、cache_stabilization 型別矩陣、Magika ML 接線，
+          等未來想深入時可以單獨挑，不需要把整個專案維持在「開放」狀態等它。
+        </p>
+
+        <h2>結案不等於砍分支</h2>
+        <p>
+          分支 <code>realign-rewrite-learn</code> 保留，作學習存底。
+          main 從未動過，學習成果全在分支上（公開 fork、SSH）。
+          想繼續候選 3 的深讀時，<code>git checkout realign-rewrite-learn</code> 就能接續。
+          封存只是「我不再主動推進」，不是「刪掉」。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>結案靠跑測試，不靠感覺</strong>：宣告「完成」之前先 <code>pytest</code>、<code>cargo test</code>、parity gate、<code>git status</code>——四個數字對了才算對，記憶不能當 ground truth。</p>
+          <p><strong>北極星要有真流量證據，不是紙上完成</strong>：<code>cache_read=63719</code>、tokens 10516→1939、SSE 事件序列完整，這些才是「達成」的憑據。</p>
+          <p><strong>邊際學習價值，不是「還能不能做」</strong>：建構面進入高原期是結案的正確判準。能做但學不到新東西，繼續做是消耗，不是進步。</p>
+          <p><strong>方向錯的候選不做，理由要說清楚</strong>：SSE buffer 攔截不是技術難，是架構選擇錯；確認方向錯，直接跳過比強行實現更誠實。</p>
+          <p><strong>封存不等於刪除</strong>：分支保留、main 不動，日後可接續的候選就留著，不必現在做完才算乾淨。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-30 · Headroom 學習重建 · M0–M20 完整 · Python 154 / Rust 154 / parity 14 fixtures byte-for-byte / clippy 0 · commit 9c4cd7a9
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
