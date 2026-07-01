@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>一份 Gemini 寫的微調指南，格式錯在哪？ · Bobo Labs</title>
+  <meta name="description" content="Gemini 幫你寫 Gemma 4 微調指南，用的卻是 ChatML 格式——而 Gemma 4 原生完全不用 ChatML。逐字核對官方 tokenizer_config.json 和 chat_template.jinja，發現問題、修正三件套，推上 GitHub。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-01-gemma4-chat-template-fix.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-01</p>
+      <h1 class="article-title">一份 Gemini 寫的微調指南，格式錯在哪？</h1>
+      <p class="article-lede">
+        拿到一份 Gemini 兩輪對話生成的「Gemma 4 E2B Agent 微調指南」，
+        邏輯分析完看起來沒問題——直到逐字核對官方的 chat template。
+        原指南用的是 ChatML（<code>&lt;|im_start|&gt;</code>），Gemma 4 原生完全不用。
+        照那份指南訓練出來的模型，serving 時 template 就對不上，行為會直接錯亂。
+      </p>
+
+      <div class="article-body">
+        <h2>任務的起點</h2>
+        <p>
+          使用者拿來一份用 Gemini 兩輪對話產出的 Gemma 4 E2B Agent 微調指南，
+          要做邏輯分析。流程看起來很直接：讀指南、查資料、找問題、輸出修訂版。
+        </p>
+        <p>
+          但流程很快就繞了一圈。第一輪分析看到 <code>&lt;|channel&gt;thought</code> 這個 token，
+          直覺認定這是「格式錯亂的幻覺」——因為它看起來不對稱、長相奇怪。
+          搜尋官方資料後發現這是 Gemma 4 的真實內部 token，當場更正。
+        </p>
+
+        <h2>第一個錯：把合法 token 誤判為幻覺</h2>
+        <p>
+          Google 在 2026-04-02 發布 Gemma 4，有五個尺寸（E2B / E4B / 12B / 26B-A4B / 31B）。
+          E2B 是「有效 2.3B 參數」的 MoE 小模型，壓縮後 &lt;1.5GB，128K context，
+          可以跑在 Raspberry Pi 5 上。
+        </p>
+        <p>
+          它的 special tokens 用的是 Gemini 系統的命名：sot/eot=turn（而非 user/assistant），
+          soc/eoc=channel（思考通道），std/etd=tool，stc/etc=tool_call，str/etr=tool_response。
+          <code>&lt;|channel&gt;thought</code> 是思考通道的開始標記，完全合法。
+          對「看起來不對稱」的新模型 token，正確做法是先查官方 tokenizer_config.json，不是憑舊知識否定。
+        </p>
+
+        <h2>真正的錯：ChatML 混進了 Gemma 4 原生格式</h2>
+        <p>
+          確認 Gemma 4 本身的 token 沒問題之後，再回頭看指南的訓練範例格式。
+          這裡才找到真正的問題。
+        </p>
+        <p>
+          原 Gemini 指南的範例用 <code>&lt;|im_start|&gt;</code>/<code>assistant</code> 對話標記，
+          工具呼叫用純 JSON code block。
+          但 Gemma 4 原生的格式是 <code>&lt;|turn&gt;</code>/<code>model</code>（非 assistant），
+          工具呼叫是 <code>&lt;|tool_call&gt;call:fn{...}&lt;tool_call|&gt;</code>。
+          兩個格式完全不相容。
+        </p>
+        <p>
+          照原範例製作訓練資料、微調後，serving 時 <code>apply_chat_template</code>
+          用的是 Gemma 4 原生模板，輸出的格式就和模型學到的不一致，推論結果直接錯亂。
+          這是「訓練資料格式」和「serving 解析格式」不吻合的經典問題，而且在訓練完才會爆。
+        </p>
+
+        <h2>三件套的核心設計</h2>
+        <p>
+          修訂版輸出三個檔案：修訂指南（含逐字核對的 Part 1 範例）、
+          <code>train.py</code>（QLoRA 微調）、<code>runtime.py</code>（LangGraph 推論）。
+          設計上唯一不變量是：三個檔案共用同一份 chat template，
+          才能確保訓練產出和 serving 解析不斷鏈。
+        </p>
+        <p>
+          <code>train.py</code> 用 QLoRA 4-bit 加 <code>train_on_responses_only</code>，
+          marker 設成 <code>&lt;|turn&gt;user\n</code>/<code>&lt;|turn&gt;model\n</code>（非 ChatML），
+          並內建 <code>assert</code> 防呆：訓練資料中若出現 <code>&lt;|im_start|&gt;</code> 直接報錯，
+          確保 ChatML 格式不會混入。
+        </p>
+        <p>
+          <code>runtime.py</code> 用 LangGraph 的 <code>plan</code>/<code>act</code> 雙節點加條件邊，
+          每個節點只暴露 1–2 個工具（JIT 暴露），<code>kv_state</code> 只餵最新的 observation，
+          避免 context 因為多輪對話越積越長。硬編碼 <code>MAX_STEPS</code> 和 <code>MAX_RETRY</code>
+          防止推論無限迴圈。
+        </p>
+
+        <h2>兩個踩坑值得記</h2>
+        <p>
+          一是 PEP 668 問題：macOS 系統 Python 禁止直接 pip install（externally-managed 錯誤）。
+          沒有用 <code>--break-system-packages</code> 汙染系統，改在 scratchpad 建拋棄式 venv
+          裝 langgraph 驗證邏輯。對「不能動的環境」，隔離 venv 是標準解法。
+        </p>
+        <p>
+          二是 langgraph 無 <code>__version__</code>：import 成功但讀版本號會拋 AttributeError，
+          不要誤判為安裝失敗。用 <code>pip show langgraph</code> 確認版本。
+        </p>
+        <p>
+          另外：本機沒有 GPU，<code>.train()</code> 和真實 vLLM serving 都沒有實跑。
+          已驗證的是格式對官方 zero-diff，以及 LangGraph runtime 邏輯跑通。
+          相關性能數據需要 GPU 環境才能量。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>新模型 token 先查官方再下結論</strong>：<code>&lt;|channel&gt;thought</code> 看起來奇怪，但是合法標記。「不認識」不等於「幻覺」，官方 tokenizer_config.json 是 ground truth。</p>
+          <p><strong>訓練格式和 serving 格式必須用同一 template</strong>：ChatML 和 Gemma 4 原生格式不相容，混用會讓訓練好的模型在推論時輸出錯亂。</p>
+          <p><strong>防呆勝過文件</strong>：<code>assert 無 &lt;|im_start|&gt;</code> 放進 train.py，讓格式錯誤在訓練前就報錯，而不是等到 serving 才發現。</p>
+          <p><strong>隔離 venv 是「不能動的環境」的標準解</strong>：PEP 668 環境不用 <code>--break-system-packages</code>，建拋棄式 venv 驗完就刪。</p>
+          <p><strong>驗證邊界要說清楚</strong>：已驗證格式正確性、LangGraph 邏輯；未驗證訓練效果、推論速度——這兩件事需要 GPU，不能靠邏輯推斷替代。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-01 · Gemma 4 E2B（有效 2.3B，Apache 2.0）· gemma4-e2b-agent-kit · QLoRA + LangGraph
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

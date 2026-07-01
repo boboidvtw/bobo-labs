@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>裝 299 個 Agent，Context Window 怎麼算才對？ · Bobo Labs</title>
+  <meta name="description" content="安裝 agency-agents 後盤點常駐開銷：Agent 只有 name+description 常駐（~11K tokens），不是 3.77MB 全文；rules 三重重複刪錯會掉真實 hook 設定；兩件事讓 always-loaded vs on-demand 的區分變得非常具體。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-01-agent-context-cost-rules-dedup.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-01</p>
+      <h1 class="article-title">裝 299 個 Agent，Context Window 怎麼算才對？</h1>
+      <p class="article-lede">
+        安裝 agency-agents 後第一個念頭是「3.77MB 的 agent 定義是不是要把 context 吃爆」——
+        結果發現常駐的只有 name 和 description，加起來約 11K tokens，不是全文。
+        真正在燒 context 的是 rules 三重重複：頂層、common、語言特定目錄各自有一份，
+        而且不是純複製，盲刪會掉真實的 hook 設定。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼想裝 299 個 agent？</h2>
+        <p>
+          agency-agents 是 msitarzewski 維護的開放 agent 定義庫，涵蓋 GIS、法律、財務、安全、醫療等
+          16 個分部。環境裡已有舊版 228 個，更新後變 303 個，實質新增 75 個分部 agent。
+          安裝指令一行：<code>scripts/install.sh --tool claude-code</code>，複製到 <code>~/.claude/agents/</code>。
+        </p>
+        <p>
+          安裝完之後跑了 <code>/context-budget</code>，把常駐開銷算清楚。
+          結果讓人意外：整個環境的常駐 token 約 24–25K，其中 agents 佔 ~10,900 tok，
+          rules 四個自動載入層佔 ~10,640 tok。加起來不算多，但「為什麼 3.77MB 的 agent 只算 11K？」
+          值得解釋清楚。
+        </p>
+
+        <h2>Agent 的常駐成本：name + description，不是全文</h2>
+        <p>
+          Claude Code 的 Task 清單機制只把每個 agent 的 <code>name</code> 和 <code>description</code>
+          常駐在 context 裡。當你真正要用某個 agent 時，它的完整定義才按需載入。
+          這意味著裝 299 個 agent 的常駐成本是所有 description 的總量（~11K tokens），
+          而不是 3.77MB 全文。
+        </p>
+        <p>
+          想省常駐開銷的正確做法是砍 division 或縮短 description，
+          不是去刪 agent 的內文指令。這是個直覺容易弄反的方向。
+        </p>
+
+        <h2>Rules 三重重複：不是複製，是兩代</h2>
+        <p>
+          跑 context-budget 的時候發現 rules 目錄有問題：頂層（原始規則）、
+          <code>common/</code>（語言中立版本）、<code>zh/</code>（簡中翻譯）三層
+          在主題上高度重疊。直覺是「重複刪掉兩層就省了」。
+        </p>
+        <p>
+          但仔細比對後發現兩件事：
+          第一，頂層規則含有真實的 hook 設定——比如 console.log 警告、Prettier 格式化的實際指令，
+          common 版本只有原則描述，沒有這些設定；
+          第二，<code>web/</code>、<code>python/</code> 等語言目錄用 <code>../common/</code> 相對路徑引用，
+          刪 common 會直接斷參照。
+        </p>
+        <p>
+          正確做法是「聯集」而非「刪除」：把頂層獨特的 hook 設定合併進 common，
+          確認語言特定目錄（如 <code>rules/typescript/</code>）已有相同內容後，再刪頂層重複部分。
+          最終 rules 從 100 → 81 檔，回收 ~3,300 tokens，零內容流失。
+        </p>
+
+        <h2>Always-loaded vs on-demand：一個很具體的區分</h2>
+        <p>
+          這次盤點讓 always-loaded vs on-demand 的區分從抽象概念變成具體數字：
+          agents（全 303 個）因為只常駐 description，成本是 ~11K；
+          skills 搬到 <code>skills-library/</code> 後按需載入，常駐成本 0；
+          MCP 工具用 ToolSearch 延遲載入，也是 0；
+          rules 因為四個層全部自動載入，是 ~10.6K。
+        </p>
+        <p>
+          如果要降低 context 基準線，rules 其實比 agents 更值得優先動。
+          agents 只要不裝多餘 division，description 密度通常合理；
+          rules 如果有三重重複，每個層都在燒。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>Agent 全文 ≠ 常駐 context</strong>：只有 name + description 常駐；想省 context 要縮 description 而非刪內文。</p>
+          <p><strong>Rules 重複不一定是純複製</strong>：頂層可能有真實設定（hook 指令、checklist 細節），common 是語言中立原則；刪前要逐一比對差異，不能假設兩者一致。</p>
+          <p><strong>語言層靠相對路徑引用 common</strong>：<code>../common/</code> 斷掉等於整個語言規則集失效，刪 common 前必須確認引用端。</p>
+          <p><strong>聯集再刪，不是直接刪</strong>：把獨特內容搬到存活版本後，再刪重複，零遺漏。</p>
+          <p><strong>先測量再優化</strong>：跑 context-budget 才知道真正的成本分布在哪。憑直覺猜「agent 多一定很重」恰好猜錯了方向。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-01 · agency-agents v2024 · 303 agents · rules 100→81 檔 · 節省 ~3,300 tokens
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
