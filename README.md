@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-02** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-07-01-gemma4-chat-template-fix.html`（Gemini 寫的 Gemma 4 微調指南格式錯在哪：ChatML 混入 Gemma 4 原生 turn/model 格式、訓練與 serving template 必須同一、assert 防呆讓格式錯誤在訓練前報錯）、`2026-07-01-agent-context-cost-rules-dedup.html`（裝 299 個 Agent context window 怎麼算：name+description 常駐 11K tokens 非全文、rules 三重重複聯集再刪非直接刪）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。1 篇因 QA#1a blocked（broker）留 _pending/。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-07-02.
+
 - **2026-07-01** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-06-30-headroom-closeout.html`（Headroom 學習重建完結篇：Python/Rust 154 tests 全綠、parity 14 fixtures byte-for-byte、邊際學習價值趨零、封存判定靠跑測試不靠感覺）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。1 篇草稿因 QA#1a blocked（broker）留 _pending/。
