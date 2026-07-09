@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>先驗再復原 — 金融 bot 盤前煙測與安全自啟的 6 條原則 · Bobo Labs</title>
+  <meta name="description" content="事故後待辦清單最上面的任務，6 天前的 commit 已做完。這篇記的是：怎麼在盤前最安全時間窗做端到端煙測、用 byte-by-byte 驗 DB 零寫入、把被鎖死 10 天的自啟安全 bootstrap 回來，以及一個讓任何未知自動 caller 預設安全的設計決策。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-06-25-stock-grid-bot-smoke-test-restore.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-06-25</p>
+      <h1 class="article-title">先驗再復原 — 金融 bot 盤前煙測與安全自啟的 6 條原則</h1>
+      <p class="article-lede">
+        事故後待辦清單最上面寫著「方案 C 對帳 + 自啟去毒」。但第一步不是開工——
+        是翻 git log。commit 23b1a3d，6 天前（6/18）已做完。
+        這 session 的工作是驗證，不是重做：在 05:38 盤前最安全時間窗做端到端煙測、
+        用 byte-by-byte 確認 DB 零寫入、把被鎖死 10 天的自啟安全 bootstrap 回來，
+        然後順手補上一個讓任何未知自動 caller 都預設安全的設計決策。
+      </p>
+
+      <div class="article-body">
+        <h2>開工第一步：磁碟才是 ground truth</h2>
+        <p>
+          事故記憶和看板都把「方案 C + 自啟去毒」標成未完成。
+          但啟動長任務前的本能反應應該是：先盤點實際程式碼，不要假設待辦清單與磁碟一致。
+        </p>
+        <p>
+          grep memory 找到更新紀錄，再跑 <code>git log</code> 確認
+          commit 23b1a3d「fix(safety): 啟動對帳(方案C) + 自啟去毒」確實存在、working tree clean。
+          接著逐檔讀：對帳邏輯在查詢失敗時整批跳過（不誤殺），
+          自啟旗標控制路徑已注入三處 plist。
+          85 條測試全 PASS——記憶聲稱的數字屬實。
+        </p>
+        <p>
+          如果沒有這一步就「重做」，會浪費時間，更可能引入回歸。
+          <strong>看板和記憶可能落後磁碟；commit message 會撒謊，程式碼不會。</strong>
+        </p>
+
+        <h2>為什麼挑 05:38 做煙測？</h2>
+        <p>
+          煙測要啟動真實交易程式，所以時機選擇不是偏好，是安全設計的一部分。
+          05:38 有三個安全特性同時成立：台股 9:00 才開盤（市場關閉，即使誤觸登入也無法成交）；
+          watchdog 排程窗口 08:00–14:30 還沒到（不會互相干擾）；
+          db 已確認 0 筆 PENDING 交易（對帳會是 no-op）。
+        </p>
+        <p>
+          金融系統需要真實啟動的驗證，永遠要挑最壞情況危害最低的時間窗。
+        </p>
+
+        <h2>Streamlit headless 要 client 連線才執行主程式</h2>
+        <p>
+          這是這次事故的根因，也是煙測設計的核心：Streamlit headless 啟動後，
+          必須有 client 連線才會執行 main.py。沒有瀏覽器連進來，程式邏輯根本不跑。
+          這就是 6/15 事故「開頁才下單」的機制——反過來，煙測也必須真正觸發一次「開頁」，
+          才能驗證「開頁時不會自動登入」。
+        </p>
+        <p>
+          環境裡沒有可用的 WebSocket client 函式庫，但 Streamlit 自帶 tornado 和 protobuf。
+          寫一個 75 行的 Python 腳本連上 <code>/_stcore/stream</code>，送一個空的
+          <code>BackMsg.rerun_script</code>，觸發首次渲染。
+          回傳的 1244 bytes 是 ForwardMsg——不完整解析 protobuf，
+          直接在原始 bytes 裡搜尋 UTF-8 關鍵字（protobuf string 欄位內嵌 UTF-8，不需反序列化）。
+        </p>
+        <p>
+          結果：gate 標記出現（「自動啟動模式」「尚未完成下單系統登入」），
+          交易標記為空，log 裡 0 筆「登入成功」。
+          再確認行程環境變數確實含有安全旗標（<code>env</code> 指令不說謊）。
+        </p>
+
+        <h2>byte-by-byte 比對 DB 是鐵證，比看 mtime 更強</h2>
+        <p>
+          煙測結束後，用 <code>cmp</code> 把 db 檔與煙測前備份逐位元組比對——完全相同。
+          不是「mtime 沒更新」（mtime 可以被手動改），是每一個位元組都相同。
+          對金融系統來說，這是「零寫入」最強的鐵證形式。
+        </p>
+        <p>
+          這個習慣值得系統化：任何需要啟動真實交易程式的驗證，
+          前後各備份一次 db，事後用 <code>cmp</code> 比對。
+        </p>
+
+        <h2>bootstrap 之前先讀 plist</h2>
+        <p>
+          把兩個 launchd plist bootstrap 回去之前，先讀每一個 plist 確認：
+          <code>RunAtLoad</code> 是什麼、<code>StartCalendarInterval</code> 設到幾點。
+          start agent 的 <code>RunAtLoad=false</code>——bootstrap 當下 runs=0，不立即執行；
+          下次觸發是 08:00，屆時會帶安全旗標進去。
+          menubar agent 的 <code>RunAtLoad=true</code>，但內部的 catch-up 邏輯在 05:50
+          判斷「還沒到 08:00」→ 不起 Streamlit；catch-up 真正觸發時也會帶安全旗標。
+        </p>
+        <p>
+          確認 bootstrap 當下不會立即執行，才叫做「安全復原」。
+          沒讀 plist 就 bootstrap，等於在沒看清楚地面的狀況下跳下去。
+        </p>
+
+        <h2>翻轉預設成安全：secure-by-default 比 denylist 穩健</h2>
+        <p>
+          復原後發現一個剩餘缺口：外部的 watchdog 腳本呼叫啟動腳本時，
+          和人類在終端機手動執行，在環境變數上無法區分——兩者都不帶任何旗標。
+          要針對這個 gap 做 denylist（列舉哪些 caller 要被擋），太脆弱：
+          未來任何新的自動 caller 都得手動加進去。
+        </p>
+        <p>
+          解法：翻轉預設值。啟動腳本的安全旗標從「預設不帶（opt-in 才安全）」
+          改成「預設帶 1（opt-in 才自動登入）」。
+          這樣任何沒有明確帶旗標的 caller——不管是 watchdog、CI、未來還沒寫的腳本——
+          都自動落在安全模式。人類想要自動登入，顯式帶旗標 opt-in。
+        </p>
+        <p>
+          測試也跟著長：補了 4 條新測試（3 個旗標情境 + 1 個手動按鈕顯式 opt-in），
+          85 → 89 PASS。
+        </p>
+        <p>
+          隔天 08:00 真實自啟事件磁碟鑑識：start agent 準時觸發（runs 0→1，exit 0）、
+          Streamlit 起來，但全日 Live 登入 0 次、無下單、DB 逐位元組仍凍在 6/15。
+          三層防禦在真實生產事件如設計運作。
+        </p>
+
+        <h2>教訓</h2>
+        <div class="takeaway">
+          <p><strong>先盤點磁碟</strong>：跨 session 大任務開工前，先讀實際程式碼和 git log 確認待辦清單是否已過期。看板與記憶可能落後；磁碟不會撒謊。</p>
+          <p><strong>金融驗證挑最安全時間窗</strong>：市場關閉、watchdog 排程窗口外、db 零 PENDING，三個條件同時成立才啟動有真實交易程式的驗證。</p>
+          <p><strong>Streamlit headless 不等於「程式在跑」</strong>：headless 啟動後必須有 client 連線才執行 main.py。沒有連線＝邏輯沒跑。煙測要真的觸發一次連線。</p>
+          <p><strong>byte-by-byte 比對 DB 才是零寫入鐵證</strong>：mtime 可以被改；<code>cmp</code> 不行。金融驗證前後各備份，事後 cmp 比對。</p>
+          <p><strong>bootstrap 前先讀 plist</strong>：確認 RunAtLoad 和排程時間，知道 bootstrap 當下會不會立即執行，才叫做受控復原。</p>
+          <p><strong>翻轉預設成安全</strong>：比起逐一列舉哪些 caller 要被擋，把預設改成安全、危險行為要顯式 opt-in，一次封住所有未知的未來 caller。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-06-25 · stock_grid_bot · 事故 P0 後收尾 · 85→89 測試 · 自啟復原 + secure-by-default 補強
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
