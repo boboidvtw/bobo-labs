@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>固化 serving 端、修閒聊：gemma4 E2B v3 的兩道守門 · Bobo Labs</title>
+  <meta name="description" content="用零依賴 Python 腳本把 mlx_lm.server tool-calling 從「聲稱可行」提升到端到端實證；再用 82 筆 curated casual 樣本修 v2「連早安都查天氣」的問題，以及 v4 矯枉過正被廢棄的反面教材。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-02-gemma4-v3-serving-casual.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-02</p>
+      <h1 class="article-title">固化 serving 端、修閒聊：gemma4 E2B v3 的兩道守門</h1>
+      <p class="article-lede">
+        「聲稱 mlx_lm.server 的 tool-calling 可行」跟「端到端實證可行」之間差一支守門腳本。
+        寫完 verify_server_toolcalling.py 後，發現 v2 模型對「早安！」也會觸發天氣查詢——
+        補 82 筆 curated casual 樣本訓 v3，修好閒聊，也記錄 v4 矯枉過正的失敗軌跡。
+      </p>
+
+      <div class="article-body">
+        <h2>mlx_lm.server 的 tool-calling 幾乎 out-of-box</h2>
+        <p>
+          先做的事是偵察，而不是自己寫 parser。發現 mlx_lm 0.31.3 內建
+          tool_parsers/gemma4.py，用 regex 抓 call:name{...}（平衡括號），
+          把 gemma4 裸 key + 字串分隔符的格式轉成合法 JSON。
+          fused 模型的 tokenizer_config.json 直接寫死 tool_parser_type=gemma4，
+          server load 時自動讀取，不需要額外旗標——
+          對比 vLLM 要 --enable-auto-tool-choice --tool-call-parser gemma，
+          mlx_lm.server 是零額外設定。
+        </p>
+        <p>
+          守門腳本 verify_server_toolcalling.py 用純 stdlib urllib（零第三方依賴），
+          測三條路徑：POS（問天氣 → tool_calls=[get_weather{city:Tokyo}]）、
+          NEG（訂機票 → tool_calls=None、正確婉拒）、
+          ROUNDTRIP（餵回 role:tool 結果 → 消化 tool_response token → 自然語言 final）。
+          實跑 3/3 PASS。這支腳本值得每次動 fused 模型後跑一次。
+        </p>
+
+        <h2>v2 的盲點：casualverify 只有 1 個案例</h2>
+        <p>
+          verify_restraint.py 的 casual 測試當時只有 1 句。
+          v2 剛好通過那 1 句，所以守門顯示 PASS。
+          實際並排測試才揭穿真相：v2 對「Good morning!」「晚安！」「Hi, how are you」
+          casual(6) 只有 1/6 直答，其餘全數 over-trigger 查天氣。
+        </p>
+        <p>
+          病灶很清楚：glaive 負樣本清一色是道歉式 out-of-scope 婉拒
+          （"Can you order a pizza?" → "I'm sorry, but..."），
+          模型把所有無工具情境都當「要婉拒的任務」，包括純寒暄。
+        </p>
+
+        <h2>casual_to_kit.py + v3：casual 1/6 → 4/6</h2>
+        <p>
+          新增 casual_to_kit.py，curated 寒暄 / 感謝 / 道別 / 稱讚對話，
+          中英混、溫暖不道歉、工具在手不呼叫，每筆隨機掛 1–2 工具保持 held-out。
+          82 筆（41 句 × repeat 2）。
+          v3 = hermes 1100 + glaive 300 + casual 82，訓 300 iters：
+          casual 直答 1/6 → 4/6，POS 和 OOS 無退化，服側 3/3 複驗通過。
+        </p>
+
+        <h2>v4 矯枉過正，廢棄</h2>
+        <p>
+          v3 casual 還剩 2 句漏網，想「收掉」——擴到 51 句（102 筆，repeat 2），
+          同樣 300 iters 訓 v4。結果 over-correction：
+          「What's the weather in Tokyo?」v4 竟婉拒「我沒辦法提供天氣資訊」（幻覺自己只有 web_search）；
+          「晚安！」輸出「明天又是元氣滿滿滿滿滿滿…」無限重複。
+          casual restraint 10/10 全直答，但 POS 呼叫工具的能力被壓垮，棄用。
+        </p>
+        <p>
+          2B 小模型對小 casual 樣本過訓後生成會崩壞。
+          casual 佔比壓在 ≲6%，不要堆到 102 筆再跑 300 iters。
+          v3 是基準。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>「聲稱可行」跟「端到端實證」不一樣</strong>：手動 curl 驗過就固化成守門腳本，避免回歸——這支零依賴腳本比寫文件更可靠。</p>
+          <p><strong>守門指標的覆蓋率決定結論的誠實度</strong>：casual 只測 1 句、v2 剛好抽中它過了，單案守門被騙出漂亮分數。擴到 6 句才照出真相。</p>
+          <p><strong>casual 劑量敏感，佔比別超過 6%</strong>：v4 的 102 筆對 2B 模型是過量，val loss 上升加上 POS 退化是真警訊，不只是分布變化。</p>
+          <p><strong>驗證不能只看單一面向</strong>：v4 只看「casual 10/10」會誤判成功，同時盯住 POS 呼叫正常才是完整的守門。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-02 · gemma4-e2b-agent-kit v3 基準 · commit 04f1ebf / a74b815 · casual 1482 + 82 = 1564 筆
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>五輪 contrastive 訓練：教 2.3B 先讀工具清單再決定呼不呼叫 · Bobo Labs</title>
+  <meta name="description" content="v5a/v5b 揭穿 refusal 不會類推（模型幻覺清單外的工具）；v5c contrastive minimal pairs 修好 grounding；v5d 再收緊能力邊界；v5e 矯枉過正被廢棄——五個版本、每輪只動一個變因。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-02-gemma4-v5-refusal-grounding.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-02</p>
+      <h1 class="article-title">五輪 contrastive 訓練：教 2.3B 先讀工具清單再決定呼不呼叫</h1>
+      <p class="article-lede">
+        v5 系列的起點是一個被單案守門掩蓋的問題：
+        模型根本沒在讀工具清單，直接從任務語意生一個聽起來合理的工具名。
+        五輪實驗、每次只動一個變因，
+        追蹤「失敗的性質」而非分數，從幻覺假工具到學會看清單。
+      </p>
+
+      <div class="article-body">
+        <h2>v5b 之前：揭穿 refusal 不會類推</h2>
+        <p>
+          v5a 把正樣本從 Hermes 1100 筆擴充到 glaive 再抽 600 筆（Apache 2.0，glaive_positives_to_kit.py），
+          讓 casual 直答從 4/6 升到 6/6——但 task-refusal 退化，
+          訂機票從婉拒變成幻覺出 book_flight 工具。
+        </p>
+        <p>
+          發現這個問題的關鍵是新寫了 verify_refusal_generalization.py：
+          5 個不同的 out-of-scope 任務（訂機票 / 訂披薩 / 設鬧鐘 / 寄 email / 翻譯），
+          只給 weather + search 兩個工具，看 held-out 任務會不會正確婉拒。
+          v3 baseline 只 1/5，v5a 更糟 0/5。
+        </p>
+        <p>
+          v5b 補 300 筆多樣 glaive task-refusal 負樣本（glaive --max-out 600 取後半段 300 筆），
+          verify_restraint 8/8 修好，casual 6/6 維持，但 verify_refusal_generalization 仍 1/5。
+        </p>
+        <p>
+          最重要的洞察：v5b 失敗的 4 個案例幻覺出的假工具
+          是 order_pizza / set_alarm / send_email / translate——
+          全都不在提供的工具清單裡，且部分工具名出現過在 casual 的 TOOL_POOL。
+          模型做的是「任務語意 → 生一個像樣的工具名」，沒有先讀清單。
+          補更多隨機婉拒樣本治不了這個問題，因為沒教「讀清單」這個決策條件。
+        </p>
+
+        <h2>v5c：contrastive minimal pairs 教清單 grounding</h2>
+        <p>
+          解法是 contrastive minimal pairs：同一句 user 話術，唯一差異是工具清單裡有沒有對應工具。
+          有 → 呼叫；沒有（只有 distractor）→ 婉拒並列出清單裡真實有的能力。
+          contrastive_pairs_to_kit.py 生成 15 領域 × 192 對比對（96 POS / 96 NEG）。
+        </p>
+        <p>
+          held-out 誠實度設計：訓練的 15 領域刻意排除 eval 的 5 個領域（flight/pizza/alarm/email/translate），
+          這樣 verify_refusal_generalization 才是真的 held-out——
+          v5c 若在沒見過的領域也做對，才算通則化。
+        </p>
+        <p>
+          結果：refusal 類推 1/5 → 3/5，grounding present→call 5/5，grounding absent→decline 3/5，
+          restraint 8/8 casual 6/6 守住。升為新 baseline。
+        </p>
+        <p>
+          失敗性質的質變才是核心：v5b 幻覺的是清單外的假工具（send_email/translate），
+          v5c 失敗的 2 個案例改成呼叫清單裡真的有的 web_search——
+          模型確實在讀清單了，只是把 web_search 當萬用工具在用。
+        </p>
+
+        <h2>v5d：教「有工具 ≠ 每任務都適用」</h2>
+        <p>
+          剩餘破口是 over-substitution：對「寄 email / 翻譯」這種任務，
+          v5c 會呼叫清單裡的 web_search 代替。
+        </p>
+        <p>
+          capability_mismatch_to_kit.py：12 個 action/transform 領域，96 對比對。
+          極小對設計：web_search 兩邊恆在，唯一差異是 action tool 有無。
+          POS（action tool 在清單）→ 呼叫 action tool；
+          NEG（只有 web_search + get_weather）→ 婉拒，文案明確說「web search 能查資料，不能幫你寄信」，不提議用 web_search 代替。
+        </p>
+        <p>
+          v5d 結果：refusal 類推 3/5 → 4/5，absent→decline 3/5 → 4/5，present 維持 5/5。
+          held-out send_email 修好——能力邊界從 12 個訓練領域通則化到沒見過的 email。
+          唯一剩下的是 translate：v5d 不再誤走 web_search，改回幻覺清單外的 translate 工具。
+        </p>
+
+        <h2>v5e：廢棄的反面教材</h2>
+        <p>
+          想再壓 translate 頑固先驗，假設問題是「transform 領域廣度不足」（v5d 只有 summarize/generate）。
+          transform_refusal_to_kit.py 擴 10 個 transform 領域，90 對比對，沿用 v5d decline 框架。
+          translate 繼續 held-out。
+        </p>
+        <p>
+          結果：refusal 類推 4/5 → 2/5，v5d 修好的 send_email 和 set_alarm 雙雙回去幻覺同名工具。
+          restraint 8/8 沒退，但真傷害在 generalization eval 上。
+        </p>
+        <p>
+          根因：v5e 的 45 筆 POS 全都是「任務動詞同名工具」（paraphrase_text/summarize_text/correct_spelling...），
+          強化了「任務 X → 生一個叫 X 的工具」的先驗，把 v5d 修好的 case 也一起養壞。
+          廣度不足假說被推翻。真正的問題是框架——transform 類任務若無對應工具，
+          應教模型直接用自然語言完成（inline），而非婉拒。
+          v5e adapter 不入庫，transform_refusal_to_kit.py 保留並加 REJECTED banner 作負結果記錄。
+          v5d 仍是基準。
+        </p>
+
+        <h2>三方對照（v3 → v5b → v5c → v5d）</h2>
+        <p>
+          verify_restraint(8)：v3 6/8 → v5b 8/8 → v5c 8/8 → v5d 8/8。
+          casual(6)：v3 4/6 → v5b 6/6 → v5c 6/6 → v5d 6/6。
+          refusal 類推(5)：v3 1/5 → v5b 1/5 → v5c 3/5 → v5d 4/5。
+          grounding absent→decline：— → — → 3/5 → 4/5。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>看失敗的性質比看分數更有診斷價值</strong>：v5c 從幻覺假工具改成呼叫真工具，這個質變直接指出下一步；v5e 3/5→2/5 分數沒特別糟，但失敗擴散的模式點出了根因。</p>
+          <p><strong>變因隔離讓歸因乾淨</strong>：每次只動一個變因，才敢斷定「v5d 的 email 改善來自 capability-mismatch 這批」，而非多個變因疊加的效果。</p>
+          <p><strong>雙向 eval 是必要的</strong>：單邊 refusal 指標被「什麼都不呼叫」騙成假陽性；同時測 present→應呼叫，才知道沒 over-correct。</p>
+          <p><strong>正樣本會反噬</strong>：v5e 的 POS 工具命名貼合任務動詞，強化了錯誤先驗。POS 不是只會幫忙——當任務有強幻覺先驗時，同名工具 POS 是火上加油。</p>
+          <p><strong>負結果同樣要誠實入庫</strong>：v5e 記錄「為何退化」比藏起來更有長期價值，transform_refusal_to_kit.py 帶 REJECTED banner 留在 repo 裡。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-02 · gemma4-e2b-agent-kit v5 系列 · commit ffb474d (v5c) / 4c5a480 (v5d) / ffad7ed (v5e) · 最終 v5d 2670 筆
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
