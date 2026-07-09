@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>「訓模型」改成「打造地端 coding agent」：一個認知翻轉 · Bobo Labs</title>
+  <meta name="description" content="一個 pivot 讓方向從「微調 Gemma4」轉向「打造地端 coding agent 產品」。路線圖 MA→MB→MC→MD→ME，以及 LM Studio + Aider + qwen2.5-coder-7b 環境建成的踩坑記錄。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-02-local-coding-agent-pivot.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-02</p>
+      <h1 class="article-title">「訓模型」改成「打造地端 coding agent」：一個認知翻轉</h1>
+      <p class="article-lede">
+        gemma4-e2b-agent-kit 原本主線是微調一個 2.3B 模型。
+        這天的 pivot 把方向轉成：打造地端 coding agent 產品，
+        模型只是零件之一，harness 才是 90% 的價值所在。
+        MA 落地：LM Studio + Aider + qwen2.5-coder-7b 端到端實測通過。
+      </p>
+
+      <div class="article-body">
+        <h2>認知翻轉：90% 的價值在 harness，不在模型</h2>
+        <p>
+          翻轉前的心智模型：微調 Gemma4 → 得到一個好的 agent 模型 → 部署。
+          翻轉後：agent CLI 產品的價值約 90% 在 harness——
+          CLI 介面、agent loop、工具呼叫、context 管理、評測集。
+          模型只佔 10%。
+        </p>
+        <p>
+          這個認知轉移有一個直接的後果：與其繼續花時間做第 v5f 版訓練，
+          不如先用現成的 coder 模型（qwen2.5-coder-7b）
+          建出 MA 基線，再用真實任務評測找出真正的弱點，
+          再決定微調的方向和規模。
+        </p>
+        <p>
+          路線圖：MA（CLI 骨架）→ MB（真實任務評測集）→ MC（base model 跑評測）
+          → MD（先 prompt 後微調、用真失敗軌跡當資料）→ ME（部署打磨）。
+          Gemma E2B 2.3B 推理天花板低，MC 拿到數據後再決定是否換模型。
+        </p>
+
+        <h2>MA 落地：LM Studio + Aider，最短路徑</h2>
+        <p>
+          用現成件組 MA 基線：
+          引擎是 LM Studio（port 1234，OpenAI 相容，守使用者既有約定而非 Ollama），
+          模型是 qwen2.5-coder-7b-instruct（mlx-community MLX 4bit，4.3GB），
+          介面是 Aider（uv tool install --python 3.12 aider-chat）。
+          設定 ~/.aider.conf.yml 指向 http://localhost:1234/v1。
+        </p>
+        <p>
+          端到端實測：aider --message 寫 fib.py → 套用 edit → python3 執行正確。MA 完成。
+        </p>
+
+        <h2>lms get 下載三連敗</h2>
+        <p>
+          用 LM Studio CLI 下載模型踩了三個坑：
+          staff picks 搜 qwen2.5-coder-7b-instruct-mlx 無結果；
+          用 mlx-community/Qwen2.5-Coder-7B-Instruct-4bit 短路徑報 artifact 不存在；
+          qwen/qwen2.5-coder-7b-instruct --mlx 也失敗。
+          唯一可行的方法是用 HuggingFace 完整 URL（https://huggingface.co/mlx-community/...）。
+        </p>
+        <p>
+          下載中途遇到 0 B/s 逾時，重跑同指令即自動續傳完成。
+          判斷下載是否在進行中：du -sh ~/.lmstudio/models 看大小有沒有增長。
+        </p>
+
+        <h2>最重要的教訓：宣告完成前要驗機器實態</h2>
+        <p>
+          對話前段的 context 曾提到「已安裝 Ollama + qwen + Aider」。
+          實際用 command -v 驗機器，全部不存在——安裝從未完成。
+          記憶和對話摘要不是 ground truth，機器的實態才是。
+          宣告「已安裝」之前必須在機器上驗一次。
+        </p>
+        <p>
+          另一個邊界說明：gemma4 的 minja tool template 在 LM Studio 跑不了，
+          這是已知地雷。但 Aider 走純文字 diff 格式、完全不用 tool-calling，
+          所以 LM Studio 搭 Aider 完全可行。地雷要看適用範圍，別過度泛化。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>harness 是主體，模型是零件</strong>：在決定換或微調模型之前，先把 CLI + agent loop + 評測集建起來，找出真實弱點，才知道微調要打哪個靶。</p>
+          <p><strong>宣告安裝完成前驗機器</strong>：對話 context 的「已安裝」記憶不可信，command -v 一下才是實態。</p>
+          <p><strong>lms get 唯一可行路徑是 HuggingFace 完整 URL</strong>：staff picks 搜不到就直接給完整 HF repo URL，比反覆試短路徑快。</p>
+          <p><strong>地雷的適用範圍要說清楚</strong>：gemma4 minja 地雷是 tool-calling 路徑專屬，不適用 Aider 的純文字 diff 流程。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-02 · gemma4-e2b-agent-kit MA 階段 · LM Studio + qwen2.5-coder-7b-instruct MLX 4bit 4.3GB
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

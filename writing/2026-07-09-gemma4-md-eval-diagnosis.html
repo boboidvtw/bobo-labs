@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>診斷 7 道必掛題：改 prompt 修了一道、壞了兩道 · Bobo Labs</title>
+  <meta name="description" content="gemma4 E2B v3 在 16 道 coding 任務裡有 7 道一致失敗。逐題分類病因後，試了一個 few-shot 示範 monkeypatch：09 修好了，但 01 和 02 一起掛——2.3B 模型的 prompt 餘裕就是這麼緊。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-09-gemma4-md-eval-diagnosis.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-09</p>
+      <h1 class="article-title">診斷 7 道必掛題：改 prompt 修了一道、壞了兩道</h1>
+      <p class="article-lede">
+        gemma4 E2B v3 在 16 道真實 coding 任務裡，有 7 道每次都跑滿 3 輪仍失敗。
+        今天把病因逐題分類——結果大半不是模型能力問題，而是格式解析 bug 或 aider 內建範例的汙染。
+        然後試了一個 monkeypatch：修好了 09，卻把從沒失敗過的 01 和 02 一起打趴。
+        2.3B 模型的 prompt 餘裕就是這麼緊。
+      </p>
+
+      <div class="article-body">
+        <h2>7 道必掛題的病因清單</h2>
+        <p>
+          過去跑的評測結果：gemma4 E2B v3 fused 在 16 題裡有 7 道一致失敗（3/3 rep 全掛）。
+          今天的目標是先把病因分類清楚，再決定要不要投資微調資料。逐題診斷：
+        </p>
+        <p>
+          <strong>09_multifile_add_field</strong>：aider 的 whole-file parser 把 gemma 輸出的 <code>- models.py</code>（帶項目符號破折號）整個當成檔名，建出錯誤的新檔，真正要改的檔案完全沒動到。<strong>格式解析 bug，非能力問題。</strong>
+        </p>
+        <p>
+          <strong>06_refactor_dedup</strong>：gemma 把檔名寫成 <code>show_report.py</code>，真實目標是 <code>report.py</code>。追到根源：aider 內建 few-shot 範例的示範檔名就是 <code>show_greeting.py</code>，前綴汙染造成幻覺。<strong>格式層問題，不是訓練造成的，大概率訓練也難治。</strong>
+        </p>
+        <p>
+          <strong>03_add_function</strong>：docstring 明寫「單位不分大小寫」，實作沒做 <code>.upper()</code>。<strong>規格遵循不全。</strong>
+        </p>
+        <p>
+          <strong>14_fix_level_count</strong>：用 <code>"WARN" in line</code> 子字串比對，誤判 <code>WARNING</code> 和訊息內文裡含 WARN 的行。<strong>規格遵循不全。</strong>
+        </p>
+        <p>
+          <strong>16_parse_duration</strong>：只吃最後一個時間單位，沒做多單位累加、沒擋重複單位輸入。<strong>實作不完整，歸入規格遵循精確度。</strong>
+        </p>
+        <p>
+          <strong>12_write_tests_stack</strong>：測試寫了 <code>from stack import OverflowError</code>，把 Python 內建例外名當作模組自訂例外 import。<strong>符號幻覺，與 v5c/v5d 治的工具清單 grounding 同款病，只是從工具名換成程式碼符號。</strong>
+        </p>
+        <p>
+          <strong>13_trace_qa</strong>：複合問題「哪個函式＋哪個例外類別」只答對後半，漏答 <code>apply_coupon</code>。<strong>多重提問遺漏。</strong>
+        </p>
+        <p>
+          分類完後，扣掉 06（外部汙染）和 09（格式解析 bug），真正值得投資微調的落在三類：
+          規格遵循精確度（03/14/16/11）、符號幻覺（12）、複合提問完整性（13）。
+        </p>
+
+        <h2>09 的格式 bug 在哪</h2>
+        <p>
+          09 要同時改兩個檔，gemma 的輸出長這樣：在 whole-file 格式的檔名行前面多了個 <code>- </code> 項目符號（Markdown 條列）。
+          aider 的 parser 做字串匹配時直接把整行（含破折號）當成檔名，
+          結果磁碟上多了一個叫 <code>- models.py</code> 的新檔，真正的 <code>models.py</code> 原封不動。
+        </p>
+        <p>
+          這不是模型「不懂多檔」，是輸出格式比預期多了一個前綴字元，然後 parser 沒有 strip。
+          根源：aider 內建的 whole-file 範例只示範單檔，沒有示範多檔情境下裸檔名的樣子。
+          2.3B 模型拿著單檔示範去類推多檔，混入了 Markdown 條列的慣性。
+        </p>
+
+        <h2>Monkeypatch 實驗：修好了 09，全套退步</h2>
+        <p>
+          為了修 09，寫了 <code>evals/aider_wholefile_wrapper.py</code>：
+          monkeypatch <code>WholeFilePrompts.example_messages</code>，
+          在 aider 內建的單檔示範後面多加一組兩檔案的範例
+          （B 檔 <code>from models import User</code> 引用 A 檔名字），
+          讓 gemma 看到多檔情境下裸檔名應該長什麼樣。
+        </p>
+        <p>
+          單題結果很好：09 從 3/3 全掛修到 <strong>3/3 穩定過關</strong>，而且一發就過、不需要 test-feedback loop。
+        </p>
+        <p>
+          然後跑全套 16 題 × 3 rep 守門。結果：
+        </p>
+        <p>
+          <code>all-pass 7/16 → 5/16</code>、<code>pass@3 9/16 → 7/16</code>——<strong>淨退步</strong>。
+          09 確實修好（0→3/3），但 01 和 02 這兩道自評測集建立以來從未失手的題目，全套崩掉（3/3 全 FAIL）。
+          另外 15 題從穩定過變不穩（1.0→0.333）。
+        </p>
+        <p>
+          新失敗模式：<code>pager.py</code>（01 題的目標檔）裡出現 <code>from pager import get_page, page_count</code>——
+          把「B 檔 import A 檔名字」的示範模式套進了<strong>定義那個名字的檔案本身</strong>，造成 circular import。
+          <code>slugify.py</code>（11 題）也是同款自我 import。
+          這個副作用不限於多檔任務，擴散到完全無關的單檔題。
+        </p>
+
+        <h2>2.3B 的 prompt 餘裕是這樣消失的</h2>
+        <p>
+          這不是第一次看到這個現象。2026-07-03 的 <code>system_prompt_prefix</code> 實驗（在 system prompt 開頭加 CRITICAL 檔名規則）：
+          單題救回了 06 的檔名問題，全套卻從 6/8 掉到 3/8。
+          今天的 wrapper 是同一課——不是前綴，是在 few-shot 示範中段多加一組範例，同樣造成全套干擾。
+        </p>
+        <p>
+          2.3B 的注意力分配沒有 7B 的餘裕。往格式示範區塞任何內容，就算邏輯上是「多一個正確示範」，
+          對模型來說都可能是「我現在要學一條新的組裝規則」。
+          那條新規則一旦被過度概化——比如「B 檔要 import A 檔」——就會滲入不相關的題目。
+        </p>
+        <p>
+          處置：<code>run_eval.py</code> 還原成直接呼叫 aider；
+          <code>aider_wholefile_wrapper.py</code> 保留在 repo 但加 REJECTED banner，比照 v5e converter 的做法。
+          09 的真正修法得從訓練資料下手，不能是「往 prompt 塞更多東西」。
+        </p>
+
+        <h2>值得投資的三類，不值得的兩類</h2>
+        <p>
+          這次診斷比之前的粗略分類更精確，讓後續投資決策更有根據：
+        </p>
+        <p>
+          <strong>值得投資 contrastive minimal-pair 訓練資料</strong>：
+          規格遵循精確度（03/14/16/11——大小寫、比對錨定、多單位累加、字元迴圈邏輯）、
+          符號幻覺（12——把 Python 內建名當自訂名 import，治法同工具清單 grounding）、
+          複合提問完整性（13——多重問題遺漏，prompt 層加計數提示先試）。
+        </p>
+        <p>
+          <strong>不值得現在投資</strong>：09（格式解析 bug，prompt 修不了、只能訓練資料，但成本高）、
+          06（aider 內建範例的既有汙染，大概率訓練也難脫身）。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>單題驗證通過 ≠ 全套安全</strong>：09 的 wrapper 單題 3/3，全套淨退步 2 題——這已是第二次同樣的課（第一次是 07-03 的 system_prompt_prefix）。任何 prompt 層變更必須跑全套守門才能算數。</p>
+          <p><strong>2.3B 的 prompt 餘裕極小，任何新增內容都有外溢風險</strong>：不是前綴才有風險，中段的 few-shot 示範同樣會波及完全無關的任務。往 aider prompt 塞東西的路已經走到盡頭。</p>
+          <p><strong>病因分類比分數分類更有投資價值</strong>：7 道必掛題裡，2 道是外部框架問題（06、09），投資訓練資料的 ROI 低；剩下 5 道才是真正的能力落差。不分類就直接訓練，等於亂撒資源。</p>
+          <p><strong>負結果要誠實入庫並加 banner</strong>：wrapper 沒達標就是沒達標；保留檔案 + REJECTED banner 比藏起來有用——下次遇到類似修法衝動時能直接找到前車之鑑。</p>
+          <p><strong>符號幻覺和工具幻覺是同款病</strong>：12 題的「幻覺 import 內建名」與 v5c 前的「幻覺不存在工具名」，根因都是「模型覺得這個任務語意應該對應到這個名字」，沒有 ground 在「清單裡真的有什麼」。Contrastive minimal pairs 在工具上有效，應該也能用於程式碼符號。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-09 · gemma4-e2b-agent-kit MD 微調評估 · eval 16 題 / gemma v3 fused 7/16 一致失敗 / wrapper 實驗 REJECTED / 7 題病因已分類
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
