@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16 道真實 coding 任務的第一份成績單：qwen-7b 12 分、gemma 2.3B 8 分 · Bobo Labs</title>
+  <meta name="description" content="從零建 8 題評測集、擴充到 16 題 + pass@k harness，三模型基線；發現 max_tokens 截斷 confound 後 gemma 從 3/8 升到 5/8；一行 examples_as_sys_msg 設定治好 edit-format 問題再升到 6/8。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-03-coding-agent-eval-suite.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-03</p>
+      <h1 class="article-title">16 道真實 coding 任務的第一份成績單：qwen-7b 12 分、gemma 2.3B 8 分</h1>
+      <p class="article-lede">
+        從 8 題擴充到 16 題、從單次跑到 pass@k harness、從兩模型到三模型基線。
+        早上「gemma 診斷正確但不吐編輯格式」被發現是 max_tokens 截斷，
+        一個 confound 讓 3/8 → 5/8。
+        然後一行 aider 設定治好 edit-format，再升到 6/8。
+      </p>
+
+      <div class="article-body">
+        <h2>MB 評測集：8 題、隱藏測試、先自審</h2>
+        <p>
+          MB 目標是建真實任務評測集（真北極星），不是寫在家練習的假題。
+          run_eval.py 流程：複製 workspace → aider --no-git --message → 隱藏測試判分。
+          agent 跑完才複製 checks/ 進工作區，防止模型改測試作弊。
+          判分兩型：pytest（行為驗證）和 stdout_keywords（QA 問答題）。
+        </p>
+        <p>
+          8 題覆蓋：修 bug ×4（off-by-one、mutable default、bare except 吞錯、TypeError 根因）、
+          實作函式（parse_size）、加 CLI flag、重構去重複（TIME_FMT 常數 + 字面值只准出現 1 次）、專案問答。
+          全部先自審：scratch 腳本驗證「原始碼必 FAIL 隱藏測試、參考解必 PASS」才跑模型。
+          這 20 分鐘換來對結果的信心。
+        </p>
+
+        <h2>早上基線：gemma 3/8，瓶頸是 edit-format 還是能力？</h2>
+        <p>
+          qwen2.5-coder-7b-instruct（MLX 4bit）跑 LM Studio，7/8。
+          gemma4 E2B v3 fused 跑 mlx_lm.server，3/8。
+        </p>
+        <p>
+          gemma 失敗剖面：01/02/08 這三題修 bug 的題目，檔案完全沒被改。
+          01 題 gemma 正確追出 slicing 越界的根因，但輸出沒套用 aider whole-file 格式，edit 從來沒套上。
+          瓶頸是 edit-format compliance，不是診斷力。
+        </p>
+        <p>
+          然後發現 gemma 第一輪被 LM Studio serving 咬住：請求 600s 不回。
+          LM Studio 的 minja stop-string 地雷在純聊天工作流（Aider）也會發作。
+          砍掉重用 mlx_lm.server 才正常。
+          注意：LM Studio 那顆是 v2，mlx_lm.server 是 v3 fused，版本不同影響對照。
+        </p>
+
+        <h2>MC：test-feedback loop + max_tokens confound 修正</h2>
+        <p>
+          harness v2 加 test-feedback loop：每輪跑完執行可見測試，
+          把 pytest 輸出截尾 3000 字後餵回下輪 prompt，max-rounds 預設 3。
+          同時修 confound：mlx_lm.server 預設輸出上限把 whole-file 重寫中途截斷，
+          加進 model_settings.yml 明帶 max_tokens: 4096 後，
+          早上「零編輯」的 01 / 08 直接通過。3/8 → 5/8。
+        </p>
+        <p>
+          修正版三模型基線（loop 開啟、serving 修好）：
+          qwen2.5-coder-7b 7/8，qwen2.5-coder-3b 7/8，gemma4 E2B v3 5/8。
+          feedback loop 的發現：能救「一次沒寫對但理解對」的 case（3b 的 01 題第 2 輪自救）；
+          救不了「API 語意的系統性誤解」（7b/3b 的 03 題 str.strip 三輪原地打轉）。
+          3B coder + 好 harness ≈ 7B——這是 90% harness 論最硬的實證。
+        </p>
+
+        <h2>擴充到 16 題 + pass@k</h2>
+        <p>
+          新增 09–16 題：多檔編輯 ×2、跨檔診斷、補測試型（12 題：mutant 判分，
+          agent 的測試須對正確實作全過、且抓出 3 隻埋 bug 的 mutant）、
+          呼叫鏈 QA、修 bug ×2、docstring 實作。
+          harness 加 --repeats N 支援 pass@1/pass@k/all-pass 三口徑。
+        </p>
+        <p>
+          三模型基線（16 題 × 3 repeats）：
+          qwen2.5-coder-7b 12/16，qwen2.5-coder-3b 11/16，gemma4 E2B v3 8/16。
+          新 8 題把差距拉開：多檔編輯（09）與寫測試（12）是 2.3B/3B 與 7B 的真分水嶺。
+          16 題最鑑別題是 parse_duration（連寫式 1h30m 格式），三模型全滅。
+          舊 8 題複跑零翻轉——先前單跑比較事後證明可信。
+        </p>
+        <p>
+          空 diff fence 病不是 gemma 專屬：qwen-7b 在 10 題全輸出空的 diff fence，
+          配合理化說詞「get_rate 已正確處理，無需修改」，feedback 的 KeyError 沒有觸發重想。
+          02 型病因二元：格式不會（gemma，examples_as_sys_msg 可治）vs 診斷錯到不想改（7b 也會，prompt 治不了）。
+        </p>
+
+        <h2>一行設定治好 edit-format：examples_as_sys_msg</h2>
+        <p>
+          gemma 的 02 題問題是：aider wholefile coder 內建具體 whole-file 示範（show_greeting.py），
+          但預設以獨立 user/assistant turns 送出、尾端補「I switched to a new code base，
+          Please don't consider the above files」。2.3B 模型把格式示範連同檔案一起拋棄，
+          只剩 system_reminder 的抽象骨架可抄，輸出空的 diff fence。
+        </p>
+        <p>
+          設 examples_as_sys_msg: true（一行 ~/.aider.conf.yml 設定）：
+          把 whole-file 示範摺進 system prompt，2.3B 不再看到「切換到新 code base」的干擾訊號，
+          02 單題 3/3 通過（1 輪完成）。全套 6/8 兩次複跑分數完全一致。
+        </p>
+        <p>
+          對比實驗：加 system_prompt_prefix（CRITICAL 檔名規則）改成 3/8，01/02/08 反被打回 diff 0。
+          對 2.3B 模型，system prompt 開頭的強指令搶注意力、壓垮編輯輸出。
+          負結果已寫進 evals/model_settings.yml 註解防重蹈。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>eval 先自審值回票價</strong>：20 分鐘寫參考解、驗「原始必敗/解必過」，換來對 3/8 vs 7/8 差距的信心；省掉跑完模型才發現題目有問題。</p>
+          <p><strong>先驗 serving 路徑再燒模型時間</strong>：第一輪 gemma 8 題全 600s 超時，提早發現 serving 地雷只浪費 10 分鐘，而非 80 分鐘。</p>
+          <p><strong>confound 修完才能做有意義的模型比較</strong>：max_tokens 截斷讓 gemma 3/8 → 5/8，修 confound 前的所有對照都要打折。</p>
+          <p><strong>prompt 變更必跑全套守門</strong>：system_prompt_prefix 在 02 單題通過，全套卻跌到 3/8。單題驗過不等於全套安全。</p>
+          <p><strong>3B + 好 harness ≈ 7B</strong>：qwen-3b 靠 test-feedback loop 在 01 題第 2 輪自救，追平 7b 的 7/8。harness 投資的報酬遠超模型升級的報酬。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-03 · gemma4-e2b-agent-kit MB/MC 階段 · commit 114f6dd / c723a72 / 386a5e0 / 48dc5c7 · 評測集 16 題 × 3 repeats
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

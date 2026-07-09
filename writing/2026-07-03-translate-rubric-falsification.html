@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>花四版 SFT 打一個設計壞掉的靶：translate rubric 證偽記錄 · Bobo Labs</title>
+  <meta name="description" content="v5c→v5d 花了四版訓練讓模型學「translate absent → 婉拒」，但 eval prompt 根本沒給要翻譯的文字。20 分鐘 prompt 實驗揭穿 rubric 設計不良，同時發現 SFT 意外壓垮 base 模型的推理能力。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-03-translate-rubric-falsification.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-03</p>
+      <h1 class="article-title">花四版 SFT 打一個設計壞掉的靶：translate rubric 證偽記錄</h1>
+      <p class="article-lede">
+        v5c 到 v5d，translate 在 held-out eval 一直失敗——
+        幻覺假工具、誤走 web_search、再幻覺假工具，像打地鼠。
+        20 分鐘 prompt-only 實驗讓一切清晰：
+        eval prompt「Please translate this paragraph into French」根本沒給段落，
+        base 模型的正確行為是反問。訓練在打一個設計壞掉的靶。
+      </p>
+
+      <div class="article-body">
+        <h2>假說：語言類任務應該 inline 完成，不是婉拒</h2>
+        <p>
+          v5c/v5d 把 translate 列為 held-out：給 weather + search 工具、沒有 translate 工具，
+          rubric 判「absent → 不呼叫工具」。
+          模型四個版本的反應：v5b 幻覺 translate 工具、v5c 誤走 web_search、v5d 幻覺回 translate 工具。
+          模式像是 translate 有特別強的「該有一個專屬工具」先驗。
+        </p>
+        <p>
+          提出的假說是：translate / summarize / rewrite 這類語言任務，
+          模型本身就能做，正確行為是直接 inline 完成，不是婉拒；
+          只有動作類（book flight / send email）才是真的「能力邊界、應婉拒」。
+          如果這假說對，那 v5c–v5e 的 rubric 設計本身就有問題，
+          把 translate 教成「absent → 婉拒」是在打錯靶。
+        </p>
+
+        <h2>20 分鐘 prompt 實驗揭穿 dangling referent</h2>
+        <p>
+          不訓練、只跑 prompt 實驗。Phase A 測 v5d baseline + INLINE prompt（系統訊息加「不需工具就直接完成語言任務」），
+          跑語言類 absent（translate ×2 / summarize）+ 動作類 absent 回歸（email / alarm）+ present 邊回歸。
+        </p>
+        <p>
+          結果一：eval 的 translate 案例「Please translate this paragraph into French」沒有附段落。
+          這是 dangling referent——base 模型的正確行為是反問「請給我要翻譯的文字」，
+          既不是婉拒（v5c–v5e rubric 的訓練目標），也不是 inline 硬翻（原假說）。
+          機械判準「absent → 不應呼叫工具」本身沒錯，錯的是 v5f 原定要教的回應內容。
+        </p>
+        <p>
+          結果二：給了具體句子時，v5d 在 baseline prompt 下本來就不呼叫工具——
+          四版打地鼠的 translate holdout 失敗是 dangling referent 特有，
+          不是通用的「任務 → 生工具」先驗。
+        </p>
+        <p>
+          結果三：INLINE prompt 沒效。v5d 在 inline 提示下仍幻覺出 translate 工具，
+          還自己編佔位文字填 text 參數。prompt-only v5f 不可行。
+        </p>
+
+        <h2>最大發現：SFT 壓垮了 base 的推理能力</h2>
+        <p>
+          Phase B 並排：base 模型（無 adapter）vs v5d，同批翻譯 prompt。
+        </p>
+        <p>
+          base 模型對「Please translate this paragraph into French」（無文字）：
+          用 thought channel 推理，分析「沒有文字可翻」，正確反問使用者。
+          base 對有文字的翻譯：直接翻，中英雙向皆正確。
+        </p>
+        <p>
+          v5d 的同一個 prompt：thought channel 完全消失（SFT 資料無 thought token，簡短風格覆蓋），
+          EN → FR 原文照抄不翻譯，缺段落時只回「Of course! I can help you with that.」
+          ZH → EN 倒正確，action absent 仍婉拒，present 仍正確呼叫——tool-calling 部分守住了。
+        </p>
+        <p>
+          微調治 over-triggering 的同時，把推理與語言品質的能力一起壓垮。
+          這直接支持 CLI pivot 的「90% harness / 10% 模型」判斷：
+          在 2.3B 小模型上深度 SFT 的副作用太大，
+          回報不值得與能力回歸的代價相抵。
+        </p>
+
+        <h2>後續處置</h2>
+        <p>
+          v5f（inline 框架）原設計作廢。優先序讓位給 MB 真實任務評測集。
+          若未來重啟微調線，資料需包含：thought channel 保留（或至少不全滅）、
+          高品質 inline 完成樣本、反問缺失資訊的樣本。
+          v5d 仍是微調基準，fused 仍是 v3，repo 唯一變更是實驗腳本入庫（commit 9ee8b52）。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>eval prompt 本身要先審</strong>：dangling referent 讓「grounding 失敗」和「缺 referent 應反問」混在同一案例裡，四版訓練都在打一個設計不良的靶。</p>
+          <p><strong>base 並排是最便宜的照妖鏡</strong>：一次 Phase B 就看穿 adapter 的收益（restraint）與代價（thought / 翻譯品質），比堆守門腳本快也誠實。</p>
+          <p><strong>SFT 會付出能力回歸的稅</strong>：tool-calling 訓得好，但推理 channel 和語言能力被壓垮——對 2.3B 小模型尤其明顯，這不是可以忽略的副作用。</p>
+          <p><strong>20 分鐘 prompt 實驗先跑，再決定訓不訓</strong>：先用 prompt 實驗證偽假說，比直接跑訓練省時省算力——即使實驗結果「假說不成立」，資訊本身就值回票價。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-03 · gemma4-e2b-agent-kit · commit 9ee8b52 · Phase A + B 對照，約 20 分鐘 prompt-only 實驗
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
