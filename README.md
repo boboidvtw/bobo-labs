@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-09** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-07-02-gemma4-v5-refusal-grounding.html`（五輪 contrastive 訓練教 2.3B 先讀工具清單，v5c minimal pairs 修 grounding，refusal 類推 1→3→4/5，v5d 為基準）、
+  `2026-07-02-gemma4-v3-serving-casual.html`（固化 mlx_lm.server tool-calling 守門腳本，補 82 筆 curated casual 訓 v3，v4 矯枉過正廢棄）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-07-09.
+
 - **2026-07-09（人工 /boboweb）** — 排除 QA#1a 誤判後人工發布 1 篇文章：
   `2026-06-25-stock-grid-bot-smoke-test-restore.html`（先驗再復原：金融 bot 盤前煙測與安全自啟的 6 條原則，git log 先於直覺、byte-by-byte 比對 DB、secure-by-default 比 denylist 穩健）。
   原本 QA#1a 命中「broker」硬擋（1a 高危專名清單不分語境），核對後確認內文只是引用 gate 狀態訊息「尚未登入 broker」非真憑證，改用詞為「尚未完成下單系統登入」後人工 mv + 編 index.html + push。
