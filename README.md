@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-10** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-07-09-gemma4-md-eval-diagnosis.html`（診斷 gemma4 E2B v3 7 道必掛題：病因分類、monkeypatch 修好 09 但讓 01/02 崩掉、2.3B prompt 餘裕教訓）、
+  `2026-07-02-local-coding-agent-pivot.html`（pivot 從訓模型到地端 coding agent：90% 價值在 harness、LM Studio + Aider + qwen2.5-coder-7b MA 落地）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-07-10.
+
 - **2026-07-09** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-07-02-gemma4-v5-refusal-grounding.html`（五輪 contrastive 訓練教 2.3B 先讀工具清單，v5c minimal pairs 修 grounding，refusal 類推 1→3→4/5，v5d 為基準）、
   `2026-07-02-gemma4-v3-serving-casual.html`（固化 mlx_lm.server tool-calling 守門腳本，補 82 筆 curated casual 訓 v3，v4 矯枉過正廢棄）。
