@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-09（人工 /boboweb）** — 排除 QA#1a 誤判後人工發布 1 篇文章：
+  `2026-06-25-stock-grid-bot-smoke-test-restore.html`（先驗再復原：金融 bot 盤前煙測與安全自啟的 6 條原則，git log 先於直覺、byte-by-byte 比對 DB、secure-by-default 比 denylist 穩健）。
+  原本 QA#1a 命中「broker」硬擋（1a 高危專名清單不分語境），核對後確認內文只是引用 gate 狀態訊息「尚未登入 broker」非真憑證，改用詞為「尚未完成下單系統登入」後人工 mv + 編 index.html + push。
+  Manually published 1 draft (previously QA#1a-blocked false positive) via /boboweb on 2026-07-09.
+
 - **2026-07-09** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-07-03-translate-rubric-falsification.html`（花四版 SFT 打設計壞掉的靶：dangling referent 讓 eval 失敗四版、base 並排照出 thought channel 被壓垮、20 分鐘 prompt 實驗揭穿比訓練便宜）、`2026-07-03-coding-agent-eval-suite.html`（16 道真實 coding 任務成績單：max_tokens confound 修正讓 gemma 3/8→5/8、examples_as_sys_msg 一行治好 edit-format、3B + 好 harness ≈ 7B）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。1 篇因 QA#1a blocked（broker）留 _pending/，4 篇 deferred 留待下次。
