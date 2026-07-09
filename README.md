@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-09** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-07-03-translate-rubric-falsification.html`（花四版 SFT 打設計壞掉的靶：dangling referent 讓 eval 失敗四版、base 並排照出 thought channel 被壓垮、20 分鐘 prompt 實驗揭穿比訓練便宜）、`2026-07-03-coding-agent-eval-suite.html`（16 道真實 coding 任務成績單：max_tokens confound 修正讓 gemma 3/8→5/8、examples_as_sys_msg 一行治好 edit-format、3B + 好 harness ≈ 7B）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。1 篇因 QA#1a blocked（broker）留 _pending/，4 篇 deferred 留待下次。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-07-09.
+
 - **2026-07-02** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-07-01-gemma4-chat-template-fix.html`（Gemini 寫的 Gemma 4 微調指南格式錯在哪：ChatML 混入 Gemma 4 原生 turn/model 格式、訓練與 serving template 必須同一、assert 防呆讓格式錯誤在訓練前報錯）、`2026-07-01-agent-context-cost-rules-dedup.html`（裝 299 個 Agent context window 怎麼算：name+description 常駐 11K tokens 非全文、rules 三重重複聯集再刪非直接刪）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。1 篇因 QA#1a blocked（broker）留 _pending/。
