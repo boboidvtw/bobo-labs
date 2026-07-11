@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>從 Hermes 到 v2：Gemma4 2.3B 資料管線踩坑與負樣本微調 · Bobo Labs</title>
+  <meta name="description" content="一條 1893 → 1100 筆的資料清洗管線，三個資料正確性 bug，第一版 LoRA val loss 0.753 → 0.292，再加 300 筆負樣本讓 v2 從幻覺假工具學會誠實婉拒。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-01-gemma4-training-pipeline-v2.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-01</p>
+      <h1 class="article-title">從 Hermes 到 v2：Gemma4 2.3B 資料管線踩坑與負樣本微調</h1>
+      <p class="article-lede">
+        拿 1893 筆公開的 Hermes function-calling 資料，清洗到 1100 筆，
+        踩了三個讓模型學壞的資料 bug，跑出第一版 LoRA。
+        然後發現 99.1% 都是正樣本、模型學會幻覺假工具——
+        補 300 筆負樣本、再跑 v2，讓它學會誠實婉拒。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼選 Hermes 資料集</h2>
+        <p>
+          候選資料集三選一：xlam（gated、需申請 token）、glaive（text-blob 格式髒）、
+          Hermes（NousResearch/hermes-function-calling-v1，Apache 2.0，免申請，多輪 + tool 回應）。
+          Hermes 的對話結構最貼近 Gemma4 原生 template 的展開方式，選它。
+          下載 func-calling.json 1893 筆。
+        </p>
+        <p>
+          然後寫 hermes_to_kit.py 把 Hermes 的 ShareGPT 格式（conversations 陣列）
+          轉成 OpenAI-like messages + tools 結構。
+          解析失敗的整筆剔除——資料品質優先於數量。
+          1893 → 1100 筆，58.1% 存活率。
+        </p>
+
+        <h2>三個讓模型學壞的資料 bug</h2>
+        <p>
+          第一個：gpt 分支邏輯洞。parse_blocks 首塊解析失敗時回傳空 list，
+          然後 if calls: 判 falsy，掉進 else 把整段含有 tool_call XML 標籤的髒文字
+          當純文字回應塞進 content。726 筆髒記錄這樣漏進了保留集。
+          根因是「解析結果是否存在」和「解析是否成功」被同一個真假值代表——
+          換成 if "&lt;tool_call&gt;" in val: 判斷標籤存在才正確剔除。
+        </p>
+        <p>
+          第二個：斷鏈陷阱。Hermes 系統訊息命令模型用舊的 tool_call XML 標籤，
+          跟 Gemma4 原生的 tool_call token 衝突。留著會教模型兩套矛盾的格式。
+          解法是偵測到 Hermes 樣板系統訊息就整段換成格式無關的乾淨版本，
+          tools schema 本來就由 chat template 的 tools= 參數注入，不需要重複。
+        </p>
+        <p>
+          第三個：tool_response name 全錯配。Gemma4 的 Jinja template 用
+          tc['id'] == follow['tool_call_id'] 來決定每個 tool_response 顯示哪個工具名。
+          我的資料兩個欄位都缺，None == None 在 Jinja 恆為真，
+          結果每個 tool_call 都「匹配」最後一個 call 的名字，全部覆蓋成一樣的名稱。
+          這個 bug 要直接讀 Jinja 原始碼才抓得到——用可辨識的假名 probe 才確認 template 確實忽略我給的 name。
+          解法是補上 OpenAI 慣例的 id / tool_call_id 配對。
+        </p>
+
+        <h2>第一版 LoRA：val loss 0.292，但行為測試才是重點</h2>
+        <p>
+          環境當機三次（峰值記憶體 ~9GB 壓垮 M4 16G），
+          改短跑策略：60 iters + save-every 20。
+          val loss 從 0.753 降到 0.292。
+          驗證腳本問東京天氣，模型正確輸出原生 tool_call 語法，推論峰值 2.93GB、41 tok/s。
+        </p>
+        <p>
+          但檢查資料組成：1100 筆中 1090 筆含工具呼叫、只有 10 筆直答。
+          首輪冷啟動決策：100% 呼叫工具、0% 直答。
+          v1 是個 over-triggering 模型。
+        </p>
+
+        <h2>v2：補 300 筆負樣本，行為改善有鐵證</h2>
+        <p>
+          從 glaive-function-calling-v2（112960 筆，Apache 2.0）抽「system 宣告工具
+          但整段對話無 functioncall」的記錄——工具在手、卻正確婉拒或直答。取 300 筆。
+        </p>
+        <p>
+          glaive 格式坑：function arguments 是單引號包著的 JSON 字串，
+          且 function 欄位是裸 schema（{"name":...,"description":...}），
+          Gemma4 template 存取 tool.function.name 會報 'dict' has no attribute 'function'。
+          解法是包成 OpenAI envelope {"type":"function","function":{...}}，
+          對齊 hermes_to_kit 的輸出。300 筆全過。
+        </p>
+        <p>
+          v2 訓練 300 iters，結果：
+        </p>
+        <p>
+          首輪直答比 0.0% → 21.6%。val loss 0.292 → 0.150。restraint 測試 2/3 → 3/3。
+          最明顯的改善：只給 get_weather / web_search 兩個工具的情況下，
+          v1 對「訂機票」會幻覺出不存在的 flight_booking 工具、發一個假的 tool_call；
+          v2 改成誠實婉拒並說明能力範圍。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>解析「有無內容」跟「解析成敗」是兩件事</strong>：別用同一個真假值代表。if calls: 這樣的判斷在解析回空 list 時會掉進錯誤的 else 分支。</p>
+          <p><strong>新模型 template 的配對邏輯要實讀 Jinja</strong>：None == None 恆為真這種地雷只有讀原始碼才發現，光看文件不夠。</p>
+          <p><strong>loss 不等於行為</strong>：v1 val loss 0.292 看起來不差，但行為測試才暴露幻覺假工具——定量 loss 加上定性行為對照缺一不可。</p>
+          <p><strong>資料層的指標要看對維度</strong>：record-level 負樣本比例 0.9% 是誤導數字，真正的槓桿是首輪冷啟動決策比例（100%→78.4%）。</p>
+          <p><strong>seq 長度是資料與記憶體的取捨</strong>：seq 2048 當機三次後改 1024，丟了 875 筆長正樣本，但峰值記憶體降到 6.35GB、無當機，這是 M4 16G 下的正確選擇。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-01 · gemma4-e2b-agent-kit · 私有 repo commit fbc6719 / 29a44a1 · 資料規模 1100 + 300 = 1400 筆
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

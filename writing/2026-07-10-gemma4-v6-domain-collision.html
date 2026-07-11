@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>小模型微調連 REJECTED：資料域衝突先退步，資料量不足再零改善 · Bobo Labs</title>
+  <meta name="description" content="想替 Gemma 4 2.3B 的 tool-calling 模型加上 coding 能力，v6 把 12 筆新資料混進 2670 筆舊資料一起訓練，結果兩種能力同時退步。改用獨立 adapter 解掉衝突，卻發現 12 筆根本不夠——兩次 REJECTED、兩個不同根因。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-10-gemma4-v6-domain-collision.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-10</p>
+      <h1 class="article-title">小模型微調連 REJECTED：資料域衝突先退步，資料量不足再零改善</h1>
+      <p class="article-lede">
+        想替 Gemma 4 E2B（2.3B 參數）的 tool-calling 模型加上 coding 能力。
+        第一次嘗試（v6）把 12 筆 coding 資料混進 2670 筆 tool-calling 資料一起跑 LoRA，
+        結果兩種能力同時退步——REJECTED。
+        第二次改成獨立 adapter，解掉了衝突，但目標四題仍全部 0/3——又 REJECTED。
+        兩次失敗、兩個完全不同的根因。
+      </p>
+
+      <div class="article-body">
+        <h2>這個實驗想解決什麼</h2>
+        <p>
+          Gemma 4 E2B 的 LoRA 訓練到 v5d 時，tool-calling 能力已經相當穩定：
+          `verify_restraint` 8/8、`verify_refusal_generalization` 4/5、
+          `verify_contrastive_grounding` 4/5。但 coding eval 裡有三類落差一直沒有改善：
+          規格精確度（03/14/16 題）、API 幻覺（12 題）、複合提問（13 題）。
+          這三類是 gemma4 當 aider 程式碼編輯後端時的問題，跟 tool-calling 完全不同的能力。
+        </p>
+        <p>
+          v6 的目標：設計 12 筆 coding-domain contrastive minimal pairs，
+          用 `aider --show-prompts` 逐字擷取 eval harness 實際送給模型的系統提示，
+          確保訓練格式與 serving 時完全一致，再併入 v5d 的 2670 筆資料一起訓練。
+        </p>
+
+        <h2>v6：域混合，兩種能力同時退步</h2>
+        <p>
+          訓練本身沒有任何問題：val loss 0.288、無 NaN、peak mem 6.348GB。
+          問題在全套守門跑出來的數字。
+        </p>
+        <p>
+          coding eval 結果：all-pass 7→6、pass@3 9→8、pass@1avg 8.0→6.67。
+          不只目標四題維持 0/3，連原本 3/3 全過的 `02_fix_mutable_default` 和
+          `04_fix_exception` 也一起崩到 0/3。
+          tool-calling 三支回歸腳本同步退化：`verify_restraint` 8/8→6/8
+          （出現退化式重複 token）、`verify_refusal_generalization` 4/5→3/5、
+          `verify_contrastive_grounding` 4/5→3/5（v5d 剛修好的
+          `send_email` 案例重新幻覺 `get_weather`）。
+        </p>
+        <p>
+          雙重退化，且完全沒達成原始目標。直接 REJECTED。
+        </p>
+        <p>
+          推測根因：coding-domain 資料（aider whole-file 對話格式）跟
+          tool-calling SFT 資料（`{tools, messages}` 格式）在對話結構和系統提示上差異極大。
+          2.3B 模型訓練預算有限，混進差異很大的新資料域稀釋了既有能力。
+        </p>
+
+        <h2>v6 還有一個沒注意到的隱藏變因</h2>
+        <p>
+          事後才拆解出來的問題：`gemma4_e2b_mlx_train.py` 用
+          `iters × batch × grad_accum` 隨機抽樣。v6 跑 300 iters、grad_accum=8，
+          等於 2400 次抽樣，在 2682 筆資料裡，12 筆 coding 資料平均只被看到 0.9 次。
+          「域混合互相干擾」和「coding 資料根本沒被訓練到」在 v6 的設計裡是兩個
+          無法區分的解釋。
+        </p>
+        <p>
+          這代表 v6 留下的 REJECTED 其實夾帶了一個未驗證的假設：
+          如果改用獨立 adapter，只讓 coding 資料用全部的訓練預算，會怎樣？
+        </p>
+
+        <h2>獨立 adapter 實驗：解掉衝突，卻碰到資料量牆</h2>
+        <p>
+          兩天後（2026-07-11）跑了這個驗證實驗。設計上特別處理了 v6 的 iters 選擇：
+          60 iters 而非照抄 v6 的 300 iters（300 iters 下 12 筆資料會被抽樣 ~200 次，
+          形同硬背而非泛化），加了 `--save-every 15` 記錄四個 checkpoint。
+          base model 直接用 `gemma-4-E2B-it-4bit-clean`，不混入任何 tool-calling 資料。
+        </p>
+        <p>
+          訓練結果：val loss 2.840→0.494，無 NaN，peak mem 6.351GB。
+          Stage 2 快測時 `13_trace_qa` 出現一次單次 PASS（v6 這題原本 0/3），
+          達到進全套守門的條件。
+        </p>
+        <p>
+          全套守門：coding eval 數字與 v3-fused 基準**逐項打平**——all-pass 7/16、
+          pass@3 9/16、pass@1avg 8.0，完全相同。`13_trace_qa` 在三次 repeat 下打回 0/3
+          （Stage 2 的單次 PASS 是僥倖）。目標五題（03/12/13/14/16）全部 0/3，零改善。
+        </p>
+        <p>
+          但有一件事確認了：v6 裡 `02_fix_mutable_default` 和 `04_fix_exception`
+          崩掉的 collateral damage，這次完全沒有重演，兩題維持 3/3。
+          域混合確實是 v6 退步的真正原因，獨立 adapter 成功隔離了。
+        </p>
+
+        <h2>兩次 REJECTED、兩個不同的根因</h2>
+        <p>
+          兩個實驗拆解出的教訓並不相同：
+        </p>
+        <p>
+          v6 的問題是域混合干擾。把對話結構差異極大的新資料混進既有基礎，
+          2.3B 模型沒有足夠的參數容量同時保住兩個能力。這是可以用架構解的問題——
+          獨立 adapter 就解了。
+        </p>
+        <p>
+          獨立 adapter 的問題是資料量不足。12 筆精心設計的 contrastive minimal pairs，
+          格式已經對齊 aider 實際送給模型的系統提示，val loss 也從 2.84 降到 0.49。
+          但 2.3B 的模型還是沒有從 12 筆資料裡學到可以泛化到 held-out 評測的能力。
+          這不是訓練方法問題，不是格式問題，不是架構問題，純粹是量不夠。
+        </p>
+        <p>
+          跟 v5 系列「隨機補負樣本無效、要用 contrastive minimal pairs 才有效」的教訓
+          不是同一種。那次是方法問題；這次連方法都對了，只是還差在量。
+        </p>
+
+        <h2>v6 這兩天另外落地的兩件事</h2>
+        <p>
+          除了訓練實驗，v6 這天還完成了兩個基礎設施更新，值得記一筆。
+        </p>
+        <p>
+          第一，`evals/reflections/` 結構化 lessons store（`lessons.jsonl` + `add_lesson.py`）。
+          原本「session 內重試、結束即丟棄」的失敗診斷升級成可持久化、可查詢的記錄。
+          碰到的坑：`.gitignore` 的 `*.jsonl` 全域規則（給訓練資料用）會誤擋這個
+          要版本化的 store，加了 `!evals/reflections/*.jsonl` 否定規則才解決。
+        </p>
+        <p>
+          第二，MLX server 打包成 `start_mlx_server.sh` + `com.gemma4e2b.server.plist`，
+          手動測試過 `verify_server_toolcalling.py` 3/3。
+          刻意不自動安裝成 launchd 常駐服務——登入就自動啟動、峰值佔用 2.93GB
+          的背景程序，這個決定留給使用者，不在 README 裡預設推薦。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>對話格式差異大的資料域，不要混進同一個訓練 run</strong>：whole-file aider 格式跟 `{tools, messages}` tool-calling 格式在 2.3B 模型上是衝突的，混進去的 collateral damage 會超過改善幅度。</p>
+          <p><strong>分析 REJECTED 前要確認假設可區分</strong>：v6 的設計讓「域衝突」和「資料根本沒被看到（0.9 次）」變成兩個無法區分的解釋。設計驗證實驗要拆開這兩個變因才算數。</p>
+          <p><strong>獨立 adapter 不是萬靈丹，只是隔離噪音</strong>：解掉 collateral damage 之後，問題才真正暴露——12 筆資料不夠教會 2.3B 模型泛化這三類落差。隔離只是讓訊號更乾淨，不是解決資料量。</p>
+          <p><strong>`.gitignore` 的全域萬用規則要寫例外</strong>：`*.jsonl` 適合忽略訓練資料，卻會誤傷要版本化的 JSONL（如 lessons store）。不同性質的同副檔名檔案，要用否定規則精確排除。</p>
+          <p><strong>全套守門，不是局部測試</strong>：Stage 2 快測出現的單次 PASS 是僥倖。只要沒跑全套三次 repeat，結果不算數。這條規則在 v5 系列就已經確認，這次又驗證了一次。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-10 + 2026-07-11 · Gemma 4 E2B agent kit · v6 + coding-isolated-adapter 實驗 · 2682 筆訓練資料 / 12 筆 coding 資料 / 2.3B 模型 / MLX LoRA
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
