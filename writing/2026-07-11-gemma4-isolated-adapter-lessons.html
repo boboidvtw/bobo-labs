@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>獨立 Adapter 擋住了域衝突，但 12 筆資料教不會 2.3B 模型 · Bobo Labs</title>
+  <meta name="description" content="v6 把 12 筆 coding 資料混進 2670 筆 tool-calling 一起訓練，兩種能力同時退步。拆成獨立 adapter 之後，域衝突不見了——但 12 筆的資料量仍然零改善。兩次 REJECTED，兩個不同根因。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-11-gemma4-isolated-adapter-lessons.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-11</p>
+      <h1 class="article-title">獨立 Adapter 擋住了域衝突，但 12 筆資料教不會 2.3B 模型</h1>
+      <p class="article-lede">
+        v6 把 12 筆 coding 資料混進 2670 筆 tool-calling 一起訓練，coding eval 和
+        tool-calling 回歸測試雙雙退步，全套守門 REJECTED。事後推論有兩個可能：「域混合
+        互相干擾」或「coding 資料根本沒被訓練到」。今天把 coding 資料拉出來單獨訓練，
+        做了一個能同時驗證這兩個假設的實驗——然後發現它們其實是兩個根因，分別屬實。
+      </p>
+
+      <div class="article-body">
+        <h2>v6 留下的謎：兩個解釋無法區分</h2>
+        <p>
+          v6 在 2682 筆資料裡，12 筆 coding 資料只佔 0.4%。訓練跑 300 iters、grad_accum=8，
+          等於 2400 次隨機抽樣，12 筆 coding 資料平均只被看到 ~0.9 次——連一個 epoch 都不到。
+          所以 v6 出現的問題有兩個互相纏繞的解釋：一是新域資料「汙染」了既有分布，
+          讓 tool-calling 能力退化；二是 coding 資料根本沒被訓練到，所以什麼都沒學到。
+          這兩件事在 v6 的設計裡完全無法區分。
+        </p>
+        <p>
+          獨立 adapter 能同時排除兩者的混淆：把 12 筆 coding 資料單獨訓練，
+          100% 的訓練預算全給它，如果目標題還是零改善，就能確定「量不足」是真正瓶頸；
+          如果 tool-calling 能力不退化，則「域衝突」的推測也得到確認。
+        </p>
+
+        <h2>實驗設計：60 iters，四個 checkpoint</h2>
+        <p>
+          base model 用 `gemma-4-E2B-it-4bit-clean`，資料集用既有的
+          `data/coding_contrastive_sft.jsonl`（12 筆，未異動），60 iters、`--save-every 15`
+          抓四個 checkpoint（15/30/45/60）。沒有照抄 v6 的 300 iters——那樣 12 筆資料會被
+          抽到 ~200 次，接近硬背，val loss 的下降會假裝有進步。
+        </p>
+        <p>
+          60 iters 的 val loss 從 2.840 降到 0.494，無 NaN、無崩潰，peak mem 6.351 GB。
+          fuse 60-iter checkpoint，快測目標五題（03/12/13/14/16）各做一次 repeat：
+          題 13（`trace_qa`）出現單次 PASS，其餘四題仍 FAIL。
+          這達到了「Stage 3 全套守門」的進入門檻。
+        </p>
+
+        <h2>Stage 3 全套：逐題打平 v3-fused 基準</h2>
+        <p>
+          `evals/run_eval.py --repeats 3` 對 16 題 × 3 repeats 完整跑過。
+          結果與 v3-fused 基準逐項完全相同：all-pass 7/16、pass@3 9/16、pass@1avg 8.0。
+          Stage 2 在題 13 的那次單次 PASS 是僥倖——3 repeats 全部打回 0/3，
+          缺少的是 `apply_coupon` 關鍵字，不是隨機波動。
+        </p>
+        <p>
+          目標五題（03/12/13/14/16）全部維持 0/3，即使 coding 資料拿到了 100% 的訓練預算、
+          val loss 降到 0.494，對 held-out 評測仍然零遷移。結論清楚：量不足是真正瓶頸。
+        </p>
+
+        <h2>但有一件事確實修好了</h2>
+        <p>
+          v6 有一個 collateral damage：tool-calling 的回歸測試題 02（`fix_mutable_default`）
+          和 04（`fix_exception`）雙雙從 3/3 崩到 0/3。這次獨立 adapter 的 Stage 3 裡，
+          這兩題維持 3/3 無退化。
+        </p>
+        <p>
+          這確認了「域混合干擾」的推測：把差異很大的新資料混進既有資料域，
+          會稀釋模型對既有任務的能力，而且這種稀釋不是小的波動，是系統性退步。
+          獨立 adapter 架構本身是對的——只是 12 筆的量，即使設計對齊了
+          aider 的真實 `--show-prompts` 輸出格式，仍然不夠。
+        </p>
+
+        <h2>這不是「contrastive 設計不夠好」</h2>
+        <p>
+          v5 系列學到的教訓是「隨機補負樣本無效，要用 contrastive minimal pairs 才有效」。
+          這次的問題層級不同：contrastive minimal pairs 的設計已經對齊，
+          格式也直接從 aider 實際輸出逐字擷取，問題純粹是數量。
+          2.3B 模型要學會三類新能力，12 筆資料不夠，跟設計方法沒關係。
+        </p>
+        <p>
+          SFT 能做的事有上限。如果目標三類能力（03/12/13/14/16 對應的推理類型）
+          用 50+ 筆 contrastive pairs 還是零改善，很可能要考慮換更強的 base model
+          或改走 prompt engineering。在資料量到位之前，繼續推 SFT 沒有 ROI。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>混合訓練前先算被看到的次數</strong>：2682 筆裡的 12 筆，在 300 iters 只被看到 ~0.9 次。低曝光 + 域衝突，兩個假設會纏在一起。設計前先算清楚。</p>
+          <p><strong>獨立 adapter 能解域衝突，但解不了量不足</strong>：v6 的 collateral damage（題 02/04 退步）這次沒有重演，証明域衝突是真實問題，獨立 adapter 是正確架構。但目標題仍零改善，問題是數量。</p>
+          <p><strong>Stage 2 的單次 PASS 不是信號</strong>：題 13 在 Stage 2 的 1 repeat 出現 PASS，Stage 3 的 3 repeats 全打回 0/3。快測要用至少 3 repeats，單次 PASS 只是僥倖。</p>
+          <p><strong>val loss 低不代表遷移到 held-out</strong>：val loss 2.840→0.494 看起來有學到東西，但 eval 零改善。loss 和 task performance 是兩個不同維度，不能互換。</p>
+          <p><strong>「設計對了、量不夠」是不同的根因</strong>：v5 學的是方法問題（contrastive pairs vs 隨機負樣本），這次學的是規模問題。解法不一樣，不要混用。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-11 · Gemma 4 E2B agent-kit · coding-domain isolated adapter · 16 evals × 3 repeats · 12 contrastive samples
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
