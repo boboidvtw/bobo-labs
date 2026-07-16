@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>資料從 12 擴到 50，全套 16 題從 5 跳到 15 · Bobo Labs</title>
+  <meta name="description" content="12 筆資料的獨立 adapter 零改善，這次把四類任務形狀補齊擴到 50 筆，再診斷出 max_tokens 截斷是另外兩道落差的根因——all-pass 從 5/16 跳到 15/16，不需要重訓第二次。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-16-gemma4-e4b-coding-v2.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-16</p>
+      <h1 class="article-title">資料從 12 擴到 50，全套 16 題從 5 跳到 15</h1>
+      <p class="article-lede">
+        上次用 12 筆資料的獨立 adapter 實驗得出結論：架構對，量不夠。這次把 coding 任務形狀
+        補齊、擴到 50 筆，還在開工核對時發現 E2B→E4B 的基礎模型遷移早在沒有記憶記錄的一段工作
+        裡完成了。重新建立 E4B 基準、訓練 90 iters、全套守門，all-pass 從 5 跳到 13；
+        再發現兩道剩餘落差不是訓練問題而是 max_tokens 截斷，調一個 yml 設定就到了 15/16。
+      </p>
+
+      <div class="article-body">
+        <h2>開工前的意外：基礎模型早就從 E2B 換成 E4B 了</h2>
+        <p>
+          動手寫資料之前照慣例先核對 repo 狀態。結果發現自上次 commit（2026-07-11）以來已有
+          11 個新 commit，對應 2026-07-13 一段沒有記憶記錄的工作——基礎模型從 E2B（2.5GB）
+          真的換成了 E4B（3.9GB）。不是改名，是實際更大的 checkpoint；訓練腳本改名成
+          `gemma4_e4b_mlx_train.py`，所有 verify 腳本的預設也已改指向 E4B。
+        </p>
+        <p>
+          同時發現一條新支線：`gemma4_e4b_rlcf_engine.py`（沙盒編譯器回饋 RL 進化引擎）+
+          `generate_rsi_dataset.py`（100 筆遞歸自我提示合成資料）+ SQLite episodic memory，
+          走 `{thinking, tool_calls}` 格式，跟本次鎖定的 aider whole-file 16 題評測是
+          不同賽道、還沒整合。跟使用者核對方向：把計畫改蓋在 E4B 上，而非沿用舊 plan 的 E2B。
+        </p>
+
+        <h2>Stage 0 E4B 基準：整體弱了，但目標題的落差縮小了</h2>
+        <p>
+          用 E4B tool-calling 側 fused 模型（角色等同舊專案的 v3-fused）當基準，跑
+          `evals/run_eval.py --repeats 3`。結果：all-pass 5/16、pass@3 6/16、pass@1avg 5.67。
+          比舊 E2B v3-fused 基準（7/16、9/16、8.0）整體較弱。
+        </p>
+        <p>
+          但從目標五題（03/12/13/14/16）的角度看，E4B 已經免費修好了其中的 12 和 13
+          （過去在 E2B 上分別是 0/3），代價是在其他題退步（`04_fix_exception` 從 PASS 掉到 0/3）。
+          真正需要 coding_v2 訓練才能修的落差縮小為 03/14/16 三題。
+        </p>
+
+        <h2>不只是量——四類任務形狀的落差</h2>
+        <p>
+          逐題讀 03/12/13/14/16 各自的 `task.json`、`workspace/` 和 `checks/` 之後，
+          發現舊 12 筆資料除了量少，還缺了三種任務形狀：
+        </p>
+        <p>
+          `16_parse_duration` 需要多元件任意順序組合、去重、未知符記規則，舊資料教的是
+          單一規則二選一。`14_count_level` 要修既有 bug，舊資料教的是從 stub 從零實作。
+          `12_write_tests_stack` 要 mutation-testing 等級的完整覆蓋，舊資料教的是
+          選對例外型別。`13_trace_qa` 是 3 層呼叫鏈，舊資料最深只到 2 層。
+        </p>
+        <p>
+          所以問題不是「12 筆換成 50 筆同類型資料就好」，而是要補四種具體不同的推理方向。
+        </p>
+
+        <h2>50 筆資料設計：四類新任務形狀</h2>
+        <p>
+          新增四類（共 38 筆）+ 原樣複製舊 12 筆 = 50 筆，用新腳本
+          `coding_contrastive_v2_to_kit.py`（不 import 舊 REJECTED 檔）：
+        </p>
+        <p>
+          `BUGFIX_TASKS`（12 筆／6 對）：6 個場景——標籤比對、溫度門檻、使用者名稱唯一性、
+          分頁計算、運費計算、config 行解析，每對共用同一段「用錯策略的既有程式碼」，
+          配兩種不同規格要求不同修法，直接對齊 `14_count_level` 的任務形狀。
+        </p>
+        <p>
+          `MULTI_COMPONENT_TASKS`（10 筆／5 對）：格點移動、資源配額、日期偏移、權限字串、
+          購物車字串，每對鎖定一個精確度軸（重複堆疊 vs 拒絕、大小寫、空白嚴格度、必填 vs 預設、
+          未知符記 raise vs 忽略），對齊 `16_parse_duration` 的多元件組合。
+        </p>
+        <p>
+          `COMPREHENSIVE_TEST_TASKS`（10 筆，不成對）：10 個小型 stateful class
+          （BoundedQueue / RateLimiter / LRUCache / PriorityQueue 等），prompt 逐項列出
+          要測的行為面向 + 最少測試數，回應示範真的測到每個面向，對齊 `12_write_tests_stack`。
+        </p>
+        <p>
+          `DEEP_CHAIN_TASKS`（6 筆／3 組×2 變體）：3 層檔案呼叫鏈（review 提交／訂位鎖定／
+          檔案上傳掃毒），單問 / 複合問成對，對齊 `13_trace_qa` 的呼叫深度。
+        </p>
+        <p>
+          寫資料時踩到一個坑：heredoc 用 quoted `&lt;&lt;'PYEOF'` 時完全不解釋跳脫，
+          多寫了一層反斜線；含正則反斜線的內容放進非 raw 的 `'''...'''` 觸發 Python
+          SyntaxWarning（invalid escape sequence）。都在當下用 `-W error::SyntaxWarning`
+          抓到並修正（改用 `r'''...'''`）。全量 apply_chat_template 驗證：50 筆零失敗、
+          序列長度 825–1395 tokens，全部低於 2048 的訓練過濾門檻。
+        </p>
+
+        <h2>訓練、快測、全套守門：all-pass 5/16→13/16</h2>
+        <p>
+          訓練 90 iters（比 v1 的 60 iters 多，因資料變多到 50 筆，讓平均曝光落在 ~13 epoch
+          而非過擬合的 ~40 epoch）、`--save-every 20`。val loss 2.84→0.997，peak mem 9.08GB，
+          無當機。訓練腳本的 `hf_repo_to_path` 只吃 HF cache 裡的 repo id——踩了一次坑，
+          直接吃本地 prepare 過的目錄路徑不行，改用預設值才對。
+        </p>
+        <p>
+          fuse 90-iter checkpoint → `gemma4_e4b_agent_fused_coding_v2/`，Stage 2 單 repeat
+          快測五個目標題：14 轉 PASS，進入 Stage 3。Stage 3 全套 16 題 × 3 repeats：
+          all-pass 13/16、pass@3 13/16、pass@1avg 13.0（vs E4B 基準 5/16）。
+          9 題意外通用（01/04/05/06/09/10/11/15），03/16 仍 0/3，12 從 3/3 掉到 0/3。
+        </p>
+
+        <h2>03 和 16 的 0/3 不是訓練問題，是 max_tokens 截斷</h2>
+        <p>
+          沒有直接設計新資料，先讀了 Stage 3 run 裡 03/16 的原始 `aider_stdout` 逐字稿：
+        </p>
+        <p>
+          `16_parse_duration`：模型寫到 94%（16/17 行）正確實作時被截斷。邏輯完全正確
+          （regex 抓 `(\d+)([hms])`、`unit_seen` set 去重，逐字對應訓練資料的手法），
+          純粹是 `max_tokens=4096` 不夠用。
+        </p>
+        <p>
+          `03_add_function`：模型把整個輸出預算花在反覆糾結一個想像出來的歧義（"KB" 該切成
+          K+B 還是整個當 unit），三次 repeat 都在給出任何程式碼之前就撞到 token 上限——
+          不是不會，是收斂太慢且沒有輸出餘裕。
+        </p>
+        <p>
+          把 `evals/model_settings.yml` 裡只有 `gemma4_e4b_agent_fused_coding_v2` 這條的
+          `max_tokens` 從 4096 調到 8192（其他模型設定不動），沒有重新訓練。03/16 各自單測
+          × 3 repeats 全部轉 PASS；全套 16 題重跑確認無新退步：
+          <strong>all-pass 15/16、pass@3 15/16、pass@1avg 15.0</strong>。
+          唯一剩餘：12_write_tests_stack 的機率性手誤（詳見另篇）。
+        </p>
+
+        <h2>重大範疇警告：這顆 fused 模型不能替換主 tool-calling 側</h2>
+        <p>
+          `gemma4_e4b_agent_fused_coding_v2` 是純 coding 獨立訓練——base 是原生 E4B、
+          完全沒摻 v5d 等價的 tool-calling 資料。只驗 aider whole-file 編輯任務，
+          沒跑 `verify_restraint`／`verify_refusal_generalization`／`verify_contrastive_grounding`
+          ／`verify_server_toolcalling`。
+        </p>
+        <p>
+          直接用它替換主 fused 會犧牲 tool-calling 能力。正確做法：兩個模型分開部署
+          + 路由，或驗證合併是否安全再考慮 fuse 成單一部署。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>任務形狀比任務數量先</strong>：12→50 筆有效，不是因為量純粹多了，而是補上了四種之前完全沒教的推理方向。量充足但形狀錯，仍然零遷移。</p>
+          <p><strong>全套守門看到 0/3 先讀逐字稿再下結論</strong>：03/16 的 0/3 直覺像「模型還沒學會」，實際是輸出被截斷或收斂太慢，一行 yml 設定就修好，不需要重訓。</p>
+          <p><strong>max_tokens 要跟訓練資料的回應長度一起設計</strong>：新資料的 worked-example 比舊版長，deploy 設定沒跟上，eval 就誤判成訓練失敗。</p>
+          <p><strong>E4B 比 E2B 便宜修好了目標題裡的 12/13</strong>：換更強的 base model 有時比繼續推 SFT 更有 ROI。新基準要先跑過，再決定 SFT 的目標範圍。</p>
+          <p><strong>獨立 adapter 的範疇警告要明確記錄</strong>：分開訓練能解域衝突，但用的人要知道「這顆不是完整的生產模型」，不然上線就踩坑。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-16 · Gemma 4 E4B agent-kit · coding_v2 獨立 adapter · 50 筆 SFT · 16 evals × 3 repeats · all-pass 15/16
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

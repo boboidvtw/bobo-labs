@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GGUF 量化到 Ollama 驗證：E4B 部署同一天全收尾 · Bobo Labs</title>
+  <meta name="description" content="MLX fused 全模型解量化、Q4_K_M 轉檔、Ollama 3/3 驗過 tool-calling、修 plist 錯字裝 launchd 常駐、加雙模型路由委派 coding 子任務——六個步驟在同一天完成部署收尾。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-16-gemma4-e4b-deployment.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-16</p>
+      <h1 class="article-title">GGUF 量化到 Ollama 驗證：E4B 部署同一天全收尾</h1>
+      <p class="article-lede">
+        coding_v2 全套守門 15/16 之後，接著做 ME 部署打磨。把 MLX fused 模型轉成
+        GGUF Q4_K_M（4.9GB）、用 llama-server 和 Ollama 分別驗 tool-calling 3/3 通過，
+        修掉 plist 路徑錯字把 mlx_lm.server 裝進 launchd 常駐，再加一條雙模型路由讓
+        tool-calling 側遇到程式碼子任務時委派給 coding_v2。六個步驟在同一天完成。
+      </p>
+
+      <div class="article-body">
+        <h2>mlx_lm.fuse 的輸出：不只 embedding 是量化格式，全模型都是</h2>
+        <p>
+          開始轉 GGUF 之前以為只有 embedding 層沒被 LoRA 觸碰、維持 4-bit 仿射量化格式，
+          所以寫了只解 2 組張量的腳本。結果卡在 `mlp.down_proj.biases`，才發現問題規模是
+          全模型層級：`mlx_lm.fuse` 對 4-bit base 的輸出，橫跨所有 attention／MLP／per-layer
+          投影都是 weight + scales + biases 三件套，共 345 組張量。
+        </p>
+        <p>
+          新增 `gguf_prepare_dequantize.py` 通用掃描所有符合三件套的張量並一次解量化。
+          解量化後模型從 3.9GB 膨脹到 ~14GB（4-bit→bf16）。
+        </p>
+
+        <h2>磁碟是真實的硬約束：先騰空間再轉檔</h2>
+        <p>
+          解量化過程中一度只剩 12–13GB 可用磁碟，不夠放 14GB 的 bf16 中繼檔。
+          請使用者決定：選擇清掉 ~13GB 已被 E4B 遷移徹底取代的 E2B 時代產物
+          （lora_v2-v6、fused v3、coding_v1 等，以及 `models/gemma-4-E2B-it-4bit-clean` base）。
+          這些在 journal / lessons.jsonl 都已記錄結論，權重只是佐證，清掉沒有損失。
+          騰到 36GiB 之後繼續。
+        </p>
+
+        <h2>轉檔路徑：直接 q8_0，跳過中繼 f16</h2>
+        <p>
+          目標是 Q4_K_M，中繼沒必要先產出更大的 f16 檔：
+          `convert_hf_to_gguf.py --outtype q8_0` 一步到位（7.9GB），
+          再用 `llama-quantize --allow-requantize` 降到 Q4_K_M（4.9GB）。
+          `--allow-requantize` 這個旗標要顯式指定，預設拒絕從已量化格式再量化。
+        </p>
+        <p>
+          轉檔踩到兩個坑：`transformers==4.57.6` 的 tokenizer 載入 bug——
+          `tokenizer_config.json` 的 `extra_special_tokens` 是 list 時
+          `AutoTokenizer.from_pretrained` 會炸 `'list' object has no attribute 'keys'`，
+          只在暫存副本 patch 成 `{}` 就過了；llama.cpp 的 convert 腳本已重構，
+          架構轉換邏輯搬到 `conversion/` 子套件，**務必用 clone 下來的 repo 自帶 gguf-py**，
+          不要設 `NO_LOCAL_GGUF=1`——pip 版 `gguf==0.19.0` 的 `MODEL_ARCH` enum 跟不上
+          最新的 `GEMMA4_ASSISTANT` 等值，一度誤判成架構不支援。
+        </p>
+        <p>
+          轉檔用了獨立 venv（`llama.cpp/.venv-convert`），因為 requirements 釘死
+          `numpy~=1.26.4` / `transformers==4.57.6`，會跟專案主 .venv（numpy 2.4.6、mlx 生態）衝突。
+        </p>
+
+        <h2>Ollama 比 LM Studio 更能處理 Gemma4 原生 tool template</h2>
+        <p>
+          用同一顆 Q4_K_M GGUF 分別測兩條路徑——裸 `llama-server --jinja`（port 8091）
+          和 `ollama create` 匯入後 serve 於 11434——對 `verify_server_toolcalling.py`（POS/NEG/ROUNDTRIP）：
+          兩邊各自 3/3，跟現有 `mlx_lm.server` 路徑打平。
+        </p>
+        <p>
+          原本擔心 Ollama 像 LM Studio 一樣被 minja（最小化 Jinja2）卡住——LM Studio 的 minja
+          渲染不了 Gemma4 原生 tool template，這份 repo 自己記錄過。結果 Ollama 的 vendored
+          llama.cpp 已吸收了近期替 Gemma4 加的 PEG grammar tool-call parser，沒有重蹈。
+        </p>
+        <p>
+          因為另一個 session 同日決議往後一律用 LM Studio（Ollama 被完整解除安裝），
+          Ollama 驗證結果留作有效歷史記錄，但不再是可在本機直接重現的路徑。
+        </p>
+
+        <h2>plist 路徑錯字：E2B→E4B 只是模型遷移，repo 名從沒變</h2>
+        <p>
+          把 mlx_lm.server 裝進 launchd 常駐（`com.gemma4e4b.server.plist`）時，
+          抓到 plist 裡的 `ProgramArguments`、`WorkingDirectory`、`StandardOutPath`、
+          `StandardErrorPath` 全都誤植成 `gemma4-e4b-agent-kit`。
+          實際 repo 目錄是 `gemma4-e2b-agent-kit`——E2B→E4B 只是模型遷移，
+          repo 目錄名從沒改過。修正後才 `launchctl load`，常駐後對 8080 server
+          重驗 `verify_server_toolcalling.py` 仍 3/3。
+        </p>
+
+        <h2>雙模型路由：tool-calling 側遇到 write_code 委派給 coding_v2</h2>
+        <p>
+          在 `gemma4_e4b_agent_runtime.py` 新增 `write_code` 工具，讓外層 tool-calling 的
+          `gemma4_e4b_agent_fused`（8080，Router/JIT 迴圈）遇到程式碼撰寫／修改子任務時，
+          透過純文字補全（非 tool-calling）委派給專門的 `gemma4_e4b_agent_fused_coding_v2`
+          （8081，按需啟動、刻意不裝 launchd）。
+        </p>
+        <p>
+          委派請求重用 `coding_contrastive_v2_to_kit.py` 訓練時的 `SYSTEM_PROMPT` /
+          `SYSTEM_REMINDER`——train/serve 一致性原則，這份 repo 反覆驗證過的做法。
+          新增 `verify_coding_delegation.py`：SELECT（外層在 JIT code-stage 選對 write_code）
+          和 EXECUTE（委派呼叫拿回可解析且正確的程式碼）各 2/2 通過，
+          實測 `clamp(x, lo, hi)` 請求正確拿回完整檔案。
+        </p>
+        <p>
+          誠實記錄一個不納入守門的觀察：完整 `initialize→plan→act→assess` 迴圈不保證
+          自然落到 `code` stage，因為 stage 分類器是簡單關鍵字啟發式，模型自我生成的
+          todo-list 措辭有變異。這是已知限制，不是守門需要覆蓋的範圍。
+        </p>
+
+        <h2>12_write_tests_stack 機率性退步——深入診斷後決定不修</h2>
+        <p>
+          12 從 E4B 基準 3/3 掉到 coding_v2 的 0/3，看起來像退步。讀了 3 次 repeat 的
+          `test_stack.py`：根因是模型自己多寫的第 6 個測試函式（只要求 5 個）裡一個孤立的
+          斷言手誤——`push(1); push(2)` 後正確斷言 `peek() == 2`（當下仍理解 LIFO），
+          緊接著卻寫 `assert popped == 1` 而非 `2`；同檔案第一個測試函式對相同模式
+          完全正確，排除系統性 LIFO 誤解。
+        </p>
+        <p>
+          攤開 repo 歷史模式後，使用者同意不修：`system_prompt_prefix`／
+          `evals/aider_wholefile_wrapper.py`／v5e transform 廣度／v6 coding-domain 合併，
+          過去每一次針對單一失敗的窄修補都讓全套 16 題守門退步，100% 反效果命中率。
+          結論記錄進 `lessons.jsonl`（verdict `OPEN`），
+          若之後重啟必須跑滿 16 題 × 3 repeats 全套守門。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>mlx_lm.fuse 的輸出格式先確認再動手</strong>：全模型仿射量化（345 組張量）跟「只有 embedding 是量化」是截然不同的規模，低估規模會寫出錯誤的解量化腳本。</p>
+          <p><strong>llama.cpp 的 convert 腳本要用 repo 自帶的 gguf-py</strong>：pip 版 gguf 的 enum 值跟不上主線，設 NO_LOCAL_GGUF=1 或用 pip 安裝版都會誤判成架構不支援。</p>
+          <p><strong>plist 路徑要跟 repo 目錄名交叉確認</strong>：模型版本遷移（E2B→E4B）不代表 repo 目錄名也跟著變，常駐設定改完之後務必開 launchctl 驗一次。</p>
+          <p><strong>針對單一失敗的窄修補，先查 repo 歷史成功率</strong>：這份 repo 的歷史顯示每次窄修補 100% 反效果，決定不投入重訓的理由是先例，不是猜測。</p>
+          <p><strong>委派路由的 train/serve 一致性</strong>：委派請求重用訓練時的 SYSTEM_PROMPT，不是隨手寫一個，這是讓 coding_v2 能穩定輸出 aider whole-file 格式的前提。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-16 · Gemma 4 E4B agent-kit · GGUF Q4_K_M 4.9GB · llama-server + Ollama 各 3/3 · launchd mlx_lm.server 常駐 · 雙模型路由 verify 2/2
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
