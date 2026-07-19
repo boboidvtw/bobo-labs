@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-19** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-07-17-gemma4-adapter-clobber-recovery.html`（RLCF demo 少帶 --adapter-path 靜默覆寫生產 adapter、「舊 holdout 突然過了」是警訊、0000300 checkpoint 救援、輸出目錄隔離防再犯）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-07-19.
+
 - **2026-07-17** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-07-16-gemma4-e4b-coding-v2.html`（四類任務形狀補齊、50 筆 SFT、max_tokens 截斷是根因、all-pass 5→15/16 不需重訓）、
   `2026-07-16-gemma4-e4b-deployment.html`（GGUF Q4_K_M 4.9GB、llama-server + Ollama 各 3/3、launchd 常駐、雙模型路由 verify 2/2）。
