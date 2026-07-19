@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>「舊測試突然過了」是警訊 — RLCF Demo 覆寫生產 Adapter 事後追查 · Bobo Labs</title>
+  <meta name="description" content="RLCF evolution demo 少帶一個參數，10 次迭代的短跑權重在 07-13 22:42 靜默覆蓋了 300 次迭代訓練出的生產 adapter。一天後巡檢才發現——從偵測、還原到防再犯的完整紀錄。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-17-gemma4-adapter-clobber-recovery.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-17</p>
+      <h1 class="article-title">「舊測試突然過了」是警訊 — RLCF Demo 覆寫生產 Adapter 事後追查</h1>
+      <p class="article-lede">
+        2026-07-13 22:42，RLCF evolution demo 因為少帶一個 <code>--adapter-path</code> 參數，
+        10 次迭代的短跑權重蓋掉了 300 次迭代訓練出的 <code>adapters.safetensors</code>。
+        那時沒有任何警告。直到隔天巡檢重跑回歸測試，grounding present 從 5/5 掉到 3/5，
+        才知道有什麼東西不對。本文是完整的偵測、還原與防再犯紀錄。
+      </p>
+
+      <div class="article-body">
+        <h2>事故是怎麼發生的</h2>
+        <p>
+          07-13 22:10，tool-calling adapter 300 次迭代訓練完成，隨即 fuse 成
+          <code>gemma4_e4b_agent_fused</code>（這個生產模型後來沒有問題）。22:42，
+          RLCF evolution demo 啟動，它呼叫的是同一支訓練腳本
+          <code>gemma4_e4b_mlx_train.py</code>，但沒有帶 <code>--adapter-path</code>。
+        </p>
+        <p>
+          訓練腳本的預設值剛好指向 <code>gemma4_e4b_agent_lora/</code>——
+          跟生產 adapter 同一個目錄。10 次迭代跑完，val loss 是 1.059，
+          接近未訓練狀態的底線，但沒人知道這個數字意味著什麼，
+          因為腳本靜默寫入、沒有任何確認步驟。
+        </p>
+
+        <h2>為什麼沒有立刻發現</h2>
+        <p>
+          fuse 發生在 22:10，覆寫在 22:42。<strong>生產 fused 模型用的是 22:10 的乾淨 adapter</strong>，
+          所以 8080 server 繼續正常跑。當天跑的所有 server-side 測試都過。
+          問題被隱藏在 adapter 目錄裡，只有直接用 adapter 跑回歸測試才會看到。
+        </p>
+        <p>
+          「server 正常」和「adapter 目錄正常」是兩件事——事後想很明顯，
+          事前根本不會去想。
+        </p>
+
+        <h2>偵測：「舊 holdout 突然過了」是第一個線索</h2>
+        <p>
+          隔天巡檢時，用被覆寫後的 adapter 重跑
+          <code>verify_contrastive_grounding</code>，得到 present 3/5——
+          歷史基準是 5/5。同時發現 refusal holdout 裡有一條 translate 題「突然通過了」，
+          這條在 v5d 訓練後一直是已知的 fail。
+        </p>
+        <p>
+          第一反應是「修好了」。但停一下再想：translate holdout 本來是被
+          tool-calling 訓練引入的「web_search 替代病」，從來沒有主動修過。
+          一個從來沒動過的 holdout 憑什麼突然通過？
+        </p>
+        <p>
+          答案是：val loss 1.059 的 adapter 幾乎等於 base model。
+          <strong>base Gemma-4 E4B 本來就會拒絕 translate 任務</strong>，
+          所以通過了 refusal holdout——這不是修好了，是 adapter 根本沒有效果。
+          「舊測試突然過了」不是喜訊，是警訊。
+        </p>
+
+        <h2>交叉驗證定案</h2>
+        <p>
+          拿生產 fused server（8080）跑同兩個案例：book_flight 和 translate_text
+          的 present 案（要求呼叫工具）。server 兩個都正確呼叫，通過。
+          同 system prompt 條件下 server 過、adapter 側 3/5——這就是「權重分岔」的直接證據。
+        </p>
+        <p>
+          最後從 <code>logs/evolution_run.log</code> 找到
+          「Saved final weights to gemma4_e4b_agent_lora/」這行，timestamp 22:42，
+          和 <code>adapters.safetensors</code> 的 mtime 一致。事故時間線定案。
+        </p>
+
+        <h2>還原：checkpoint 是唯一救援路</h2>
+        <p>
+          訓練時有設 <code>--save-every</code>，所以 300 次迭代的中間點都還在。
+          把覆寫後的壞 adapter 另存為 <code>rlcf_demo10_clobbered_adapters.safetensors</code>
+          留存記錄，然後 <code>cp 0000300_adapters.safetensors adapters.safetensors</code>。
+        </p>
+        <p>
+          還原前驗 checksum 和 config 相容性（rank 16、35 層匹配）。
+          還原後三支回歸：restraint 8/8、refusal 4/5（translate holdout，同 v5d 基準）、
+          grounding present 4/5 / absent 4/5——回到 v5d 的已知 profile。
+        </p>
+
+        <h2>防再犯：一行 diff 解決</h2>
+        <p>
+          <code>gemma4_e4b_rlcf_engine.py</code> 的 train_cmd 改為顯式帶
+          <code>--adapter-path gemma4_e4b_agent_lora_rlcf</code>。
+          RLCF 的輸出從此寫到自己的隔離目錄，不會碰到主 adapter。
+        </p>
+        <p>
+          其實這是很簡單的修法。問題是原本沒有人想到需要這樣寫——
+          因為兩個用途共用一個輸出路徑，在「只有一條腳本」的早期完全合理，
+          等到有第二個呼叫者出現，才變成定時炸彈。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>自動化觸發器必須顯式指定輸出目錄</strong>：訓練腳本的預設值是為互動式使用設計的，不適合被自動化流程直接呼叫。兩種用途共用一個輸出路徑是定時炸彈。</p>
+          <p><strong><code>--save-every</code> checkpoint 是事故救援的唯一路</strong>：這次 300 次迭代能完整還原，全靠中間點都還在。如果沒有 checkpoint，只能重新訓練。永遠保留。</p>
+          <p><strong>量測前先核對 mtime</strong>：跑回歸測試前確認 <code>adapters.safetensors</code> 的修改時間是否晚於已知的訓練完成時間。mtime 異常就停下來查。</p>
+          <p><strong>「server 正常」不代表 adapter 目錄正常</strong>：fused 模型和 adapter 目錄是兩個獨立的生產物。fuse 發生在覆寫之前，生產不受影響；但這個「偶然的時間差保護」不能依賴。</p>
+          <p><strong>「舊 holdout 突然過了」先懷疑量錯對象</strong>：一個從來沒有主動修過的 fail 突然通過，最可能的解釋是測試沒有測到真正的模型能力。先懷疑、再慶祝。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-17 · Gemma-4 E4B Agent Kit · adapter 還原 v5d 基準 · 0000300 checkpoint 救援
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
