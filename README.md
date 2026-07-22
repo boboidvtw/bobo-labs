@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-22** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `2026-07-19-graphify-loop-routing.html`（第一炮打在沒開的 8081 · stage 路由從可選變前置 · 4 跨 repo episode 記憶全回寫）、`2026-07-19-graphify-vs-ua-dashboard.html`（AST 3.2s $0 vs LLM 費時 stale · 跨邊界邊兩工具都 0 條 · 重跑成本決定圖壽命）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-07-22.
+
 - **2026-07-19** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-07-17-gemma4-adapter-clobber-recovery.html`（RLCF demo 少帶 --adapter-path 靜默覆寫生產 adapter、「舊 holdout 突然過了」是警訊、0000300 checkpoint 救援、輸出目錄隔離防再犯）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
