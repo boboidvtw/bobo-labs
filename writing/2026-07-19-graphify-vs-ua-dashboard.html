@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Graphify vs Understand-Anything — 用同一份檔案集做照妖鏡，然後整進 nomad-dashboard · Bobo Labs</title>
+  <meta name="description" content="AST 建圖 3.2 秒、$0 成本，LLM 建圖要幾小時且一個月後 stale。同樣的前端→後端跨邊界查詢，兩個工具都交出 0 條邊——「LLM 語意優勢」要實測驗證，不能拿來當選型理由。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-19-graphify-vs-ua-dashboard.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-19</p>
+      <h1 class="article-title">Graphify vs Understand-Anything — 用同一份檔案集做照妖鏡，然後整進 nomad-dashboard</h1>
+      <p class="article-lede">
+        graphify 拿 AST 靜態分析；understand-anything 拿 LLM 語意推斷。
+        理論上後者應該在跨邊界連結占優。實測之後，前端 <code>fetch</code> 到後端 HTTP route
+        的跨邊界邊兩個工具都是 0 條——理論優勢沒兌現。
+        但重跑成本決定了圖的壽命，這才是真正的選型依據。
+      </p>
+
+      <div class="article-body">
+        <h2>同一份檔案集、同一套排除規則，數字一比就清楚</h2>
+        <p>
+          把 <code>.graphifyignore</code> 設成鏡射 understand-anything 的排除規則，
+          對同一個 codebase 跑兩個工具：
+        </p>
+        <p>
+          graphify（AST）：3.2 秒 / $0 建圖，1,525 節點 / 2,809 邊 / 111 社群，symbol 層級。
+          邊品質：96% EXTRACTED（抽測全對）、4% INFERRED（信心 0.61）。
+        </p>
+        <p>
+          understand-anything（LLM）：建圖要數小時、消耗大量 token（曾遇額度重置），
+          234 節點 / 364 邊 / 8 層，檔案層級。圖是一個月前建的，
+          缺少整條 7 月 gemma_evolution 演進線——stale 到 0 個相關節點。
+        </p>
+        <p>
+          最關鍵的一筆：前端 <code>fetch</code> 到後端 HTTP route 的跨邊界連結，
+          兩個工具都交出 0 條邊。LLM 語意推斷在這裡沒有任何優勢，
+          因為這條連結需要同時理解 JS 字串樣式和 Python routing decorator，
+          兩個工具都沒做到。
+        </p>
+
+        <h2>重跑成本決定圖的壽命</h2>
+        <p>
+          understand-anything 的圖建完後一個月就 stale，根本原因不是「LLM 不夠好」，
+          而是重跑太貴——費時費 token，讓人不想跑。一個讓人不想跑的工具，圖就永遠停在過去。
+        </p>
+        <p>
+          graphify $0 重建，讓「圖永遠跟上現碼」從一個理想變成可執行的常態。
+          整合進 nomad-dashboard 之後，觸發一次更新，節點從 1,525 升到 1,546——
+          本日新寫的程式碼被自動收錄，這是「永遠跟上現碼」的活證明。
+        </p>
+        <p>
+          <strong>重跑成本決定圖的壽命，壽命決定圖的實用價值。</strong>
+          這才是兩個工具最根本的差異，不是語意能力的理論比較。
+        </p>
+
+        <h2>UA 的剩餘真價值是教學，不是查詢</h2>
+        <p>
+          evaluate 完兩個工具之後，understand-anything 的定位就清楚了：
+          它的繁中白話摘要、架構分層解析、12 步導覽是初識陌生 codebase 時的教學資源，
+          不適合當即時查詢引擎。
+        </p>
+        <p>
+          分工定案：結構查詢和衝擊分析走 graphify；第一次摸陌生 codebase 走 UA。
+          UA 的 nomad-dashboard 舊圖不再花 token 更新——它的角色是靜態快照，
+          所以 dashboard 上的 badge 刻意標成「📸 快照」而非「✅ 最新」。
+          <strong>誠實地標示圖的新鮮度，比一個讓人誤以為即時的 UI 更有用。</strong>
+        </p>
+
+        <h2>整合進 nomad-dashboard</h2>
+        <p>
+          後端加一個 GraphifyRoutes mixin（<code>routes/graphify_routes.py</code>），
+          照專案既有模式接進 server.py：
+          status endpoint 回傳兩引擎的節點數和 stale 偵測結果（比對 <code>built_at_commit</code> 與當前 HEAD）；
+          update endpoint 跑 subprocess 觸發 <code>graphify update</code>；
+          graph.html 直接公開（非 <code>/api/</code> 路徑，middleware 不攔）。
+          前端加一張全寬雙引擎卡片，熱載後端到端實測通過。
+        </p>
+        <p>
+          不安裝 graphify skill 的原因是：CLI 透過 Bash 呼叫零 context 稅，
+          install 進 skill 系統反而增加一層間接和維護負擔，不符合 token 經濟學。
+        </p>
+
+        <h2>踩到的三個坑</h2>
+        <p>
+          瀏覽器 ref 在 nav group 收合後座標過期，點到錯元素還讓畫面短暫黑屏；
+          改用 <code>querySelector('[data-tab=...]').click()</code> 直接觸發最穩。
+          <code>node --check</code> 對瀏覽器 ES module 語法誤報 SyntaxError，
+          實際在瀏覽器跑完全正常，要以瀏覽器實測為準。
+          server.py 的 GET_ROUTES 一度以為有兩份定義，
+          實為 sed 輸出範圍的錯覺——<strong>下結論前先 <code>grep -n</code> 核實，不要靠肉眼</strong>。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>理論優勢要實測驗證</strong>：「LLM 懂語意所以跨邊界連結應該更好」——兩個工具都交出 0 條邊。用同一份測試集做照妖鏡，才能看到真實的差距。</p>
+          <p><strong>重跑成本決定圖的壽命</strong>：一個讓人因為成本而不想跑的工具，圖就永遠 stale。零成本重建讓「永遠新鮮」從口號變成事實。</p>
+          <p><strong>誠實標示資料的新鮮度</strong>：「📸 快照」比「✅ 最新」更有用——使用者能做出正確判斷，比一個誤導人的 UI 更重要。</p>
+          <p><strong>工具定位要分清楚</strong>：graphify 是查詢引擎，UA 是教學工具。兩個都保留，但不要讓貴的那個承擔它做不到的事。</p>
+          <p><strong>下結論前先 <code>grep -n</code></strong>：肉眼看到「兩份定義」可能只是 sed 輸出範圍問題。多一步確認省掉一次錯誤追查。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-19（上午）· graphify AST 1,525 節點 / UA LLM 234 節點 / nomad-dashboard commit be10f6f / 更新後 1,546 節點
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

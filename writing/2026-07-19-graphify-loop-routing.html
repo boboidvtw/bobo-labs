@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第一炮就打在沒開的 port — Graphify 生態 loop 實跑與 stage 路由硬化 · Bobo Labs</title>
+  <meta name="description" content="第一個真實 episode 完整失敗：「查知識圖」被模型改寫成「查相關程式碼」，名詞「程式」誤觸 code stage，5 步全打在沒開的 8081 上。這才發現 stage 路由不是可選優化，而是迴圈能動的前置條件。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-19-graphify-loop-routing.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-19</p>
+      <h1 class="article-title">第一炮就打在沒開的 port — Graphify 生態 loop 實跑與 stage 路由硬化</h1>
+      <p class="article-lede">
+        第一個 <code>GRAPHIFY_GRAPH=global</code> 真實 episode 完整失敗：
+        模型把「查知識圖」改寫成「查閱相關<em>程式碼</em>」，
+        graph 關鍵字在子任務層蒸發，名詞「程式」誤觸 code stage，
+        5 步全打在沒開的 8081 上——零查圖、零記憶回寫。
+        原本標為「可選硬化」的 stage 路由，實跑證明它是迴圈能動的前置。
+      </p>
+
+      <div class="article-body">
+        <h2>實跑優先於紙上排序</h2>
+        <p>
+          依照計畫，stage 路由硬化排在生態級 episode 實跑之後，因為理論上路由「應該差不多夠用」。
+          第一個真實 episode 跑完，5 步全部命中 code stage，試圖連線 8081（code server），
+          但那個 port 當時根本沒開。
+        </p>
+        <p>
+          追查後找到根因：模型在子任務拆解時把「查閱知識圖中關於 graphify_tools 的依賴」
+          改寫成「查閱與 graphify_tools 相關的<strong>程式碼</strong>」。
+          「程式碼」三個字被 code stage 關鍵字匹配器抓到，graph 的語境蒸發。
+          <strong>「資訊性邊界」——理論上可以正常工作但沒有硬性測試——在真實負載下變成硬故障。</strong>
+        </p>
+
+        <h2>路由硬化：兩條修法都是通則</h2>
+        <p>
+          第一條修法：把 code 意圖關鍵字裡的名詞「程式」剔除，只留動詞（寫、建立、修改……）
+          和兩個常見委派動詞（「編寫」「構建」）——這是從實跑 log 觀察到模型拆解時愛用的動詞。
+          名詞改觸發很容易誤命中，動詞觸發意圖明確。
+        </p>
+        <p>
+          第二條修法：新增 goal-level graph fallback——
+          如果子任務沒有明確的寫碼意圖，但長期目標欄位含有 graph 相關關鍵字，
+          就路由到 graph stage。這是治「模型改寫吃掉關鍵字」的通則，
+          不是針對這次「程式碼」字眼的窄修補。
+        </p>
+        <p>
+          修完後新增守門腳本 <code>verify_stage_routing.py</code>，12/12 通過，
+          含這次實跑失敗的逐字回歸案。全套重跑：bridge 5/5、graph stage 7/7、
+          feedback 11/11、delegation 2/2。原本被 False 的資訊性「全迴圈自然路由 code stage」翻 True。
+        </p>
+
+        <h2>4 個跨 repo episode，記憶真實回寫</h2>
+        <p>
+          路由修好後，4 個跨 repo 真實 episode 全數完成，記憶回寫 <code>~/.graphify/memory</code>，
+          <code>LESSONS.md</code> 生成——路徑派生從「已斷言」變「已實跑」。
+          實跑同時暴露了引用降噪的必要：<code>_cited_nodes</code> 裡有三種噪音。
+        </p>
+        <p>
+          第一種：子字串比對（<code>"gemma"</code> 命中 <code>"gemma4_e4b_agent_runtime"</code>）→ 改用 token 等值比對。
+          第二種：rationale/doc 節點（label 是中文長句）混進引用 → 只收 <code>file_type=code</code>。
+          第三種：跨 repo 撞名（<code>main</code>、<code>types</code> 在 5.7k 節點的 global 圖到處都是）→
+          單 token 短於 6 字元一律排除。
+          修後 CITE-FILTER 從 4 筆噪音縮到 1 筆精準，LESSONS 裡的 Tentative 欄全為真實符號。
+        </p>
+
+        <h2>週保養排程：自舉的最後一塊拼圖</h2>
+        <p>
+          加了一個 launchd 排程 <code>com.nomad.graphify-global-refresh</code>，
+          每週一 08:10 自動執行 global graph 更新。
+          關鍵坑：wrapper script 必須把 <code>~/.local/bin</code> 加進 PATH，
+          因為 graphify 是透過 uv tool 安裝的，launchd 的預設 PATH 找不到。
+        </p>
+        <p>
+          排程實跑 log 顯示 agent-kit 圖從 648 升到 654 節點——
+          本日新寫的程式碼被自動收錄。這是週保養排程「永遠跟上現碼」的活證明。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>實跑優先於紙上排序</strong>：「應該差不多夠用」的邊界在真實負載下可以直接變成硬故障。先跑、後排序，不要等到序列清完再跑。</p>
+          <p><strong>泛化修法勝過窄修補</strong>：「剔除名詞意圖關鍵字」和「goal-level fallback」是通則，不是針對「程式碼」三個字的補丁。通則在未見過的輸入也成立；窄修補只修已見過的失敗。</p>
+          <p><strong>引用噪音的三個來源要逐一封堵</strong>：子字串比對、非 code 節點混入、跨 repo 撞名——每一種都需要不同的過濾策略，不能用同一條規則解決。</p>
+          <p><strong>守門腳本要含實跑失敗的逐字案</strong>：從失敗輸入直接加進測試集，才能確保同一個輸入不會再次失敗。</p>
+          <p><strong>launchd PATH 和互動 shell PATH 不同</strong>：uv tool 裝的 CLI 在 <code>~/.local/bin</code>，launchd 找不到；wrapper 必須顯式設定。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-19（下午）· Graphify agent-kit · commits 0c31c90 / e2eb080 · verify_stage_routing 12/12 · 4 跨 repo episode 記憶全回寫
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
