@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-22** — 由 /boboweb 核可 1 篇文章：
+  `2026-07-18-supercalc-v384-quality-audit.html`（Lighthouse mobile A11y 94→100、雙主題 contrast ratio 手算、og:image 從無到有、FAQPage JSON-LD 5 題、Carbon Ads 被拒後文案誠實化）。
+  Index Writing 區依時間倒序插入。
+  Promoted 1 draft from _pending/ via /boboweb on 2026-07-22.
+
 - **2026-07-22** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-07-19-graphify-loop-routing.html`（第一炮打在沒開的 8081 · stage 路由從可選變前置 · 4 跨 repo episode 記憶全回寫）、`2026-07-19-graphify-vs-ua-dashboard.html`（AST 3.2s $0 vs LLM 費時 stale · 跨邊界邊兩工具都 0 條 · 重跑成本決定圖壽命）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
