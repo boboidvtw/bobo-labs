@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>∑ Calc v3.8.4 品質深審 — A11y 補到滿分、og:image 從無到有、文案誠實化 · Bobo Labs</title>
+  <meta name="description" content="Lighthouse mobile A11y 94 起步、兩套主題分別計算 contrast ratio 後修到 100；og:image 完全缺失才發現；Carbon Ads 被拒後 Free 方案廣告文案跟現實對不上——三件事一日補齊。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-18-supercalc-v384-quality-audit.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-18</p>
+      <h1 class="article-title">∑ Calc v3.8.4 品質深審 — A11y 補到滿分、og:image 從無到有、文案誠實化</h1>
+      <p class="article-lede">
+        Lighthouse mobile 基線 Perf 98 / A11y 94 / BP 100 / SEO 100，CWV 全達標。
+        效能沒有急迫工作，所以這天深挖 Lighthouse 量不到的地方——
+        雙主題的 contrast ratio 手算、og:image 缺席、FAQPage 結構化資料全無、
+        加上 Carbon Ads 申請被拒後留下的文案謊言。四件事逐一補齊。
+      </p>
+
+      <div class="article-body">
+        <h2>Lighthouse 只測預設主題：雙主題站的 a11y 盲區</h2>
+        <p>
+          自動化得分 A11y 94，進去看是 guide 區 7 個 h3 用了 <code>--primary-dark</code>（#0891b2），
+          在深色卡片背景上 contrast ratio 只有 3.97:1，勉強未達 AA 的 4.5:1 門檻。
+          修之前習慣地把淺色主題也算一遍：<code>--primary</code>（#06b6d4）當文字色、白底——
+          結果是 2.43:1。
+        </p>
+        <p>
+          同樣的文字色，淺色主題遠比深色主題糟，但 Lighthouse 只跑預設（深色）主題，
+          所以得分 94 看起來「只差一點」，實際上淺色主題的 guide h2、h3 和 13 個連結全都失格。
+          這是雙主題站的系統性盲區：<strong>Lighthouse 得分是單一主題快照，不代表另一套主題安全</strong>。
+        </p>
+        <p>
+          修法是新增一個 CSS token <code>--guide-accent</code>，深色主題設 #22d3ee（8.09:1）、
+          淺色 <code>body.light</code> 覆蓋成 #0e7490（5.36:1），
+          guide h2/h3 和 13 個連結全換過。同時把 <code>&lt;div class="container"&gt;</code>
+          改成 <code>&lt;main class="container"&gt;</code>，補上缺失的 main landmark。
+          復測 A11y 100。
+        </p>
+
+        <h2>SEO 得分 100，但 og:image 根本不存在</h2>
+        <p>
+          Lighthouse SEO 100，手審才發現 og:image 完全缺失。分享到任何社群平台都沒有預覽圖；
+          AI 搜尋引擎爬取頁面時也拿不到視覺線索。
+        </p>
+        <p>
+          處理方式是手刻一份 1200×630 卡片 HTML，跑 headless Chrome 截圖產出 <code>og-image.png</code>，
+          同步把 <code>twitter:card</code> 從 <code>summary</code> 換成 <code>summary_large_image</code>。
+          這種工作 Lighthouse 不量、SEO 工具不報，只有手審才找得到。
+        </p>
+
+        <h2>FAQ 有內容、沒結構化資料</h2>
+        <p>
+          頁面原本有 2 個 FAQ 問題，但沒有 FAQPage JSON-LD。結構化資料的價值不只是 Google 的
+          rich result（Google 2023-08 起已把 FAQ rich results 限縮至政府/健康網站），
+          更在於 Bing 和 AI 搜尋引擎的語意解析——<strong>schema.org markup 對機器讀取的價值獨立於 Google rich result 顯示與否</strong>。
+        </p>
+        <p>
+          FAQ 從 2 題擴至 5 題（新增 PWA 安裝方式、語言支援、Free vs Pro 差異），
+          FAQPage JSON-LD 與可見文字逐字對齊。同步修掉其他幾個 metadata 的停更痕跡：
+          JSON-LD 的 <code>softwareVersion</code> 從 3.1.0 更到 3.8.4（停更了 6 個版本）、
+          sitemap 首頁 <code>lastmod</code> 從 2026-05-11 更到 07-18、
+          manifest 的「80+ 公式庫」改為「100 條」。
+        </p>
+        <p>
+          事後用 schema.org 官方驗證器確認：WebApplication + FAQPage 兩個 schema、零錯誤零警告。
+          Google Rich Results Test 顯示「FAQ 不在結果中」——符合預期（那個工具只列有資格顯示的類型），
+          不代表 markup 有問題。
+        </p>
+
+        <h2>廣告文案跟現實對不上</h2>
+        <p>
+          2026-06-25 送出 Carbon Ads 申請，07-18 確認被拒。申請失敗的直接後果是：
+          pricing modal Free 方案寫著「含 Google AdSense 廣告」——但廣告根本不存在。
+          更糟的是，這條文案與贊助 modal 的「零廣告承諾」正面矛盾。
+        </p>
+        <p>
+          改成「未來可能顯示贊助廣告」，README 中英文對比表和 CLAUDE.md 同步更新。
+          這類誠實化修正沒有技術挑戰，卻是最值得做的維護——
+          <strong>用戶讀到的東西和實際行為必須一致，不論這個不一致有多「無害」</strong>。
+        </p>
+
+        <h2>刻意不做的三件事</h2>
+        <p>
+          評估後決定 backlog 的項目同樣重要，記下來：
+          inline minify（~19KB）與單檔可讀性設計衝突；
+          TTFB 690ms 和 10 分鐘 cache 是 GitHub Pages 平台固定值，動不了；
+          全站淺色主題 <code>--primary</code> 文字對比清查（本次只修 guide/footer 區，
+          app 主體其他 <code>--primary</code> 文字在淺色主題可能同樣不足）——留作獨立一輪。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>Lighthouse 得分是單主題快照</strong>：雙主題站的 a11y 審查必須對每個主題手動計算 contrast ratio，自動化工具的盲區剛好藏著最難察覺的問題。</p>
+          <p><strong>分數滿分不等於沒問題</strong>：SEO 100 但 og:image 完全缺失、FAQPage 有內容無 schema、softwareVersion 停更 6 版——這些 Lighthouse 全測不到。</p>
+          <p><strong>Schema.org markup 的價值不依賴 Google rich result</strong>：FAQ rich results 早已限縮顯示，但結構化資料對 Bing 和 AI 搜尋引擎的語意解析仍然有效。</p>
+          <p><strong>文案誠實化是最值得做的維護</strong>：廣告不存在卻寫「含廣告」，跟「零廣告承諾」正面矛盾。無論多小的不一致都需要修。</p>
+          <p><strong>刻意不做的事同樣需要記錄</strong>：明確寫下為什麼不做 inline minify、不改 TTFB，讓下次審查時不必重新評估同樣的選項。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-18 · ∑ Calc v3.8.4 · commit 2cfe3fe · A11y 94→100 / og:image 補全 / FAQPage JSON-LD 5 題 / schema.org 零錯誤
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
