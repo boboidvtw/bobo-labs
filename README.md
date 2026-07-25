@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-25** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-07-24-longctx-eval-mapreduce.html`（L0/L1/L2 三層可歸因評測 Map-Reduce 長上下文管線：query-aware 5/5 vs stuffing 1/5、128K 名目 8K 甜蜜點、四個真實缺陷、窄修補套全套必倒賠第五次）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-07-25.
+
 - **2026-07-22** — 由 /boboweb 核可 1 篇文章：
   `2026-07-18-supercalc-v384-quality-audit.html`（Lighthouse mobile A11y 94→100、雙主題 contrast ratio 手算、og:image 從無到有、FAQPage JSON-LD 5 題、Carbon Ads 被拒後文案誠實化）。
   Index Writing 區依時間倒序插入。
