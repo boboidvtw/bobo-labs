@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三層可歸因評測拆解長上下文 — Map-Reduce 管線的量測與四個真實缺陷 · Bobo Labs</title>
+  <meta name="description" content="在 Gemma 4 E4B 上建 L0/L1/L2 三層評測架構驗 Map-Reduce 長上下文管線：128K 名目、8K 實際甜蜜點、query-aware 5/5 vs stuffing 1/5，踩到四個真實缺陷與量測方法三大坑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-24-longctx-eval-mapreduce.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-24</p>
+      <h1 class="article-title">三層可歸因評測拆解長上下文 — Map-Reduce 管線的量測與四個真實缺陷</h1>
+      <p class="article-lede">
+        Map-Reduce 漸進式摘要真的能讓 Gemma 4 E4B 處理超過 128K 的語料嗎？
+        先不急著相信結論——端到端一起測只能告訴你「pipeline 壞了」，不知道是誰的責任。
+        今天把 L0／L1／L2 三層評測套件建起來，順手踩到四個真實缺陷、三個量測方法坑，
+        以及一個生產 tool-calling 模型不該扮演的角色。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼評測不能端到端一起跑</h2>
+        <p>
+          如果 Map-Reduce 最終跑出 0 分，是模型不夠強、map 指令寫錯，還是 reduce 組合邏輯有問題？
+          三者混在一起，答案就是「都有可能」，只能從頭查起。
+          三層拆解的設計讓每層的變因獨立：
+        </p>
+        <p>
+          L0 只測模型本身的視窗可用長度，完全不涉及 Map-Reduce；
+          L1 把 map 與 reduce 分開——reduce 故意餵人工黃金摘要，確保 map 出問題時不會污染 reduce 的數字；
+          L2 才跑端到端，並且要有對照組（stuffing、query-agnostic、query-aware 三架構並排）。
+          題型也不能只測「找得到的題」，一定要加反事實題：答案不在語料裡時，
+          正解是承認找不到，而不是任意編造。
+        </p>
+
+        <h2>L0：名目 128K，實際甜蜜點 8K</h2>
+        <p>
+          16K 上下文 prefill 跑 314 tok/s，32K 掉到 136 tok/s，
+          64K／128K 直接主動中止——可用記憶體剩 8%、swap 已達 4.08 / 5.12 GB、CPU 使用率 0%，
+          典型的換頁停滯。
+        </p>
+        <p>
+          反直覺的地方：瓶頸<strong>不是</strong> KV cache。
+          Gemma 4 E4B 的 42 層裡只有 7 層是 full attention，
+          其餘 35 層用 RotatingKVCache(512) 恆定佔 35 MB；128K 的 KV 才 1.75 GB。
+          真正的牆是 prefill 算力與活化記憶體（activation memory）。
+          實際可靠的甜蜜點在 8K，超過 16K 成本就開始急速攀升。
+        </p>
+
+        <h2>Map 的本質是有損壓縮，指令要硬性限量</h2>
+        <p>
+          L1 的 reduce 結果很好：餵黃金摘要、3 次重複，6／7 零翻轉，
+          單針三位置、二跳三跳全過。map 就差：query-agnostic 版本 2／4，顯著性判斷弱。
+        </p>
+        <p>
+          問題出在初版 map 指令寫「extract every fact」。
+          模型忠實照辦，把 60 到 100 句填充文字每句都抽出來——
+          輸出長度大約等於輸入長度，零壓縮，map-reduce 的存在意義就消失了。
+          這種情況在外觀上像「JSON 輸出損毀」，因為撞到 max_tokens 就截斷。
+          正確的寫法是明講留什麼、丟什麼，<strong>並給硬性的數量預算</strong>：
+          例如「最多 5 條，每條 20 字以內」。
+        </p>
+
+        <h2>分數相同，失敗的方式不一樣</h2>
+        <p>
+          L2 三架構並排，同 32K 真實語料、同 5 題：
+          stuffing 1／5、query-agnostic map-reduce 1／5、query-aware map-reduce 5／5。
+        </p>
+        <p>
+          stuffing 和 query-agnostic 都是 1／5，但不能視為等價。
+          stuffing 的反事實題直接編造一個不存在的車站代號；
+          query-agnostic 的反事實題正確回答「NOT FOUND」。
+          一個失敗得危險，一個失敗得安全。
+          沒有反事實題，這個差別根本看不出來。
+        </p>
+        <p>
+          query-agnostic 做不了精確檢索是資訊理論問題：16 倍壓縮等於丟掉 15／16 的資訊，
+          在不知道問題是什麼的情況下，無從判斷哪 1／16 值得保留。換模型解決不了這件事。
+        </p>
+
+        <h2>1M 語料成本沒漲，但跨語言讓檢索翻車</h2>
+        <p>
+          最後一個實驗把語料放大到 1M，用 retrieval k=5 前濾，
+          端到端每題 127 秒——與 32K 全掃的 153 秒同級，語料大 34 倍成本幾乎沒漲。
+        </p>
+        <p>
+          能力分四類：單針事實 3／3、反事實 1／1，但多跳 0／1、語意改寫 0／3。
+          四類失敗全發生在<strong>檢索階段</strong>，不是推理階段。
+          原因是跨語言問題：英文問題 vs 繁中針，兩者只共用「penghu」一個 token，
+          向量相似度拿不到第 1，排到第 10；
+          改成繁中提問，共用 10 個 token，直接排第 1，相似度分數 26.1 vs 次名 10.8。
+          縮小 chunk 大小反而更差——8192 縮到 512，recall@3 從 3／7 掉到 2／7。
+        </p>
+
+        <h2>同一個 bug 踩了第五次</h2>
+        <p>
+          這次有個缺陷值得單獨記：把 rp=1.2（repetition penalty）全域套用到所有 chunk，
+          想解空轉問題，結果 32K focused 的分數從 5／5 掉到 3／5。
+          多跳題沒治好，反事實題反而從正確婉拒變成幻覺出別站代號——
+          而那正是 map-reduce 唯一勝過 stuffing 的地方。
+        </p>
+        <p>
+          這是這個 repo 第五次遇到「單案驗證的窄修補套全套必倒賠」：
+          system_prompt_prefix 改動、aider wrapper、v5e、v6、這次的 rp=1.2。
+          解法是<strong>條件式救援</strong>：正常路徑完全不動，
+          只有偵測到空轉的那塊才觸發重試。
+        </p>
+        <p>
+          另一個連踩兩次的 bug 類型：量測工具和 pipeline 走不同程式碼路徑。
+          measure_retrieval.py 加了 merge_expanded_query，answer_via_retrieval 還在用原始問題，
+          跑出來的 1M 端到端數字是沒有查詢擴展的版本——量測工具卻是擴展過的版本。
+          這種 bug 不會在函式單元測試層出現，只有 1M 端到端才爆，賠掉整趟 GPU 時間。
+          補救是在單元測試層加接線冒煙測試（wiring smoke test），讓兩條路徑的差異在跑測試時就紅燈。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>可歸因評測：層層隔離才知道誰的責任</strong>：端到端失敗只能告訴你「壞了」。L0／L1／L2 拆開後，L1 的 reduce 6／7 與 map 2／4 立刻指向「修指令」，不是「換模型」。</p>
+          <p><strong>反事實題是量測誠實度的必要題型</strong>：stuffing 和 query-agnostic 同樣 1／5，但一個幻覺編造、一個正確拒答。沒有反事實題，這個差別永遠看不見。</p>
+          <p><strong>Map 的本質是有損壓縮，指令要給硬性數量預算</strong>：「extract every fact」等於要模型複製整份輸入；必須明講留什麼丟什麼，並限制條數和每條字數。</p>
+          <p><strong>窄修補套全套必倒賠（第五次）</strong>：rp=1.2 在單一 chunk 驗證有效，套全套讓整體分數下滑。解法永遠是條件式——只在真正需要的地方觸發，不動正常路徑。</p>
+          <p><strong>量測工具跟 pipeline 走不同路徑 = 量測的幻覺</strong>：改完之後要確認 production path 和 measurement path 是同一份程式碼；用接線冒煙測試在測試層就抓出差異，不要等 1M 端到端才爆。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-24 · gemma4-e4b-agent-kit · evals/longctx/ · L0／L1／L2 + 125 項單元測試 · 8 commits（084c672 → 773d1ab）
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
