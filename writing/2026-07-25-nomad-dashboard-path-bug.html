@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>「不即時」底下藏著「根本讀不到」— Nomad Dashboard 交接欄三層修復 · Bobo Labs</title>
+  <meta name="description" content="使用者回報交接欄不即時，調查後發現路徑解析錯誤才是 P0：選任何專案都讀到空白，POST 還會在根目錄新建孤兒檔。三層獨立缺陷、一個 services/handoff.py 加 mtime 樂觀鎖的修法。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-25-nomad-dashboard-path-bug.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-25</p>
+      <h1 class="article-title">「不即時」底下藏著「根本讀不到」— Nomad Dashboard 交接欄三層修復</h1>
+      <p class="article-lede">
+        使用者說「交接事項好像不能實時更新」。調查之後發現刷新頻率只是最表層的問題——
+        底下藏著一個路徑 bug，讓選任何專案都只讀到空白，甚至在儲存時默默新建孤兒檔，
+        然後告訴使用者「已成功儲存並同步」。三個獨立缺陷，一個修法。
+      </p>
+
+      <div class="article-body">
+        <h2>P0：路徑約定與程式碼不一致</h2>
+        <p>
+          <code>routes/data_routes.py</code> 和 <code>agent_tools/workspace.py</code> 兩處都把
+          交接文件路徑組成 <code>&lt;project&gt;/project_context.md</code>（根目錄版本），
+          但 <code>HANDOFF.md</code> 第 36 行和 UI 說明文字都寫 <code>&lt;project&gt;/memory/project_context.md</code>。
+          掃過 <code>程式倉庫/</code> 所有 repo，沒有一個根目錄版本，只有 nomad-dashboard
+          自己有 <code>memory/</code> 版本。
+        </p>
+        <p>
+          結果是：選任何專案，GET 回傳 0/0 字——文件不存在、內容全空。這還不是最糟糕的。
+          POST 用同一組路徑，所以使用者按儲存，會在 repo 根目錄新建孤兒檔。Agent 的
+          <code>read_handoff_context</code> 工具同樣中招，永遠讀不到使用者儲存的內容，
+          而 UI 會跳「已成功儲存並同步」。
+        </p>
+
+        <h2>P1 與 P2：其餘兩層缺陷</h2>
+        <p>
+          <strong>P2（沒有更新機制）：</strong>
+          <code>fetchHandoff()</code> 只在切分頁、按重新載入、換專案時觸發。對照其他分頁：
+          ports 有每 5 秒 <code>setInterval</code>、agent 有 5 秒輪詢、healing logs 甚至有 SSE。
+          handoff 是唯一的例外——使用者看到的「不即時」問題就來自這裡，
+          但這其實是三個問題裡最輕的一個。
+        </p>
+        <p>
+          加輪詢還有隱藏的資料遺失路徑：textarea 直接綁值，「使用者正在打字 → Agent
+          背景更新 → 使用者按儲存」會用舊快照覆蓋 Agent 寫入的內容，且無任何提示。
+          光加輪詢不加鎖反而會製造新的問題。
+        </p>
+        <p>
+          <strong>P1（ZH 欄位指向不存在的檔案）：</strong>
+          全域中文欄固定指向一個路徑，但實際上不存在，所以中文欄常態空白，也沒有任何說明。
+        </p>
+
+        <h2>修法：一個服務層解決路徑散亂</h2>
+        <p>
+          新增 <code>services/handoff.py</code> 作為路徑的單一真相來源。邏輯是：
+          優先找 <code>memory/</code> 目錄下的文件；若根目錄有舊檔則相容回退；
+          兩處皆無時，新建仍落在 <code>memory/</code>。EN/ZH 一律成對取自同一目錄，
+          不讓它們因為新舊佈局混合而拆散在不同層級。
+        </p>
+        <p>
+          即時性加 10 秒輪詢，比對 <code>mtime</code>：textarea 未被編輯就自動吸收
+          Agent 的更新；已有修改則顯示橫幅讓使用者決定。POST 帶 <code>base_mtime</code>
+          樂觀鎖，磁碟版本較新時回 409 而非靜默覆寫。P1 改為回傳
+          <code>en_path</code>/<code>zh_path</code>/<code>en_exists</code>/<code>zh_exists</code>，
+          前端顯示實際解析路徑與「尚未建立，儲存後將自動建檔」，取代無聲空白。
+        </p>
+
+        <h2>驗證三條路徑</h2>
+        <p>
+          <code>tests/test_handoff.py</code> 13 個 case 涵蓋舊佈局回退與 EN/ZH 同目錄
+          不拆散，已掛進 <code>make test</code>。live API：GET nomad-dashboard 由 0/0 字
+          變 22011/12255 字，路徑落在 <code>memory/</code>，根目錄確認無孤兒檔。
+        </p>
+        <p>
+          瀏覽器實測：改背景檔後 13 秒自動同步顯示橫幅；先弄髒 textarea 再改背景檔，
+          編輯內容原封不動轉為警告橫幅；此時按儲存被 409 擋下，<code>grep</code>
+          確認磁碟檔案未被舊版本覆寫。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>「不即時」的抱怨底下可能藏著「根本讀不到」</strong>：先驗資料是否到得了前端，再談刷新頻率。刷新頻率是表象，資料流通才是前提。</p>
+          <p><strong>說明文字與程式碼路徑衝突時，說明文字通常才是對的</strong>：文件寫的是人類約定的意圖，程式碼可能只是沒對齊的實作。HANDOFF.md 與 UI 文案兩處獨立佐證 <code>memory/</code>，程式碼是孤例。</p>
+          <p><strong>同一份路徑組法散在多處等於遲早分岔</strong>：route 與 agent tool 各寫一份、一起錯。抽成 service 層後兩邊共用，下次改路徑只改一處。</p>
+          <p><strong>可編輯欄位加背景寫入者必須有樂觀鎖</strong>：只加輪詢會製造新的資料遺失路徑，髒值偵測與 mtime 基準要一起上，不能只解其一。</p>
+          <p><strong>孤兒檔比空白更危險</strong>：空白讓使用者知道有問題，孤兒檔加上「儲存成功」的 toast 讓問題完全隱形，直到 Agent 無論如何讀不到才被發現。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-25 · Nomad Dashboard · commit db28657 · 13 test cases · GET 0→22011 字
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

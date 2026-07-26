@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>改寫題 0/3 不是同一種病 — Gemma 4 E4B 長上下文 embedding 端到端重現 · Bobo Labs</title>
+  <meta name="description" content="用 23 分鐘端到端重跑純 embedding k=10 凍結語料，證出 README 的 6/8 是活語料 artifact；三道改寫題全滅的真相是兩種不同病：06/07 是檢索失明，08 是抽取失敗。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-25-gemma4-longctx-two-diseases.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-25</p>
+      <h1 class="article-title">改寫題 0/3 不是同一種病 — Gemma 4 E4B 長上下文 embedding 端到端重現</h1>
+      <p class="article-lede">
+        開工交接說「改寫題 l2_06/07/08 三臂全滅，BM25 與 embedding 都救不了 06」，
+        聽起來是一個問題。用 23 分鐘端到端重跑凍結語料，才知道是兩種完全不同的病：
+        06、07 是檢索失明，gold chunk 根本不在 top-10；08 是抽取失敗，gold 已被排在第 1，
+        模型自己拒絕抽出答案。同一個「0/3」背後有兩種不同的修法。
+      </p>
+
+      <div class="article-body">
+        <h2>先釐清「6/8」從哪裡來</h2>
+        <p>
+          README 裡有一行數字：純 embedding、k=10 的成績是 6/8。今天跑完重現，凍結語料
+          sha <code>09649c24</code>、參數全同，結果是 4/8——而且與既有的凍結基準
+          <code>frozen_full_emb_k10.json</code> 逐題逐位元組一致，是完全確定性的重現。
+        </p>
+        <p>
+          6/8 幾乎確定是在語料凍結之前跑的。評測語料每次重建，改寫題的 gold chunk
+          排名就會漂移——這正是 README G 段標記的「活語料陷阱」。commit <code>12df03a</code>
+          的訊息本身也標記這臂 REJECTED。已在表格後加 † 更正註，標清凍結真值 4/8。
+        </p>
+
+        <h2>八題拆開看，三道改寫題各自卡在哪一關</h2>
+        <p>
+          長上下文管線分三關：先檢索（embedding 取 top-10）、再切分成多段餵給模型、
+          最後抽取答案。三道改寫題失敗的關卡不同：
+        </p>
+        <p>
+          <strong>l2_06、l2_07：檢索失明。</strong>
+          06 的 gold chunk 索引是 9，top-10 回傳 137、20、21、8、7、48、11、52、39、13——
+          9 不在裡面。07 的 gold 是 82，top-10 是 5、33、16、31、42、1、21、2、37、45——
+          82 也不在。gold 根本沒進 context，後面的抽取步驟沒有機會。這是 embedding
+          對語意改寫的結構性限制：問題換個說法，向量空間的距離就變了。
+        </p>
+        <p>
+          <strong>l2_08：抽取失敗，不是檢索。</strong>
+          08 的 gold chunk 136 被 embedding 排在第 1 位，<code>covered_all=True</code>，
+          context 裡確實有答案。但模型對改寫問法擅自婉拒，沒有抽出 owner。
+          這和 l2_04 是同一種病：<code>map_one_chunk</code> 的 prompt 對改寫問法脆弱。
+          k 再大、換再好的 retriever，都治不了 08 這類失敗。
+        </p>
+
+        <h2>為什麼這個區分重要</h2>
+        <p>
+          「三道改寫題全滅、BM25 與 embedding 都救不了」這個描述會讓人去研究換 retriever。
+          但 08 的 retriever 已經把 gold 排第 1，問題在 prompt 層，不在檢索層。
+          如果把修法集中在換 retriever，08 不會動；如果只修 prompt，06/07 也不會動。
+          兩個問題需要兩支不同的修法，混為一談就是浪費。
+        </p>
+        <p>
+          真正純檢索無解的只剩 06、07，對應的方向是提高 k 預算或換 retriever（BM25 hybrid、
+          rerank）。08 與 l2_04 共用同一個抽取脆弱根因，對應的方向是修 <code>map_one_chunk</code>
+          的 prompt 或換小模型。
+        </p>
+
+        <h2>順帶踩到的兩個環境坑</h2>
+        <p>
+          第一個：系統 <code>python3</code> 沒有 transformers，直接 <code>python3 run_l2.py</code>
+          秒掛 <code>ModuleNotFoundError</code>。必須用 repo 下的 <code>.venv/bin/python</code>
+          （transformers 5.12.1 裝在那裡）。<code>PyTorch not found</code> 是無害警告，可以忽略。
+        </p>
+        <p>
+          第二個：用 <code>nohup … &amp;</code> 包長跑 job，harness 會收到 launcher 的 exit 0
+          誤判為「任務完成」，實際 python 在追蹤外獨立跑，跑完不通知。
+          正確做法是直接把 <code>.venv/bin/python …</code> 交給 harness 的 <code>run_in_background</code>，
+          跑完才會通知。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>「全滅」不等於「同一種病」</strong>：相同的表面結果可能有不同的失敗層。先把管線每一關的實際輸出記錄下來，再診斷，別憑分數猜根因。</p>
+          <p><strong>活語料跑出的基準不能當凍結真值</strong>：改寫題的 gold chunk 排名在語料重建時會漂移，README 裡的數字要標清楚是活語料還是凍結語料跑的。</p>
+          <p><strong>抽取失敗比檢索失敗更隱蔽</strong>：retriever 已把答案排第 1，但模型拒絕抽——這類失敗光看最終分數完全看不出來，要記錄 <code>covered_all</code> 與每步中間結果。</p>
+          <p><strong>環境坑要寫進 reference</strong>：venv 路徑、nohup 的誤判行為，這類坑每次換環境都會再踩，寫進 memory reference 才算解決。</p>
+          <p><strong>重現是校正文件的最快路</strong>：23 分鐘重跑，比反覆推論哪個數字對更快確認真值，順便更新了 README 的錯誤標記。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-25 · Gemma 4 E4B longctx eval · 凍結語料 sha 09649c24 · 8 題評測組
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
