@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-07-29** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-07-25-gemma4-zhtw-adapter.html`（v7、v8 混訓兩度 REJECTED，診出語言假設互斥根因；base 對照組才知微調在繁中是雙向的；四個守門機制是被自己犯的錯逼出來的）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-07-29.
+
 - **2026-07-26** — 由 /bobo-autopublish 全自主發布 2 篇文章：
   `2026-07-25-gemma4-longctx-two-diseases.html`（同一個「0/3」背後兩種不同的病：06/07 是檢索失明、08 是抽取失敗，修法不能混用）、`2026-07-25-nomad-dashboard-path-bug.html`（路徑 bug 讓任何專案都讀到空白，POST 默默建孤兒檔，services/handoff.py 加 mtime 樂觀鎖三層同修）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
