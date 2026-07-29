@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三次失敗之後，守門機制才是真正的產出 — Gemma4-E4B 繁中線實驗 · Bobo Labs</title>
+  <meta name="description" content="v7、v8 混訓兩度 REJECTED，獨立 adapter 可用但 opt-in；整個過程真正值錢的輸出是四個原本不存在的守門機制，三個是被自己犯的錯逼出來的。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-25-gemma4-zhtw-adapter.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-25</p>
+      <h1 class="article-title">三次失敗之後，守門機制才是真正的產出 — Gemma4-E4B 繁中線實驗</h1>
+      <p class="article-lede">
+        使用者拿一份 Gemini 生成的文件問：「能不能把 gemma-4-e4b 訓練成繁中邏輯的 Agent OS？」
+        讀完發現二成可用、五成與 repo 實證衝突。接下來 v7、v8 混訓兩度 REJECTED，
+        最後繞到獨立 adapter 可用但 opt-in。但翻回去看，整個過程真正值錢的輸出
+        是四個原本不存在的守門機制——其中三個是被自己犯的錯逼出來的。
+      </p>
+
+      <div class="article-body">
+        <h2>先讀 Gemini 文件：五成與 repo 衝突</h2>
+        <p>
+          那份文件的問題不在「AI 生成」，在於它假設的執行環境跟 repo 不同。
+          建議 ChatML 格式，但 repo 的不變量是 Gemma4 原生 template；
+          把 <code>&lt;|channel&gt;thought</code> 寫進 <code>content</code>，
+          但實際收尾標籤是 <code>&lt;channel|&gt;</code>，且應放在 <code>reasoning</code> 欄位由 template 渲染。
+          建議 QLoRA + RTX 4090，但執行環境是 Apple M4 16GB + MLX。
+          建議「善用 128K context」，但 L0 實測的可用甜蜜點是 8K。
+          建議 3000–5000 筆大配比 SFT，但 repo 的 loss 曲線方向相反——
+          v5e 擴廣度 REJECTED，v6 加量 REJECTED。
+        </p>
+        <p>
+          把文件這樣拆解一遍，才能定出這次繁中實驗的起點：
+          只用符合 repo 既有實證的假設去跑，衝突的部分全部打掉。
+        </p>
+
+        <h2>三次嘗試，三種死法</h2>
+        <p>
+          v7 混入 162 筆繁中訓練資料（佔比 5.7%），結果三項退步換一項空心改善，REJECTED。
+          v8 加碼到 432 筆 ×8 倍重複（佔比 13.9%），繁中 C 軸 +1，但 coding 退步 3 分，REJECTED。
+        </p>
+        <p>
+          為什麼混訓一定壞？翻 <code>data/capability_mismatch_sft.jsonl</code>（v5d 的能力邊界資料）發現：
+          裡面 48 筆 NEG 婉拒文案，100% 是英文輸出句式——
+          包括其中 12 筆「使用者用中文提問」的樣本，模型學到的回應方式也是英文。
+          能力邊界被綁在英文輸出上，混進繁中訓練資料之後，兩種預期互相干擾。
+          混訓不是資料量不夠，是資料的語言假設本來就互斥。
+        </p>
+        <p>
+          最後繞到的解法：獨立 adapter，只把婉拒措辭生成切出來委派。
+          D 軸（工具呼叫 grounding）已經 5/5 不用碰，只有 C 軸（繁中婉拒）壞掉。
+          訓練資料 100% 負樣本（純婉拒文案，POS 刻意排除），
+          生產權重不動，用 <code>GEMMA_ZHTW_REFUSAL=1</code> 環境變數 opt-in。
+          這樣 coding 評測依定義不可能退步。
+        </p>
+
+        <h2>先跑三方基準，才知道微調是雙向的</h2>
+        <p>
+          在 v7 之前，沒有繁中基準——不知道 base 模型本來表現多少。
+          v7 出來之後才做了第一次三方同機同日對照：base、生產 fused、英文對照。
+        </p>
+        <p>
+          結果非常反直覺：<strong>微調在繁中上是雙向的。</strong>
+          D 軸（中文問也能正確呼叫工具）從 base 的 2/5 提升到生產的 5/5，+3。
+          但 C 軸（繁中婉拒正確率）從 base 的 5/5 跌到生產的 3/5，−2。
+          微調教會了中文工具呼叫，卻把 base 原本就有的繁中婉拒能力覆蓋成強迫呼叫 web_search。
+        </p>
+        <p>
+          如果沒跑 base，看到 C 軸 3/5 只會以為「小模型繁中能力弱」，
+          不會知道那是微調造成的退步，方向就會完全錯。
+          <strong>「沒退步」在沒有對照組的情況下等於沒守門。</strong>
+        </p>
+
+        <h2>四個守門機制：真正的產出</h2>
+        <p>
+          這次實驗表面上交出一個 opt-in adapter，但真正值長期留下來的是四個守門機制：
+        </p>
+        <p>
+          第一，<code>evals/zhtw/</code> 繁中評測電池。四軸 24 案，判分全確定性，不靠 LLM judge，
+          與英文電池逐案對位。此前繁中維度完全沒有尺，每次改動不知道在哪個軸動了多少。
+        </p>
+        <p>
+          第二，<code>data/</code> 版控加 <code>scripts/data_manifest.py</code>。
+          記錄 SHA-256、筆數、展開數、生成指令、每次訓練的參數，
+          <code>--verify</code> 模式偵測資料漂移。這是被訓練資料永久遺失逼出來的——
+          舊版生產模型的訓練資料因為 gitignore 加上同名覆蓋加上 merge shuffle，
+          目前對不上任何一份現存檔案。
+        </p>
+        <p>
+          第三，<code>evals/zhtw/coherence.py</code>，語意矛盾偵測。
+          124 則真實語料，精確度 1/1。被並行測量污染評測逼出來的——
+          v8 跑評測時明知有干擾仍共用 server，其中一個任務跑 644.9 秒 FAIL，
+          其他回合只要 37–99 秒。之後把互相干擾的任務做語意一致性偵測，
+          才能在 re-run 前先過濾掉污染數據。
+        </p>
+        <p>
+          第四，<code>MANUAL_REVIEW.md</code> 加 <code>test_manual_review.py</code>。
+          人工複核清單，單一資料來源，執行期提醒，四種漂移守門。
+          被觀察數量誤當證據強度兩次逼出來的——
+          先以兩次觀察斷定「跨重啟不確定」，再以連續五次觀察斷定「穩定」，
+          但連續重啟共用系統狀態，五次量的是同一條件。
+          有些問題是程序問題，不是再加一條啟發式能解的。
+        </p>
+
+        <h2>順帶挖出：HF 繁中資料集大半不可用</h2>
+        <p>
+          Gemini 文件建議「20% TaiwanChat 確保用語品質」。拿 124 則語料實測之後，
+          TaiwanChat 中國用語比例 13.8%。twllm-data 6.3% 簡體字，
+          OpenOrca-zhtw 9.0% 中國用語。這三個是 HF 上最常被推薦的繁中資料集。
+        </p>
+        <p>
+          在這批裡面，只有 Heng666/aya（0.00%）和 erhwenkuo/moss-003-zhtw（1.03%）
+          的中國用語比例低到可以用。這個結論直接推翻了文件的資料來源建議，
+          也解釋了為什麼單純從 HF 取資料的繁中訓練往往風格不如預期。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>外部文件要對著 repo 實證逐條驗</strong>：建議本身不重要，建議背後的假設（執行環境、訓練資料比例、context 限制）才決定它能不能用。不驗假設就直接跟著做，等於在別人的環境裡跑實驗。</p>
+          <p><strong>混訓失敗的根因是資料語言假設互斥，不是量不夠</strong>：v5d 的 48 筆婉拒文案是英文，v7/v8 塞進繁中資料只是在同一槽加兩種顏料——量加到多少都是灰。先修資料假設，再調比例。</p>
+          <p><strong>沒有對照組的「沒退步」等於沒守門</strong>：base 的 C 軸 5/5 沒跑之前，生產的 3/5 會被誤讀成「小模型繁中弱」。真值在對照，不在分數本身。</p>
+          <p><strong>三個守門機制是被三個錯誤逼出來的</strong>：data manifest 是訓練資料遺失的後果，coherence.py 是並行污染評測的後果，MANUAL_REVIEW.md 是觀察數量誤當證據強度的後果。沒犯那三個錯，這三個機制不會存在。</p>
+          <p><strong>HF「Traditional Chinese」標籤不保證台灣用語</strong>：TaiwanChat 13.8%、twllm-data 6.3%、OpenOrca-zhtw 9.0% 中國用語，多數是 OpenCC 轉繁而非原生繁中寫作。用之前自己量，不要靠 dataset 描述頁猜。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-25 · gemma4-e4b-agent-kit · commits 43ebea5→85aa54e（14 個） · 繁中評測電池 4 軸 24 案 · 三次嘗試：v7 162 筆、v8 432×8 筆、獨立 adapter 336 筆
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
