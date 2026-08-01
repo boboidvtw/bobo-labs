@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>連續四次代理指標失敗 — 清理 334 個 fork 和 238 則通知的一課 · Bobo Labs</title>
+  <meta name="description" content="清空 238 則 GitHub CI 通知、停用 8 個排程 workflow、刪除 305 個純鏡像 fork——過程中連續四次用代理指標取代直接證據，每次都得到一個看似乾淨的錯誤答案。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-07-30-github-fork-cleanup.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-07-30</p>
+      <h1 class="article-title">連續四次代理指標失敗 — 清理 334 個 fork 和 238 則通知的一課</h1>
+      <p class="article-lede">
+        GitHub 積累了 238 則未讀通知、334 個 fork，大部分是兩年前批量 star 然後遺忘的鏡像。
+        清理本身花不了多久，但同一個 session 裡連續用錯了四次「代理指標」，
+        每次都拿到一個看似乾淨的答案，實際上全部是錯的。
+        這篇記的是那四次失誤比 fork 清理本身更值得留下來的東西。
+      </p>
+
+      <div class="article-body">
+        <h2>做了什麼：三件事</h2>
+        <p>
+          238 則通知全部是 <code>ci_activity</code>，零 mention、零 PR review——這種通知訊噪比近乎零，
+          清空後不影響任何實際訊息。停用了 8 個排程 workflow（worldmonitor × 3、gemini-voyager × 1、
+          developer-roadmap × 2、headroom × 2），全部用 API 確認 <code>disabled_manually</code>。
+        </p>
+        <p>
+          334 個 fork 掃完後只有 17 個有自己的 commit，317 個純鏡像。最終刪除 305 個，
+          保留 29 個（17 有 commit + 12 個上游已封存故具保存價值）。整個刪除零失敗，
+          逐一 API 回查確認，結果從 334 → 29。
+        </p>
+        <p>
+          順帶把 <code>~/.gitconfig</code> 的 user 欄統一為 <code>bobo li &lt;boboidvtw@gmail.com&gt;</code>
+          並加 <code>user.useConfigOnly = true</code>，用實際 commit 驗證 GitHub 正確歸戶。
+          這步不算大，但之前 git 身分是 Antigravity IDE 寫入的，升級後可能復原——現在至少知道去哪裡檢查。
+        </p>
+
+        <h2>四次代理指標失誤，一次比一次更安靜</h2>
+        <p>
+          <strong>第一次</strong>：「通知數 = 來源活躍度」。238 則都是 CI 通知，推論「這些 repo 有活躍的 CI 在跑」。
+          實際上 worldmonitor 失敗根因是上游資料源劣化，不是我的 workflow 設定有問題。
+          通知量只說明「有東西在叫」，不說明「問題在哪」。
+        </p>
+        <p>
+          <strong>第二次</strong>：「fork 有 commit = 是自己開發的」。
+          查詢時用 <code>--author</code> 篩選，把「我 authored 的 commit」解讀成「有實質開發」。
+          但 <code>--author</code> 在某些 rebase 流程下會匹配到歸戶為自己的 upstream commit；
+          另外「有一個 commit」不等於「有原創程式碼」。
+          正確方法是看 <code>ahead_by</code> 或直接看 diff vs upstream。
+        </p>
+        <p>
+          <strong>第三次</strong>：<code>ahead_by</code> 當作歸屬判據。
+          <code>ahead_by &gt; 0</code> 推論「有原創工作」，
+          但 <code>paperclip</code> fork 的 ahead_by 來自 graphify 產出的 <code>graphify-out/</code>（42 MB），
+          可秒級重建的產生物——不是原始資料，不構成保留理由。
+          搬走本機 clone 的 origin 再刪，clone 完好無損。
+        </p>
+        <p>
+          <strong>第四次</strong>：commit 標題「Add notebook.ipynb」→ 推論「檔案現在存在於這個 fork 裡」。
+          實際上同一份 git log 輸出的下兩行就是「Delete notebook.ipynb」——
+          讀了開頭就停，沒看完整個序列。
+          Manim notebook 早在 2026-07-27 就搬到自有 repo 並從 fork 刪除了，
+          不需要任何操作。
+        </p>
+
+        <h2>為什麼代理指標如此危險</h2>
+        <p>
+          代理指標的問題不只是不準確——它們會產生「看似乾淨的答案」。通知量、commit 數、
+          ahead_by、commit 標題，這四個全部是真實資料，只是和想問的問題不對齊。
+          每次都得到一個有信心的錯誤結論，而且不會感覺到哪裡不對。
+        </p>
+        <p>
+          每次代理指標失誤的對照方法都不難：
+          直接看 CI log 找失敗原因、diff vs upstream 看有沒有原創程式碼、
+          查 contents API 確認檔案現在在不在、讀完整個 git log 序列再下結論。
+          問題不在「太難」，在於「代理指標夠快、看起來夠合理，不會讓人想繼續往下查」。
+        </p>
+
+        <h2>commit 說「新增了 X」不代表「X 現在存在」</h2>
+        <p>
+          這是第四次失誤的通則化版本，但值得單獨寫出來，因為這個誤判模式幾乎每個用 git 的人都踩過。
+          「Add X」的 commit 紀錄的是當時的操作，不是現在的狀態。
+          要知道某個檔案現在在不在，用 contents API 或直接看工作樹，不要用 git log。
+        </p>
+        <p>
+          同樣的道理適用於「這個 PR 加了某個功能」——要確認功能現在是否存在，
+          要查現在的程式碼，不是查 PR 歷史。
+          git 是歷史紀錄，不是當前狀態的快照。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>通知量 ≠ 來源活躍度</strong>：CI 通知只說「有東西叫」，不說根因在哪。找失敗原因要看 log，不要看通知計數。</p>
+          <p><strong>代理指標產生「自信的錯誤答案」</strong>：commit 數、ahead_by、標題關鍵字都是真實資料，但和你想問的問題不對齊時，得到的結論看起來乾淨但是錯的。</p>
+          <p><strong>commit 說「新增 X」不代表 X 現在存在</strong>：git 是歷史紀錄，確認當前狀態要查 contents API 或工作樹，不要查 commit 標題。</p>
+          <p><strong>產生物不構成保留理由</strong>：ahead_by 來自可秒級重建的輸出檔（42 MB graphify 產出）——這種「超前」沒有保存價值。判斷前先看那個變動是什麼。</p>
+          <p><strong>git 身分要主動管理</strong>：IDE 寫入的 user.name/email 可能在升級後復原。統一設好 useConfigOnly = true 並用實際 commit 驗證歸戶，才算真正設定完成。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-07-30 · GitHub 帳戶衛生 · 334 fork → 29 · 238 通知 → 0 · 8 workflow 停用
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
