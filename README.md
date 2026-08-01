@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-01** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-07-30-github-fork-cleanup.html`（334 fork 掃出 317 個純鏡像，連續四次用代理指標拿到自信錯誤答案；ahead_by 來自可秒建產出物不算原創，commit 標題說新增不等於現在存在）。
+  Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-01.
+
 - **2026-07-29** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-07-25-gemma4-zhtw-adapter.html`（v7、v8 混訓兩度 REJECTED，診出語言假設互斥根因；base 對照組才知微調在繁中是雙向的；四個守門機制是被自己犯的錯逼出來的）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
