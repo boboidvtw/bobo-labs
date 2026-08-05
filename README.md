@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-05** — 自動化火力轉向公式庫：新增 `formulas/present-value.html`（#42 · 金融 · Pro，
+  現值計算公式，含折現率敏感度與 n 的影響實例）。Formula 卡片由 placeholder 轉為連結。
+  同時上線 formula 文章的數值守門 `scripts/verify_formula_math.py`（獨立驗算文章宣稱的每個數字，
+  並要求該數字逐字出現在正文），以及泛化的 `scripts/regen_sitemap.py`（writing + formulas 兩區）。
+  Shifted the publishing pipeline from dev-journal posts to the formula library, and added a
+  deterministic math verifier that gates every number a formula article claims.
+
 - **2026-08-01** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-07-30-github-fork-cleanup.html`（334 fork 掃出 317 個純鏡像，連續四次用代理指標拿到自信錯誤答案；ahead_by 來自可秒建產出物不算原創，commit 標題說新增不等於現在存在）。
   Index Writing 區依時間倒序插入。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
