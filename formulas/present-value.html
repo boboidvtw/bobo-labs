@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>現值計算公式｜未來的錢現在值多少（100萬10年折現實例）· Bobo Labs</title>
+  <meta name="description" content="現值怎麼算？PV = F/(1+r/n)^(nt) 決定一筆未來的錢在今天值多少。本文用 10 年後 100 萬、折現率 5% 的實例算給你看，並拆解折現率差 1% 會讓答案差多少。" />
+  <meta property="og:title" content="現值計算公式：未來的錢現在值多少" />
+  <meta property="og:description" content="PV = F/(1+r/n)^(nt) 的完整解析、折現率敏感度、與複利終值的反向關係。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/present-value.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/present-value.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "現值計算公式：未來的錢現在值多少", "url": "https://labs.moneyai168.com/formulas/present-value.html", "datePublished": "2026-08-05", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "現值計算", "item": "https://labs.moneyai168.com/formulas/present-value.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "F / (1 + r/n) ** (n*t)",
+    "cases": [
+      {"input": {"F": 1000000, "r": 0.05, "n": 1, "t": 10}, "expect": 613913.253541, "tol": 1, "text": "613,913"},
+      {"input": {"F": 1000000, "r": 0.06, "n": 1, "t": 10}, "expect": 558394.776915, "tol": 1, "text": "558,395"},
+      {"input": {"F": 1000000, "r": 0.05, "n": 12, "t": 10}, "expect": 607161.040299, "tol": 1, "text": "607,161"},
+      {"input": {"F": 1000000, "r": 0.05, "n": 1, "t": 20}, "expect": 376889.482873, "tol": 1, "text": "376,889"},
+      {"input": {"F": 1000000, "r": 0.03, "n": 1, "t": 10}, "expect": 744093.914897, "tol": 1, "text": "744,094"},
+      {"expr": "(1 + r) ** t", "input": {"r": 0.05, "t": 10}, "expect": 1.628894626777, "tol": 1e-9, "text": "1.6289"},
+      {"expr": "F/(1+a)**t - F/(1+b)**t", "input": {"F": 1000000, "a": 0.05, "b": 0.06, "t": 10}, "expect": 55518.476626, "tol": 1, "text": "55,518"},
+      {"expr": "F/(1+r)**t - F/(1+r/n)**(n*t)", "input": {"F": 1000000, "r": 0.05, "n": 12, "t": 10}, "expect": 6752.213242, "tol": 1, "text": "6,752"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #42 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">現值計算公式：未來的 100 萬，現在值多少？</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-05</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        有人承諾 10 年後給你 100 萬，這張支票今天值多少？
+        用 5% 折現率算，答案是 <strong>613,913 元</strong> —— 不是 100 萬打個折，是差了將近 39 萬。
+        現值公式 PV = F/(1+r/n)<sup>nt</sup> 決定了所有「未來現金流」的今日價格，
+        而它最反直覺的地方是：折現率只要改 1 個百分點，答案就會再差 5 萬多。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">PV = F / (1 + r/n)<sup>nt</sup></div>
+          <div class="formula-box-note">F 終值 · r 年折現率（小數）· n 每年複利次數 · t 年數</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>F</td><td>未來會拿到的金額（Future Value）</td><td>1,000,000</td></tr>
+            <tr><td>r</td><td>年折現率（decimal）</td><td>0.05（即 5%）</td></tr>
+            <tr><td>n</td><td>每年複利次數</td><td>1（年）/ 12（月）</td></tr>
+            <tr><td>t</td><td>距離拿到錢的年數</td><td>10</td></tr>
+            <tr><td>PV</td><td>現值（Present Value）</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼未來的錢一定要打折？</h2>
+        <p>
+          同樣是 100 萬，今天拿到和 10 年後拿到差在哪裡？差在今天拿到的那筆錢<strong>可以立刻去賺利息</strong>。
+          如果市場上隨手就能找到年報酬 5% 的去處，那今天的 61 萬多放 10 年就會長成 100 萬。
+          反過來說，「10 年後的 100 萬」和「今天的 61 萬多」是同一件事的兩種說法。
+        </p>
+        <p>
+          所以折現率 r 不是憑空選的數字，它代表<strong>你放棄的其他機會</strong>。
+          機會成本越高，未來的錢就越不值錢，折得越兇。這也是為什麼同一張支票，
+          不同的人算出來的現值可以差很多——每個人的 r 不一樣。
+        </p>
+
+        <h2>用真實數字算一遍</h2>
+        <p>
+          F = 100 萬、r = 5%、n = 1（年複利）、t = 10 年。先算分母的折現因子：
+          (1 + 0.05)<sup>10</sup> = <strong>1.6289</strong>。
+          再用 1,000,000 除以它，得到 <strong>613,913</strong> 元。
+        </p>
+        <p>
+          這個 1.6289 就是「10 年後的錢要除以多少才能換算回今天」。
+          它同時也是 <a href="/formulas/compound-interest.html">複利終值</a>的成長倍數——
+          今天的 613,913 元用 5% 滾 10 年，剛好會變成 100 萬。兩條公式是同一件事的正反面。
+        </p>
+
+        <table class="formula-vars">
+          <thead><tr><th>情境</th><th>折現率 r</th><th>年數 t</th><th>現值 PV</th></tr></thead>
+          <tbody>
+            <tr><td>保守（接近定存）</td><td>3%</td><td>10</td><td>744,094</td></tr>
+            <tr><td>基準</td><td>5%</td><td>10</td><td>613,913</td></tr>
+            <tr><td>要求較高報酬</td><td>6%</td><td>10</td><td>558,395</td></tr>
+            <tr><td>基準、但等更久</td><td>5%</td><td>20</td><td>376,889</td></tr>
+          </tbody>
+        </table>
+
+        <h2>折現率差 1%，答案差多少？</h2>
+        <p>
+          把 r 從 5% 改成 6%，其他都不動，現值從 613,913 掉到 <strong>558,395</strong>，
+          少了 <strong>55,518</strong> 元。一個百分點的假設差異，
+          在一筆 100 萬的十年期現金流上就是 5 萬多的價差。
+        </p>
+        <p>
+          而且這個效應會隨年數放大。同樣 5% 折現率，等 10 年是 613,913，
+          等 20 年只剩 <strong>376,889</strong>——時間拉長一倍，現值不是砍一半，是砍到不足四成。
+          折現是指數運算，不是線性打折，這是最多人算錯方向的地方。
+        </p>
+
+        <h2>n 怎麼影響結果？</h2>
+        <p>
+          n 是每年複利（折現）幾次。同樣 5%、10 年，改成月複利（n = 12）之後：
+          現值變成 <strong>607,161</strong> 元，比年複利的 613,913 再少 <strong>6,752</strong> 元。
+        </p>
+        <p>
+          方向要記牢：<strong>複利越頻繁，折現越兇、現值越低</strong>。
+          這和 <a href="/formulas/compound-interest.html">複利終值</a>那邊「複利越頻繁、終值越高」是同一個機制的兩端——
+          分母長得越快，商就越小。實務上比較兩張報價時，
+          如果一張用年複利、一張用月複利，不換算到同一個基準就直接比大小，比出來的是假的。
+        </p>
+
+        <h2>什麼時候真的會用到</h2>
+        <p>
+          最常見的是三種場合。第一是<strong>比較不同時間點的收付</strong>：
+          分期給付和一次付清哪個划算，不能直接加總金額，要各自折現到今天再比。
+          第二是<strong>替一筆未來現金流定價</strong>：債券、保單滿期金、應收帳款轉讓，
+          本質都是在問「未來的錢今天值多少」。
+        </p>
+        <p>
+          第三是<strong>反推需要多少本金</strong>。想在 10 年後有 100 萬，
+          在 5% 的假設下今天要準備 613,913 元。這和用
+          <a href="/formulas/rule-of-72.html">72 法則</a>心算「幾年翻倍」是互補的工具：
+          72 法則給你速度感，現值公式給你精確的金額。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把折現率和「保證報酬率」混為一談</strong>：r 是你自己選的機會成本假設，
+            不是對方承諾的收益。換一個 r 就換一個答案，所以任何現值數字都必須標明用了幾 %，
+            單獨報一個「這張支票值 61 萬」是沒有意義的。
+            另外老問題還是單位——r 是 decimal，5% 要代入 0.05 不是 5；
+            用 Excel 算是 <code>=1000000/(1+0.05/12)^(12*10)</code>，不是 <code>(1+5/12)</code>。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的現值計算機。把你自己的折現率假設代進去試試。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 現值 PV #42</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=42" title="現值 PV 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 現值的反向問題：本金推終值</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 翻倍年數的快速估算</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 等額本息的 30 年數學</a></li>
+          <li>進階：年金終值（每期定額存入的複利累積）— Pro 版即將推出</li>
+          <li>進階：實質年利率 EAR（解決廣告利率的可比性）— Pro 版即將推出</li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：現值定義依標準財務數學（discounted cash flow）· 本文所有數字均以
+        PV = F/(1+r/n)^(nt) 實算並通過站台數值驗算腳本 · 全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
