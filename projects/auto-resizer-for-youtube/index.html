@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto Resizer for YouTube™ — 依畫質與螢幕自動調整播放器 · Bobo Labs</title>
+  <meta name="description" content="Chrome 擴充功能：依畫質、視窗與螢幕解析度自動調整 YouTube 播放器尺寸，支援 4K 與多螢幕，另有彈出式播放器。開放原始碼、零資料收集。" />
+  <meta property="og:title" content="Auto Resizer for YouTube™" />
+  <meta property="og:description" content="依畫質、視窗與螢幕解析度自動調整 YouTube 播放器尺寸。4K 與多螢幕感知，開放原始碼，零資料收集。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://labs.moneyai168.com/projects/auto-resizer-for-youtube/" />
+  <link rel="canonical" href="https://labs.moneyai168.com/projects/auto-resizer-for-youtube/" />
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../../writing/article.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Auto Resizer for YouTube",
+    "applicationCategory": "BrowserApplication",
+    "operatingSystem": "Chrome, Brave, Edge",
+    "description": "依畫質、視窗與螢幕解析度自動調整 YouTube 播放器尺寸，支援 4K 與多螢幕。",
+    "url": "https://labs.moneyai168.com/projects/auto-resizer-for-youtube/",
+    "license": "https://opensource.org/licenses/MIT",
+    "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" }
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#project">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/formulas/">Formulas</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="project" class="article">
+    <article class="article-wrap">
+      <a class="back-link" href="/#work">← 回 Work</a>
+      <p class="article-eyebrow">Project · Browser extension · Manifest V3</p>
+      <h1 class="article-title">Auto Resizer for YouTube™</h1>
+      <p class="article-lede">
+        YouTube 的播放器只會長到它自己想要的大小。1600px 的視窗上，一支 4K 影片仍然被塞在
+        1112px 的框裡，右邊擺著永遠佔住 400px 的推薦欄，底下是一大片空白。
+        這個擴充功能把順序反過來：<strong>播放器先取空間，推薦欄撿剩下的，擠不下就換行到下方。</strong>
+      </p>
+
+      <div class="article-body">
+      <h2>它做什麼</h2>
+      <ul>
+        <li><strong>依畫質自動匹配尺寸</strong> —— 以影片原生解析度為上限，再收斂到視窗容納得下的最大 16:9。</li>
+        <li><strong>螢幕適配（4K / 多螢幕）</strong> —— 依「播放器寬度 × 螢幕像素密度」推算需要的畫質並主動要求。
+          把視窗從 Retina 拖到 4K 外接螢幕，畫質會跟著重算。</li>
+        <li><strong>彈出式播放器</strong> —— 控制列上多一顆按鈕，把影片丟到獨立視窗續播，視窗內只留播放器，
+          尺寸以閉環校正貼合影片長寬比，可指定開在哪一台螢幕。</li>
+        <li><strong>畫質鎖定</strong> —— 每支新影片自動鎖到你指定的畫質；影片沒有時取可用的最高畫質。</li>
+        <li><strong>零留白版面</strong> —— 消除播放器兩側與上方的留白。</li>
+      </ul>
+
+      <h2>隱私</h2>
+      <p>
+        不收集任何資料。沒有分析工具、沒有遠端程式碼、沒有任何對外連線 ——
+        整份原始碼裡連一個 <code>fetch</code> 都沒有。你的設定存在瀏覽器自己的
+        <code>chrome.storage.sync</code>，經由你的 Google 帳號同步，開發者看不到。
+      </p>
+      <p><a href="privacy.html">完整隱私權政策 →</a></p>
+
+      <h2>安裝</h2>
+      <p>
+        Chrome 線上應用程式商店審核中。在那之前可以從 GitHub 取得原始碼，以「載入未壓縮的擴充功能」方式使用。
+      </p>
+      <ul>
+        <li><a href="https://github.com/boboidvtw/youtube-auto-resizer-extension" target="_blank" rel="noopener">原始碼與安裝說明（GitHub）</a></li>
+        <li><a href="https://github.com/boboidvtw/youtube-auto-resizer-extension/blob/main/CHANGELOG.md" target="_blank" rel="noopener">版本紀錄</a></li>
+      </ul>
+
+      <h2>技術細節</h2>
+      <p>
+        Manifest V3、零相依、零建置流程。畫質偵測與畫質控制各自跑在 YouTube 頁面的主世界，
+        版面套用留在隔離世界，三者只透過事件與 <code>postMessage</code> 溝通。
+        單元測試以 Node 內建的 test runner 加 <code>node:vm</code> 執行，
+        端到端測試則真的啟動一個瀏覽器實例、載入擴充功能、對真實 YouTube 量測放大幅度。
+      </p>
+      <p>
+        兩個踩過的坑值得記下來：macOS 的 <code>chrome.system.display</code> 完全不提供 DPI
+        （<code>dpiX</code> 恆為 0），而 Brave 的指紋防護會竄改網頁端看到的
+        <code>screen.*</code> —— 任何需要真實螢幕尺寸的邏輯都不能寫在 content script 裡。
+      </p>
+
+      <hr />
+      <p class="article-note">
+        <small>
+          YouTube™ 是 Google LLC 的商標。本擴充功能由個人獨立開發，
+          與 Google LLC 或 YouTube 沒有任何從屬、贊助或背書關係。
+          原始碼以 MIT 授權釋出。
+        </small>
+      </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span class="footer-note">Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
