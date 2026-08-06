@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-06** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `writing/2026-08-05-gemma4-e4b-false-pass-and-e-axis.html`（四層生產路徑同日全失全復原・比對腳本空集合靜默通過加 assert 才是真守門・GPU 高峰值不能重疊・E 軸 9/9 否決自己的修法）。
+  Writing 區依時間倒序插入 index.html；sitemap 同步重生（writing 92 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-06.
+
 - **2026-08-05** — 自動化火力轉向公式庫：新增 `formulas/present-value.html`（#42 · 金融 · Pro，
   現值計算公式，含折現率敏感度與 n 的影響實例）。Formula 卡片由 placeholder 轉為連結。
   同時上線 formula 文章的數值守門 `scripts/verify_formula_math.py`（獨立驗算文章宣稱的每個數字，
