@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>比對腳本測了零案例，然後印出「全部通過」 · Bobo Labs</title>
+  <meta name="description" content="venv/base/fused/GGUF 四層同日全失、復原成功後重跑評測，卻發現比對腳本掃了錯層級、抽到 0 個鍵、對空集合印出 ✅。加了一行 assert 才是真守門。同日新建繁中拆解 E 軸，首跑就否決了自己原本要提的修法。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-08-05-gemma4-e4b-false-pass-and-e-axis.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-08-05</p>
+      <h1 class="article-title">比對腳本測了零案例，然後印出「全部通過」</h1>
+      <p class="article-lede">
+        gemma4-e4b 的生產路徑同日四層全失：venv 壞、base 遺失、fused 遺失、GGUF 整目錄消失。
+        復原成功、評測重跑，才發現比對腳本掃了錯層級、抽到 0 個鍵、對空集合印出 ✅。
+        加了一行 assert 才讓零案例變成硬失敗。同一天新建繁中拆解 E 軸，
+        首跑 9/9 通過——然後否決了自己本來想提的修法。
+      </p>
+
+      <div class="article-body">
+        <h2>四層全失，但都不是不可復原的損失</h2>
+        <p>
+          查 repo 準備新測軸，發現生產路徑一路失敗。損壞清單：
+          `.venv` 的 Python symlink 斷鏈、`models/` 遺失、`gemma4_e4b_agent_fused` 遺失、
+          `gguf_export/` 整目錄消失。adapter 本身完好，SHA <code>71bcf3ec…</code> 與記錄相符。
+        </p>
+        <p>
+          全部可復原：`uv python install 3.11` 修 venv、
+          重抓 `mlx-community/gemma-4-e4b-it-4bit`（rev <code>475b9088…</code>）再 prepare、
+          `mlx_lm.fuse` 重新合成、llama.cpp 整個 GGUF 鏈重跑。
+          最難診斷的是 venv：`ls` 看得到目錄下所有 site-packages，
+          但執行任何指令就回 <code>no such file or directory</code>——
+          指著一個 `ls` 看得到的路徑。
+        </p>
+        <p>
+          原因是 uv 管理的 CPython 3.11 直譯器在某次清理中被移除，
+          只剩下 symlink 指向一個已不存在的位置。site-packages 完好、symlink 存在、
+          直譯器不見——症狀極易誤判成 repo 損壞。修法只需要一行指令，
+          診斷卻必須先排除「目錄結構完好」這個假訊號。
+        </p>
+
+        <h2>比對腳本測了零個案例，然後印出「零翻轉」</h2>
+        <p>
+          復原成功後，MLX 和 GGUF 兩條路徑各重跑凍結基準評測，
+          24 案、四個軸（A/B/C/D）。比對腳本讀 baseline 和新跑結果，
+          計算有沒有任何案例從 pass 變 fail 或反向翻轉。
+          輸出：✅ 零翻轉。
+        </p>
+        <p>
+          但腳本實際上掃了錯層級。案例存在 <code>axes</code> 底下的子 key，
+          腳本從頂層讀起、抽到 0 個鍵，然後對一個空集合做差集——
+          空集合的差集是空集合，等同於「沒有任何翻轉」，印出通過。
+        </p>
+        <p>
+          加了兩行 guard 才讓這個情況變成真正的失敗：
+          <code>assert len(b) == 24 and set(b) == set(n)</code>，
+          確認比對的案例數量正確、兩份資料的 key 集合相符，再算差集。
+          比對腳本要在「什麼都沒量到」時大聲失敗，不是安靜通過。
+          這條原則更早說過（就在凍結基準引入的那次），但在復原後的重跑裡又踩了一次。
+        </p>
+
+        <h2>GPU 記憶體不能重疊計畫</h2>
+        <p>
+          GGUF 轉換鏈其中一步是解量化：把 4-bit 模型膨脹到 f32，
+          再轉 q8_0 並匯出 GGUF。解量化後的中繼檔大約 14 GB。
+        </p>
+        <p>
+          第一次跑失敗：<code>[METAL] Command buffer execution failed: GPU Timeout</code>。
+          原因是 8080 的 MLX server 還掛著，佔用約 3.9 GB GPU 記憶體，
+          加上解量化需要的 14 GB，合計超過可用上限。
+          停掉 server 再重跑，通過。
+        </p>
+        <p>
+          原則早在「並行測量會污染評測結果」那次就有過——
+          這是 GPU 記憶體的版本：兩個高峰值工作不能同時進行，
+          就算看起來各自獨立。
+        </p>
+
+        <h2>E 軸首跑 9/9，然後否決了打算提的修法</h2>
+        <p>
+          既有四軸（A/B/C/D）沒有一軸測任務拆解能力。
+          新建 `evals/zhtw/` 下的 E 軸：18 項 pytest、`decompose.py` 評分器、
+          `run_zhtw.py --axis e` 執行入口。
+        </p>
+        <p>
+          評分設計有一個關鍵分層：<strong>計分</strong>的是 `forbidden_stages`——
+          路由到會讓目標不可能達成的 stage；
+          <strong>只觀測不計分</strong>的是 `stage_is_expected`——
+          模型是否選了「最理想的」stage。
+          這個分層在首跑裡救了一次判斷。
+        </p>
+        <p>
+          首跑結果：啟用 GEMMA_GRAPHIFY 時 E 9/9，預設模式 7/7 + 2 案未計分。
+          理想 stage 只中 3/9。E6/E7 的「寫」「修好」關鍵字蒸發成「定義」「定位」，
+          兩案落在 locate stage。
+        </p>
+        <p>
+          原本判斷：code stage 應該補 `list_dir` 和 `read_file`，對稱 graph 的 goal-level fallback，
+          讓更多案例路由到 code。
+          但查了 `STAGE_TOOLS["code"]`：只有 `write_code`，沒有 `list_dir` 也沒有 `read_file`。
+          把「定位 main.py 中的錯誤點」路由到 code stage，
+          模型拿不到任何讀取工具，連檔案都打不開。
+          落在 locate 是正確排序，不是缺陷。
+          因為評分設計把「理想 stage」排在觀測層而非計分層，這個案例才不會被錯誤地標為失敗。
+        </p>
+
+        <h2>拆解不是瓶頸</h2>
+        <p>
+          原始問題是「加繁中語意訓練能不能改善任務拆分」。
+          E 軸首跑的答案：不需要。
+          9 個繁中案例全數產出結構合法、關鍵詞保留、無簡體、無有害路由的拆解。
+        </p>
+        <p>
+          已知的 agent 完成率 0/7 落差在<strong>續航</strong>——
+          模型在任務執行中途早停，四個 stage 都試過了，型態一致。
+          拆解是第一步；問題在第二步之後的持續推進。
+          「加訓練改善拆分」在正確的地方下對了功夫，但那不是現在的瓶頸。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>比對腳本要在零案例時大聲失敗</strong>：空集合的差集是空集合——「沒有翻轉」和「沒有量到任何東西」在輸出上看起來一樣。加 assert 確認案例數量，讓零量測變成硬錯誤。</p>
+          <p><strong>`ls` 看得到 ≠ 可以執行</strong>：uv 管理的 Python symlink 斷鏈後，site-packages 完整、目錄存在，只有直譯器不見。症狀指向「repo 壞掉」，根因是「直譯器被清掉」，兩件事要分開排查。</p>
+          <p><strong>高峰值工作不能重疊</strong>：MLX server 3.9 GB + 解量化 14 GB 超過 GPU 上限。並行「看起來獨立」不等於「記憶體獨立」。高峰值工作前先確認 GPU 空出來。</p>
+          <p><strong>評分設計決定你能不能信任結果</strong>：把「理想 stage」放進觀測層而非計分層，才能分清「正確但非最優路由」和「錯誤路由」。計分的是不可能達成目標的 stage，不是最理想的 stage。</p>
+          <p><strong>先用評測否決修法，再決定要不要修</strong>：補 code stage 工具看起來合理，但查 `STAGE_TOOLS` 後發現 code 沒有讀取工具，路由過去反而讓模型更失能。評測先行，比直覺先行省工。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-08-05 · gemma4-e4b agent · venv/base/fused/GGUF 四層復原 · pytest 528 綠 · 24 案零翻轉 · E 軸 9/9
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
