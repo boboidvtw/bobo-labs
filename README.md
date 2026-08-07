@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-07** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/future-value-annuity.html`（#43 · 金融 · Pro，年金終值 FV = PMT×((1+r)^n−1)/r，逐步拆解等比數列推導、利率敏感度、早晚 10 年差距 542 萬）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 17 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 1 formula draft from _pending/ via /bobo-autopublish on 2026-08-07.
+
 - **2026-08-06** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `writing/2026-08-05-gemma4-e4b-false-pass-and-e-axis.html`（四層生產路徑同日全失全復原・比對腳本空集合靜默通過加 assert 才是真守門・GPU 高峰值不能重疊・E 軸 9/9 否決自己的修法）。
   Writing 區依時間倒序插入 index.html；sitemap 同步重生（writing 92 篇）。
