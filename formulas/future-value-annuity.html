@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>年金終值公式怎麼算？每月存 1 萬 30 年能累積多少（6% 實例）· Bobo Labs</title>
+  <meta name="description" content="年金終值 FV = PMT×((1+r)^n−1)/r 是定期儲蓄的核心公式。用每月存 1 萬、年利率 6%、30 年的實例算出超過 1,004 萬，並對比 3%/9% 利率差距與早晚 10 年的影響。" />
+  <meta property="og:title" content="年金終值公式：每月存 1 萬 30 年能累積多少" />
+  <meta property="og:description" content="FV = PMT×((1+r)^n−1)/r 的完整解析、利率敏感度、時間複利效應，附 ∑ Calc Pro 互動試算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/future-value-annuity.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/future-value-annuity.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "年金終值公式：每月存 1 萬 30 年能累積多少", "url": "https://labs.moneyai168.com/formulas/future-value-annuity.html", "datePublished": "2026-08-06", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "年金終值", "item": "https://labs.moneyai168.com/formulas/future-value-annuity.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "PMT * ((1 + r) ** n - 1) / r",
+    "cases": [
+      {"input": {"PMT": 10000, "r": 0.005, "n": 360},
+       "expect": 10045150.0, "tol": 1, "text": "10,045,150"},
+      {"input": {"PMT": 100000, "r": 0.06, "n": 30},
+       "expect": 7905819.0, "tol": 1, "text": "7,905,819"},
+      {"input": {"PMT": 10000, "r": 0.0025, "n": 360},
+       "expect": 5827369.0, "tol": 1, "text": "5,827,369"},
+      {"input": {"PMT": 10000, "r": 0.0075, "n": 360},
+       "expect": 18307435.0, "tol": 1, "text": "18,307,435"},
+      {"input": {"PMT": 10000, "r": 0.005, "n": 240},
+       "expect": 4620409.0, "tol": 1, "text": "4,620,409"},
+      {"expr": "PMT1 * ((1 + r1) ** n1 - 1) / r1 - PMT2 * ((1 + r2) ** n2 - 1) / r2",
+       "input": {"PMT1": 10000, "r1": 0.005, "n1": 360, "PMT2": 10000, "r2": 0.005, "n2": 240},
+       "expect": 5424741.0, "tol": 1, "text": "5,424,741"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #43 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">年金終值：每月存 1 萬，30 年後能累積多少？</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-06</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        每月固定存入一筆錢，幾十年後能累積多少？這個問題沒辦法靠直覺回答。
+        每月存 10,000 元、年利率 6%、存滿 30 年，答案是 <strong>10,045,150 元</strong>——
+        是你直接把月存金額乘以 360 個月的兩倍以上。
+        多出來的那一大截，全部來自每月存入的那筆錢被反覆複利再複利。
+        年金終值公式 FV = PMT × ((1+r)<sup>n</sup> − 1) / r 把「定期存入 + 複利累積」壓縮成一條算式，
+        本文把它拆開、逐步算清楚。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">FV = PMT × ((1 + r)<sup>n</sup> − 1) / r</div>
+          <div class="formula-box-note">PMT 每期存入金額 · r 每期利率（小數）· n 總期數 · FV 終值</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>FV</td><td>終值（Future Value）</td><td>元</td><td>計算結果</td></tr>
+            <tr><td>PMT</td><td>每期定額存入（Payment）</td><td>元</td><td>10,000</td></tr>
+            <tr><td>r</td><td>每期利率（decimal）</td><td>—</td><td>0.005（月利率 0.5%，對應年利率 6% ÷ 12）</td></tr>
+            <tr><td>n</td><td>總期數</td><td>期</td><td>360（30 年 × 12 個月）</td></tr>
+          </tbody>
+        </table>
+
+        <h2>公式從哪裡來？等比數列一句話推導</h2>
+        <p>
+          想像你每個月底存入一筆 PMT 元。第 1 個月存入的那筆錢，
+          在第 n 期結束時已經複利了 n−1 期，變成 PMT × (1+r)^(n−1)。
+          第 2 個月存入的那筆複利了 n−2 期，是 PMT × (1+r)^(n−2)。
+          依此類推，最後一個月底存入的那筆剛好到期，沒有複利機會，就是 PMT 本身。
+        </p>
+        <p>
+          把 n 項加起來，是個首項 PMT、公比 (1+r) 的等比數列求和：
+        </p>
+        <p style="text-align: center; font-style: italic; margin: 1rem 0;">
+          FV = PMT + PMT(1+r) + PMT(1+r)² + … + PMT(1+r)^(n−1)
+        </p>
+        <p>
+          用等比級數求和公式化簡，就得到 FV = PMT × ((1+r)^n − 1) / r。
+          括號內的 ((1+r)^n − 1) / r 有個專有名詞叫<strong>年金終值因子（FVIFA，Future Value Interest Factor of Annuity）</strong>，
+          它代表「每存入 1 元，在利率 r 下存滿 n 期之後的累積倍數」。
+          把 r 和 n 代進去算出 FVIFA，再乘以你的月存金額，就是答案。
+        </p>
+        <p>
+          這條公式是「期末年金（ordinary annuity）」版本，假設每筆款項在<strong>每期期末</strong>存入。
+          如果改成每期期初存入（annuity-due），終值公式要再乘以 (1+r)，
+          因為每一筆都多複利了一期。實務上期末版本是主流，銀行定期定額幾乎都用這個假設。
+        </p>
+
+        <h2>每月存 1 萬，6% 年利率，30 年後是多少？</h2>
+        <p>
+          代入參數：PMT = 10,000、r = 0.005（年利率 6% 除以 12 個月）、n = 360（30 年乘以 12）。
+        </p>
+        <p>
+          先算年金終值因子 FVIFA：
+        </p>
+        <p style="text-align: center; font-style: italic; margin: 1rem 0;">
+          FVIFA = ((1.005)^360 − 1) / 0.005
+        </p>
+        <p>
+          (1.005)^360 這個數字可以從
+          <a href="/formulas/compound-interest.html">複利終值</a>公式直接查到：
+          把 100 萬本金放在月利率 0.5% 下滾 360 個月，終值因子正好是 6.0226。
+          代入得 FVIFA = (6.0226 − 1) / 0.005 = 5.0226 / 0.005 = 1004.5。
+        </p>
+        <p>
+          FV = 10,000 × 1004.5 = <strong>10,045,150</strong> 元。
+        </p>
+        <p>
+          直接把 10,000 乘以 360 個月只有約 360 萬，終值是 360 萬的兩倍以上。
+          多出來的那截全部是複利貢獻——前幾年存入的款項滾了將近 30 年，
+          幾乎把自己變成好幾倍大。你實際出的錢佔終值的比例不到四成。
+        </p>
+        <p>
+          Excel 驗算：<code>=10000*((1+0.005)^360-1)/0.005</code>，結果相同。
+        </p>
+
+        <h2>利率怎麼影響結果？3% / 6% / 9% 實測</h2>
+        <p>
+          同樣每月存 10,000 元、存 30 年，把年利率從 3% 改到 9%，終值差距超乎想像：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>年利率</th><th>月利率 r</th><th>期數 n</th><th>終值 FV</th></tr></thead>
+          <tbody>
+            <tr><td>3%</td><td>0.0025</td><td>360</td><td>5,827,369</td></tr>
+            <tr><td>6%</td><td>0.005</td><td>360</td><td>10,045,150</td></tr>
+            <tr><td>9%</td><td>0.0075</td><td>360</td><td>18,307,435</td></tr>
+          </tbody>
+        </table>
+        <p>
+          年利率從 3% 翻倍到 6%，終值從 582 萬翻到 1,004 萬，漲幅超過 72%。
+          再從 6% 升到 9%（只加了 3 個百分點），終值又跳到 1,830 萬，比 6% 多了 823 萬。
+          這是複利的指數放大效應：利率的影響不是線性的，30 年後會被大幅放大。
+        </p>
+        <p>
+          換個說法：同樣投入 360 萬本金，在 9% 和 3% 的差距下，30 年後的終值差了約 1,248 萬。
+          每多爭取 1% 的年化報酬率，在這個時間尺度上代表的是數百萬的差距，
+          不是「大家差不多」。
+        </p>
+
+        <h2>早 10 年開始，差多少？</h2>
+        <p>
+          每月存 10,000 元、年利率 6%，比較從 30 歲存到 60 歲（30 年）
+          與從 40 歲存到 60 歲（20 年）的結果：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>投資年限</th><th>期數 n</th><th>終值 FV</th></tr></thead>
+          <tbody>
+            <tr><td>30 年（30 歲開始）</td><td>360</td><td>10,045,150</td></tr>
+            <tr><td>20 年（40 歲開始）</td><td>240</td><td>4,620,409</td></tr>
+          </tbody>
+        </table>
+        <p>
+          晚 10 年開始，終值從 10,045,150 元掉到 4,620,409 元，少了 <strong>5,424,741</strong> 元。
+          注意成本：晚 10 年少投入的本金是 10,000 × 120 個月 = 120 萬元，
+          但終值少了 542 萬元——差距是少投入本金的 4.5 倍。
+          多出來的那一大截損失，純粹是「早期存入的款項失去了 10 年以上的複利時間」。
+        </p>
+        <p>
+          這個不對稱的根源在於公式裡的指數。最早存入的那幾期款項，
+          到第 30 年時已複利 350 多次，貢獻遠大於後期的款項。
+          晚 10 年等於砍掉了 FVIFA 中指數最大的那批項，損失不成比例。
+          <strong>儲蓄起步的時機，比每月存多少更難補回來。</strong>
+        </p>
+
+        <h2>年存 vs 月存：r 和 n 的換算不能偷懶</h2>
+        <p>
+          如果改成每年年底存一次 100,000 元（和月存 10,000 的年投入規模接近），
+          年利率直接用 6%，n 用 30 年，套同一條公式：
+        </p>
+        <p style="text-align: center; font-style: italic; margin: 1rem 0;">
+          FV = 100,000 × ((1.06)^30 − 1) / 0.06 = <strong>7,905,819</strong> 元
+        </p>
+        <p>
+          比月存版本的 10,045,150 少了約 214 萬。兩個原因：
+          一是年存 100,000 的年投入比月存 10,000（年投入 120,000）少了 2 萬；
+          二是月存讓每筆款項能比年存更早開始複利，最早的一筆款項多複利了最多 11 個月。
+          頻率本身就是優勢。
+        </p>
+        <p>
+          <strong>換算規則</strong>：r 和 n 必須對應到同一個時間單位。
+          月存時，r 用月利率（年利率 ÷ 12）、n 用月數（年數 × 12）。
+          季存就 ÷ 4 和 × 4；年存直接用年利率和年數。
+          這個換算不能省略——把年利率 6%（0.06）直接代入月存的公式，
+          得出來的數字會高估數十倍，完全不可用。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>r 和 n 的頻率不一致</strong>：這是年金終值最常見的錯誤，
+            也最難被發現，因為公式本身不會報錯，只是給你一個荒謬的大數字。
+            月存時必須用月利率（0.06 ÷ 12 = 0.005），不能直接代入 0.06。
+            自己用 Excel 算的話，正確寫法是 <code>=PMT*((1+0.005)^360-1)/0.005</code>，
+            不是 <code>((1+0.06)^360-1)/0.06</code>。
+            另一個老問題：r 是小數而非百分比，6% 代入 0.06，填 6 會超出公式的假設範圍。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供年金終值的互動計算，可以直接調整 PMT、年利率、年數，
+          即時看到終值變化，以及各期累積的走勢圖。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 年金終值 #43</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=43" title="年金終值互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 單筆本金的長期滾動，FV = P(1+r/n)^(nt)</a></li>
+          <li><a href="/formulas/present-value.html">現值 PV — 終值的反向問題：未來的錢現在值多少</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 資金翻倍年數的快速估算</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 年金現值的反問題：現在借多少、每月還多少</a></li>
+          <li>進階：實質年利率 EAR（解決廣告名目利率與實際利率的可比性）— Pro 版即將推出</li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：年金終值公式依標準財務數學（ordinary annuity / time value of money）·
+        本文所有數字均以 FV = PMT×((1+r)^n−1)/r 實算並通過站台數值驗算腳本 ·
+        全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
