@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>直式影片比不裝擴充功能還小 — Auto Resizer v3.0.1 踩坑記 · Bobo Labs</title>
+  <meta name="description" content="v3.0.1 清掉四項待辦、74→98 單元全綠，但同時發現：兩條長期綠燈的測試根本沒在測產品；直式影片我們給的面積比 YouTube 原生小了 14.8%；Chrome Web Store 命中次數從 3 降到 2 並不是快好了。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-08-07-auto-resizer-v301-portrait-fix.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-08-07</p>
+      <h1 class="article-title">直式影片比不裝擴充功能還小 — Auto Resizer v3.0.1 踩坑記</h1>
+      <p class="article-lede">
+        v3.0.1 清掉了交接檔裡四項待辦：content.js 從 662 行瘦到 581、e2e 座標從寫死改成
+        執行期查詢、直式影片納入實測。CI 綠、上架成功。問題是實測才發現，
+        直式影片我們給的面積比 YouTube 不裝任何擴充功能還小 14.8%——
+        而且有兩條長期綠燈的測試，從頭到尾都沒在測產品。
+      </p>
+
+      <div class="article-body">
+        <h2>四項待辦，一天清完</h2>
+        <p>
+          交接檔 Next Session Goals 有四條：content.js 逼近 800 行上限、e2e 座標寫死在
+          `1710,40`（換螢幕就壞）、非 16:9 影片從未實測、側欄並排拉寬疑似未修。
+          解法各自直白：把 `content.js` 的品質政策抽到 `src/quality-policy.js`、
+          視窗適配邏輯抽到 `src/window-fit.js`，662 → 581 行；
+          e2e 改呼叫 `chrome.system.display` 在執行期查詢座標；
+          直式影片實測——然後踩坑；側欄則發現 v2.3.0 早已修掉，補上守門測試即可。
+        </p>
+        <p>
+          commits `8b85042` → `c08d5c8`，CI 全綠（單元 74 → 98、e2e 內建 40/40、4K 46/46）。
+          上架後 `2026-08-08` 確認線上版本 = 3.0.1、舊網址殘留 0 次，收尾 commit `8836039`。
+        </p>
+
+        <h2>兩條「長期綠燈、但什麼都沒守到」的測試</h2>
+        <p>
+          第一條：「彈出視窗開在來源螢幕」。Brave 的 `--window-position` 旗標會覆蓋
+          <em>每一個</em> `chrome.windows.create` 的 `left` / `top` 座標，且不報任何錯。
+          舊 harness 把主視窗與彈出視窗都用同一個旗標座標啟動，
+          於是「彈出視窗開在來源螢幕」變成必然成立——
+          因為驗的是命令列旗標，不是產品程式碼裡 `chrome.windows.create` 的邏輯。
+        </p>
+        <p>
+          第二條：「彈出視窗長寬比符合影片」。全新 profile 預設擋自動播放，
+          導致 `videoWidth = 0`；影片寬度為零時程式退回 16:9 基準，
+          於是「內容區符合影片長寬比」變成 16:9 比 16:9——永遠成立。
+        </p>
+        <p>
+          兩條都通過了好幾個版本。<strong>「測試綠」跟「測試有作用」是兩件事，
+          不會自己分開，必須主動設計對照情境才看得出來。</strong>
+        </p>
+
+        <h2>直式影片：我們讓它比不裝擴充功能還小</h2>
+        <p>
+          實測環境：1670×896 視窗、720×1280 影片、釘 720p。
+          YouTube 原生（不裝任何擴充）可見影像面積是 439×780；
+          裝了 Auto Resizer 之後是 405×720——<strong>面積少了 14.8%</strong>。
+        </p>
+        <p>
+          交接檔裡寫「直式影片出現黑邊，與 YouTube 原生行為相同」。那句是錯的：
+          YouTube 原生對直式影片會給一個高容器，兩側是黑邊，
+          但內容本身維持影片長寬比的高度。Auto Resizer 錯在把容器高度當成影片高度，
+          壓出了更小的可見區域。
+        </p>
+        <p>
+          修法第一版只對了一半，而且我把錯誤的期望值也一起寫進了測試——
+          讓「改正確」與「改期望值」變成同一步，失去了測試的對照功能。
+          最後另開一個獨立 commit，先把測試改正確（RED），再改產品邏輯（GREEN）。
+          16:9 輸出有專門測試守著，全程沒動。
+        </p>
+
+        <h2>Chrome Web Store：命中次數跌是假進度</h2>
+        <p>
+          v3.0.0 上架後，說明文案的 OPEN SOURCE 段落一直是舊網址——
+          那是在送審<em>之後</em>才更新 `store-assets/store-listing.md` 的，
+          Dashboard 沒回填，線上從未改過。
+          掃 repo 看到的是正確版本，線上是舊的，兩個副本從 v3.0.0 起就不一致。
+        </p>
+        <p>
+          查驗時用 grep 抓舊網址，命中數從 3 降到 2 看起來像「快好了」。
+          實際上那是 Support URL 欄位（已修）跟說明文案（尚未修）兩個不同欄位各自的狀態。
+          <strong>聚合數字把兩個獨立問題混成一個進度條。
+          要逐一看命中「位置」，不要只看命中「次數」。</strong>
+          最終隨 v3.0.1 一併修掉，兩個欄位同步更新。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>測試綠 ≠ 測試有作用</strong>：Brave 旗標覆蓋座標、新 profile 擋自動播放——這兩個環境假設讓兩條測試從頭到尾都是 tautology。主動設計對照情境才能分辨。</p>
+          <p><strong>文件說的不算，實測說的才算</strong>：交接檔寫「直式影片黑邊同 YouTube 原生」是錯的。現場量測才看出面積差了 14.8%。</p>
+          <p><strong>錯誤的期望值也要分開 commit</strong>：先讓測試 RED（期望值改正確），再讓產品 GREEN（實作改正確）。兩步混在一起就沒有對照。</p>
+          <p><strong>看命中位置，不要只看命中次數</strong>：3 → 2 看起來像進度，其實是兩個獨立欄位各自報狀態，聚合數字掩蓋了真相。</p>
+          <p><strong>版控副本與線上副本可以長期不同步</strong>：repo 裡的 store-listing.md 是對的，但 Dashboard 從未更新——掃 repo 永遠查不出線上的問題。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-08-07 · Auto Resizer for YouTube v3.0.1 · 單元 98 條全綠、e2e 86 條全綠 · Chrome Web Store 上架確認
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

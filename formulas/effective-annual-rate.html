@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>實質年利率 EAR 怎麼算？月複利 6% 的真正年化（完整對照表）· Bobo Labs</title>
+  <meta name="description" content="EAR 實質年利率怎麼算？銀行廣告「年利率 6%、月複利」的 EAR 是 6.17%，信用卡月利率 1.5% 換算 EAR 是 19.56%。本文用對照表拆解 (1+r/n)ⁿ-1，教你一眼看穿廣告利率陷阱。" />
+  <meta property="og:title" content="實質年利率 EAR 怎麼算？月複利 6% 的真正年化" />
+  <meta property="og:description" content="(1+r/n)ⁿ-1 的完整解析：名目利率 vs EAR、複利頻率對照表、信用卡真實年化。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/effective-annual-rate.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/effective-annual-rate.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "實質年利率 EAR 怎麼算？月複利 6% 的真正年化", "url": "https://labs.moneyai168.com/formulas/effective-annual-rate.html", "datePublished": "2026-08-08", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "實質年利率 EAR", "item": "https://labs.moneyai168.com/formulas/effective-annual-rate.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(1 + r/n) ** n - 1",
+    "cases": [
+      {"input": {"r": 0.06, "n": 1},   "expect": 0.06,        "scale": 100, "tol": 1e-10, "text": "6.00"},
+      {"input": {"r": 0.06, "n": 4},   "expect": 0.061363551, "scale": 100, "tol": 1e-5,  "text": "6.14"},
+      {"input": {"r": 0.06, "n": 12},  "expect": 0.061677812, "scale": 100, "tol": 1e-5,  "text": "6.17"},
+      {"input": {"r": 0.06, "n": 365}, "expect": 0.0618313,   "scale": 100, "tol": 0.0002,"text": "6.18"},
+      {"input": {"r": 0.18, "n": 12},  "expect": 0.195618201, "scale": 100, "tol": 1e-5,  "text": "19.56"},
+      {"expr": "(1 + r/n)**n - 1 - r", "input": {"r": 0.18, "n": 12}, "expect": 0.015618201, "scale": 100, "tol": 1e-5, "text": "1.56"},
+      {"input": {"r": 0.036, "n": 12}, "expect": 0.036600,    "scale": 100, "tol": 0.001, "text": "3.66"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #48 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">實質年利率 EAR：廣告「月複利 6%」的真正年化是多少？</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-08</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        銀行廣告寫「年利率 6%、月複利計息」——但一年後算出來的實際報酬，不等於本金乘以 6%。
+        廣告說的是<strong>名目年利率</strong>（nominal rate），你真正賺到的年化收益叫做
+        <strong>實質年利率 EAR</strong>（Effective Annual Rate）。
+        月複利 6% 的 EAR 是 <strong>6.17%</strong>，不是 6%。
+        差那 0.17%，在 100 萬存款上是 1,700 元，在 500 萬房貸 30 年攤還上是幾萬元。
+        更重要的是：不換算 EAR，你根本沒辦法公平地比較兩個不同複利頻率的金融商品。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">EAR = (1 + r/n)<sup>n</sup> − 1</div>
+          <div class="formula-box-note">r 名目年利率（小數）· n 每年複利次數</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>r</td><td>名目年利率（Nominal Annual Rate）</td><td>decimal</td><td>0.06（即 6%）</td></tr>
+            <tr><td>n</td><td>每年計息（複利）次數</td><td>次/年</td><td>12（月）/ 4（季）/ 1（年）</td></tr>
+            <tr><td>EAR</td><td>實質年利率（Effective Annual Rate）</td><td>decimal</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>名目利率 vs 實質利率：廣告數字為什麼不是真正的年化？</h2>
+        <p>
+          「名目年利率」是一個帳面數字，只告訴你一年的利率標籤，但不反映複利帶來的時間效應。
+          當銀行說「月複利計息」，意思是每個月結算一次利息，下個月的本金就包含上個月賺到的利息——
+          利息也在賺利息。這個雪球效應讓年化報酬<strong>超過</strong>名目利率。
+        </p>
+        <p>
+          EAR 把這個效應整合進去，給你一個「等效純年利率」：
+          把 1 元放進去，一年後拿回 (1 + r/n)<sup>n</sup> 元，
+          「真正的年化報酬」就是終值減掉本金。
+          因此，EAR 才是比較不同金融商品的唯一公平基準。
+        </p>
+        <p>
+          同一個名目利率，月複利的 EAR 高於季複利，季複利高於年複利。
+          用名目利率直接比大小，就像比兩個人的薪資單但一個是月薪、一個是年薪除以十二，
+          看起來一樣，實際買到的不一樣。
+        </p>
+
+        <h2>用真實數字算一遍：r = 6%，不同複利頻率的 EAR 對照表</h2>
+        <p>
+          名目年利率固定 r = 6%，只改每年計息次數 n，看 EAR 怎麼跟著變：
+        </p>
+
+        <table class="formula-vars">
+          <thead><tr><th>複利頻率</th><th>n（次/年）</th><th>EAR</th><th>比年複利多</th></tr></thead>
+          <tbody>
+            <tr><td>年複利</td><td>1</td><td>6.00%</td><td>—</td></tr>
+            <tr><td>季複利</td><td>4</td><td>6.14%</td><td>+0.14%</td></tr>
+            <tr><td>月複利</td><td>12</td><td>6.17%</td><td>+0.17%</td></tr>
+            <tr><td>日複利</td><td>365</td><td>6.18%</td><td>+0.18%</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          以月複利（n = 12）為例，完整計算過程如下：
+          每月利率 = 6% ÷ 12 = 0.5%，一年複利 12 次：
+          (1 + 0.005)<sup>12</sup> = 1.06168…，減去 1 得 EAR = <strong>6.17%</strong>。
+        </p>
+        <p>
+          從月複利到日複利（n = 365），EAR 只從 6.17% 升到 6.18%——邊際效益快速遞減。
+          廣告強調「日複利」聽起來很厲害，但相較於月複利的實質差異不到 0.01%。
+          真正影響大的，是「年複利 vs 月複利」這一跳，差了 0.17%。
+        </p>
+        <p>
+          季複利的計算：每季利率 = 6% ÷ 4 = 1.5%，
+          (1.015)<sup>4</sup> = 1.06136…，EAR = <strong>6.14%</strong>。
+          年複利最直接：(1 + 0.06)<sup>1</sup> − 1 = <strong>6.00%</strong>，EAR 等於名目利率。
+        </p>
+
+        <h2>信用卡循環利息：月利率 1.5% 的真實年化成本</h2>
+        <p>
+          金管會規定信用卡循環利息月利率上限 1.5%，折算成名目年利率是 1.5% × 12 = 18%。
+          這個 18% 就是「APR」（Annual Percentage Rate），是名目利率的揭露方式。
+          但真正的 EAR 是多少？
+        </p>
+        <p>
+          r = 0.18、n = 12 代入：
+          EAR = (1 + 0.18/12)<sup>12</sup> − 1 = (1.015)<sup>12</sup> − 1 = <strong>19.56%</strong>。
+          比廣告的名目 18% 高了 <strong>1.56%</strong>。
+        </p>
+        <p>
+          聽起來只差一點，但換成欠 10 萬元的循環信用卡債，光這 1.56% 的差距就是
+          一年多出 1,560 元的利息——在你可能還在每月只繳最低應繳的情況下持續累積。
+          用 EAR 19.56% 試算還款計畫，才是誠實的數字。
+        </p>
+        <p>
+          更重要的一點：「月利率 1.5%」是個心理錨點。很多人覺得「才 1.5%」，
+          但那是月的，不是年的。把它年化得到 19.56%，感受完全不同。
+          這是 EAR 在消費金融上最有力的應用：讓借款成本無所遁形。
+        </p>
+
+        <h2>貸款比較實戰：名目利率低不代表成本低</h2>
+        <p>
+          貸款市場常有這種狀況：銀行 A 的名目年利率比較低，但用月複利計息；
+          銀行 B 的名目年利率稍高，但只做年複利結算。
+          直接比名目數字，結論可能是反的。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>選項</th><th>名目年利率</th><th>計息方式</th><th>EAR（真實成本）</th></tr></thead>
+          <tbody>
+            <tr><td>銀行 A</td><td>3.6%</td><td>月複利（n = 12）</td><td>3.66%</td></tr>
+            <tr><td>銀行 B</td><td>3.64%</td><td>年複利（n = 1）</td><td>3.64%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          銀行 A 名目利率 3.6% 看起來比銀行 B 的 3.64% 便宜 0.04%。
+          但月複利讓銀行 A 的 EAR 達到 <strong>3.66%</strong>，
+          反而比銀行 B 的 EAR 3.64% 還貴。
+          選銀行 A 等於付了更多利息，即使廣告數字說反了。
+        </p>
+        <p>
+          銀行 A 的計算：r = 0.036、n = 12，
+          EAR = (1 + 0.003)<sup>12</sup> − 1 ≈ <strong>3.66%</strong>。
+          銀行 B（年複利）EAR = 3.64%，和名目利率相同（年複利的 EAR 永遠等於名目利率）。
+          兩家比較，B 便宜 0.02%。
+        </p>
+        <p>
+          借 500 萬、30 年期，0.02% 的差距換算下來是幾萬元的總利息差異。
+          選對銀行的基準是 EAR，不是廣告頁面上那個名目數字。
+        </p>
+
+        <h2>EAR、APY 與 APR：三個術語的關係</h2>
+        <p>
+          金融文件裡常看到三個縮寫，把它們搞混很容易做錯決策：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>術語</th><th>全名</th><th>意義</th><th>等不等於 EAR？</th></tr></thead>
+          <tbody>
+            <tr><td>EAR</td><td>Effective Annual Rate</td><td>考慮複利頻率後的真正年利率</td><td>是，這就是 EAR</td></tr>
+            <tr><td>APY</td><td>Annual Percentage Yield</td><td>美式存款帳戶常用，等同 EAR</td><td>是（同義）</td></tr>
+            <tr><td>APR</td><td>Annual Percentage Rate</td><td>台灣/美國常見揭露方式，通常是名目年利率</td><td>否（= 名目利率 r）</td></tr>
+          </tbody>
+        </table>
+        <p>
+          台灣銀行定存的廣告通常揭露 APR（名目利率），不是 APY（EAR）。
+          美國部分儲蓄帳戶廣告會同時標出兩者，例如「APR 5.85% / APY 6.02%」——
+          兩個數字不一樣的時候，APY 才是你真正拿到的年化報酬。
+          看到廣告利率，先問：「這是 APR 還是 APY？」
+        </p>
+
+        <h2>n → ∞ 的極限：連續複利與 EAR 的理論上界</h2>
+        <p>
+          當每年複利次數 n 趨向無限大，公式 (1 + r/n)<sup>n</sup> 的極限是 e<sup>r</sup>。
+          所以「連續複利」的 EAR = e<sup>r</sup> − 1，這是給定名目利率 r 時 EAR 的理論上界。
+        </p>
+        <p>
+          r = 6% 時：連續複利 EAR = e<sup>0.06</sup> − 1 ≈ <strong>6.18%</strong>。
+          和日複利（n = 365）的 6.18% 幾乎相同——n = 365 已非常接近極限，繼續加密幾乎無益。
+          連續複利出現在衍生性商品定價（Black-Scholes 模型、對數報酬計算）裡，
+          但日常存款和貸款不會真的做到連續複利；理解它的意義在於知道「上限在哪裡」。
+        </p>
+        <p>
+          r 越大，有限 n 和連續複利的 EAR 差距才會比較明顯。
+          r = 6% 時幾乎感受不到差異，但 r = 50% 時，n = 12 的 EAR 是 63.21%，
+          連續複利的 EAR 是 64.87%——差了 1.66%，此時是否連續計息就有實質差別了。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把月利率直接乘以 12 當成 EAR</strong>：月利率 1.5% × 12 = 18%，
+            但 18% 是名目年利率（APR），不是 EAR。正確的 EAR = 19.56%，差 1.56%。
+            這個做法叫「單純加總」，銀行法規允許這樣揭露成本，但你拿它跟不同頻率的商品比較就會出錯。
+            另外老問題：r 要代 decimal（0.06），不是百分比（6）。
+            Excel 算法：<code>=(1+0.06/12)^12-1</code>，不是 <code>=(1+6/12)^12-1</code>。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc Pro 的實質年利率計算機。把你的存款或貸款利率代進去，直接得出 EAR 做比較。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 實質年利率 EAR #48</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=48" title="實質年利率 EAR 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — EAR 背後的複利滾雪球機制</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 等額本息的 30 年數學</a></li>
+          <li><a href="/formulas/present-value.html">現值 PV — 折現率與 EAR 的關係</a></li>
+          <li><a href="/formulas/future-value-annuity.html">年金終值 — 每月定存複利累積（用 EAR 才算準）</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 翻倍年數快速估算（代入 EAR 而非名目利率）</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：EAR 定義依標準財務數學（Effective Annual Rate / APY）·
+        複利頻率對照表以 (1+r/n)ⁿ−1 實算並通過站台數值驗算腳本 ·
+        全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
