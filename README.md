@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-09** — 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/effective-annual-rate.html`（#48 · 金融 · Pro，實質年利率 EAR = (1+r/n)ⁿ−1，拆解名目利率 vs EAR、月複利 6%→6.17%、信用卡循環 18%→EAR 19.56%）、
+  `writing/2026-08-07-auto-resizer-v301-portrait-fix.html`（Auto Resizer v3.0.1：74→98 單元全綠但兩條測試是 tautology、直式影片面積比不裝擴充功能小 14.8%、聚合命中次數掩蓋兩個獨立欄位）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（writing 93 篇、formulas 18 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-08-09.
+
 - **2026-08-07** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/future-value-annuity.html`（#43 · 金融 · Pro，年金終值 FV = PMT×((1+r)^n−1)/r，逐步拆解等比數列推導、利率敏感度、早晚 10 年差距 542 萬）。
   Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 17 篇）。
