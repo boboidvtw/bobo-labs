@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BMR 基礎代謝率怎麼算？Mifflin-St Jeor 公式詳解（70公斤 175公分 30歲實例）· Bobo Labs</title>
+  <meta name="description" content="BMR 基礎代謝率是身體靜止時的最低熱量消耗。Mifflin-St Jeor 公式怎麼算？本文以 70 公斤 175 公分 30 歲男性（1,649 kcal）與 60 公斤 160 公分女性（1,289 kcal）為例，拆解體重、身高、年齡、性別四個係數的影響，並說明為何 BMR 不等於 TDEE。" />
+  <meta property="og:title" content="BMR 基礎代謝率怎麼算？Mifflin-St Jeor 公式詳解" />
+  <meta property="og:description" content="10w + 6.25h − 5a + 5（男）/ −161（女）完整解析，含男女差異與年齡效應實例。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/bmr.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/bmr.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "BMR 基礎代謝率怎麼算？Mifflin-St Jeor 公式詳解", "url": "https://labs.moneyai168.com/formulas/bmr.html", "datePublished": "2026-08-09", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "BMR 基礎代謝", "item": "https://labs.moneyai168.com/formulas/bmr.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "10*w + 6.25*h - 5*a + 5",
+    "cases": [
+      {"input": {"w": 70, "h": 175, "a": 30}, "expect": 1648.75, "tol": 1, "text": "1,649"},
+      {"expr": "10*w + 6.25*h - 5*a - 161", "input": {"w": 60, "h": 160, "a": 30}, "expect": 1289.0, "tol": 1, "text": "1,289"},
+      {"expr": "b1 - b2", "input": {"b1": 1648.75, "b2": 1289.0}, "expect": 359.75, "tol": 1, "text": "360"},
+      {"expr": "10*w + 6.25*h - 5*a + 5", "input": {"w": 70, "h": 175, "a": 40}, "expect": 1598.75, "tol": 1, "text": "1,599"},
+      {"expr": "b1 - b2", "input": {"b1": 1648.75, "b2": 1598.75}, "expect": 50.0, "tol": 0.01, "text": "50"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 健康 · #91 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">BMR 基礎代謝率：身體靜止也在燒的那些熱量</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-09</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        躺著不動也要消耗熱量——那不是懶，是生存成本。
+        BMR（Basal Metabolic Rate，基礎代謝率）是身體在完全靜止、空腹狀態下，
+        維持心跳、呼吸、體溫所需的最低熱量。
+        70 公斤、175 公分、30 歲男性的 BMR 是 1,649 kcal/天；
+        同齡 60 公斤、160 公分女性是 1,289 kcal/天——兩者相差 360 kcal，
+        比一杯全糖珍珠奶茶的熱量還多。
+        本文拆解 Mifflin-St Jeor 公式的每個係數，說清楚體重、身高、年齡、性別各自的影響。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">BMR = 10<em>w</em> + 6.25<em>h</em> − 5<em>a</em> + <em>s</em></div>
+          <div class="formula-box-note">
+            w 體重（kg）· h 身高（cm）· a 年齡（歲）· s = +5（男）/ −161（女）
+          </div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>w</td><td>體重（Weight）</td><td>kg</td><td>55–90</td></tr>
+            <tr><td>h</td><td>身高（Height）</td><td>cm</td><td>155–185</td></tr>
+            <tr><td>a</td><td>年齡（Age）</td><td>歲</td><td>18–65</td></tr>
+            <tr><td>s</td><td>性別常數（Sex constant）</td><td>kcal/天</td><td>+5（男）/ −161（女）</td></tr>
+            <tr><td>BMR</td><td>基礎代謝率</td><td>kcal/天</td><td>1,200–2,100</td></tr>
+          </tbody>
+        </table>
+
+        <h2>BMR 是什麼？為什麼比你想的還高</h2>
+        <p>
+          BMR 占一般成人全日總消耗熱量的 60–75%。大腦每天約需 400–500 kcal，
+          肝臟持續進行代謝約 200 kcal，心臟 24 小時跳動、腎臟每分鐘過濾 1.2 公升血液，
+          都需要持續供應 ATP。肌肉即使靜止也要維持基礎張力。
+          這些都不是免費的。
+        </p>
+        <p>
+          臨床上，BMR 最常用於：①住院病人的靜脈或鼻胃管餵食量計算；
+          ②運動員週期化訓練的能量規劃；③減脂期熱量缺口設計。
+          BMR 是安全下限——長期攝取低於 BMR 有代謝降低與肌肉流失的風險。
+        </p>
+
+        <h2>公式係數怎麼來的</h2>
+        <p>
+          Mifflin-St Jeor 方程式由 Mark D. Mifflin 與 Sachiko T. St Jeor 在 1990 年
+          發表於《美國臨床營養期刊》（AJCN），以 498 名健康成人為樣本做線性迴歸：
+        </p>
+        <ul>
+          <li><strong>體重係數 10</strong>：每增加 1 kg，BMR 上升約 10 kcal。脂肪與肌肉均計入，但肌肉的實際代謝貢獻更高（約 13 kcal/kg），係數是平均效應。</li>
+          <li><strong>身高係數 6.25</strong>：每增加 1 cm，BMR 上升約 6.25 kcal。身高代理了體表面積和器官尺寸。</li>
+          <li><strong>年齡係數 −5</strong>：每增加 1 歲，BMR 下降約 5 kcal。主因是肌肉量隨年齡流失（肌少症）。</li>
+          <li><strong>性別常數差 166 kcal</strong>（男 +5 vs 女 −161）：反映相同體型下男性肌肉比例平均高於女性的結構性差異。</li>
+        </ul>
+
+        <h2>用真實數字算一遍：70 公斤男性 vs 60 公斤女性</h2>
+        <p>
+          <strong>男 A</strong>（70 kg、175 cm、30 歲）：
+        </p>
+        <p>
+          BMR = 10 × 70 + 6.25 × 175 − 5 × 30 + 5 = 700 + 1,093.75 − 150 + 5 = <strong>1,649 kcal/天</strong>
+        </p>
+        <p>
+          <strong>女 B</strong>（60 kg、160 cm、30 歲）：
+        </p>
+        <p>
+          BMR = 10 × 60 + 6.25 × 160 − 5 × 30 − 161 = 600 + 1,000 − 150 − 161 = <strong>1,289 kcal/天</strong>
+        </p>
+        <p>
+          兩者相差 <strong>360 kcal/天</strong>。拆開來看：體重差 100 kcal、身高差 93.75 kcal、
+          性別常數差 166 kcal，年齡項相同。
+          這也是「男女一起節食，男的掉得比較快」的根本原因——
+          基礎代謝就已經差了 360 kcal，同樣的熱量限制造成的缺口比例不同。
+        </p>
+
+        <h2>年齡效應有多大？30 歲 vs 40 歲</h2>
+        <p>
+          把男 A 的年齡從 30 改成 40，其他不變：
+        </p>
+        <p>
+          BMR = 10 × 70 + 6.25 × 175 − 5 × 40 + 5 = 700 + 1,093.75 − 200 + 5 = <strong>1,599 kcal/天</strong>
+        </p>
+        <p>
+          30 歲 1,649 kcal，40 歲 1,599 kcal，前後相差 <strong>50 kcal/天</strong>。
+          年齡係數 −5 乘以 10 年就是 −50——公式把每年肌肉流失的代謝拖累線性化了。
+          50 kcal/天看似不多，但它是每天都在發生的系統性差距。
+          40 歲後若飲食習慣和 30 歲完全相同，每年多攝入約 18,000 kcal，
+          脂肪就是這樣一點一點積累的。
+        </p>
+        <p>
+          對策是維持甚至增加肌肉量。阻力訓練是抵消年齡係數最直接的方法：
+          每增加 1 公斤純肌肉，真實 BMR 提升幅度接近 13 kcal，
+          比公式係數的 10 kcal 還高（因係數混入了體脂的平均值）。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 BMR 當作「每天吃這麼多就夠」的目標值</strong>：
+            BMR 是「完全靜止、連消化都不做」的最低消耗，不是正常攝取量。
+            真正設計飲食需要 TDEE（每日總消耗），等於 BMR × 活動係數——
+            久坐辦公室約乘以 1.2，每週輕度運動約乘以 1.375，中度運動約乘以 1.55。
+            長期吃低於 BMR 有代謝降低與肌肉流失的健康風險。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          輸入體重、身高、年齡、性別，∑ Calc 立刻算出你的 Mifflin-St Jeor BMR。
+          同時可用 Pro 版 TDEE 計算機（#94）把 BMR 乘上活動係數，得到飲食規劃的真正基準線。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · BMR 基礎代謝 #91</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=91" title="BMR 基礎代謝互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/bmi.html">BMI 身體質量指數 — 簡單到危險的健康指標</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 每多複利一次，差距就放大</a></li>
+          <li>進階：TDEE 每日總消耗（BMR 乘以活動係數，才是飲食規劃的真正基準）— ∑ Calc Pro #94 即將推出</li>
+          <li>進階：體脂率 Deurenberg 公式（補強 BMR 的體脂盲點）— ∑ Calc Pro #96 即將推出</li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
