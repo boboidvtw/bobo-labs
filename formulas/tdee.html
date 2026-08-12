@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TDEE 每日總消耗熱量怎麼算？公式拆解（70公斤男性活動量對照）· Bobo Labs</title>
+  <meta name="description" content="TDEE（每日總消耗熱量）= BMR × 活動係數。本文完整解析公式、列出 5 種活動等級係數，用 70 公斤 175 公分 30 歲男性實例從 1,979 到 3,133 大卡逐行算出，說明常見的「吃多少才夠」誤區。" />
+  <meta property="og:title" content="TDEE 每日總消耗熱量怎麼算？公式拆解" />
+  <meta property="og:description" content="BMR × 活動係數的完整解析，5 種活動等級對照，男女實例計算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/tdee.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/tdee.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "TDEE 每日總消耗熱量怎麼算？公式拆解", "url": "https://labs.moneyai168.com/formulas/tdee.html", "datePublished": "2026-08-11", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "TDEE 每日總消耗", "item": "https://labs.moneyai168.com/formulas/tdee.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(10*w + 6.25*h - 5*a + s) * factor",
+    "cases": [
+      {"expr": "10*w + 6.25*h - 5*a + s", "input": {"w":70,"h":175,"a":30,"s":5}, "expect": 1648.75, "tol": 0.5, "text": "1,649"},
+      {"input": {"w":70,"h":175,"a":30,"s":5,"factor":1.2},   "expect": 1978.5,     "tol": 0.5, "text": "1,979"},
+      {"input": {"w":70,"h":175,"a":30,"s":5,"factor":1.375}, "expect": 2267.03125, "tol": 0.5, "text": "2,267"},
+      {"input": {"w":70,"h":175,"a":30,"s":5,"factor":1.55},  "expect": 2555.5625,  "tol": 0.5, "text": "2,556"},
+      {"input": {"w":70,"h":175,"a":30,"s":5,"factor":1.725}, "expect": 2844.09375, "tol": 0.5, "text": "2,844"},
+      {"input": {"w":70,"h":175,"a":30,"s":5,"factor":1.9},   "expect": 3132.625,   "tol": 0.5, "text": "3,133"},
+      {"expr": "10*w + 6.25*h - 5*a + s", "input": {"w":60,"h":160,"a":30,"s":-161}, "expect": 1289.0, "tol": 0.5, "text": "1,289"},
+      {"input": {"w":60,"h":160,"a":30,"s":-161,"factor":1.2},   "expect": 1546.8,   "tol": 0.5, "text": "1,547"},
+      {"input": {"w":60,"h":160,"a":30,"s":-161,"factor":1.375}, "expect": 1772.375, "tol": 0.5, "text": "1,772"},
+      {"input": {"w":60,"h":160,"a":30,"s":-161,"factor":1.55},  "expect": 1997.95,  "tol": 0.5, "text": "1,998"},
+      {"input": {"w":60,"h":160,"a":30,"s":-161,"factor":1.725}, "expect": 2223.525, "tol": 0.5, "text": "2,224"},
+      {"input": {"w":60,"h":160,"a":30,"s":-161,"factor":1.9},   "expect": 2449.1,   "tol": 0.5, "text": "2,449"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 健康 · #94 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">TDEE 每日總消耗：從 BMR 到實際熱量需求的那一步</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-11</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        BMR 是躺著不動也要燒的最低熱量，但你不是每天都躺著。
+        TDEE（Total Daily Energy Expenditure，每日總消耗熱量）才是你從早到晚——
+        工作、走路、運動、甚至消化食物——真正花掉的熱量總和。
+        計算方式只有一步：BMR 乘以活動係數。
+        70 公斤、175 公分、30 歲的男性，同樣的身體、不同的生活型態，
+        TDEE 可以從 1,979 大卡（久坐辦公室）到 3,133 大卡（每天高強度訓練）——
+        差距超過 1,100 大卡，幾乎是一餐正餐的三倍。
+        本文把公式拆開，說清楚活動係數的定義、男女差異，以及最常算錯的地方。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">TDEE = BMR × AF</div>
+          <div class="formula-box-note">
+            BMR 基礎代謝率（Mifflin-St Jeor）· AF 活動係數（1.2–1.9）
+          </div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>TDEE</td><td>每日總消耗熱量（Total Daily Energy Expenditure）</td><td>kcal/天</td><td>1,500–4,000</td></tr>
+            <tr><td>BMR</td><td>基礎代謝率（Basal Metabolic Rate），靜止最低消耗</td><td>kcal/天</td><td>1,200–2,200</td></tr>
+            <tr><td>AF</td><td>活動係數（Activity Factor），由生活型態決定</td><td>無單位</td><td>1.2–1.9</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          BMR 用 Mifflin-St Jeor 公式計算（10<em>w</em> + 6.25<em>h</em> − 5<em>a</em> + <em>s</em>，男性 s = +5，女性 s = −161）。
+          還沒算過 BMR 的話，先看 <a href="/formulas/bmr.html">BMR 基礎代謝率公式詳解</a>，再回來把結果帶進 TDEE。
+        </p>
+
+        <h2>活動係數從哪裡來？5 個等級的定義</h2>
+        <p>
+          活動係數背後有 Harris-Benedict 修正版與 Ainsworth 的 Compendium of Physical Activities 支撐。
+          最常引用的 5 等級如下：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>等級</th><th>係數 AF</th><th>定義</th></tr></thead>
+          <tbody>
+            <tr><td>久坐（Sedentary）</td><td>1.2</td><td>辦公室工作，幾乎不運動；步行是主要活動</td></tr>
+            <tr><td>輕度活動（Lightly active）</td><td>1.375</td><td>每週輕度運動 1–3 天（如散步、瑜伽）</td></tr>
+            <tr><td>中度活動（Moderately active）</td><td>1.55</td><td>每週中強度運動 3–5 天（如慢跑、重訓）</td></tr>
+            <tr><td>高強度活動（Very active）</td><td>1.725</td><td>每週高強度運動 6–7 天（如馬拉松訓練）</td></tr>
+            <tr><td>超高強度（Extra active）</td><td>1.9</td><td>每天劇烈訓練或體力勞動職業（如搬運工、職業運動員）</td></tr>
+          </tbody>
+        </table>
+        <p>
+          選係數有一個實用原則：<strong>先估保守，一週後看體重變化再調整</strong>。
+          大多數人高估自己的運動量——用 1.375 起算，比用 1.55 起算、兩週後發現沒效再往下修，省時間得多。
+        </p>
+
+        <h2>用真實數字算：70 公斤男性，5 種活動量的 TDEE</h2>
+        <p>
+          以 <a href="/formulas/bmr.html">BMR 文章</a>的男性例子為基礎：
+          70 公斤、175 公分、30 歲，BMR = <strong>1,649 kcal/天</strong>。
+          把 1,649 乘上各級活動係數：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>活動等級</th><th>係數 AF</th><th>TDEE（kcal/天）</th></tr></thead>
+          <tbody>
+            <tr><td>久坐</td><td>1.2</td><td><strong>1,979</strong></td></tr>
+            <tr><td>輕度活動</td><td>1.375</td><td><strong>2,267</strong></td></tr>
+            <tr><td>中度活動</td><td>1.55</td><td><strong>2,556</strong></td></tr>
+            <tr><td>高強度活動</td><td>1.725</td><td><strong>2,844</strong></td></tr>
+            <tr><td>超高強度</td><td>1.9</td><td><strong>3,133</strong></td></tr>
+          </tbody>
+        </table>
+        <p>
+          從最低的 1,979 到最高的 3,133，同一個人差距超過 1,100 大卡——大概是兩碗白飯加一個雞腿便當。
+          活動量才是 TDEE 變化幅度最大的槓桿，遠比任何飲食細節都重要。
+        </p>
+        <p>
+          以中度活動為例：(10 × 70 + 6.25 × 175 − 5 × 30 + 5) × 1.55 = 1,648.75 × 1.55 = <strong>2,556 kcal/天</strong>。
+          其他列同理，係數一換、結果隨之變。
+        </p>
+
+        <h2>女性 TDEE：60 公斤 160 公分 30 歲，同樣 5 個等級</h2>
+        <p>
+          沿用 <a href="/formulas/bmr.html">BMR 文章</a>的女性例子（60 公斤、160 公分、30 歲），BMR = <strong>1,289 kcal/天</strong>。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>活動等級</th><th>係數 AF</th><th>TDEE（kcal/天）</th></tr></thead>
+          <tbody>
+            <tr><td>久坐</td><td>1.2</td><td><strong>1,547</strong></td></tr>
+            <tr><td>輕度活動</td><td>1.375</td><td><strong>1,772</strong></td></tr>
+            <tr><td>中度活動</td><td>1.55</td><td><strong>1,998</strong></td></tr>
+            <tr><td>高強度活動</td><td>1.725</td><td><strong>2,224</strong></td></tr>
+            <tr><td>超高強度</td><td>1.9</td><td><strong>2,449</strong></td></tr>
+          </tbody>
+        </table>
+        <p>
+          女性中度活動的 TDEE 是 1,998 大卡，男性同等級是 2,556 大卡。
+          BMR 的性別差距在 TDEE 層面被活動係數放大——
+          這就是男女一起做同樣熱量赤字計劃，男性往往掉重更快的根本原因：
+          不是意志力的差異，是起點的差異。
+        </p>
+
+        <h2>TDEE 才是飲食規劃的起點，BMR 不是</h2>
+        <p>
+          BMR 是「完全靜止、空腹、體溫維持」的消耗底線，
+          現實生活裡不存在這個狀態——你每天至少要站起來上廁所、咀嚼食物（熱效應約佔 TDEE 的 8–15%）。
+          以 BMR 當攝取目標，代表你在設計一個讓身體長期處於嚴重缺口的計劃，
+          結果往往是肌肉流失先於脂肪、代謝降低，復胖更快。
+        </p>
+        <p>
+          實際應用上：維持體重把攝取設在 TDEE；減脂設在 TDEE × 0.8（約 −20% 赤字）；
+          增肌設在 TDEE × 1.05–1.10（小幅盈餘即可，過多只是多存脂肪）。
+          三種情境的起點都是 TDEE，不是 BMR——用 BMR 當目標等於從一開始就差了 20% 的缺口。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>用 BMR 當每日攝取目標</strong>：BMR 是靜止消耗的底線，
+            不是正常人應該攝取的熱量。即使你整天坐著，AF 也是 1.2，
+            代表你每天至少消耗 BMR × 1.2，吃到 BMR 就已經是 −20% 的赤字。
+            長期低於 BMR 攝取的風險是代謝下降、肌肉流失，而不是單純的脂肪減少。
+            TDEE 的活動係數已經把運動熱量包含在內，不需要另外再「加回去」運動消耗——那樣等於算了兩次。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          輸入 BMR（可從 <a href="/formulas/bmr.html">∑ Calc #91</a> 算出），
+          選擇活動等級，立刻得到 TDEE。∑ Calc Pro #94 提供這條公式的互動計算。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · TDEE 每日總消耗 #94</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=94" title="TDEE 每日總消耗互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/bmr.html">BMR 基礎代謝率 — TDEE 的起算基礎，公式與男女差異詳解</a></li>
+          <li><a href="/formulas/bmi.html">BMI 身體質量指數 — 和 TDEE 一起用才完整的體型指標</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 熱量赤字的「複利效果」：為什麼一點一點累積才持久</a></li>
+          <li>進階：體脂率 Deurenberg 公式（補強 BMR 低估高體脂者的盲點）— ∑ Calc Pro #96 即將推出</li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        <h2>來源與定義出處</h2>
+        <ul>
+          <li>Mifflin MD, St Jeor ST, et al. "A new predictive equation for resting energy expenditure in healthy individuals." <em>American Journal of Clinical Nutrition</em>, 1990; 51(2): 241–247.</li>
+          <li>Ainsworth BE, et al. "Compendium of Physical Activities." <em>Medicine &amp; Science in Sports &amp; Exercise</em>, 2011; 43(8): 1575–1581.</li>
+          <li>Hall KD, et al. "Energy balance and its components." <em>American Journal of Clinical Nutrition</em>, 2012; 95(4): 989–994. （NEAT 個體差異數據來源）</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
