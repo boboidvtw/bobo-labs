@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-12** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/tdee.html`（#94 · 健康 · Pro，TDEE = BMR × 活動係數，拆解 5 種活動等級係數 1.2–1.9，男性 70kg 久坐 1,979 到高強度 3,133 kcal 實例，女性 60kg 同步對照）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（formulas 20 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 12 cases）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-12.
+
 - **2026-08-10** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/bmr.html`（#91 · 健康 · Free，BMR 基礎代謝率 = 10w + 6.25h − 5a + s，拆解 Mifflin-St Jeor 公式四係數，附男女差 360 kcal、30 vs 40 歲年齡效應 50 kcal 實例）。
   Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（formulas 19 篇）。
