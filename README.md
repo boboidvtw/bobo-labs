@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-14** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/body-fat-deurenberg.html`（#96 · 健康 · Pro，體脂率 Deurenberg：BF% = 1.20×BMI + 0.23×age − 10.8×sex − 5.4，BMI 24 的 30 歲男性估 19.5%、同齡女性 30.3%，差 10.8 個百分點；40 歲年齡效應 2.3% 實例；亞洲族裔與重訓者誤差討論）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（formulas 21 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 5 cases）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-14.
+
 - **2026-08-12** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/tdee.html`（#94 · 健康 · Pro，TDEE = BMR × 活動係數，拆解 5 種活動等級係數 1.2–1.9，男性 70kg 久坐 1,979 到高強度 3,133 kcal 實例，女性 60kg 同步對照）。
   Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（formulas 20 篇）。
