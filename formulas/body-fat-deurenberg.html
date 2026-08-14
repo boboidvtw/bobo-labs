@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>體脂率公式怎麼算？Deurenberg 用 BMI 估體脂（男女 30 歲對照實例）· Bobo Labs</title>
+  <meta name="description" content="不用體脂計也能估體脂率？Deurenberg 公式以 BMI、年齡、性別三個數字換算，BMI 24 的 30 歲男性估出 19.5%、同齡女性 30.3%，差了 10.8 個百分點。本文拆解每個係數的含義、健康範圍參考，以及公式在哪些情境下會失準。" />
+  <meta property="og:title" content="體脂率公式怎麼算？Deurenberg 用 BMI 估體脂" />
+  <meta property="og:description" content="BF% = 1.20×BMI + 0.23×age − 10.8×sex − 5.4 完整解析，含男女差異與年齡效應實例。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/body-fat-deurenberg.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/body-fat-deurenberg.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "體脂率公式怎麼算？Deurenberg 用 BMI 估體脂", "url": "https://labs.moneyai168.com/formulas/body-fat-deurenberg.html", "datePublished": "2026-08-13", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "體脂率 Deurenberg", "item": "https://labs.moneyai168.com/formulas/body-fat-deurenberg.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "1.20 * BMI + 0.23 * age - 10.8 * sex - 5.4",
+    "cases": [
+      {"input": {"BMI": 24, "age": 30, "sex": 1}, "expect": 19.5, "tol": 0.01, "text": "19.5"},
+      {"input": {"BMI": 24, "age": 30, "sex": 0}, "expect": 30.3, "tol": 0.01, "text": "30.3"},
+      {"input": {"BMI": 24, "age": 40, "sex": 1}, "expect": 21.8, "tol": 0.01, "text": "21.8"},
+      {"expr": "bf40 - bf30", "input": {"bf40": 21.8, "bf30": 19.5}, "expect": 2.3, "tol": 0.01, "text": "2.3"},
+      {"expr": "bf_f - bf_m", "input": {"bf_f": 30.3, "bf_m": 19.5}, "expect": 10.8, "tol": 0.01, "text": "10.8"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 健康 · #96 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">體脂率 Deurenberg：BMI 怎麼換算成體脂率</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-13</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        體重計量不出體脂。BMI 24、30 歲的男性，Deurenberg 公式估出體脂率 19.5%；
+        同樣 BMI、同樣年齡的女性，卻是 30.3%——差了 10.8 個百分點。
+        這不是量測誤差，是公式設計進去的生理常數。
+        1991 年 Paul Deurenberg 以 498 人的水中秤重法實測，
+        用 BMI、年齡、性別三個數字換算體脂率，至今仍是臨床常用的快速篩檢工具。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">BF% = 1.20 × BMI + 0.23 × age − 10.8 × sex − 5.4</div>
+          <div class="formula-box-note">BMI 身體質量指數 · age 年齡（歲）· sex = 1（男）/ 0（女）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>BMI</td><td>身體質量指數（體重 kg ÷ 身高 m²）</td><td>kg/m²</td><td>18.5–27.5</td></tr>
+            <tr><td>age</td><td>年齡</td><td>歲</td><td>18–65</td></tr>
+            <tr><td>sex</td><td>性別（男 = 1，女 = 0）</td><td>—</td><td>0 或 1</td></tr>
+            <tr><td>BF%</td><td>體脂率（Body Fat Percentage）</td><td>%</td><td>男 10–25 / 女 18–32</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼 BMI 和體脂率是兩回事？</h2>
+        <p>
+          BMI（Body Mass Index，身體質量指數）是體重除以身高平方，只計算體重與身高的關係，
+          完全不分辨這個體重來自肌肉還是脂肪。
+          一個 80 公斤、175 公分的健美選手和一個相同體重的久坐工作者，BMI 完全相同，
+          體脂率卻可能差距超過 15 個百分點。
+        </p>
+        <p>
+          體脂率（Body Fat Percentage）才是直接衡量脂肪占體重比例的指標。
+          精準測量需要 DEXA 或水中秤重法，誤差可控制在 1–2%，但需要專業設備。
+          Deurenberg 公式用 BMI 搭配年齡和性別換算體脂率估計值，誤差約 ±3–5%，
+          不需要儀器，適合快速自我評估是否偏高。
+        </p>
+
+        <h2>四個係數各自代表什麼</h2>
+        <ul>
+          <li>
+            <strong>1.20 × BMI</strong>：BMI 每增加 1 單位，體脂率增加 1.20%。
+            BMI 越高通常意味著脂肪比例也越高，係數捕捉的是這個群體平均趨勢。
+          </li>
+          <li>
+            <strong>0.23 × age</strong>：年齡每增加 1 歲，體脂率增加 0.23%。
+            即使體重不變，肌肉量隨年齡下降（肌少症，sarcopenia）、脂肪比例上升，
+            係數 0.23 是這個老化過程的統計平均速率。
+          </li>
+          <li>
+            <strong>−10.8 × sex</strong>：性別調整項。相同 BMI 和年齡的人，
+            男性體脂率比女性低 10.8%。差距來自女性生理需求——
+            生殖系統、荷爾蒙、乳腺組織都需要一定比例的必要脂肪（essential fat）。
+          </li>
+          <li>
+            <strong>−5.4</strong>：統計迴歸截距常數，無獨立生理含義。
+          </li>
+        </ul>
+
+        <h2>用真實數字算一遍：BMI 24，30 歲男女對照</h2>
+        <p>
+          以 BMI 24（正常體重上緣）、30 歲為例，分別代入男性（sex = 1）和女性（sex = 0）：
+        </p>
+        <p>
+          <strong>男性（sex = 1）</strong>：
+        </p>
+        <p>
+          BF% = 1.20 × 24 + 0.23 × 30 − 10.8 × 1 − 5.4
+          = 28.8 + 6.9 − 10.8 − 5.4 = <strong>19.5%</strong>
+        </p>
+        <p>
+          <strong>女性（sex = 0）</strong>：
+        </p>
+        <p>
+          BF% = 1.20 × 24 + 0.23 × 30 − 10.8 × 0 − 5.4
+          = 28.8 + 6.9 − 0 − 5.4 = <strong>30.3%</strong>
+        </p>
+        <p>
+          兩人 BMI 相同、年齡相同，體脂率相差 <strong>10.8%</strong>，
+          剛好等於公式的性別係數。無論 BMI 和年齡填什麼，
+          男女的體脂估算差距永遠固定是 10.8%——公式用一個常數把平均的生理性別差異量化了進去。
+          對照常見分類：男性 19.5% 落在「可接受（Acceptable）」範圍（約 18–24%），
+          女性 30.3% 落在「可接受」上緣（約 25–31%）。
+          BMI 在「正常」範圍不代表體脂也在理想區間，對女性尤其如此。
+        </p>
+
+        <h2>年齡效應：30 歲 vs 40 歲，同一個男性的差距</h2>
+        <p>
+          把上面的男性年齡從 30 歲改成 40 歲，其他數字不變：
+        </p>
+        <p>
+          BF% = 1.20 × 24 + 0.23 × 40 − 10.8 × 1 − 5.4
+          = 28.8 + 9.2 − 10.8 − 5.4 = <strong>21.8%</strong>
+        </p>
+        <p>
+          30 歲估出 19.5%，40 歲估出 21.8%，差了 <strong>2.3%</strong>。
+          年齡係數 0.23 乘以 10 年恰好是 2.3%——公式把體脂率隨時間的漂移線性化了。
+        </p>
+        <p>
+          2.3% 看似不大，但多數體脂分類每個等級區間只有 6–8%，
+          10 年就走了大約三分之一個等級的距離——生活型態完全不變的話，
+          每過一個十年都在往偏高方向移動。
+        </p>
+        <p>
+          0.23 × age 捕捉的是統計平均的老化速率，
+          真正的機制是肌肉量流失（sarcopenia）——每年約 0.5–1%，
+          導致同樣體重下脂肪比例上升。這個過程可以被每週 2–3 次的阻力訓練大幅延緩，
+          體脂上升幅度會顯著低於公式的統計平均值。
+        </p>
+
+        <h2>體脂率的健康參考範圍</h2>
+        <p>
+          Deurenberg 公式算出來的數字，需要對照分類標準才有意義。
+          以下是臨床上常引用的成人體脂率健康參考範圍（不同機構的切點略有出入，以下為常見版本）：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>等級</th><th>男性</th><th>女性</th></tr></thead>
+          <tbody>
+            <tr><td>必要脂肪（Essential fat）</td><td>2–5%</td><td>10–13%</td></tr>
+            <tr><td>運動員（Athletes）</td><td>6–13%</td><td>14–20%</td></tr>
+            <tr><td>健康（Fitness）</td><td>14–17%</td><td>21–24%</td></tr>
+            <tr><td>可接受（Acceptable）</td><td>18–24%</td><td>25–31%</td></tr>
+            <tr><td>偏高（Obese）</td><td>≥ 25%</td><td>≥ 32%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          女性必要脂肪下限（10–13%）比男性（2–5%）高出一大截。
+          女性體脂長期低於 14% 容易引發月經週期紊亂（運動性無月經）、
+          荷爾蒙異常與骨密度下降——追求「過低體脂」在女性族群是需要注意的健康風險。
+        </p>
+        <p>
+          男性 19.5% 在「可接受」（18–24%）下段，若想進入「健康（Fitness）」（14–17%），
+          需搭配飲食控制與重量訓練，目標是降脂同時維持肌肉量，而非單純壓低體重。
+          女性 30.3% 在「可接受」上緣，「健康（Fitness）」（21–24%）
+          對一般成年女性需要持續努力才能達到，不是普通人的日常基線。
+        </p>
+
+        <h2>Deurenberg 公式的限制：哪些人用會失準</h2>
+        <p>
+          這是統計迴歸，原始樣本是 1991 年的荷蘭成年人。以下情境誤差會明顯放大：
+        </p>
+        <ul>
+          <li>
+            <strong>重訓型運動員</strong>：BMI 偏高但體脂低的人——例如 90 公斤、175 公分（BMI 約 29.4）的健美選手，
+            公式會把高 BMI 解讀成高體脂，但實際體脂可能只有 12–15%。
+            公式在這類人群系統性高估體脂。
+          </li>
+          <li>
+            <strong>65 歲以上高齡族群</strong>：原始研究的年齡範圍主要涵蓋 18–65 歲成人，
+            高齡者的身體組成特性（如肌少脂增、體液比例變化）
+            可能超出這條線性方程式的適用範圍。
+          </li>
+          <li>
+            <strong>亞洲族裔</strong>：多項研究（包括以台灣、香港族群為樣本的研究）發現，
+            亞洲人在相同 BMI 下的體脂率比歐洲人平均高 3–5%，
+            原因涉及體型比例與肌肉分布的族裔差異。
+            對台灣人使用 Deurenberg 公式，估算結果可能輕微偏低。
+          </li>
+          <li>
+            <strong>特殊生理狀態</strong>：懷孕、哺乳、嚴重水腫、腎臟疾病患者的體重組成
+            與正常狀態差異甚大，此時 BMI 的輸入本身已失去代表性，公式估算無實質意義。
+          </li>
+        </ul>
+        <p>
+          需要精準數值時，建議使用 DEXA 或 InBody 設備。
+          Deurenberg 公式最適合體型普通、無極端運動習慣的一般成年人快速篩查。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>sex 的編碼填反了</strong>：公式規定「男性 = 1，女性 = 0」，
+            而係數本身帶負號（−10.8）。
+            如果直覺把「女性 = 1」代進去，男女結果會完全顛倒：
+            BMI 24 的 30 歲男性會算出 30.3%（女性的估算水準），
+            女性反而得到 19.5%（男性的估算水準）。
+            這是手動計算時最常見的輸入錯誤。
+            ∑ Calc Pro #96 讓使用者直接選「男/女」，
+            自動處理 0/1 的轉換，不需要記住哪個是 1。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供 Deurenberg 體脂率 #96 的互動計算——
+          輸入 BMI、年齡、性別，立刻得到估算結果並對照健康分類。
+          可與 <a href="/formulas/bmi.html">BMI（#90）</a>、<a href="/formulas/bmr.html">BMR（#91）</a>、
+          <a href="/formulas/tdee.html">TDEE（#94）</a> 組合，完整評估身體組成與熱量需求。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 體脂率 Deurenberg #96</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=96" title="體脂率 Deurenberg 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/bmi.html">BMI 身體質量指數 — 簡單到危險的健康指標</a></li>
+          <li><a href="/formulas/bmr.html">BMR 基礎代謝率 — 身體靜止也在燒的那些熱量</a></li>
+          <li><a href="/formulas/tdee.html">TDEE 每日總消耗 — BMR × 活動係數，飲食規劃的真正基準</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        <p>來源：Deurenberg P, Weststrate JA, Seidell JC. "Body mass index as a measure of body fatness." <em>Br J Nutr.</em> 1991;65(2):105–114. 健康分類依臨床常用版本，各機構切點略有差異。</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
