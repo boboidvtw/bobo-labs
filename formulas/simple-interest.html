@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>單利公式怎麼算？單利終值 P(1+rt) 完整拆解（100萬5%三年實例）· Bobo Labs</title>
+  <meta name="description" content="單利怎麼算？公式 F = P(1+rt)：本金乘以（1 加利率乘年數）。本文用 100 萬、年利率 5%、存 3 年的完整算法，並對比複利差距，說明哪些金融商品實際用單利計息。" />
+  <meta property="og:title" content="單利公式怎麼算？單利終值 P(1+rt) 完整拆解" />
+  <meta property="og:description" content="F = P(1+rt) 的完整解析：變數說明、100萬三年實例、單利 vs 複利對照表、實際應用場景。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/simple-interest.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/simple-interest.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "單利公式怎麼算？單利終值 P(1+rt) 完整拆解", "url": "https://labs.moneyai168.com/formulas/simple-interest.html", "datePublished": "2026-08-15", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "單利終值", "item": "https://labs.moneyai168.com/formulas/simple-interest.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "P * (1 + r * t)",
+    "cases": [
+      {"input": {"P": 1000000, "r": 0.05, "t": 3},  "expect": 1150000, "tol": 1, "text": "1,150,000"},
+      {"input": {"P": 1000000, "r": 0.05, "t": 10}, "expect": 1500000, "tol": 1, "text": "1,500,000"},
+      {"input": {"P": 1000000, "r": 0.05, "t": 30}, "expect": 2500000, "tol": 1, "text": "2,500,000"},
+      {"expr": "P * r * t", "input": {"P": 1000000, "r": 0.05, "t": 3},  "expect": 150000,  "tol": 1, "text": "150,000"},
+      {"expr": "P * r * t", "input": {"P": 1000000, "r": 0.05, "t": 10}, "expect": 500000,  "tol": 1, "text": "500,000"},
+      {"expr": "P * r * t", "input": {"P": 1000000, "r": 0.05, "t": 30}, "expect": 1500000, "tol": 1, "text": "1,500,000"},
+      {"expr": "P * (1 + r) ** t", "input": {"P": 1000000, "r": 0.05, "t": 3},  "expect": 1157625.0,   "tol": 1, "text": "1,157,625"},
+      {"expr": "P * (1 + r) ** t", "input": {"P": 1000000, "r": 0.05, "t": 10}, "expect": 1628894.627, "tol": 1, "text": "1,628,895"},
+      {"expr": "P * (1 + r) ** t", "input": {"P": 1000000, "r": 0.05, "t": 30}, "expect": 4321942.375, "tol": 1, "text": "4,321,942"},
+      {"expr": "P * (1 + r) ** t - P * (1 + r * t)", "input": {"P": 1000000, "r": 0.05, "t": 3},  "expect": 7625.0,     "tol": 1, "text": "7,625"},
+      {"expr": "P * (1 + r) ** t - P * (1 + r * t)", "input": {"P": 1000000, "r": 0.05, "t": 10}, "expect": 128894.627, "tol": 1, "text": "128,895"},
+      {"expr": "P * (1 + r) ** t - P * (1 + r * t)", "input": {"P": 1000000, "r": 0.05, "t": 30}, "expect": 1821942.375,"tol": 1, "text": "1,821,942"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #41 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">單利公式 P(1+rt)：計算最快、理解最直覺的利息算法</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-15</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        100 萬存三年、年利率 5%——利息是多少？單利公式給出最直接的答案：
+        <strong>F = P(1 + rt)</strong>，代入 P=1,000,000、r=0.05、t=3，
+        一步算出終值 <strong>1,150,000</strong>，利息 <strong>150,000</strong>。
+        不需要指數、不用計算複利次數。
+        這篇文章拆解公式每個變數、給出時間拉長後的利息成長表，
+        並比較單利和複利在 3、10、30 年的真實差距。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">F = P(1 + rt)</div>
+          <div class="formula-box-note">P 本金 · r 年利率（小數）· t 年數 · F 終值</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>初始本金（Principal）</td><td>元</td><td>1,000,000</td></tr>
+            <tr><td>r</td><td>年利率（Annual Rate，decimal）</td><td>小數</td><td>0.05（即 5%）</td></tr>
+            <tr><td>t</td><td>存放年數（Time）</td><td>年</td><td>3</td></tr>
+            <tr><td>F</td><td>到期終值（Future Value）</td><td>元</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>用真實數字算一遍：100 萬、5%、三年</h2>
+        <p>
+          設 P = 1,000,000 元、年利率 r = 5%（代入 decimal 為 0.05）、期間 t = 3 年。
+        </p>
+        <p>
+          單利公式計算過程：
+        </p>
+        <ul>
+          <li>每年利息：P × r = 1,000,000 × 0.05 = 50,000 元</li>
+          <li>三年利息合計：50,000 × 3 = <strong>150,000</strong> 元</li>
+          <li>到期終值：1,000,000 + 150,000 = <strong>1,150,000</strong> 元</li>
+        </ul>
+        <p>
+          也可以直接代公式：F = 1,000,000 × (1 + 0.05 × 3) = 1,000,000 × 1.15 = <strong>1,150,000</strong>。
+          兩種算法結果相同——因為 P(1 + rt) = P + P·r·t，括號展開就是「本金加上利息總和」。
+        </p>
+        <p>
+          單利的核心邏輯：<strong>每一期的利息只算原始本金，不算已累積的利息</strong>。
+          第一年賺 50,000、第二年還是賺 50,000、第三年也是 50,000，每年利息相同，
+          不因為前一年已有獲利而增加。這是單利和複利最根本的差別。
+        </p>
+
+        <h2>時間拉長，利息怎麼增長？（1 到 30 年對照表）</h2>
+        <p>
+          P = 1,000,000、r = 5% 固定，只改年數，看每個時間點的終值和累積利息：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>存放年數 t</th><th>終值 F</th><th>累積利息</th><th>本利比</th></tr></thead>
+          <tbody>
+            <tr><td>1 年</td><td>1,050,000</td><td>50,000</td><td>1.05×</td></tr>
+            <tr><td>2 年</td><td>1,100,000</td><td>100,000</td><td>1.10×</td></tr>
+            <tr><td>3 年</td><td>1,150,000</td><td>150,000</td><td>1.15×</td></tr>
+            <tr><td>5 年</td><td>1,250,000</td><td>250,000</td><td>1.25×</td></tr>
+            <tr><td>10 年</td><td>1,500,000</td><td>500,000</td><td>1.50×</td></tr>
+            <tr><td>20 年</td><td>2,000,000</td><td>1,000,000</td><td>2.00×</td></tr>
+            <tr><td>30 年</td><td>2,500,000</td><td>1,500,000</td><td>2.50×</td></tr>
+          </tbody>
+        </table>
+        <p>
+          觀察表格可以看出：<strong>單利是線性成長</strong>。每 10 年增加固定的 500,000 元利息，
+          不管第 10 年還是第 30 年，每一年貢獻的利息永遠是 50,000 元。
+          這是「單利」這個名字的由來——增長曲線是一條直線。
+        </p>
+        <p>
+          30 年 1,500,000 的利息聽起來很多，但全是本金貢獻的，利息本身從未再生利息。
+          這一點在和複利比較時差距會非常明顯。
+        </p>
+
+        <h2>單利 vs 複利：差距從哪年開始明顯？</h2>
+        <p>
+          同樣條件（P = 1,000,000、r = 5%），單利和年複利的終值對比：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>年數 t</th><th>單利終值</th><th>複利終值（年複利）</th><th>複利多賺</th></tr></thead>
+          <tbody>
+            <tr><td>3 年</td><td>1,150,000</td><td>1,157,625</td><td>+7,625</td></tr>
+            <tr><td>10 年</td><td>1,500,000</td><td>1,628,895</td><td>+128,895</td></tr>
+            <tr><td>30 年</td><td>2,500,000</td><td>4,321,942</td><td>+1,821,942</td></tr>
+          </tbody>
+        </table>
+        <p>
+          三年的差距只有 <strong>7,625</strong> 元——不到 0.66%，短期幾乎感覺不到。
+          但到了十年，差距拉開到 <strong>128,895</strong> 元；三十年後，複利多賺 <strong>1,821,942</strong> 元，
+          幾乎等於單利總利息（1,500,000）的 1.2 倍。
+        </p>
+        <p>
+          複利的優勢來自<strong>利息再投資</strong>：第一年賺的 50,000 元利息，
+          第二年以後也會產生利息，形成滾雪球效應。時間越長，這個效果的累積越驚人。
+          單利就像每年固定提領利息、本金永遠保持 100 萬，複利則是把每年利息都加回本金繼續滾。
+        </p>
+        <p>
+          這解釋了為什麼 <a href="/formulas/rule-of-72.html">72 法則</a>（複利翻倍年數估算）
+          在短期不太有感，但長期存款和退休規劃卻極為關鍵。
+        </p>
+
+        <h2>哪些金融商品實際用單利計息？</h2>
+        <p>
+          在實際金融產品裡，單利並不罕見。以下是幾個常見場景：
+        </p>
+        <p>
+          <strong>短期定期存款（1 年以內）</strong>：台灣銀行的定期存款在到期前通常以單利結算，
+          到期才結算的利息沒有再滾入本金。存 1 年後取出、再重新存入，效果等同單利；
+          不解約、自動續存才開始接近複利。一般人很少注意這個區別。
+        </p>
+        <p>
+          <strong>政府公債、國庫券</strong>：短期政府債券（如 91 天期國庫券）通常以單利計息。
+          本金乘以日利率乘以天數，到期一次結算。長期公債則每半年付一次票面利息（息票），
+          計算方式不同，但單一期間的利息仍是本金的線性函數。
+        </p>
+        <p>
+          <strong>汽車貸款、個人信貸（Rule of 78）</strong>：部分貸款機構使用「78 法則」
+          攤銷方式，早期還款時的利息分攤比例較重，數學基礎是單利加權。
+          這種計法在台灣較少見，但美國二手車貸款市場仍存在，
+          消費者若提前還款必須特別注意是否適用。
+        </p>
+        <p>
+          <strong>借據、私人借貸</strong>：民間借貸常見「月利率 X%、到期一次還清本息」，
+          用的就是單利邏輯：F = P(1 + r × t)，其中 r 是月利率、t 是月數。
+          只要換算成年利率和年數就能套用同一條公式。
+        </p>
+        <p>
+          相對地，<a href="/formulas/compound-interest.html">複利</a>更常見於存款帳戶、
+          投資基金、房貸的長期計息，以及 <a href="/formulas/mortgage-payment.html">等額本息房貸</a>
+          的每月利息結算。判斷自己面對的是單利還是複利，問一個問題就夠了：
+          <em>「上期賺到的利息，這期有沒有算入本金繼續生息？」</em>有的話就是複利，沒有就是單利。
+        </p>
+
+        <h2>公式變形：從終值推回本金或利率</h2>
+        <p>
+          F = P(1 + rt) 有三種常見的變形用途：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>想求的</th><th>公式</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr><td>終值 F</td><td>P × (1 + rt)</td><td>存款到期領多少</td></tr>
+            <tr><td>本金 P</td><td>F / (1 + rt)</td><td>目標終值需要存多少（即現值）</td></tr>
+            <tr><td>年利率 r</td><td>(F/P − 1) / t</td><td>比較哪個商品真正利率較高</td></tr>
+            <tr><td>期間 t</td><td>(F/P − 1) / r</td><td>達到目標金額需要幾年</td></tr>
+          </tbody>
+        </table>
+        <p>
+          舉例：目標三年後累積到 1,150,000，年利率 5%，需要存入多少本金？
+          P = F / (1 + rt) = 1,150,000 / (1 + 0.05 × 3) = 1,150,000 / 1.15 = <strong>1,000,000</strong>。
+          這等同於單利的現值計算——和 <a href="/formulas/present-value.html">現值 PV</a>
+          公式的邏輯相同，但折現率用的是線性單利而非複利。
+        </p>
+        <p>
+          求利率的用法在比較金融商品時很實用：
+          某商品 P = 100,000 元、t = 2 年後得 F = 110,000，
+          隱含年利率 r = (110,000/100,000 − 1) / 2 = 0.1 / 2 = 5%。
+          這樣才能在同一個基準下和其他商品比較。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>r 代百分比數字而非 decimal</strong>：年利率 5% 要代 0.05，不是 5。
+            代 5 會得 F = 1,000,000 × (1 + 5 × 3) = 16,000,000——16 倍，顯然算錯了。
+            公式裡的 r 永遠是 decimal（百分比除以 100），t 永遠是「年數」。
+            如果實際期間是月份，要先除以 12 換成年：存 18 個月則 t = 18/12 = 1.5。
+            另一個常見失誤是把 r 代成月利率卻沒有換算 t，
+            例如月利率 0.5%（r = 0.005）、t 代 36 個月，
+            結果需要 r 和 t 單位一致：月利率搭月數，或年利率搭年數，不能混用。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 單利終值計算機，輸入你的本金、年利率、存放年數，直接算出終值。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 單利終值 #41</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=41" title="單利終值互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 利息再生利息的滾雪球效應（單利的進化版）</a></li>
+          <li><a href="/formulas/present-value.html">現值 PV — 單利的反向問題：目標終值需要存多少</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 複利翻倍年數的快速估算（對比單利的線性成長）</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 等額本息房貸的每期利息計法</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 比較不同計息頻率的唯一公平基準</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：單利公式定義依標準財務數學（Simple Interest Future Value）·
+        複利終值對照以 F = P(1+r)^t 實算並通過站台數值驗算腳本 ·
+        全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
