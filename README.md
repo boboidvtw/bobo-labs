@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-16** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/simple-interest.html`（#41 · 金融 · Free，單利公式 P(1+rt)：100 萬 5% 三年終值 1,150,000，單利 vs 複利 3/10/30 年差距對照（7,625→128,895→1,821,942），四種公式變形與適用場景）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（formulas 22 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 12 cases）自動上線。
+  Auto-published 1 formula draft from _pending/ via /bobo-autopublish on 2026-08-16.
+
 - **2026-08-14** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/body-fat-deurenberg.html`（#96 · 健康 · Pro，體脂率 Deurenberg：BF% = 1.20×BMI + 0.23×age − 10.8×sex − 5.4，BMI 24 的 30 歲男性估 19.5%、同齡女性 30.3%，差 10.8 個百分點；40 歲年齡效應 2.3% 實例；亞洲族裔與重訓者誤差討論）。
   Formula 卡片由 placeholder 轉為連結（1 張替換 Tier 一致計數不動）；sitemap 重生（formulas 21 篇）。
