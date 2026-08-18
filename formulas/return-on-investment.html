@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>投資報酬率怎麼算？ROI 公式完整拆解（5萬買進8萬賣出實例）· Bobo Labs</title>
+  <meta name="description" content="ROI 投資報酬率公式 (V₂−V₁)/V₁×100%：用 5 萬買進、8 萬賣出一步步算清楚，說明負報酬解讀、年化報酬率算法，以及三個最常踩的 ROI 計算陷阱。" />
+  <meta property="og:title" content="投資報酬率 ROI 公式：怎麼算才正確" />
+  <meta property="og:description" content="(V₂−V₁)/V₁×100% 的完整解析、負報酬解讀、年化報酬率算法、三大誤用。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/return-on-investment.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/return-on-investment.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "投資報酬率 ROI 公式：怎麼算才正確", "url": "https://labs.moneyai168.com/formulas/return-on-investment.html", "datePublished": "2026-08-17", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "投資報酬率 ROI", "item": "https://labs.moneyai168.com/formulas/return-on-investment.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(V2 - V1) / V1 * 100",
+    "cases": [
+      {"expr": "V2 - V1",
+       "input": {"V1": 50000, "V2": 80000}, "expect": 30000, "tol": 1, "text": "30,000"},
+      {"input": {"V1": 50000, "V2": 80000}, "expect": 60.0, "tol": 0.01, "text": "60"},
+      {"input": {"V1": 100000, "V2": 85000}, "expect": -15.0, "tol": 0.01, "text": "-15"},
+      {"expr": "((1 + total_roi) ** (1 / years) - 1) * 100",
+       "input": {"total_roi": 0.30, "years": 3}, "expect": 9.139288306, "tol": 0.000001, "text": "9.14"},
+      {"expr": "(V2 - V1) / V2 * 100",
+       "input": {"V1": 50000, "V2": 80000}, "expect": 37.5, "tol": 0.01, "text": "37.5"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #45 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">投資報酬率怎麼算？ROI 公式完整拆解（5 萬買進 8 萬賣出實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-17</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        ROI（Return on Investment，投資報酬率）公式只有一行：<strong>(V₂ − V₁) / V₁ × 100%</strong>。
+        但有三個地方容易算錯：分母用錯、忘記含交易成本、不同持有期直接比較。
+        本文用 50,000 買進、80,000 賣出的具體數字算給你看，
+        並說明負報酬的解讀方式與年化報酬率的換算。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">ROI = (V<sub>2</sub> &minus; V<sub>1</sub>) / V<sub>1</sub> &times; 100%</div>
+          <div class="formula-box-note">V₁ 買入成本 &middot; V₂ 賣出（或現值） &middot; 結果單位：%</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>V₁</td><td>初始投入成本（買入價 &times; 數量 + 交易費）</td><td>元</td><td>50,000</td></tr>
+            <tr><td>V₂</td><td>最終回收金額（賣出價 &times; 數量 &minus; 交易費）</td><td>元</td><td>80,000</td></tr>
+            <tr><td>ROI</td><td>投資報酬率</td><td>%</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>用真實數字算一遍：5 萬買進、8 萬賣出</h2>
+        <p>
+          設買入成本 V₁ = 50,000 元，賣出回收 V₂ = 80,000 元。先算獲利金額：
+        </p>
+        <p>
+          獲利 = 80,000 &minus; 50,000 = <strong>30,000 元</strong>
+        </p>
+        <p>
+          再代入公式：
+        </p>
+        <p>
+          ROI = 30,000 / 50,000 &times; 100% = <strong>60%</strong>
+        </p>
+        <p>
+          意思是：每投入 1 元，淨賺了 0.6 元，報酬率 60%。
+          <strong>分母一定是 V₁（買入成本），不是 V₂（賣出金額）</strong>——
+          這是最高頻的計算錯誤，下面「誤用一」會再展開。
+        </p>
+        <p>
+          若你想直接代數字驗算，分三步：
+        </p>
+        <ol>
+          <li>計算獲利（或虧損）= V₂ &minus; V₁</li>
+          <li>除以投入成本 V₁</li>
+          <li>乘以 100，轉成百分比</li>
+        </ol>
+        <p>
+          三步做完就是 ROI。不需要其他公式。
+        </p>
+
+        <h2>ROI 是負數怎麼解讀</h2>
+        <p>
+          投資不一定獲利。假設買入 100,000 元的基金，後來以 85,000 元贖回：
+        </p>
+        <p>
+          ROI = (85,000 &minus; 100,000) / 100,000 &times; 100% = <strong>-15%</strong>
+        </p>
+        <p>
+          負的 ROI 代表虧損。<strong>-15% 的意思是每投入 1 元，最終只拿回 0.85 元，每元虧了 0.15 元</strong>。
+          遇到負 ROI，不需要取絕對值或做任何換算，直接帶著負號就是正確的報酬描述。
+        </p>
+        <p>
+          一個容易混淆的點：有些人看到虧損 15,000 元，會說「損失 15,000 / 85,000 = 17.6%」——
+          這是拿回收金額做分母，算的是另一個指標（類似毛損率），不是 ROI。
+          ROI 的分母永遠固定在<strong>你投入的錢 V₁</strong>，不隨結果改變。
+        </p>
+
+        <h2>年化報酬率：拉平持有時間才能比較</h2>
+        <p>
+          ROI 本身不含時間。「持有 3 個月賺 15%」和「持有 3 年賺 30%」，
+          哪一筆更划算？直接比 ROI 毫無意義，因為時間長度不同。
+          要比，就要換算成<strong>年化報酬率（Annualized ROI）</strong>，把不同持有期拉到同一把尺。
+        </p>
+        <p>
+          年化報酬率公式：
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">年化 ROI = (1 + ROI)<sup>1/t</sup> &minus; 1</div>
+          <div class="formula-box-note">ROI 用小數（如 30% 填 0.30） &middot; t 是持有年數（3 個月填 0.25）</div>
+        </div>
+        <p>
+          以「持有 3 年賺 30%」為例：
+        </p>
+        <p>
+          年化 ROI = (1 + 0.30)<sup>1/3</sup> &minus; 1 &asymp; <strong>9.14%</strong> / 年
+        </p>
+        <p>
+          「持有 3 個月賺 15%」的年化則遠高於此——短時間高報酬換算成年化後數字很大。
+          兩者年化後的差距遠比表面數字（30% vs 15%）更能說明績效高低。
+        </p>
+        <p>
+          年化報酬率的底層假設是「每年獲得的報酬都再投入（複利累積）」，
+          本質上是把 ROI 換算成等效的複利年率，和<a href="/formulas/effective-annual-rate.html">實質年利率 EAR</a> 的概念一脈相承。
+          如果你的投資平台直接顯示「年化報酬率」，通常就是用這個公式計算。
+        </p>
+        <p>
+          需要注意：若投資期間有中途提取或追加，簡單年化公式會失準，
+          這時更嚴謹的做法是用內部報酬率（IRR）——但那是更進階的主題。
+          日常評估單一筆投資，年化 ROI 就夠用了。
+        </p>
+
+        <h2>ROI 公式的三個常見誤用</h2>
+
+        <p>
+          公式本身不複雜，但以下三個誤用在實務中非常普遍：
+        </p>
+
+        <p><strong>誤用一：分母用賣出金額而不是買入成本</strong></p>
+        <p>
+          同樣 50,000 買進、80,000 賣出的例子：
+        </p>
+        <ul>
+          <li>正確：ROI = (80,000 &minus; 50,000) / <strong>50,000</strong> &times; 100% = 60%</li>
+          <li>錯誤：ROI = (80,000 &minus; 50,000) / <strong>80,000</strong> &times; 100% = 37.5%</li>
+        </ul>
+        <p>
+          「獲利占賣出金額幾成」是毛利率的概念，不是 ROI。
+          兩個公式在名稱上相近，但分母定義不同，算出來的數字（60% vs 37.5%）差距明顯。
+          只要記住：<strong>ROI 的分母 = 你花出去的錢（V₁）</strong>，就不會搞錯。
+        </p>
+
+        <p><strong>誤用二：忽略交易成本</strong></p>
+        <p>
+          台灣股票每次買賣各收約 0.1425% 手續費，賣出另付 0.3% 證交稅。
+          頻繁短線操作時，這些費用會讓實際 ROI 明顯低於「表面報酬」。
+          計算上盡量把買入時的費用加進 V₁、把賣出時的費用從 V₂ 扣掉，
+          才能得到真實的 ROI。若只計算差價、忽略費用，會系統性高估報酬。
+        </p>
+
+        <p><strong>誤用三：不年化就直接跨期比較</strong></p>
+        <p>
+          前文已算過：3 個月 15% 和 3 年 30%，直接比毫無意義。
+          同樣的問題出現在比較定存（1 年期）、股票（持有 2.5 年）、基金（持有 7 個月）時。
+          <strong>先年化、再比較</strong>，才是在相同時間尺度下評估績效的正確做法。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">&#9888;&#65039; 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>分母搞錯是最高頻的失誤</strong>：ROI 的分母是 <em>V₁（買入成本）</em>，
+            不是 V₂（賣出金額），也不是獲利金額（V₂ &minus; V₁）。
+            口訣：「賺了多少 / 花了多少」——花出去的才是分母。
+          </p>
+        </div>
+
+        <h2>ROI 和複利的關係</h2>
+        <p>
+          ROI 描述的是「總累積報酬」，它本身沒有時間。
+          <a href="/formulas/compound-interest.html">複利終值公式</a> F = P(1+r/n)<sup>nt</sup>
+          描述的是「在固定利率下，本金隨時間如何增長」。
+        </p>
+        <p>
+          兩者的連結在於：如果你知道 ROI 和持有年數，就能反推出等效的年化複利率（即年化 ROI）；
+          反過來，知道年化率和年數，就能用複利公式算出預期的終值 ROI。
+          在做長期投資計算時，這兩條公式經常搭配使用。
+        </p>
+        <p>
+          一個常見的實務問題：「年化報酬 8% 投入 10 年，總 ROI 是多少？」
+          用複利公式：F = P &times; (1.08)<sup>10</sup>，ROI = (F &minus; P)/P &times; 100%。
+          不需要死背，理解兩條公式各自負責什麼，需要時組合即可。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 投資報酬率計算機。輸入買入與賣出金額及持有年數，
+          直接得到 ROI 與年化報酬率。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc &middot; 投資報酬率 ROI #45</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&amp;utm_medium=formula_article&amp;utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&amp;formula=45" title="投資報酬率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — ROI 在時間軸上的數學基礎</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 資金翻倍年數的快速估算</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 年化報酬率的進階版本</a></li>
+          <li><a href="/formulas/simple-interest.html">單利公式 — ROI 計算的最簡型態</a></li>
+          <li>進階：本益比 P/E（用 ROI 視角評估股票定價）— Free 版即將推出</li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        <p><strong>定義來源</strong></p>
+        <ul>
+          <li>Investopedia — Return on Investment (ROI): Definition, Formula</li>
+          <li>CFA Institute — Investment Performance Measurement</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs &middot; <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
