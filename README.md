@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-20** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/price-earnings-ratio.html`（#47 · 金融 · Free，本益比 P/E：P÷E，750÷25=30 倍 vs 400÷40=10 倍實例，反推合理股價 20×25=500 元，Trailing vs Forward P/E 選擇說明）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 24 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 3 cases）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-20.
+
 - **2026-08-18** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/return-on-investment.html`（#45 · 金融 · Free，投資報酬率 ROI：(V₂−V₁)/V₁×100%，5 萬買進 8 萬賣出得 60%，負報酬 -15% 實例，持有 3 年 30% 年化換算 9.14%，三大誤用：分母搞錯 vs 37.5%、忽略手續費、不年化直接跨期比）。
   Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 23 篇）。
