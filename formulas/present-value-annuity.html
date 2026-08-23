@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>年金現值公式怎麼算？退休金與貸款折現完整解析（月領1萬20年實例）· Bobo Labs</title>
+  <meta name="description" content="年金現值 PVA = PMT×(1−(1+r)⁻ⁿ)/r 決定「每月領一筆錢、領幾年」現在值多少。用月領 1 萬、年利率 6%、領 20 年的實例算出 1,395,808 元，並對比利率差 1% 如何造成 40 萬的價差，以及它與月繳貸款公式的反向關係。" />
+  <meta property="og:title" content="年金現值公式：每月領 1 萬 20 年現在值多少" />
+  <meta property="og:description" content="PVA = PMT×(1−(1+r)⁻ⁿ)/r 的完整解析、利率敏感度、與月繳貸款的反向關係，附 ∑ Calc Pro 互動試算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/present-value-annuity.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/present-value-annuity.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "年金現值公式：每月領 1 萬 20 年現在值多少", "url": "https://labs.moneyai168.com/formulas/present-value-annuity.html", "datePublished": "2026-08-22", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "年金現值", "item": "https://labs.moneyai168.com/formulas/present-value-annuity.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "PMT * (1 - (1 + r) ** (-n)) / r",
+    "cases": [
+      {"input": {"PMT": 10000, "r": 0.005, "n": 240},
+       "expect": 1395808, "tol": 1, "text": "1,395,808"},
+      {"input": {"PMT": 30000, "r": 0.005, "n": 240},
+       "expect": 4187423, "tol": 1, "text": "4,187,423"},
+      {"input": {"PMT": 10000, "r": 0.0025, "n": 240},
+       "expect": 1803109, "tol": 1, "text": "1,803,109"},
+      {"input": {"PMT": 10000, "r": 0.0075, "n": 240},
+       "expect": 1111450, "tol": 1, "text": "1,111,450"},
+      {"input": {"PMT": 10000, "r": 0.005, "n": 360},
+       "expect": 1667916, "tol": 1, "text": "1,667,916"},
+      {"expr": "PMT * (1 - (1+r1)**(-n)) / r1 - PMT * (1 - (1+r2)**(-n)) / r2",
+       "input": {"PMT": 10000, "r1": 0.0025, "n": 240, "r2": 0.005},
+       "expect": 407301, "tol": 1, "text": "407,301"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #44 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">年金現值：每月領 1 萬、領 20 年，現在值多少？</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-22</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        每月領 1 萬、領 20 年，240 筆錢的名目總和是 240 萬，
+        但以 6% 折現，現在的價值只有 <strong>1,395,808 元</strong>。
+        少掉的那 100 萬，全因 20 年後才拿到的款項在今天的機會成本下大幅縮水。
+        年金現值公式 PVA = PMT × (1 − (1+r)<sup>−n</sup>) / r
+        把「等額分期收款」壓縮成一個現值數字，本文把它一步步算清楚。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">PVA = PMT × (1 − (1 + r)<sup>−n</sup>) / r</div>
+          <div class="formula-box-note">PMT 每期領取金額 · r 每期折現率（小數）· n 總期數 · PVA 現值</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>PVA</td><td>年金現值（Present Value of Annuity）</td><td>元</td><td>計算結果</td></tr>
+            <tr><td>PMT</td><td>每期定額收付（Payment）</td><td>元</td><td>10,000</td></tr>
+            <tr><td>r</td><td>每期折現率（decimal）</td><td>—</td><td>0.005（月折現率 0.5%，對應年利率 6% ÷ 12）</td></tr>
+            <tr><td>n</td><td>總期數</td><td>期</td><td>240（20 年 × 12 個月）</td></tr>
+          </tbody>
+        </table>
+
+        <h2>公式從哪裡來？等比數列一句話推導</h2>
+        <p>
+          想像你每個月月底會領到一筆 PMT 元。第 1 期領到的那筆，
+          今天的價值是 PMT ÷ (1+r)¹；第 2 期領到的折現後是 PMT ÷ (1+r)²；
+          最後第 n 期是 PMT ÷ (1+r)ⁿ。
+          把 n 期全部加起來：
+        </p>
+        <p style="text-align: center; font-style: italic; margin: 1rem 0;">
+          PVA = PMT/(1+r) + PMT/(1+r)² + … + PMT/(1+r)ⁿ
+        </p>
+        <p>
+          這是首項 PMT/(1+r)、公比 1/(1+r) 的等比數列求和。
+          利用等比級數公式化簡，就得到：
+        </p>
+        <p style="text-align: center; font-style: italic; margin: 1rem 0;">
+          PVA = PMT × (1 − (1+r)<sup>−n</sup>) / r
+        </p>
+        <p>
+          括號內的 (1−(1+r)^(−n))/r 就是<strong>年金現值因子（PVIFA）</strong>，
+          代表「每期 1 元、折現率 r、共 n 期，今天的合計現值」。
+          乘上每期金額就得整串現金流的現值。
+        </p>
+        <p>
+          這是「期末年金（ordinary annuity）」版本，假設每筆在期末收付。
+          期初版（annuity-due）要再乘 (1+r)，實務上退休金與貸款幾乎都用期末。
+        </p>
+
+        <h2>用真實數字算一遍：月領 1 萬、6%、20 年</h2>
+        <p>
+          代入 PMT = 10,000、r = 0.005（年利率 6% ÷ 12）、n = 240（20 年 × 12）。
+        </p>
+        <p>
+          從<a href="/formulas/future-value-annuity.html">年金終值</a>可知
+          (1.005)^240 ≈ 3.3102，故 (1.005)^(−240) ≈ 0.3021。
+          PVIFA = (1 − 0.3021) / 0.005 = 139.58。
+          PVA = 10,000 × 139.58 = <strong>1,395,808</strong> 元。
+        </p>
+        <p>
+          240 筆名目總和 240 萬，折現後只剩 139 萬多。
+          最後一筆在 240 期後才領，到今天只值 10,000/(1.005)^240 ≈ 3,021 元，縮水到三成。
+          越晚拿的錢，折現幅度越深。
+        </p>
+        <p>
+          Excel 驗算：<code>=10000*(1-(1+0.005)^(-240))/0.005</code>，結果相同。
+        </p>
+
+        <h2>退休規劃：月領 3 萬，現在要準備多少？</h2>
+        <p>
+          退休後希望每月領 30,000 元、領 20 年，折現率假設 6%。
+          PMT 直接乘以 3，PVA 也乘以 3：
+        </p>
+        <p>
+          PVA = 30,000 × 139.58 = <strong>4,187,423</strong> 元。
+        </p>
+        <p>
+          也就是說，今天在 6% 的假設下準備約 418 萬，
+          就足以支撐 20 年每月 3 萬的現金流。
+          少了這個數字，就意味著預算告罄前現金流就會斷。
+          這個數字就是你「需要從儲蓄或資產裡提領的資本額」，
+          和退休帳戶的目標餘額直接掛鉤。
+        </p>
+        <p>
+          這個數字對應的折現率假設是 6%（通常對應投資組合的預期年化報酬率）。
+          r 的選取至關重要，差 1% 就差超過 40 萬 — 見下一節。
+        </p>
+
+        <h2>利率差 1%，答案差多少？</h2>
+        <p>
+          同樣月領 10,000 元、領 20 年（n = 240），把折現率從 3% 換到 9%：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>年利率</th><th>月折現率 r</th><th>年金現值 PVA</th></tr></thead>
+          <tbody>
+            <tr><td>3%</td><td>0.0025</td><td>1,803,109</td></tr>
+            <tr><td>6%</td><td>0.005</td><td>1,395,808</td></tr>
+            <tr><td>9%</td><td>0.0075</td><td>1,111,450</td></tr>
+          </tbody>
+        </table>
+        <p>
+          折現率從 3% 升到 6%，現值從 180 萬掉到 139 萬，差了 <strong>407,301</strong> 元。
+          僅僅 3 個百分點的假設差異，在「每月 1 萬、領 20 年」這個規格上，
+          就造成超過 40 萬的現值差距。
+        </p>
+        <p>
+          折現率代表放棄這筆錢去別處的機會成本，機會成本越高現值越低。
+          3%→6% 的差距在 20 年的指數效應下被放大成 40 萬。
+          這正是為什麼退休計算機裡「預期報酬率」這個假設那麼敏感。
+        </p>
+
+        <h2>領 20 年 vs 領 30 年：期數怎麼影響現值</h2>
+        <p>
+          同樣月領 10,000 元、6% 折現率，把年限從 20 年（n=240）拉長到 30 年（n=360）：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>領取年限</th><th>期數 n</th><th>年金現值 PVA</th></tr></thead>
+          <tbody>
+            <tr><td>20 年</td><td>240</td><td>1,395,808</td></tr>
+            <tr><td>30 年</td><td>360</td><td>1,667,916</td></tr>
+          </tbody>
+        </table>
+        <p>
+          年限從 20 年延長到 30 年（多 10 年），現值只從 139 萬增加到 167 萬，
+          多了約 27 萬。
+          相比之下，這 10 年多出 120 筆款項，名目面值是 120 萬，
+          但折到今天只貢獻 27 萬 —— 因為這 120 筆都是 20〜30 年後才拿到的錢，
+          每一筆都已被折現到只剩很小的比例。
+        </p>
+        <p>
+          這揭示了一個關鍵直覺：<strong>年金現值對近期款項遠比遠期敏感</strong>。
+          第 1 期的 10,000 元折現後是 9,950 元；
+          第 240 期折了 240 次只剩 3,021 元；第 360 期更只剩 1,660 元。
+          遠期款項在現值上幾乎「失重」，延長年限的邊際效益遞減明顯。
+        </p>
+
+        <h2>年金現值就是貸款本金的另一面</h2>
+        <p>
+          月繳貸款公式是：
+        </p>
+        <p style="text-align: center; font-style: italic; margin: 1rem 0;">
+          M = P × r × (1+r)ⁿ / ((1+r)ⁿ − 1)
+        </p>
+        <p>
+          移項後得 P = M × (1 − (1+r)^(−n)) / r —— 正是年金現值公式。
+          <strong>「能借多少本金」和「這串月繳款的現值」是同一件事的兩種說法。</strong>
+        </p>
+        <p>
+          月繳 10,000 元、年利率 6%、還 20 年（n=240）：
+          銀行最多貸給你 1,395,808 元，因為這筆本金在 6% 下恰好等於 240 期月付款的現值。
+          這就是銀行定價貸款的邏輯。
+        </p>
+        <p>
+          「月繳 1 萬、年利率 6%、還 30 年，最多能借多少？」
+          直接套公式：PVA = 10,000 × PVIFA(0.005, 360) = 1,667,916 元。
+          <a href="/formulas/mortgage-payment.html">月繳貸款文章</a>從另一頭入手，給本金算月付；
+          這裡給月付算本金，兩篇是同一條公式的正反面。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>r 和 n 的頻率不一致</strong>：月繳但把年利率直接代入 r，
+            算出來的現值會嚴重低估（折得太兇）。月付款一定要用月折現率（年利率 ÷ 12），
+            n 也要換算成月數（年數 × 12）。
+            自己用 Excel 驗算：<code>=PMT*(1-(1+0.005)^(-240))/0.005</code>，
+            不是 <code>(1-(1+0.06)^(-20))/0.06</code> —— 後者算出來的數字只是個湊巧相近的錯誤結果。
+            另一個老問題是 r 用百分比而非小數：6% 要代入 0.005（月利率），不是 0.06 或 6。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供年金現值的互動計算，可以直接調整 PMT、折現率、期數，
+          即時看到現值與每期折現分量的拆解。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 年金現值 #44</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=44" title="年金現值互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/future-value-annuity.html">年金終值 — 每月定額存入的反向問題：存了幾年能累積多少</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 給定本金算月付，與年金現值互為正反面</a></li>
+          <li><a href="/formulas/present-value.html">現值 PV — 單筆未來金額的折現，年金現值的單期特例</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 了解折現因子 (1+r)ⁿ 的來源</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 比較不同複利頻率時，先統一到 EAR 再折現</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：年金現值公式依標準財務數學（ordinary annuity / discounted cash flow）·
+        本文所有數字均以 PVA = PMT×(1−(1+r)⁻ⁿ)/r 實算並通過站台數值驗算腳本 ·
+        全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
