@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-23** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/present-value-annuity.html`（#44 · 金融 · Pro，年金現值 PVA=PMT×(1−(1+r)⁻ⁿ)/r：月領 1 萬 6% 20 年現值 1,395,808 元，利率差 1% 造成 40 萬差距（3%→180 萬 vs 6%→139 萬），年限 20→30 年現值僅多 27 萬，貸款公式正反面關係說明）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 25 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 6 cases）自動上線。
+  Auto-published 1 formula draft from _pending/ via /bobo-autopublish on 2026-08-23.
+
 - **2026-08-20** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/price-earnings-ratio.html`（#47 · 金融 · Free，本益比 P/E：P÷E，750÷25=30 倍 vs 400÷40=10 倍實例，反推合理股價 20×25=500 元，Trailing vs Forward P/E 選擇說明）。
   Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 24 篇）。
