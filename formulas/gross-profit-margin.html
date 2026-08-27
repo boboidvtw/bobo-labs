@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>毛利率怎麼算？公式拆解與淨利率差在哪（年營收1.2億實例）· Bobo Labs</title>
+  <meta name="description" content="毛利率 = (營收−銷貨成本)/營收 × 100%，回答「每 100 元營收留下多少」。用年營收 1.2 億、成本 7,350 萬的公司算出 38.75%，並一路扣到營業利益率 12.75%、淨利率 9.33%，說明降成本與漲價誰更有效。" />
+  <meta property="og:title" content="毛利率怎麼算？公式拆解與淨利率差在哪" />
+  <meta property="og:description" content="毛利率公式的完整拆解、三層利潤率的落差、降成本 vs 漲價的敏感度，附 ∑ Calc Pro 互動試算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/gross-profit-margin.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/gross-profit-margin.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "毛利率怎麼算？公式拆解與淨利率差在哪", "url": "https://labs.moneyai168.com/formulas/gross-profit-margin.html", "datePublished": "2026-08-26", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "毛利率", "item": "https://labs.moneyai168.com/formulas/gross-profit-margin.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+{
+"expr":"(R - C) / R",
+"cases":[
+{"expr":"R - C","input":{"R":120000000,"C":73500000},"expect":46500000,"tol":1,"text":"46,500,000"},
+{"input":{"R":120000000,"C":73500000},"expect":0.3875,"scale":100,"tol":1e-09,"text":"38.75"},
+{"expr":"C / R","input":{"R":120000000,"C":73500000},"expect":0.6125,"scale":100,"tol":1e-09,"text":"61.25"},
+{"expr":"R - C - OPEX","input":{"R":120000000,"C":73500000,"OPEX":31200000},"expect":15300000,"tol":1,"text":"15,300,000"},
+{"expr":"(R - C - OPEX) / R","input":{"R":120000000,"C":73500000,"OPEX":31200000},"expect":0.1275,"scale":100,"tol":1e-09,"text":"12.75"},
+{"expr":"(R - C - OPEX + NOI) * (1 - t)","input":{"R":120000000,"C":73500000,"OPEX":31200000,"NOI":-1300000,"t":0.2},"expect":11200000,"tol":1,"text":"11,200,000"},
+{"expr":"(R - C - OPEX + NOI) * (1 - t) / R","input":{"R":120000000,"C":73500000,"OPEX":31200000,"NOI":-1300000,"t":0.2},"expect":0.09333333333,"scale":100,"tol":1e-08,"text":"9.33"},
+{"expr":"(R - C) / R - (R - C - OPEX) / R","input":{"R":120000000,"C":73500000,"OPEX":31200000},"expect":0.26,"scale":100,"tol":1e-09,"text":"26"},
+{"expr":"R - C * 0.95","input":{"R":120000000,"C":73500000},"expect":50175000,"tol":1,"text":"50,175,000"},
+{"expr":"(R - C * 0.95) / R","input":{"R":120000000,"C":73500000},"expect":0.418125,"scale":100,"tol":1e-09,"text":"41.81"},
+{"expr":"R * 1.05 - C","input":{"R":120000000,"C":73500000},"expect":52500000,"tol":1,"text":"52,500,000"},
+{"expr":"(R * 1.05 - C) / (R * 1.05)","input":{"R":120000000,"C":73500000},"expect":0.4166666667,"scale":100,"tol":1e-09,"text":"41.67"},
+{"expr":"(R * 1.05 - C) - (R - C * 0.95)","input":{"R":120000000,"C":73500000},"expect":2325000,"tol":1,"text":"2,325,000"},
+{"expr":"(R - C * 0.95) / R - (R * 1.05 - C) / (R * 1.05)","input":{"R":120000000,"C":73500000},"expect":0.001458333333,"scale":100,"tol":1e-09,"text":"0.15"},
+{"input":{"R":860000000,"C":783300000},"expect":0.08918604651,"scale":100,"tol":1e-08,"text":"8.92"},
+{"input":{"R":68000000,"C":12240000},"expect":0.82,"scale":100,"tol":1e-09,"text":"82"},
+{"expr":"R1 / R2","input":{"R1":860000000,"R2":68000000},"expect":12.64705882,"tol":1e-06,"text":"12.65"},
+{"expr":"(R1 - C1) / (R2 - C2)","input":{"R1":860000000,"C1":783300000,"R2":68000000,"C2":12240000},"expect":1.375538020,"tol":1e-07,"text":"1.38"}
+]
+}
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #109 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">毛利率怎麼算？公式拆解與淨利率差在哪</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-26</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+一家公司年營收 1.2 億、銷貨成本 7,350 萬，毛利率是 <strong>38.75</strong>%。
+        意思很具體：每收進 100 元，扣掉為了做出商品而付的錢之後，還剩 38.75 元
+        可以拿去付薪水、打廣告、繳稅。毛利率公式只有一行，但它和營業利益率、淨利率的落差，
+        往往決定一家公司到底賺不賺錢。本文把三層一路算下來。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">毛利率 = (營收 − 銷貨成本) / 營收 × 100%</div>
+          <div class="formula-box-note">R 營收 · C 銷貨成本 COGS · R−C 毛利 · 結果為百分比</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>R</td><td>營業收入（Revenue），扣除折讓退貨後的淨額</td><td>元</td><td>120,000,000</td></tr>
+            <tr><td>C</td><td>銷貨成本（COGS），把商品做出來或買進來的成本</td><td>元</td><td>73,500,000</td></tr>
+            <tr><td>R−C</td><td>毛利（Gross Profit）</td><td>元</td><td>46,500,000</td></tr>
+            <tr><td>毛利率</td><td>毛利佔營收比例（Gross Profit Margin）</td><td>%</td><td>20%–80%，視產業</td></tr>
+          </tbody>
+        </table>
+
+        <h2>公式在算什麼？每 100 元營收留下多少</h2>
+        <p>
+          毛利率把兩個絕對金額壓成可比較的比率：分子是毛利（營收扣掉銷貨成本），分母是營收。
+          單位互相消掉後只剩純比例，不同規模的公司才能放在一起看。
+        </p>
+        <p>
+          關鍵在「銷貨成本」包含什麼。COGS 只收<strong>直接和產出商品有關</strong>的支出：
+          原物料、產線人工、製造費用、代工費、進貨成本、運費。行銷預算、業務獎金、總部租金、
+          研發薪資都不算，它們屬於營業費用，在毛利之後才扣。
+        </p>
+        <p>
+          毛利率因此衡量<strong>產品本身</strong>的賺錢能力，不是公司整體的。
+          一家毛利率 70% 的公司完全可能年年虧損，只要它把毛利全砸在行銷上。
+        </p>
+
+        <h2>用真實數字算一遍：年營收 1.2 億的公司</h2>
+        <p>
+          設定一家自有品牌保養品公司：年營收 120,000,000 元，銷貨成本 73,500,000 元（原料、代工包材與進出貨運費）。
+        </p>
+        <p>
+          毛利 = 120,000,000 − 73,500,000 = <strong>46,500,000</strong> 元。
+        </p>
+        <p>
+          毛利率 = 46,500,000 ÷ 120,000,000 = <strong>38.75</strong>%，
+          反過來說成本吃掉營收的 <strong>61.25</strong>%。
+          Excel 驗算：<code>=(120000000-73500000)/120000000</code>。
+        </p>
+        <p>
+          38.75% 對消費品牌不算高：每賣 100 元只有 38.75 元能支撐整家公司營運。
+          行銷費用一旦超過營收的 38.75%，這門生意在毛利這層就注定虧錢。
+        </p>
+
+        <h2>毛利率、營業利益率、淨利率差在哪？一路扣下來</h2>
+        <p>
+          損益表層層相減，同一家公司接著扣營業費用 31,200,000 元：
+        </p>
+        <p>
+          營業利益 = 46,500,000 − 31,200,000 = <strong>15,300,000</strong> 元，
+          營業利益率 = <strong>12.75</strong>%。再扣業外收支 −1,300,000 元與 20% 營所稅，稅後淨利 = <strong>11,200,000</strong> 元，淨利率 = <strong>9.33</strong>%。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>層級</th><th>金額（元）</th><th>對營收比率</th></tr></thead>
+          <tbody>
+            <tr><td>營收</td><td>120,000,000</td><td>100%</td></tr>
+            <tr><td>毛利</td><td>46,500,000</td><td>38.75%</td></tr>
+            <tr><td>營業利益</td><td>15,300,000</td><td>12.75%</td></tr>
+            <tr><td>稅後淨利</td><td>11,200,000</td><td>9.33%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          從 38.75% 掉到 9.33%，中間蒸發的近三十個百分點全在營業費用與稅上。
+          三個比率用途不同：毛利率看產品定價與成本控制，營業利益率看本業經營效率，
+          淨利率看真正落袋的比例。只報其中一個而不說是哪一個，數字就沒有意義。
+        </p>
+
+        <h2>降成本 5% 還是漲價 5%？兩條路的差別</h2>
+        <p>
+          想把毛利率拉高，兩個方向各算一次。
+          <strong>情境 A：銷貨成本降 5%</strong>，
+          毛利 = <strong>50,175,000</strong> 元，毛利率 = <strong>41.81</strong>%。
+          <strong>情境 B：售價漲 5%、銷量不變</strong>，成本不動仍是 73,500,000 元，
+          毛利 = <strong>52,500,000</strong> 元，毛利率 = <strong>41.67</strong>%。
+        </p>
+        <p>
+          結果反直覺：漲價的毛利<strong>金額</strong>比降成本多 <strong>2,325,000</strong> 元，
+          毛利<strong>率</strong>卻低了 <strong>0.15</strong> 個百分點。原因在分母 ——
+          降成本只縮小被扣掉的那一項，漲價卻把分子和分母一起墊高，比率的漲幅因此被稀釋。
+        </p>
+        <p>
+          這有實際後果：靠漲價撐營收的公司，毛利率可能原地踏步甚至微幅下滑，賺到的錢卻確實變多。
+          只盯比率不看金額，會把好消息讀成壞消息。
+        </p>
+
+        <h2>毛利率為什麼不能跨產業比？</h2>
+        <p>
+          一家 3C 通路商年營收 860,000,000 元、銷貨成本 783,300,000 元；
+          一家軟體訂閱公司年營收 68,000,000 元、銷貨成本 12,240,000 元。
+        </p>
+        <p>
+          通路商毛利率 <strong>8.92</strong>%，軟體公司 <strong>82</strong>%。
+          通路商的營收是軟體公司的 <strong>12.65</strong> 倍，毛利額卻只有 <strong>1.38</strong> 倍。
+          差距來自商業模式：通路商每賣一台手機就要先付一台手機的進貨成本，
+          軟體公司多一個訂閱用戶幾乎只多一點主機費。
+        </p>
+        <p>
+          所以 8.92% 不代表通路商比較差：低毛利率的生意靠周轉率賺錢，資金一年轉十次也很可觀。
+          毛利率只有在<strong>同產業、同商業模式</strong>之間，或拿同一家公司的歷年趨勢比，
+          才讀得出訊息。跨產業排名毛利率，等於拿體重比身高。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+<strong>把營業費用算進銷貨成本</strong>：最常見的錯法是拿「營收 − 所有成本費用」當毛利，
+            以本例算是 120,000,000 − 73,500,000 − 31,200,000 = 15,300,000 元，除以營收得 12.75%
+            —— 那是營業利益率，和真正的毛利率差了整整 <strong>26</strong> 個百分點。
+            行銷費、總部租金、業務獎金一律留在毛利之後再扣。
+            <br /><br />
+<strong>把毛利率當貢獻邊際率用</strong>：銷貨成本裡含有廠房折舊、
+            產線人員底薪這類<strong>固定製造費用</strong>，不管做幾件都要付，貢獻邊際只扣純變動成本。
+            拿毛利率去推損益平衡點會低估打平所需的銷量。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供毛利率的互動計算，輸入營收與銷貨成本即可看到毛利金額、
+          毛利率與成本佔比的連動。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 毛利率 #109</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=109" title="毛利率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/break-even-point.html">損益平衡點 — 貢獻邊際率和毛利率差在哪</a></li>
+          <li><a href="/formulas/price-earnings-ratio.html">本益比 P/E — 毛利結構如何反映在獲利倍數</a></li>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 從利潤率走到資本效率</a></li>
+          <li><a href="/formulas/present-value.html">現值 PV — 把未來的毛利流折現回今天</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+來源：毛利率定義依一般公認會計原則之損益表結構 ·
+        本文數字均以 (營收−銷貨成本)/營收 及其衍生式實算並通過站台數值驗算腳本 ·
+        營收、成本與稅率為示範假設值 · 全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

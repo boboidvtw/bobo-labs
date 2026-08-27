@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>損益平衡點怎麼算？開店要賣幾杯才回本（手搖店月成本19萬實例）· Bobo Labs</title>
+  <meta name="description" content="損益平衡點 BEP = FC/(P−VC) 回答「一個月要賣幾個才不賠錢」。用手搖店月固定成本 190,000 元、售價 60 元、變動成本 22 元算出每月 5,000 杯，拆解漲價、原物料上漲、加薪如何位移打平點與安全邊際率。" />
+  <meta property="og:title" content="損益平衡點：開店一個月要賣幾杯才不賠錢" />
+  <meta property="og:description" content="BEP = FC/(P−VC) 的完整拆解、成本變化敏感度、目標利潤反推與安全邊際，附 ∑ Calc Pro 互動試算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/break-even-point.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/break-even-point.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "損益平衡點：開店一個月要賣幾杯才不賠錢", "url": "https://labs.moneyai168.com/formulas/break-even-point.html", "datePublished": "2026-08-25", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "損益平衡點", "item": "https://labs.moneyai168.com/formulas/break-even-point.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+{
+"expr":"FC / (P - VC)",
+"cases":[
+{"expr":"P - VC","input":{"P":60,"VC":22},"expect":38,"tol":0.001,"text":"38"},
+{"input":{"FC":190000,"P":60,"VC":22},"expect":5000,"tol":1,"text":"5,000"},
+{"expr":"FC / (P - VC) / 30","input":{"FC":190000,"P":60,"VC":22},"expect":166.6666667,"tol":0.001,"text":"166.67"},
+{"expr":"FC / (P - VC) * P","input":{"FC":190000,"P":60,"VC":22},"expect":300000,"tol":1,"text":"300,000"},
+{"expr":"(P - VC) / P","input":{"P":60,"VC":22},"expect":0.6333333333,"scale":100,"tol":1e-06,"text":"63.33"},
+{"expr":"P - VC","input":{"P":66,"VC":22},"expect":44,"tol":0.001,"text":"44"},
+{"input":{"FC":190000,"P":66,"VC":22},"expect":4318.181818,"tol":0.01,"text":"4,318.2"},
+{"expr":"FC / (P1 - VC) - FC / (P2 - VC)","input":{"FC":190000,"P1":60,"P2":66,"VC":22},"expect":681.8181818,"tol":0.01,"text":"681.8"},
+{"expr":"(FC / (P1 - VC) - FC / (P2 - VC)) / (FC / (P1 - VC))","input":{"FC":190000,"P1":60,"P2":66,"VC":22},"expect":0.1363636364,"scale":100,"tol":1e-06,"text":"13.64"},
+{"expr":"P - VC","input":{"P":60,"VC":28},"expect":32,"tol":0.001,"text":"32"},
+{"input":{"FC":190000,"P":60,"VC":28},"expect":5937.5,"tol":0.01,"text":"5,937.5"},
+{"input":{"FC":220000,"P":60,"VC":22},"expect":5789.473684,"tol":0.01,"text":"5,789.5"},
+{"expr":"(FC + G) / (P - VC)","input":{"FC":190000,"G":50000,"P":60,"VC":22},"expect":6315.789474,"tol":0.01,"text":"6,315.8"},
+{"expr":"(Q - B) / Q","input":{"Q":7000,"B":5000},"expect":0.2857142857,"scale":100,"tol":1e-06,"text":"28.57"},
+{"expr":"(FC + VC * Q) / Q","input":{"FC":190000,"VC":22,"Q":6000},"expect":53.6666667,"tol":0.001,"text":"53.67"}
+]
+}
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #49 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">損益平衡點怎麼算？開店一個月要賣幾杯才不賠錢</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-25</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一間手搖飲料店每月固定支出 190,000 元，一杯賣 60 元、原料與包材成本 22 元。
+        這家店一個月要賣掉 <strong>5,000</strong> 杯才剛好不賠錢，平均每天 166.67 杯。
+        損益平衡點公式 BEP = FC / (P − VC) 把租金、薪水、原料、售價壓成一個能每天追蹤的數字。
+        本文把它算清楚，並拆解漲價、原物料上漲、加薪各自把它推到哪裡。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">BEP = FC / (P − VC)</div>
+          <div class="formula-box-note">FC 期間固定成本 · P 單位售價 · VC 單位變動成本 · BEP 損益平衡銷量</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>BEP</td><td>損益平衡銷量（Break-even Point）</td><td>個 / 杯 / 份</td><td>計算結果</td></tr>
+            <tr><td>FC</td><td>期間固定成本（Fixed Cost），銷量為零也要付</td><td>元/月</td><td>190,000</td></tr>
+            <tr><td>P</td><td>單位售價（Price）</td><td>元</td><td>60</td></tr>
+            <tr><td>VC</td><td>單位變動成本（Variable Cost），賣一個發生一次</td><td>元</td><td>22</td></tr>
+            <tr><td>P−VC</td><td>單位貢獻邊際（Contribution Margin）</td><td>元</td><td>38</td></tr>
+          </tbody>
+        </table>
+
+        <h2>公式在算什麼？貢獻邊際才是主角</h2>
+        <p>
+          利潤 = P×Q − (FC + VC×Q)，Q 是銷量。把含 Q 的項合併得利潤 = (P − VC)×Q − FC，
+          令它等於零，Q 就是 FC / (P − VC)。整條公式只有這一步推導。
+        </p>
+        <p>
+          分母的 P − VC 叫<strong>單位貢獻邊際</strong>：每賣一個單位，扣掉為它額外付出的
+          變動成本後，剩下多少錢能填固定成本這個坑。本例是 60 − 22 = <strong>38</strong> 元。
+          公式因此很白話：190,000 元的坑，每杯填 38 元，要填幾杯。
+        </p>
+        <p>
+          成本要分對兩類，公式才成立。固定成本是銷量為零仍要付的錢：店租、正職薪資、
+          設備折舊、基本水電。變動成本是賣一個才發生一次的錢：茶葉、鮮奶、珍珠、
+          杯蓋吸管、外送平台抽成。分類錯了，打平點就整個偏掉。
+          公式另假設 P 與 VC 在區間內固定；多品項的店改用加權平均值代入。
+        </p>
+
+        <h2>用真實數字算一遍：月固定成本 19 萬的手搖店</h2>
+        <p>
+          設定一間巷口手搖飲料店：每月固定成本 190,000 元（店租 70,000、店員薪資 92,000、
+          水電雜支 28,000），單杯售價 60 元，單杯變動成本 22 元。
+        </p>
+        <p>
+          BEP = 190,000 ÷ 38 = <strong>5,000</strong> 杯／月。
+        </p>
+        <p>
+          換算成日目標：5,000 ÷ 30 = 166.67 杯／天，無條件進位就是每天 167 杯。
+          這個數字比月目標好用，可以每天下班前對一次。
+        </p>
+        <p>
+          換成營收：5,000 × 60 = <strong>300,000</strong> 元／月。也可用貢獻邊際率反推：
+          38 ÷ 60 = <strong>63.33</strong>%，190,000 ÷ 0.6333 = 300,000 元。
+          營收版不需要知道賣了幾杯，適合品項多、單價不一的店。
+          Excel 驗算：<code>=190000/(60-22)</code>。
+        </p>
+
+        <h2>漲價 10% 的威力：打平點少 681.8 杯</h2>
+        <p>
+          把單杯售價從 60 元調到 66 元（漲 10%），變動成本不變仍是 22 元。
+          單位貢獻邊際變成 66 − 22 = <strong>44</strong> 元，
+          BEP = 190,000 ÷ 44 = <strong>4,318.2</strong> 杯。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>情境</th><th>單杯售價 P</th><th>貢獻邊際 P−VC</th><th>損益平衡銷量</th></tr></thead>
+          <tbody>
+            <tr><td>原價</td><td>60</td><td>38</td><td>5,000</td></tr>
+            <tr><td>漲價 10%</td><td>66</td><td>44</td><td>4,318.2</td></tr>
+          </tbody>
+        </table>
+        <p>
+          售價只動了 10%，打平點卻少了 <strong>681.8</strong> 杯，降幅 <strong>13.64</strong>%。
+          原因是漲的 6 元完全落進貢獻邊際：分母從 38 變 <strong>44</strong>，
+          而 BEP 與分母成反比。漲價不多付任何成本，增加的部分整筆都是貢獻邊際，
+          這是價格對獲利結構槓桿最大的地方。
+        </p>
+        <p>
+          真正的風險不在公式裡：漲價後客人會不會少買，公式不會告訴你。
+          但它給出門檻 —— 若漲價 10% 讓銷量掉超過 13.64%，這一步就是虧的。
+        </p>
+
+        <h2>原物料漲 vs 多請一個人：哪個更傷？</h2>
+        <p>
+          <strong>情境 A：原物料漲，單杯變動成本 22 元升到 28 元。</strong>
+          貢獻邊際掉到 60 − 28 = <strong>32</strong> 元，BEP = 190,000 ÷ 32 =
+          <strong>5,937.5</strong> 杯。
+        </p>
+        <p>
+          <strong>情境 B：多請一名店員，月薪連同勞健保 30,000 元，固定成本升到 220,000 元。</strong>
+          貢獻邊際不動仍是 38 元，BEP = 220,000 ÷ 38 = <strong>5,789.5</strong> 杯。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>情境</th><th>FC</th><th>VC</th><th>貢獻邊際</th><th>損益平衡銷量</th></tr></thead>
+          <tbody>
+            <tr><td>基準</td><td>190,000</td><td>22</td><td>38</td><td>5,000</td></tr>
+            <tr><td>A：原物料漲 6 元</td><td>190,000</td><td>28</td><td>32</td><td>5,937.5</td></tr>
+            <tr><td>B：加一名店員</td><td>220,000</td><td>22</td><td>38</td><td>5,789.5</td></tr>
+          </tbody>
+        </table>
+        <p>
+          單杯多 6 元的原物料，比多請一名店員更傷打平點。變動成本打在分母上，
+          效果隨銷量放大：賣越多杯，那 6 元被乘的次數越多；固定成本只把分子墊高一次。
+          結論因此和直覺相反：生意越好的店越該先盯單位變動成本，
+          還沒起量的店才是固定成本壓死人。
+        </p>
+
+        <h2>過了打平點之後：目標利潤與安全邊際</h2>
+        <p>
+          打平只是及格線。要問「一個月要淨賺 50,000 元得賣幾杯」，
+          把目標利潤 G 併進分子即可：目標銷量 = (FC + G) / (P − VC)。
+          代入得 (190,000 + 50,000) ÷ 38 = <strong>6,315.8</strong> 杯／月。
+        </p>
+        <p>
+          過線之後固定成本已被填滿，每多賣一杯，那 38 元的貢獻邊際整筆變成利潤。
+          這是餐飲業過線後獲利曲線陡峭、掉到線下時虧損又擴大得同樣快的原因。
+        </p>
+        <p>
+          反過來追蹤「離打平還有多遠」，用安全邊際率 = (實際銷量 − 損益平衡銷量) / 實際銷量。
+          這家店實際月銷 7,000 杯，安全邊際率 = (7,000 − 5,000) ÷ 7,000 =
+          <strong>28.57</strong>%，意思是銷量掉超過 28.57% 就開始虧錢。
+        </p>
+        <p>
+          這個比率把打平點從靜態數字變成風險刻度。安全邊際率 5% 與 40% 的店帳面上都在賺錢，
+          但前者遇到一個連續下雨的月份就翻負。淡旺季明顯的生意該用淡季銷量算，而非全年平均。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>用平均成本取代變動成本</strong>：常見做法是拿上月總成本除以當月銷量，
+            得到「平均每杯成本」再和售價比。以月銷 6,000 杯計算，平均成本每杯
+            <strong>53.67</strong> 元，看起來售價 60 元穩穩高過它。這是錯的 ——
+            平均成本隨銷量浮動，銷量掉一半它就暴漲，拿它當固定基準等於用結果推原因。
+            分母必須是<strong>單位變動成本</strong> 22 元，只有這一項是「多賣一杯多花的錢」。
+            另一個高頻錯誤是把外送平台抽成算進固定成本：抽成按筆數計，錯放會嚴重低估打平點。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供損益平衡點的互動計算，可直接調整固定成本、售價與單位變動成本，
+          即時看到打平銷量、打平營收與貢獻邊際率的連動。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 損益平衡點 #49</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=49" title="損益平衡點互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 開店資本支出多久回收</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 開店貸款月付額屬於固定成本</a></li>
+          <li><a href="/formulas/price-earnings-ratio.html">本益比 P/E — 貢獻邊際結構如何反映在獲利倍數</a></li>
+          <li><a href="/formulas/present-value-annuity.html">年金現值 — 把未來每月利潤流折現回今天</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：損益平衡點公式依標準管理會計（cost-volume-profit analysis）·
+        本文數字均以 BEP = FC/(P−VC) 及其衍生式實算並通過站台數值驗算腳本 ·
+        店租、薪資、原物料為示範假設值 · 全文僅作數學說明，不構成投資或創業建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
