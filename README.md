@@ -20,6 +20,19 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-27**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/gross-profit-margin.html`（#109 · 金融 · Pro，毛利率 (R−C)/R：年營收 1.2 億、銷貨成本 7,350 萬 → 毛利 46,500,000 元／毛利率 38.75%；再扣營業費用 3,120 萬與 20% 稅得營業利益率 12.75%、淨利率 9.33%，三層落差 26 個百分點實算；降成本 5%（41.81%）與漲價 5%（41.67%）反直覺對照，通路商 8.92% vs 軟體 82% 說明跨產業不可比）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；卡片 expr 依文章更正為「銷貨成本」；sitemap 重生（formulas 27 篇）。
+  同批補提交 2026-08-26 因 launchd 中斷而未 commit 的 `formulas/break-even-point.html`（已複驗 QA 通過）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 18 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-27.
+
+- **2026-08-26** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/break-even-point.html`（#49 · 金融 · Pro，損益平衡點 BEP=FC/(P−VC)：月固定成本 190,000 元、售價 60 元、變動成本 22 元的手搖店打平 5,000 杯／日 166.67 杯／營收 300,000 元；漲價 10% 打平點降 681.8 杯（13.64%），原物料漲 6 元（5,937.5 杯）比多請一名店員（5,789.5 杯）更傷，目標利潤與安全邊際率 28.57% 實算）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 26 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 15 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-26.
+
 - **2026-08-23** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/present-value-annuity.html`（#44 · 金融 · Pro，年金現值 PVA=PMT×(1−(1+r)⁻ⁿ)/r：月領 1 萬 6% 20 年現值 1,395,808 元，利率差 1% 造成 40 萬差距（3%→180 萬 vs 6%→139 萬），年限 20→30 年現值僅多 27 萬，貸款公式正反面關係說明）。
   Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；sitemap 重生（formulas 25 篇）。
