@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>股息殖利率怎麼算？公式拆解與高殖利率陷阱（股價42.5元實例）· Bobo Labs</title>
+  <meta name="description" content="股息殖利率 = 年現金股利 / 股價 × 100%，回答「這筆錢一年配回多少」。用股價 42.5 元、年配 2.55 元算出 6%，再看除息、填息、配息率與總報酬如何讓帳面上的高殖利率縮水。" />
+  <meta property="og:title" content="股息殖利率怎麼算？公式拆解與高殖利率陷阱" />
+  <meta property="og:description" content="殖利率公式拆解、除息與填息、配息率的可持續性、高殖利率股的總報酬對照，附 ∑ Calc Pro 互動試算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/dividend-yield.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/dividend-yield.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "股息殖利率怎麼算？公式拆解與高殖利率陷阱", "url": "https://labs.moneyai168.com/formulas/dividend-yield.html", "datePublished": "2026-08-27", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "股息殖利率", "item": "https://labs.moneyai168.com/formulas/dividend-yield.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+{
+"expr":"D / P",
+"cases":[
+{"expr":"D * S","input":{"D":2.55,"S":10000},"expect":25500,"tol":1e-06,"text":"25,500"},
+{"expr":"P * S","input":{"P":42.5,"S":10000},"expect":425000,"tol":1e-06,"text":"425,000"},
+{"input":{"D":2.55,"P":42.5},"expect":0.06,"scale":100,"tol":1e-09,"text":"6"},
+{"expr":"P - D","input":{"P":42.5,"D":2.55},"expect":39.95,"tol":1e-09,"text":"39.95"},
+{"expr":"D / (P - D)","input":{"D":2.55,"P":42.5},"expect":0.06382978723,"scale":100,"tol":1e-09,"text":"6.38"},
+{"expr":"D / (P - D) - D / P","input":{"D":2.55,"P":42.5},"expect":0.003829787234,"scale":100,"tol":1e-09,"text":"0.38"},
+{"expr":"D / C","input":{"D":2.55,"C":30},"expect":0.085,"scale":100,"tol":1e-09,"text":"8.50"},
+{"input":{"D":2.55,"P":55},"expect":0.04636363636,"scale":100,"tol":1e-09,"text":"4.64"},
+{"input":{"D":2.55,"P":34},"expect":0.075,"scale":100,"tol":1e-09,"text":"7.50"},
+{"expr":"(D + (P1 - P0)) / P0","input":{"D":2.55,"P0":42.5,"P1":40},"expect":0.001176470588,"scale":100,"tol":1e-09,"text":"0.12"},
+{"input":{"D":1.2,"P":120},"expect":0.01,"scale":100,"tol":1e-09,"text":"1.00"},
+{"expr":"D + (P1 - P0)","input":{"D":1.2,"P0":120,"P1":132},"expect":13.2,"tol":1e-09,"text":"13.2"},
+{"expr":"(D + (P1 - P0)) / P0","input":{"D":1.2,"P0":120,"P1":132},"expect":0.11,"scale":100,"tol":1e-09,"text":"11.00"},
+{"expr":"D / EPS","input":{"D":2.55,"EPS":3.4},"expect":0.75,"scale":100,"tol":1e-09,"text":"75"},
+{"expr":"D / EPS","input":{"D":2.4,"EPS":1.8},"expect":1.333333333,"scale":100,"tol":1e-08,"text":"133.33"},
+{"input":{"D":2.4,"P":30},"expect":0.08,"scale":100,"tol":1e-09,"text":"8"},
+{"expr":"D * S * rate","input":{"D":2.55,"S":10000,"rate":0.0211},"expect":538.05,"tol":1e-06,"text":"538.05"},
+{"expr":"D * S * (1 - rate)","input":{"D":2.55,"S":10000,"rate":0.0211},"expect":24961.95,"tol":1e-06,"text":"24,961.95"},
+{"expr":"D * S * (1 - rate) / (P * S)","input":{"D":2.55,"S":10000,"rate":0.0211,"P":42.5},"expect":0.058734,"scale":100,"tol":1e-09,"text":"5.87"}
+]
+}
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #110 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">股息殖利率怎麼算？公式拆解與高殖利率陷阱</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-27</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        股價 42.5 元、一年配 2.55 元現金股利，殖利率就是 <strong>6</strong>%。
+        公式只有一個除法，難的是後面那串：除息當天股價會扣掉股利、填息才算真的拿到、
+        配息率過高代表配的是老本、殖利率高的股票總報酬可能還輸給殖利率低的。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">股息殖利率 = 年現金股利 / 股價 × 100%</div>
+          <div class="formula-box-note">D 每股年現金股利 · P 每股股價 · 結果為百分比</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>D</td><td>每股年現金股利，只算配現金的部分</td><td>元／股</td><td>2.55</td></tr>
+            <tr><td>P</td><td>每股股價，取除息前一日收盤價或當下市價</td><td>元／股</td><td>42.5</td></tr>
+            <tr><td>殖利率</td><td>現金股利佔股價比例（Dividend Yield）</td><td>%</td><td>1%–8%</td></tr>
+            <tr><td>EPS</td><td>每股盈餘，用來檢查配息率</td><td>元／股</td><td>3.4</td></tr>
+          </tbody>
+        </table>
+
+        <h2>公式在算什麼？分母是股價，不是你的成本</h2>
+        <p>
+          殖利率把「配多少錢」和「要花多少錢買」壓成一個比率：分子是一年拿到的現金股利，
+          分母是股價，元／股的單位互相消掉，剩下純比例，不同價位的股票才比得起來。
+        </p>
+        <p>
+          分子只算<strong>現金股利</strong>。配股不進分子——配股把同一塊餅切成更多片，
+          股數變多、每股價值等比例下降，公司帳上一毛錢都沒流出來，把它折成金額塞進分子，
+          等於把除權動作算成收益。
+        </p>
+        <p>
+          分母有兩種取法，意義完全不同：用<strong>市價</strong>算，得到「現在買進報酬率多少」，
+          這是決定要不要買的依據；用<strong>買進成本</strong>算，得到 yield on cost，
+          只描述既有部位的績效，不能拿來評估新資金。
+        </p>
+
+        <h2>用真實數字算一遍：股價 42.5 元、年配 2.55 元</h2>
+        <p>
+          一檔股價 42.5 元、宣布年度現金股利 2.55 元的股票，
+          殖利率 = 2.55 ÷ 42.5 = <strong>6</strong>%。Excel 驗算：<code>=2.55/42.5</code>。
+        </p>
+        <p>
+          換成金額比較有感：買 10 張（10,000 股）需要 42.5 × 10,000 =
+          <strong>425,000</strong> 元，一年領 2.55 × 10,000 = <strong>25,500</strong> 元現金股利。
+        </p>
+        <p>
+          台灣還要扣二代健保補充保險費：單次給付達 20,000 元起徵，以現行費率 2.11% 計，
+          25,500 元扣掉 <strong>538.05</strong> 元，實際入帳 <strong>24,961.95</strong> 元。
+          回推實質殖利率是 <strong>5.87</strong>%，不是帳面的 6%——股利所得稅另計，還會再往下壓。
+        </p>
+
+        <h2>除息不是天上掉錢：填息前殖利率只是帳面數字</h2>
+        <p>
+          除息當天，交易所把股利從參考價直接扣掉：股價 42.5 元、配息 2.55 元，
+          除息參考價 = 42.5 − 2.55 = <strong>39.95</strong> 元。
+        </p>
+        <p>
+          帳戶總值在這一刻沒有變：手上多了 2.55 元現金，股票市值少了 2.55 元。
+          唯有股價從 39.95 元漲回 42.5 元（<strong>填息</strong>），這 2.55 元才算真的賺到，
+          需要的漲幅是 2.55 ÷ 39.95 = <strong>6.38</strong>%。
+        </p>
+        <p>
+          注意 6.38% 的來歷：它拿股利除以<strong>除息後</strong>的股價。誤把它當殖利率會虛胖
+          <strong>0.38</strong> 個百分點——它衡量的是「要漲多少才回本」，不是「投入多少換得多少」。
+        </p>
+        <p>
+          填不了息就是左手換右手，還先付一輪稅費。判斷配息股值不值得，
+          歷年填息紀錄比當期殖利率更有訊息量。
+        </p>
+
+        <h2>股價一動，殖利率就變：追高的懲罰有多大？</h2>
+        <p>
+          宣布配息後 D 一整年固定，P 卻天天在跳，同樣配 2.55 元，買在不同價位結果差很多。
+        </p>
+        <p>
+          55 元進場殖利率剩 <strong>4.64</strong>%，34 元進場則有 <strong>7.50</strong>%。
+          同一家公司、同一筆股利，報酬率差了將近一倍，差別只在買進當下的價格。
+        </p>
+        <p>
+          除息旺季股價常先漲一波，等於用更大的分母去除同一個分子。
+          若三年前用 30 元買進，yield on cost 是 2.55 ÷ 30 = <strong>8.50</strong>%——
+          這只說明過去買得便宜，現在加碼的殖利率仍是 6%。
+        </p>
+
+        <h2>高殖利率一定好嗎？總報酬與配息率兩道檢查</h2>
+        <p>
+          殖利率只算股利、不算價差。兩檔股票放在一起看一整年：
+        </p>
+        <p>
+          <strong>A 股</strong>：買進 42.5 元，配息 2.55 元（殖利率 6%），年底跌到 40 元。
+          總報酬 = 2.55 + (40 − 42.5) = 0.05 元，報酬率 <strong>0.12</strong>%。
+        </p>
+        <p>
+          <strong>B 股</strong>：買進 120 元，配息 1.2 元（殖利率 <strong>1.00</strong>%），年底漲到 132 元。
+          總報酬 = 1.2 + (132 − 120) = <strong>13.2</strong> 元，報酬率 <strong>11.00</strong>%。
+        </p>
+        <p>
+          殖利率高出 5 個百分點的 A 股，總報酬卻輸 B 股將近 11 個百分點。
+          分母是股價，股價下跌會讓殖利率自動變高——殖利率突然衝上去，有時不是配得多，
+          而是市場正在賣它。只看殖利率，等於主動去挑正在下跌的標的。
+        </p>
+
+        <p>
+          要判斷高殖利率是實力還是假象，還要看<strong>配息率</strong>：現金股利除以 EPS。
+        </p>
+        <p>
+          本例公司 EPS 3.4 元、配息 2.55 元，配息率 = 2.55 ÷ 3.4 = <strong>75</strong>%，
+          留下四分之一再投資，對成熟型企業算健康。
+        </p>
+        <p>
+          對照另一家：股價 30 元、配息 2.4 元，殖利率 <strong>8</strong>% 更吸引人，
+          但 EPS 只有 1.8 元，配息率 = 2.4 ÷ 1.8 = <strong>133.33</strong>%。
+          配出去的比當年賺的還多，缺口只能從保留盈餘挖。這種殖利率撐不了幾年，
+          一旦減配，股價和股利兩頭都縮。
+        </p>
+        <p>
+          配息率超過 100% 未必立刻是壞事——處分資產或一次性費用都可能讓單一年度失真，
+          但連續兩三年如此就是明確警訊。殖利率要和配息率、自由現金流一起讀。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>用除息後的股價當分母</strong>：本例正確殖利率是 6%，誤用 39.95 元當分母會算出
+            <strong>6.38</strong>%，虛胖 <strong>0.38</strong> 個百分點。分母必須是<strong>實際付出的價格</strong>，
+            也就是除息前買進的價格；2.55 ÷ 39.95 算的是填息所需漲幅，意義完全不同。
+            <br /><br />
+            <strong>把配股折成現金加進分子</strong>：配息 1 元加配股 1 元寫成「殖利率 2 元／股價」是錯的。
+            配股會同步稀釋每股價值，分母的每股價格也該跟著調整，算出來的數字既不是現金報酬率，
+            也不是總報酬率。要衡量整體，直接算含價差的總報酬。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供股息殖利率的互動計算，輸入股價與年配息即可看到殖利率、
+          除息參考價與填息所需漲幅的連動。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 股息殖利率 #110</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=110" title="股息殖利率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/price-earnings-ratio.html">本益比 P/E — 和殖利率共用同一個分母：股價</a></li>
+          <li><a href="/formulas/gross-profit-margin.html">毛利率 — 配息能力的源頭在產品賺不賺錢</a></li>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 把股利與價差合起來算總報酬</a></li>
+          <li><a href="/formulas/compound-interest.html">複利 — 股利再投入為什麼會拉開差距</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：殖利率定義依一般財務分析慣例（年現金股利／股價）· 除息參考價依證交所除權息規則 ·
+        補充保險費率與起徵金額以主管機關公告為準 · 本文數字均以 D/P 及其衍生式實算並通過站台數值驗算腳本 ·
+        股價、股利、EPS 為示範假設值 · 全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
