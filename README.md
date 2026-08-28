@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-28**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/dividend-yield.html`（#110 · 金融 · Pro，股息殖利率 D/P：股價 42.5 元、年配 2.55 元 → 6%；買 10 張成本 425,000 元、年領 25,500 元，扣二代健保補充保費 2.11%（538.05 元）後實質殖利率 5.87%；除息參考價 39.95 元、填息所需漲幅 6.38% 與殖利率虛胖 0.38 個百分點的常見誤用；追高 55 元剩 4.64% vs 低接 34 元 7.50%、yield on cost 8.50%；總報酬對照 A 股 0.12% 輸 B 股 11.00%，配息率 75% vs 133.33% 兩道體檢）。
+  Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；金融分類 13 條至此全數完成，區塊註腳同步更正；sitemap 重生（formulas 28 篇）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 19 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-28.
 - **2026-08-27**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/gross-profit-margin.html`（#109 · 金融 · Pro，毛利率 (R−C)/R：年營收 1.2 億、銷貨成本 7,350 萬 → 毛利 46,500,000 元／毛利率 38.75%；再扣營業費用 3,120 萬與 20% 稅得營業利益率 12.75%、淨利率 9.33%，三層落差 26 個百分點實算；降成本 5%（41.81%）與漲價 5%（41.67%）反直覺對照，通路商 8.92% vs 軟體 82% 說明跨產業不可比）。
   Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；卡片 expr 依文章更正為「銷貨成本」；sitemap 重生（formulas 27 篇）。
