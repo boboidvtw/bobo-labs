@@ -11,8 +11,14 @@ Formula 區」，導致自動化火力轉向 formulas 後，新公式文章不�
   - 重複執行結果不變（idempotent）。
 
 排序 / lastmod：
-  - writing：日期檔（YYYY-MM-DD 前綴）依日期升序、同日依檔名；lastmod 取檔名日期。
-  - formulas：依檔名升序；lastmod 保留 sitemap 既有值，新檔取檔案 mtime。
+  - writing：日期檔（YYYY-MM-DD 前綴）依日期升序、同日依檔名；lastmod 取檔名日期＝發布日。
+  - formulas：依檔名升序；lastmod 取內容最後改動日（git），未提交的改動算今天。
+
+2026-08-29 修正：formulas 原本「保留 sitemap 既有值」，等於首次進 sitemap 後永遠凍結，
+27/28 篇的 lastmod 因此是錯的——2026-06-18 的長尾標題改動從未反映到 sitemap，Google
+讀到「5/28 之後沒變過」就沒有回來重爬的理由。改以 git 為唯一來源，既有值不再參與計算。
+writing 維持檔名日期：那批的 git 日期幾乎全是全站注入 analytics 的機械式 commit，
+拿它當 lastmod 會讓 93 篇同時謊稱已修改，而 Google 對不可信的 lastmod 是整欄不再採信。
 
 用法：
     python3 scripts/regen_sitemap.py              # 兩區都重生
@@ -23,12 +29,13 @@ from __future__ import annotations
 import argparse
 import re
 import sys
-from datetime import datetime
+import subprocess
+from datetime import date
 from pathlib import Path
 
 BASE = "https://labs.moneyai168.com"
 DATE_PREFIX = re.compile(r"^(\d{4}-\d{2}-\d{2})-")
-LASTMOD = re.compile(r"<lastmod>([^<]+)</lastmod>")
+GIT_TIMEOUT = 10  # 秒；單檔查詢，逾時即視為取不到而退回 mtime
 
 # 每區的設定。loc 正則只吃 *.html，所以 `/formulas/` 索引頁那行不會被視為區塊成員。
 # exclude：目錄索引頁不進文章區（`/formulas/` 已由 sitemap 的 Formula Library Index
@@ -48,25 +55,46 @@ def loc_pattern(dirname: str) -> re.Pattern[str]:
     return re.compile(rf"/{re.escape(dirname)}/([^<\"]+\.html)")
 
 
-def existing_lastmods(sitemap_text: str, pattern: re.Pattern[str]) -> dict[str, str]:
-    """抽出該區每檔既有的 lastmod，供無日期檔名保留原值。"""
-    result: dict[str, str] = {}
-    for line in sitemap_text.splitlines():
-        loc, mod = pattern.search(line), LASTMOD.search(line)
-        if loc and mod:
-            result[loc.group(1)] = mod.group(1)
-    return result
+def git_output(directory: Path, *args: str) -> str:
+    """在 directory 下跑 git，任何失敗都回空字串（未安裝 git／不是 repo 都走這條）。"""
+    try:
+        done = subprocess.run(["git", *args], cwd=directory, check=True,
+                              capture_output=True, text=True, timeout=GIT_TIMEOUT)
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return done.stdout.strip()
 
 
-def derive_lastmod(basename: str, prior: dict[str, str], directory: Path, by_date: bool) -> str:
-    """日期檔→檔名日期；否則→既有值，無則檔案 mtime。"""
-    match = DATE_PREFIX.match(basename)
-    if by_date and match:
-        return match.group(1)
-    if basename in prior:
-        return prior[basename]
-    mtime = (directory / basename).stat().st_mtime
-    return datetime.fromtimestamp(mtime).date().isoformat()
+def content_lastmod(path: Path) -> str:
+    """內容最後改動日：未提交的改動算今天，否則取 git 最後 commit 日，無 git 才退回 mtime。
+
+    mtime 只當退路而非常態來源——全新 clone 會把整批檔案的 mtime 設成 clone 當天，
+    拿它產 sitemap 會讓每一頁都謊稱剛改過。
+    """
+    directory = path.parent
+    if git_output(directory, "status", "--porcelain", "--", path.name):
+        return date.today().isoformat()
+    committed = git_output(directory, "log", "-1", "--format=%cs", "--", path.name)
+    return committed or date.fromtimestamp(path.stat().st_mtime).isoformat()
+
+
+def publish_lastmod(path: Path) -> str:
+    """發布日：git 首次收錄該檔的 commit 日；取不到才退回內容最後改動日。
+
+    給 writing 的無日期前綴舊檔用。它們最後一次改動是 2026-06-04 全站注入 analytics
+    的單行 commit——拿那個當 lastmod 等於為一支追蹤腳本宣稱文章更新過。
+    """
+    created = git_output(path.parent, "log", "--diff-filter=A", "--format=%cs",
+                         "--", path.name)
+    return created.splitlines()[-1] if created else content_lastmod(path)
+
+
+def derive_lastmod(basename: str, directory: Path, by_date: bool) -> str:
+    """writing→發布日（檔名日期，無前綴則取 git 首次收錄日）；formulas→內容最後改動日。"""
+    if by_date:
+        match = DATE_PREFIX.match(basename)
+        return match.group(1) if match else publish_lastmod(directory / basename)
+    return content_lastmod(directory / basename)
 
 
 def sort_key(basename: str, by_date: bool) -> tuple[int, str, str]:
@@ -75,7 +103,7 @@ def sort_key(basename: str, by_date: bool) -> tuple[int, str, str]:
     return (0, match.group(1), basename) if match else (1, "", basename)
 
 
-def build_block(root: Path, section: str, prior: dict[str, str]) -> list[str]:
+def build_block(root: Path, section: str) -> list[str]:
     config = SECTIONS[section]
     directory = root / config["dir"]
     names = sorted(
@@ -84,7 +112,7 @@ def build_block(root: Path, section: str, prior: dict[str, str]) -> list[str]:
     )
     return [
         f"  <url><loc>{BASE}/{config['dir']}/{name}</loc>"
-        f"<lastmod>{derive_lastmod(name, prior, directory, config['by_date'])}</lastmod>"
+        f"<lastmod>{derive_lastmod(name, directory, config['by_date'])}</lastmod>"
         f"<priority>{config['priority']}</priority></url>"
         for name in names
     ]
@@ -105,7 +133,7 @@ def regen_section(sitemap_path: Path, section: str) -> tuple[bool, int]:
     if idx != list(range(first, last + 1)):
         raise SystemExit(f"[regen-sitemap] {section} 條目非連續區塊，需人工檢查，中止")
 
-    new_block = build_block(site_root(), section, existing_lastmods(text, pattern))
+    new_block = build_block(site_root(), section)
     new_text = "\n".join(lines[:first] + new_block + lines[last + 1:]) + "\n"
     if new_text == text:
         return False, len(new_block)

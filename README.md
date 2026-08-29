@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-29** — 修正 sitemap `lastmod` 失真（非發文，改的是產生器）：
+  `scripts/regen_sitemap.py` 原本對 formulas 區「保留 sitemap 既有值」，等於首次收錄後永遠凍結——實測 **27/28 篇公式頁的 lastmod 是錯的**，2026-06-18 的長尾標題改動（`cce8df3`）從未反映到 sitemap，Google 讀到「5/28 之後沒變過」就沒有回來重爬的理由。
+  改以 git 為唯一來源：formulas 取內容最後改動日、未提交的改動算今天、無 git 才退回 mtime（mtime 在全新 clone 會整批變成 clone 當天，不能當常態來源）。writing 維持發布日語意——日期前綴檔取檔名日期，3 篇無前綴舊檔改取 git 首次收錄日，避免 2026-06-04 全站注入 analytics 的單行 commit 讓文章謊稱更新。
+  新增 `scripts/test_regen_sitemap.py`（17 項純 assert 規格，含整合層與冪等驗證）；修正前對同一組測試跑出 4/8 紅，另做兩次變異測試確認測試抓得到退化。
+  sitemap 重生：formulas 27 行、writing 3 行更正，網址總數 125 不變、其餘區塊零變動。
+  Fixed sitemap lastmod drift: formulas now derive from git instead of freezing at first inclusion (27/28 pages were stale, hiding the 2026-06-18 title change from Google). Adds test_regen_sitemap.py.
+
 - **2026-08-28**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/dividend-yield.html`（#110 · 金融 · Pro，股息殖利率 D/P：股價 42.5 元、年配 2.55 元 → 6%；買 10 張成本 425,000 元、年領 25,500 元，扣二代健保補充保費 2.11%（538.05 元）後實質殖利率 5.87%；除息參考價 39.95 元、填息所需漲幅 6.38% 與殖利率虛胖 0.38 個百分點的常見誤用；追高 55 元剩 4.64% vs 低接 34 元 7.50%、yield on cost 8.50%；總報酬對照 A 股 0.12% 輸 B 股 11.00%，配息率 75% vs 133.33% 兩道體檢）。
   Formula 卡片由 placeholder 轉為連結（1 張替換，Tier 一致計數不動）；金融分類 13 條至此全數完成，區塊註腳同步更正；sitemap 重生（formulas 28 篇）。
