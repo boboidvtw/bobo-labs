@@ -83,6 +83,11 @@ html.light {
   --text-muted: #475569;
   --text-subtle: #94a3b8;
 
+  /* 強調色在亮色底需要壓深才過 AA：原值 #34d399 僅 1.91:1、#f43f5e 僅 3.64:1。
+     這兩個 token 全站只用於文字色（badge/chip 的底色是另外寫死的 rgba），故可安全覆寫。 */
+  --accent-green: #047857;
+  --accent-rose: #be123c;
+
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
@@ -1381,6 +1386,7 @@ html.light .spec-table thead th {
         <a href="#comparison-cards" class="nav-link"><i class="fa-solid fa-table-cells"></i> 四機 PK</a>
         <a href="#spec-matrix" class="nav-link"><i class="fa-solid fa-list-check"></i> 參數總表</a>
         <a href="#ram-cost-analysis" class="nav-link"><i class="fa-solid fa-coins"></i> 每GB成本精算</a>
+        <a href="#baseline-pricing" class="nav-link"><i class="fa-solid fa-tag"></i> 官方起售價</a>
         <a href="#ai-model-guide" class="nav-link"><i class="fa-solid fa-brain"></i> AI 選購建議</a>
       </nav>
 
@@ -1949,6 +1955,92 @@ html.light .spec-table thead th {
       </div>
     </section>
 
+    <!-- Official Baseline Pricing -->
+    <section class="ram-analysis-section" id="baseline-pricing">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-tag"></i> 官方標配起售價 × 標配記憶體</h2>
+        <p class="section-desc">上方比的是加購記憶體後的配置；這張是 Apple 官網可直接核對的入門價（2026-08-30 查核）</p>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">機型</th>
+              <th>晶片</th>
+              <th>官方起售價</th>
+              <th>標配統一記憶體</th>
+              <th>標配 SSD</th>
+              <th>起售價 &divide; 記憶體</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sticky-col spec-name">Mac mini</td>
+              <td>Apple M6</td>
+              <td>NT$ 29,900 起</td>
+              <td>16 GB</td>
+              <td>256 GB</td>
+              <td><strong class="text-green">NT$ 1,869 / GB</strong> &#128081;</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Mac mini</td>
+              <td>Apple M5 Pro</td>
+              <td>NT$ 59,900 起</td>
+              <td>24 GB</td>
+              <td>512 GB</td>
+              <td><strong class="text-rose">NT$ 2,496 / GB</strong></td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Mac Studio</td>
+              <td>Apple M5 Max</td>
+              <td>NT$ 84,900 起</td>
+              <td>36 GB</td>
+              <td>512 GB</td>
+              <td>NT$ 2,358 / GB</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Mac Studio</td>
+              <td>Apple M5 Ultra</td>
+              <td>NT$ 199,900 起</td>
+              <td>96 GB</td>
+              <td>1 TB</td>
+              <td>NT$ 2,082 / GB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="analysis-insights-box">
+        <h4 class="box-title"><i class="fa-solid fa-scale-unbalanced text-amber"></i> 這張表和上面那張，結論是相反的：</h4>
+        <ul class="insights-list">
+          <li>
+            <strong>「越高階每 GB 越划算」只在加購到頂時成立。</strong>
+            上方用加購後配置算出一路遞減的 1,591 &rarr; 1,328 元（&minus;16.5%）；改用官方標配起售價來算，
+            最便宜的反而是入門的 <strong class="text-green">Mac mini (M6) NT$ 1,869 / GB</strong>，
+            而 <strong class="text-rose">M5 Pro 是四者中最貴的 NT$ 2,496 / GB</strong>，完全不是單調遞減。
+          </li>
+          <li>
+            <strong>這個指標把 SSD 的錢算到記憶體頭上。</strong>
+            四台的標配 SSD 是 256GB / 512GB / 512GB / 1TB，差距達四倍。
+            「售價 &divide; 記憶體」會把儲存、機殼、散熱、10GbE 全部攤進「每 GB 記憶體成本」，
+            機型間 SSD 容量不同時這個數字就<strong>不能直接橫向比</strong>。
+            要看純記憶體的邊際價格，該查的是官網設定工具裡「同一台機器加購記憶體」的加價級距。
+          </li>
+          <li>
+            <strong>兩張表回答的是不同問題。</strong>
+            上方問「我要 32/64/128/256GB 的話，哪台單位成本低」——那是加購後的推估值；
+            這張問「用最低門檻進場，每台的入門單位成本是多少」——這是官網可直接核對的官方價。
+            買不到頂規的人該看這張。
+          </li>
+        </ul>
+        <div class="baseline-source" style="margin-top:4px;font-size:0.85rem;line-height:1.7;color:var(--text-muted);">
+          資料來源：Apple 台灣官網 Mac mini / Mac Studio 技術規格頁與購買頁，2026-08-30 查核。
+          兩款機器目前皆為預訂狀態，官網標示 9 月 22 日開始發售。
+        </div>
+      </div>
+    </section>
+
     <!-- Interactive AI Model Fit Checker -->
     <section class="ai-guide-section" id="ai-model-guide">
       <div class="section-header">
@@ -2181,6 +2273,20 @@ function initCopyMarkdown() {
 | **乙太網路** | 2.5 Gbps | 2.5 Gbps | **10 Gbps** | **10 Gbps** |
 | **推估售價（加購記憶體後）** | **NT$ 50,900** | **NT$ 94,900** | **NT$ 175,900** | **NT$ 339,900** |
 | 🏷️ **每 1GB 記憶體成本** | **約 NT$ 1,591 / GB** | **約 NT$ 1,483 / GB** | **約 NT$ 1,374 / GB** | **約 NT$ 1,328 / GB 👑** |
+
+## 官方標配起售價 × 標配記憶體（Apple 台灣官網，2026-08-30 查核）
+
+| 機型 | 晶片 | 官方起售價 | 標配記憶體 | 標配 SSD | 起售價 ÷ 記憶體 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Mac mini | Apple M6 | NT$ 29,900 起 | 16 GB | 256 GB | **NT$ 1,869 / GB** 👑 |
+| Mac mini | Apple M5 Pro | NT$ 59,900 起 | 24 GB | 512 GB | NT$ 2,496 / GB |
+| Mac Studio | Apple M5 Max | NT$ 84,900 起 | 36 GB | 512 GB | NT$ 2,358 / GB |
+| Mac Studio | Apple M5 Ultra | NT$ 199,900 起 | 96 GB | 1 TB | NT$ 2,082 / GB |
+
+> 兩張表結論相反：上表（加購到頂）每 GB 成本一路遞減 1,591 → 1,328；改用官方標配起售價，
+> 最便宜的是入門 Mac mini (M6) 1,869 元，M5 Pro 反而最貴 2,496 元。
+> 另注意此指標把 SSD 成本攤進了記憶體——四台標配 SSD 差距達四倍（256GB / 512GB / 512GB / 1TB），
+> 機型間不能直接橫向比。兩款機器官網標示 9 月 22 日開始發售。
 
 *來源整理：Bobo Labs (https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html) — 晶片規格對照 Apple 官網核實 2026-08-30；售價為加購記憶體後的推估值*`;
 
