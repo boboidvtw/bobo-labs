@@ -3,33 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較 | Bobo Labs</title>
-  <meta name="description" content="Mac mini (M6 / M5 Pro) 與 Mac Studio (M5 Max / M5 Ultra) 規格與選購對照整理，含每 1GB 記憶體取得成本精算、多螢幕輸出與 I/O 擴充比對。注意：本頁比較的是加購記憶體後的客製配置，售價為推估值，非官方標準機型定價。">
-  <meta name="keywords" content="Mac mini, Mac Studio, M6, M5 Pro, M5 Max, M5 Ultra, Apple Silicon, 規格比較, 每GB記憶體成本, 本地AI模型">
+  <title>Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 與本地 LLM 速度實算 | Bobo Labs</title>
+  <meta name="description" content="2026 年 Mac mini（M6／M5 Pro）與 Mac Studio（M5 Max／M5 Ultra）選購對照。用官網實價算出記憶體加購一律 NT$875／GB、記憶體頻寬 153～1,200 GB/s 如何決定本地 LLM 生成速度，以及 Thunderbolt 4／5 與螢幕輸出的實際差別。售價與規格 2026-08-30 於 apple.com/tw 逐項核實。">
+  <meta name="keywords" content="Mac mini 還是 Mac Studio, 記憶體頻寬, Thunderbolt 5, M6, M5 Pro, M5 Max, M5 Ultra, 統一記憶體加購價, 本地 LLM Mac, 每GB頻寬成本">
   <link rel="canonical" href="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Bobo Labs">
-  <meta property="og:title" content="2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較">
-  <meta property="og:description" content="每 1GB 記憶體取得成本精算、本地 LLM 適配速查、四機全參數交叉對照。比較的是加購記憶體後的客製配置，售價為推估值。">
+  <meta property="og:title" content="Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 與本地 LLM 速度實算">
+  <meta property="og:description" content="記憶體加購全線一律 NT$875／GB、頻寬 153～1,200 GB/s 決定 tok/s、Thunderbolt 4 與 5 的實際差別。售價與規格 2026-08-30 於 Apple 官網逐項核實。">
   <meta property="og:url" content="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
   <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 與本地 LLM 速度實算",
+    "description": "以 Apple 官網實價與技術規格，量化比較 Mac mini（M6／M5 Pro）與 Mac Studio（M5 Max／M5 Ultra）的記憶體單價、記憶體頻寬、Thunderbolt 規格與本地大型語言模型生成速度上限。",
+    "inLanguage": "zh-TW",
+    "datePublished": "2026-08-30",
+    "dateModified": "2026-08-30",
+    "author": { "@type": "Organization", "name": "Bobo Labs" },
+    "publisher": { "@type": "Organization", "name": "Bobo Labs" },
+    "mainEntityOfPage": "https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html"
+  }
+  </script>
   <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
-  
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,3,00..800;1,300..800&family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <style>
-/* ==========================================================================
-   CSS Design System & Styles for Mac Comparison Blog Web App
-   Theme: Modern Apple Dark Glassmorphism + Dynamic Accent Glows
-   Target: labs.moneyai168.com
-   ========================================================================== */
 
+  <style>
 :root {
   --bg-primary: #090b10;
   --bg-secondary: #121620;
@@ -43,7 +51,7 @@
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --text-subtle: #64748b;
+  --text-subtle: #8496ab;
 
   --accent-blue: #38bdf8;
   --accent-purple: #a855f7;
@@ -83,8 +91,9 @@ html.light {
   --text-muted: #475569;
   --text-subtle: #94a3b8;
 
-  /* 強調色在亮色底需要壓深才過 AA：原值 #34d399 僅 1.91:1、#f43f5e 僅 3.64:1。
-     這兩個 token 全站只用於文字色（badge/chip 的底色是另外寫死的 rgba），故可安全覆寫。 */
+  --text-subtle: #64748b;
+
+  /* accent-green / accent-rose 全站只當文字色，可直接壓深（原值 1.91:1 / 3.64:1）。 */
   --accent-green: #047857;
   --accent-rose: #be123c;
 
@@ -321,13 +330,8 @@ html.light .site-header {
   border-radius: 50%;
   background-color: var(--accent-blue);
   box-shadow: 0 0 10px var(--accent-blue);
-  animation: pulse-dot 2s infinite;
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
-}
 
 .hero-title {
   font-size: clamp(2.2rem, 5vw, 3.6rem);
@@ -1307,57 +1311,535 @@ html.light .spec-table thead th {
     grid-template-columns: 1fr;
   }
 }
-/* --- 資料可信度標註（2026-08-30 進站時新增） --- */
-.speculative-notice {
-  width: 100%;
-  max-width: 880px;
-  display: flex;
-  gap: 16px;
-  text-align: left;
-  padding: 20px 22px;
-  border-radius: var(--radius-md);
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  border-left: 4px solid var(--accent-amber);
-}
-
-.speculative-notice .notice-icon {
-  flex: 0 0 auto;
-  font-size: 1.35rem;
-  line-height: 1.4;
-  color: var(--accent-amber);
-}
-
-.speculative-notice .notice-body { min-width: 0; }
-
-.speculative-notice .notice-title {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.speculative-notice p {
-  font-size: 0.94rem;
-  line-height: 1.75;
-  color: var(--text-muted);
-}
-
-.speculative-notice p + p { margin-top: 8px; }
-
-.speculative-notice strong { color: var(--text-main); }
-
 @media (max-width: 640px) {
   /* 窄螢幕：品牌名不換行，讓出空間給右側動作鍵 */
   .brand-title { white-space: nowrap; }
   .brand-badge { display: none; }
 }
 
-@media (max-width: 600px) {
-  .speculative-notice { padding: 16px; gap: 12px; }
-  .speculative-notice .notice-icon { font-size: 1.1rem; }
-  .speculative-notice p { font-size: 0.88rem; }
+
+
+/* ==========================================================================
+   2026-08-30 重寫新增：頻寬／Thunderbolt／roofline 三條新軸線的元件
+   配色經 dataviz validate_palette.js 驗證（見頁尾「數字怎麼來的」）
+   ========================================================================== */
+
+:root {
+  /* 機型序階 ramp — 深色底 #0f1420，--ordinal 五項檢查全通過 */
+  --seq-1: #00629c;
+  --seq-2: #0080bd;
+  --seq-3: #00a0de;
+  --seq-4: #2ec6ff;
+  /* 非資料的參照刻度（外接 I/O）刻意用中性灰，不佔用資料色 */
+  --seq-ref: #7c8ba1;
+}
+
+html.light {
+  --seq-1: #00c0ff;
+  --seq-2: #00a6ea;
+  --seq-3: #008acb;
+  --seq-4: #006eae;
+  --seq-ref: #5b6b7f;
+
+  /* 亮色底量測：#38bdf8 僅 2.14:1、#a855f7 3.96:1、#fbbf24 1.67:1，都不到內文要求的 4.5:1。
+     這三個 token 全站共 23 處當文字色、僅 3 處當底色（badge-dot／toggle slider／th-badge），
+     因此整體壓深、再把那 3 處還原成鮮豔值，比逐處改色安全。 */
+  --accent-blue: #0369a1;
+  --accent-purple: #7e22ce;
+  --accent-amber: #a16207;
+}
+
+/* 亮色主題中，上述三個 token 被當「底色」使用的三處例外 */
+html.light .badge-dot {
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
+html.light .toggle-switch input:checked + .slider { background-color: #0369a1; }
+
+html.light .th-badge {
+  background: #fbbf24;
+  color: #1c1917;
+}
+
+/* 標題不使用漸層字：亮色主題下漸層末端只有 2.4:1，且漸層字是無語意的裝飾 */
+.text-gradient {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+  color: var(--accent-blue);
+}
+
+/* --- 資料基準（取代原本的「推估值」警示；四個售價已於官網逐項核實） --- */
+.data-basis {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  gap: 16px;
+  text-align: left;
+  padding: 18px 22px;
+  border-radius: var(--radius-md);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent-blue);
+}
+
+.data-basis .basis-icon {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--accent-blue);
+}
+
+.data-basis .basis-body { min-width: 0; }
+
+.data-basis p {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+.data-basis p + p { margin-top: 6px; }
+.data-basis strong { color: var(--text-main); }
+
+/* --- 雙軌價格（入門機 / 本頁配置） --- */
+.dual-price {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.dual-price .track {
+  background: var(--bg-secondary);
+  padding: 10px 12px;
+}
+
+.dual-price .track-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-subtle);
+  margin-bottom: 3px;
+}
+
+.dual-price .track-price {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.dual-price .track-conf {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.dual-price .track-this .track-price { color: var(--accent-blue); }
+
+/* --- 兩條軸線的導言 --- */
+.axis-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.axis-card {
+  padding: 22px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.axis-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.axis-card h3 .axis-num {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--seq-3);
+  color: var(--bg-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.axis-card p {
+  font-size: 0.93rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+.axis-card strong { color: var(--text-main); }
+
+/* --- 大數字（875 元/GB 這種「故事只有一個數」的情況） --- */
+.figure-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: 28px;
+  align-items: center;
+  padding: 26px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.figure-value {
+  font-size: clamp(2.6rem, 1.4rem + 4vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.figure-value .unit {
+  font-size: 0.32em;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.figure-caption {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.figure-note {
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--text-muted);
+}
+
+.figure-note strong { color: var(--text-main); }
+.figure-note p + p { margin-top: 10px; }
+
+/* --- 頻寬階梯：對數軸點圖（log 軸上不畫長條，長條會謊報倍數） --- */
+.ladder {
+  padding: 24px 26px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.ladder-group + .ladder-group { margin-top: 22px; }
+
+.ladder-group-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+}
+
+.ladder-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 190px) 1fr;
+  align-items: center;
+  gap: 14px;
+  min-height: 30px;
+}
+
+.ladder-name {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.ladder-row.is-machine .ladder-name { color: var(--text-main); font-weight: 600; }
+
+.ladder-plot {
+  position: relative;
+  height: 26px;
+}
+
+/* 十進位刻度線：實線髮絲，不用虛線 */
+.ladder-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ladder-grid span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-subtle);
+}
+
+.ladder-dot {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  /* 2px 底色環，避免點與刻度線黏在一起 */
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.ladder-val {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ladder-row.is-ref .ladder-val { color: var(--text-muted); font-weight: 500; }
+
+/* 靠右的點把標籤放到左側，避免被容器右緣切掉 */
+.ladder-val.is-flipped {
+  transform: translate(-100%, -50%);
+  margin-left: -12px;
+}
+
+.ladder-axis {
+  display: grid;
+  grid-template-columns: minmax(120px, 190px) 1fr;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.ladder-ticks {
+  position: relative;
+  height: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ladder-ticks span {
+  position: absolute;
+  top: 3px;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.ladder-caption {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* --- Thunderbolt 規格對照 --- */
+.tb-callout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.tb-stat {
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.tb-stat .tb-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.tb-stat .tb-lbl {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* --- roofline 生成速度矩陣 --- */
+.roof-cell {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.roof-num {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.roof-unit { font-size: 0.75rem; color: var(--text-subtle); }
+
+.roof-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.roof-ok    { color: var(--accent-green); }
+.roof-tight { color: var(--accent-amber); }
+.roof-no    { color: var(--accent-rose); font-weight: 700; }
+
+.assumption-box {
+  margin-top: 18px;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.86rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+.assumption-box strong { color: var(--text-main); }
+
+.assumption-box code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.92em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+}
+
+/* --- 驗算表（每一列都是可自行複算的算式） --- */
+.calc-table td.calc-expr {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.calc-table td.calc-out {
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 來源標註 --- */
+.source-note {
+  margin-top: 10px;
+  font-size: 0.84rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+.source-note a { color: var(--accent-blue); }
+
+@media (max-width: 760px) {
+  .figure-panel { grid-template-columns: 1fr; gap: 18px; }
+  .ladder-row,
+  .ladder-axis { grid-template-columns: minmax(96px, 130px) 1fr; gap: 10px; }
+  .ladder-name { font-size: 0.78rem; }
+  .ladder-val { font-size: 0.76rem; margin-left: 10px; }
+  .dual-price { grid-template-columns: 1fr; }
+}
+
+/* 尊重系統的「減少動態效果」設定 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 高亮關鍵差異：改用 class（原本寫 inline style，亮色主題下用不到自己的色） */
+#matrix-table.show-diff tr.diff-row { background-color: rgba(56, 189, 248, 0.10); }
+html.light #matrix-table.show-diff tr.diff-row { background-color: rgba(3, 105, 161, 0.07); }
+
+/* 表格說明文字 */
+.spec-table caption { color: var(--text-muted); font-size: 0.88rem; }
+
+/* ==========================================================================
+   對比度修正（2026-08-30 實測後補；判準見頁尾「數字怎麼來的」）
+   ========================================================================== */
+
+/* 白字壓在 --accent-gradient 上，三個色停分別只有 2.14 / 2.98 / 2.64:1。
+   漸層是 background-image，backgroundColor 讀起來是透明，所以掃描器長期看不到這兩處。
+   互動控制項改用壓深後的漸層：兩端對白字為 5.93:1 與 10.95:1。 */
+.action-btn.btn-primary,
+.filter-pills .pill.active {
+  background: linear-gradient(135deg, #0369a1 0%, #4c1d95 100%);
+  color: #ffffff;
+}
+
+.action-btn.btn-primary:hover,
+.filter-pills .pill.active:hover {
+  background: linear-gradient(135deg, #075985 0%, #3b1078 100%);
+}
+
+/* 序號徽章：亮色主題下 seq-3 對 --bg-primary 只有 3.65:1，改用更深的 seq-4（5.22:1） */
+.axis-card h3 .axis-num { background: var(--seq-4); }
+
+/* 兩張「重點卡」原本把深色主題的底色 rgba(22,27,39,.8) 寫死在漸層裡，
+   亮色主題下整張卡下半部會變成深藍底配深色文字。改成跟著主題走的強調底。 */
+.product-card.popular-card,
+.decision-card.highlight-card {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.10) 0%, var(--bg-card) 100%);
+}
+
+html.light .product-card.popular-card,
+html.light .decision-card.highlight-card {
+  background: linear-gradient(180deg, rgba(161, 98, 7, 0.10) 0%, var(--bg-secondary) 100%);
+}
+
+/* 金額不要在 NT$ 與數字之間斷行 */
+.dual-price .track-price,
+.price-val { white-space: nowrap; }
+
+@media (max-width: 760px) {
+  /* 0.5 與 1 兩個刻度在窄螢幕會疊字 */
+  .ladder-ticks .tick-dense { display: none; }
+}
+
+/* --- 鍵盤焦點：原樣式表完全沒有 focus 規則，只靠瀏覽器預設環 --- */
+/* 用 outline-offset 讓焦點環落在祖先底色上，所以對比要對祖先底量：
+   深色 #38bdf8 on #090b10 = 9.19:1；亮色 #0369a1 on #f8fafc = 5.67:1，皆過非文字 3:1。 */
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* 篩選膠囊自己有圓角，焦點環跟著走 */
+.filter-pills .pill:focus-visible { border-radius: 999px; }
+
+/* 指標卡的補充說明另起一行，避免「（四款晶片一致）」被拆到下一行只剩尾字 */
+.metric-val small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
   </style>
@@ -1373,114 +1855,144 @@ html.light .spec-table thead th {
     <div class="header-container">
       <a class="brand" href="/" title="回 Bobo Labs 首頁">
         <div class="brand-logo">
-          <i class="fa-solid fa-microchip brand-icon"></i>
+          <i class="fa-solid fa-microchip brand-icon" aria-hidden="true"></i>
         </div>
         <div class="brand-text">
           <span class="brand-title">Bobo Labs</span>
           <span class="brand-badge">Hardware Lab</span>
         </div>
       </a>
-      
-      <nav class="header-nav">
-        <a href="#quick-summary" class="nav-link"><i class="fa-solid fa-bolt"></i> 快速導覽</a>
-        <a href="#comparison-cards" class="nav-link"><i class="fa-solid fa-table-cells"></i> 四機 PK</a>
-        <a href="#spec-matrix" class="nav-link"><i class="fa-solid fa-list-check"></i> 參數總表</a>
-        <a href="#ram-cost-analysis" class="nav-link"><i class="fa-solid fa-coins"></i> 每GB成本精算</a>
-        <a href="#baseline-pricing" class="nav-link"><i class="fa-solid fa-tag"></i> 官方起售價</a>
-        <a href="#ai-model-guide" class="nav-link"><i class="fa-solid fa-brain"></i> AI 選購建議</a>
+
+      <nav class="header-nav" aria-label="頁內導覽">
+        <a href="#comparison-cards" class="nav-link"><i class="fa-solid fa-table-cells" aria-hidden="true"></i> 四機速覽</a>
+        <a href="#spec-matrix" class="nav-link"><i class="fa-solid fa-list-check" aria-hidden="true"></i> 參數總表</a>
+        <a href="#memory-price" class="nav-link"><i class="fa-solid fa-coins" aria-hidden="true"></i> 記憶體單價</a>
+        <a href="#bandwidth" class="nav-link"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 頻寬階梯</a>
+        <a href="#thunderbolt" class="nav-link"><i class="fa-solid fa-plug" aria-hidden="true"></i> Thunderbolt</a>
+        <a href="#llm" class="nav-link"><i class="fa-solid fa-brain" aria-hidden="true"></i> 本地 LLM</a>
       </nav>
 
       <div class="header-actions">
         <button id="theme-toggle" class="action-btn" title="切換色彩模式" aria-label="切換色彩模式">
-          <i class="fa-solid fa-moon"></i>
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
         </button>
         <button id="copy-markdown-btn" class="action-btn btn-primary" title="複製 Markdown 比較表">
-          <i class="fa-regular fa-copy"></i> 複製 MD
+          <i class="fa-regular fa-copy" aria-hidden="true"></i> 複製 MD
         </button>
       </div>
     </div>
   </header>
 
   <main class="main-content">
-    <!-- Hero Banner -->
-    <section class="hero-section">
+    <!-- Hero -->
+    <section class="hero-section" aria-labelledby="page-title">
       <div class="hero-badge">
-        <span class="badge-dot"></span>
-        <span>2026 Apple 旗艦桌面工作站指南</span>
+        <span class="badge-dot" aria-hidden="true"></span>
+        <span>規格與售價：2026-08-30 於 apple.com/tw 逐項核實</span>
       </div>
-      <h1 class="hero-title">
+      <h1 class="hero-title" id="page-title">
         Mac mini <span class="text-gradient">vs</span> Mac Studio
-        <span class="hero-subtitle-block">一頁式規格參數對比 · 每 GB 成本精算 · 選購指南</span>
+        <span class="hero-subtitle-block">記憶體頻寬、Thunderbolt 與本地 LLM 速度，全部用官網數字算給你看</span>
       </h1>
       <p class="hero-description">
-        從 <strong>NT$ 50,900</strong> 的高性價比全能主機，到 <strong>NT$ 339,900</strong> 的極限算力怪獸！針對 <strong>軟體開發、影音創作、3D 渲染與本地大模型 (LLM)</strong> 深入量化評測。
+        四台機器、兩條軸線：<strong>容量</strong>決定模型跑不跑得動，<strong>記憶體頻寬</strong>決定它跑多快。
+        本頁把 Apple 官網的實際售價與規格換算成可驗算的單價與速度上限，不談體感。
       </p>
 
-      <!-- 資料可信度標註 -->
-      <div class="speculative-notice" role="note">
-        <i class="fa-solid fa-triangle-exclamation notice-icon" aria-hidden="true"></i>
-        <div class="notice-body">
-          <strong class="notice-title">閱讀前請先看這段：本頁比的是「加購記憶體後」的配置，不是官方標準機型</strong>
+      <div class="data-basis" role="note">
+        <i class="fa-solid fa-circle-info basis-icon" aria-hidden="true"></i>
+        <div class="basis-body">
           <p>
-            晶片規格（CPU／GPU／NPU 核心數、連接埠、螢幕輸出上限）已於 <strong>2026-08-30 對照 Apple 台灣官網技術規格頁核實</strong>。
-            但本頁四台機器的<strong>記憶體容量是加購後的客製配置</strong>——32GB／64GB／128GB／256GB 都不是標準機型的出廠容量，
-            對應的新台幣售價是<strong>推估值，未經 Apple 線上商店設定工具逐項核對</strong>。
+            <strong>本頁所有售價都是 Apple 官網設定工具實際跑出來的金額，不是推估值。</strong>
+            四組配置逐一核對：Mac mini M6 32GB／512GB = NT$50,900；Mac mini M5 Pro 64GB／512GB = NT$94,900；
+            Mac Studio M5 Max 128GB／512GB = NT$175,900；Mac Studio M5 Ultra 256GB／1TB = NT$339,900。
           </p>
-          <p class="notice-usage">
-            官方標準機型起價供你對照：<strong>Mac mini (M6) NT$ 29,900 起</strong>（16GB／256GB）、
-            <strong>Mac mini (M5 Pro) NT$ 59,900 起</strong>（24GB／512GB）、
-            <strong>Mac Studio (M5 Max) NT$ 84,900 起</strong>（36GB／512GB）、
-            <strong>Mac Studio (M5 Ultra) NT$ 199,900 起</strong>（96GB／1TB）。
-            所有「每 GB 成本」與「降幅百分比」都是在本頁那組推估售價之上算出來的：算式可驗算，但輸入值會隨你實際選配而變。
-            本頁適合當作<strong>選購思路與比較框架</strong>（記憶體容量如何決定本地 LLM 上限、單位記憶體成本為何隨機型遞減）；
-            <strong>下單前請以 Apple 官網設定工具跑出的實際報價為準</strong>。
+          <p>
+            兩款機器官網目前標示<strong>預訂中、9 月 22 日開始發售</strong>，Mac Studio 每位顧客限購兩部。
+            M5 Ultra 的 512GB 記憶體選項官網註明<strong>10 月底才推出</strong>。
+            價格會變動，下單前仍請以官網當下報價為準。
           </p>
         </div>
       </div>
 
-      <!-- Quick Metrics Bar -->
+      <!-- 四個一眼結論，每個都由頁內算式產生 -->
       <div class="metrics-grid" id="quick-summary">
-        <div class="metric-card">
-          <div class="metric-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
-          <div class="metric-info">
-            <span class="metric-label">價格區間</span>
-            <span class="metric-val">NT$ 50.9K ~ 339.9K</span>
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-icon"><i class="fa-solid fa-memory"></i></div>
-          <div class="metric-info">
-            <span class="metric-label">記憶體跨度</span>
-            <span class="metric-val">32GB ~ 256GB</span>
-          </div>
-        </div>
         <div class="metric-card highlight-metric">
-          <div class="metric-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+          <div class="metric-icon"><i class="fa-solid fa-memory" aria-hidden="true"></i></div>
           <div class="metric-info">
-            <span class="metric-label">每 1GB 最低成本</span>
-            <span class="metric-val">NT$ 1,328 / GB <small>(M5 Ultra)</small></span>
+            <span class="metric-label">記憶體加購單價</span>
+            <span class="metric-val">NT$ 875 / GB <small>（四款晶片一致）</small></span>
           </div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon"><i class="fa-solid fa-desktop"></i></div>
+          <div class="metric-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></div>
           <div class="metric-info">
-            <span class="metric-label">最高螢幕輸出</span>
-            <span class="metric-val">最多 8 部外接螢幕</span>
+            <span class="metric-label">記憶體頻寬跨度</span>
+            <span class="metric-val">153 → 1,200 GB/s <small>（7.8 倍）</small></span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i></div>
+          <div class="metric-info">
+            <span class="metric-label">入門機每 GB/s 成本</span>
+            <span class="metric-val">NT$ 167 ~ 195 <small>（幾乎打平）</small></span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-plug" aria-hidden="true"></i></div>
+          <div class="metric-info">
+            <span class="metric-label">統一記憶體 ÷ Thunderbolt 5</span>
+            <span class="metric-val">120 倍 <small>（1,200 vs 10 GB/s）</small></span>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- 兩條軸線 -->
+    <section aria-labelledby="axes-title">
+      <div class="section-header">
+        <h2 class="section-title" id="axes-title"><i class="fa-solid fa-arrows-left-right-to-line" aria-hidden="true"></i> 先講清楚：這四台的差別是兩條軸，不是一條</h2>
+        <p class="section-desc">多數比較表只排「多少 GB」。但決定你實際體驗的，是容量與頻寬各自負責的兩件不同的事</p>
+      </div>
+
+      <div class="axis-pair">
+        <div class="axis-card">
+          <h3><span class="axis-num" aria-hidden="true">1</span> 容量：跑不跑得動</h3>
+          <p>
+            模型權重必須整份放進統一記憶體，放不下就是<strong>完全跑不起來</strong>，沒有「慢一點」這個選項。
+            這條軸是階梯式的：32GB 擋在 70B 之外，128GB 擋在大型 MoE 之外。
+            容量決定的是<strong>可行與不可行的分界</strong>。
+          </p>
+        </div>
+        <div class="axis-card">
+          <h3><span class="axis-num" aria-hidden="true">2</span> 頻寬：跑多快</h3>
+          <p>
+            生成每一個詞元，晶片都得把整份權重從記憶體讀過一遍。所以生成速度的上限直接由頻寬除以權重大小決定，
+            與 CPU 或 GPU 核心數關係不大。<strong>M5 Ultra 的 1,200 GB/s 是 M6 的 7.8 倍</strong>，
+            同一個模型的 tok/s 差距就是這個倍數。
+          </p>
+        </div>
+      </div>
+
+      <div class="assumption-box">
+        <strong>這兩條軸在 Apple 的產品線上是綁在一起的，而且綁得比想像中緊。</strong>
+        Mac mini M6 加購記憶體到 24GB 或 32GB，頻寬會從 153GB/s 一起升到 170GB/s；
+        Mac Studio 的 128GB 記憶體<strong>只有 40 核 GPU 版選得到</strong>，而那顆晶片的頻寬是 614GB/s，
+        36GB 的 32 核 GPU 版只有 460GB/s。
+        換句話說：<strong>你沒辦法只買容量不買頻寬</strong>，官網的選項表就沒有那一格。
+      </div>
+    </section>
+
     <!-- Interactive Filter Toolbar -->
-    <section class="filter-toolbar-section">
+    <section class="filter-toolbar-section" aria-label="機型篩選">
       <div class="filter-toolbar">
         <div class="filter-group">
-          <span class="filter-title"><i class="fa-solid fa-filter"></i> 使用情境篩選：</span>
+          <span class="filter-title"><i class="fa-solid fa-filter" aria-hidden="true"></i> 使用情境篩選：</span>
           <div class="filter-pills" id="scenario-filters">
             <button class="pill active" data-filter="all">全部機型 (4)</button>
-            <button class="pill" data-filter="dev"><i class="fa-solid fa-code"></i> 軟體開發 / 日常</button>
-            <button class="pill" data-filter="creator"><i class="fa-solid fa-film"></i> 影音剪輯 / 3D</button>
-            <button class="pill" data-filter="ai"><i class="fa-solid fa-brain"></i> 本地 AI / LLM</button>
+            <button class="pill" data-filter="dev"><i class="fa-solid fa-code" aria-hidden="true"></i> 軟體開發 / 日常</button>
+            <button class="pill" data-filter="creator"><i class="fa-solid fa-film" aria-hidden="true"></i> 影音剪輯 / 3D</button>
+            <button class="pill" data-filter="ai"><i class="fa-solid fa-brain" aria-hidden="true"></i> 本地 AI / LLM</button>
           </div>
         </div>
 
@@ -1494,17 +2006,17 @@ html.light .spec-table thead th {
       </div>
     </section>
 
-    <!-- 4 Cards Side by Side Section -->
-    <section class="cards-section" id="comparison-cards">
+    <!-- 四款速覽 -->
+    <section class="cards-section" id="comparison-cards" aria-labelledby="cards-title">
       <div class="section-header">
-        <h2 class="section-title"><i class="fa-solid fa-cubes-stacked"></i> 四款主力配置速覽</h2>
-        <p class="section-desc">點擊卡片可即時聚焦對比，或查看各機型的每 GB 記憶體取得成本</p>
+        <h2 class="section-title" id="cards-title"><i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i> 四款主力機型速覽</h2>
+        <p class="section-desc">每張卡片同時列出「官方入門機」與「本頁比較的配置」，兩組都是官網實價</p>
       </div>
 
       <div class="product-cards-grid">
-        <!-- Card 1: Mac mini M6 -->
+        <!-- Mac mini M6 -->
         <div class="product-card" data-category="dev" id="card-mini-m6">
-          <div class="card-badge badge-blue">入門全能王</div>
+          <div class="card-badge badge-blue">入門全能</div>
           <div class="product-visual">
             <div class="product-render mini-render">
               <div class="apple-device mini-device">
@@ -1522,45 +2034,53 @@ html.light .spec-table thead th {
             <div class="chip-tag chip-m6">Apple M6</div>
           </div>
 
-          <div class="product-price-box">
-            <div class="price-main">NT$ 50,900</div>
-            <div class="price-sub">每 1GB 成本：<strong>NT$ 1,591</strong></div>
+          <div class="dual-price">
+            <div class="track">
+              <span class="track-label">官方入門機</span>
+              <span class="track-price">NT$ 29,900</span>
+              <span class="track-conf">16GB · 256GB · 153GB/s</span>
+            </div>
+            <div class="track track-this">
+              <span class="track-label">本頁配置</span>
+              <span class="track-price">NT$ 50,900</span>
+              <span class="track-conf">32GB · 512GB · 170GB/s</span>
+            </div>
           </div>
 
           <div class="key-specs-list">
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
-              <span class="spec-value">12核 CPU · 12核 GPU · 雙16核 NPU</span>
+              <span class="spec-label"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 核心算力</span>
+              <span class="spec-value">12 核 CPU · 12 核 GPU · 雙 16 核 NPU</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
-              <span class="spec-value highlight-text">32 GB</span>
+              <span class="spec-label"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 記憶體頻寬</span>
+              <span class="spec-value highlight-text">170 GB/s</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
-              <span class="spec-value">512 GB SSD</span>
+              <span class="spec-label"><i class="fa-solid fa-memory" aria-hidden="true"></i> 記憶體上限</span>
+              <span class="spec-value">32 GB</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
-              <span class="spec-value">3× TB4 + 2.5GbE</span>
+              <span class="spec-label"><i class="fa-solid fa-network-wired" aria-hidden="true"></i> Thunderbolt</span>
+              <span class="spec-value">3 × TB4（40Gb/s）</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
-              <span class="spec-value">最多 3 部螢幕</span>
+              <span class="spec-label"><i class="fa-solid fa-display" aria-hidden="true"></i> 顯示支援</span>
+              <span class="spec-value">最多 3 部 · DP 1.4</span>
             </div>
           </div>
 
           <div class="card-footer">
             <div class="best-for">
-              <i class="fa-solid fa-thumbs-up"></i>
-              <span><strong>適合：</strong>個人開發、輕量 AI、日常高效多工</span>
+              <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
+              <span><strong>適合：</strong>日常開發與多工，本地模型跑到 14B 為止</span>
             </div>
           </div>
         </div>
 
-        <!-- Card 2: Mac mini M5 Pro -->
+        <!-- Mac mini M5 Pro -->
         <div class="product-card" data-category="dev creator" id="card-mini-m5pro">
-          <div class="card-badge badge-purple">多工效能王</div>
+          <div class="card-badge badge-purple">多工效能</div>
           <div class="product-visual">
             <div class="product-render mini-render">
               <div class="apple-device mini-device">
@@ -1578,45 +2098,53 @@ html.light .spec-table thead th {
             <div class="chip-tag chip-m5pro">Apple M5 Pro</div>
           </div>
 
-          <div class="product-price-box">
-            <div class="price-main">NT$ 94,900</div>
-            <div class="price-sub">每 1GB 成本：<strong>NT$ 1,483</strong></div>
+          <div class="dual-price">
+            <div class="track">
+              <span class="track-label">官方入門機</span>
+              <span class="track-price">NT$ 59,900</span>
+              <span class="track-conf">24GB · 512GB · 307GB/s</span>
+            </div>
+            <div class="track track-this">
+              <span class="track-label">本頁配置</span>
+              <span class="track-price">NT$ 94,900</span>
+              <span class="track-conf">64GB · 512GB · 307GB/s</span>
+            </div>
           </div>
 
           <div class="key-specs-list">
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
-              <span class="spec-value">15核 CPU · 16核 GPU · 16核 NPU</span>
+              <span class="spec-label"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 核心算力</span>
+              <span class="spec-value">15 核 CPU · 16 核 GPU · 16 核 NPU</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
-              <span class="spec-value highlight-text">64 GB</span>
+              <span class="spec-label"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 記憶體頻寬</span>
+              <span class="spec-value highlight-text">307 GB/s</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
-              <span class="spec-value">512 GB SSD</span>
+              <span class="spec-label"><i class="fa-solid fa-memory" aria-hidden="true"></i> 記憶體上限</span>
+              <span class="spec-value">64 GB</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
-              <span class="spec-value">3× <strong>TB5 (120G)</strong> + 2.5GbE</span>
+              <span class="spec-label"><i class="fa-solid fa-network-wired" aria-hidden="true"></i> Thunderbolt</span>
+              <span class="spec-value"><strong>3 × TB5（120Gb/s）</strong></span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
-              <span class="spec-value">最多 3 部螢幕</span>
+              <span class="spec-label"><i class="fa-solid fa-display" aria-hidden="true"></i> 顯示支援</span>
+              <span class="spec-value">最多 3 部 · <strong>DP 2.1</strong></span>
             </div>
           </div>
 
           <div class="card-footer">
             <div class="best-for">
-              <i class="fa-solid fa-thumbs-up"></i>
-              <span><strong>適合：</strong>重度程式編譯、多軌音訊、4K剪輯</span>
+              <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
+              <span><strong>適合：</strong>重度編譯與 4K 剪輯；70B 塞得下但只剩極少上下文</span>
             </div>
           </div>
         </div>
 
-        <!-- Card 3: Mac Studio M5 Max -->
+        <!-- Mac Studio M5 Max -->
         <div class="product-card popular-card" data-category="creator ai" id="card-studio-m5max">
-          <div class="card-badge badge-amber"><i class="fa-solid fa-crown"></i> AI 甜蜜點首選</div>
+          <div class="card-badge badge-amber"><i class="fa-solid fa-crown" aria-hidden="true"></i> 本地 LLM 甜蜜點</div>
           <div class="product-visual">
             <div class="product-render studio-render">
               <div class="apple-device studio-device">
@@ -1634,45 +2162,53 @@ html.light .spec-table thead th {
             <div class="chip-tag chip-m5max">Apple M5 Max</div>
           </div>
 
-          <div class="product-price-box">
-            <div class="price-main">NT$ 175,900</div>
-            <div class="price-sub">每 1GB 成本：<strong>NT$ 1,374</strong></div>
+          <div class="dual-price">
+            <div class="track">
+              <span class="track-label">官方入門機（32 核 GPU）</span>
+              <span class="track-price">NT$ 84,900</span>
+              <span class="track-conf">36GB · 512GB · 460GB/s</span>
+            </div>
+            <div class="track track-this">
+              <span class="track-label">本頁配置（40 核 GPU）</span>
+              <span class="track-price">NT$ 175,900</span>
+              <span class="track-conf">128GB · 512GB · 614GB/s</span>
+            </div>
           </div>
 
           <div class="key-specs-list">
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
-              <span class="spec-value">18核 CPU · 40核 GPU · 16核 NPU</span>
+              <span class="spec-label"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 核心算力</span>
+              <span class="spec-value">18 核 CPU · 40 核 GPU · 16 核 NPU</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
-              <span class="spec-value highlight-text text-amber">128 GB</span>
+              <span class="spec-label"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 記憶體頻寬</span>
+              <span class="spec-value highlight-text text-amber">614 GB/s</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
-              <span class="spec-value">512 GB SSD</span>
+              <span class="spec-label"><i class="fa-solid fa-memory" aria-hidden="true"></i> 記憶體上限</span>
+              <span class="spec-value">128 GB</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
-              <span class="spec-value">4× TB5 + 2× USB-A + <strong>10GbE</strong></span>
+              <span class="spec-label"><i class="fa-solid fa-network-wired" aria-hidden="true"></i> Thunderbolt</span>
+              <span class="spec-value">4 × TB5 + 2 × USB-A · <strong>10GbE 標配</strong></span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
-              <span class="spec-value">最多 <strong>5 部螢幕</strong></span>
+              <span class="spec-label"><i class="fa-solid fa-display" aria-hidden="true"></i> 顯示支援</span>
+              <span class="spec-value">最多 <strong>5 部</strong> · 單埠帶 4 部</span>
             </div>
           </div>
 
           <div class="card-footer">
             <div class="best-for">
-              <i class="fa-solid fa-thumbs-up"></i>
-              <span><strong>適合：</strong>70B 本地 LLM、3D 動畫、工作室主機</span>
+              <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
+              <span><strong>適合：</strong>70B 本地推論有餘裕、雙編碼引擎剪片、工作室主機</span>
             </div>
           </div>
         </div>
 
-        <!-- Card 4: Mac Studio M5 Ultra -->
+        <!-- Mac Studio M5 Ultra -->
         <div class="product-card" data-category="creator ai" id="card-studio-m5ultra">
-          <div class="card-badge badge-rose">終極算力怪獸</div>
+          <div class="card-badge badge-rose">頂規</div>
           <div class="product-visual">
             <div class="product-render studio-render">
               <div class="apple-device studio-device ultra-glow">
@@ -1690,49 +2226,57 @@ html.light .spec-table thead th {
             <div class="chip-tag chip-m5ultra">Apple M5 Ultra</div>
           </div>
 
-          <div class="product-price-box">
-            <div class="price-main">NT$ 339,900</div>
-            <div class="price-sub text-green">每 1GB 成本：<strong>NT$ 1,328</strong> 👑</div>
+          <div class="dual-price">
+            <div class="track">
+              <span class="track-label">官方入門機</span>
+              <span class="track-price">NT$ 199,900</span>
+              <span class="track-conf">96GB · 1TB · 1.2TB/s</span>
+            </div>
+            <div class="track track-this">
+              <span class="track-label">本頁配置</span>
+              <span class="track-price">NT$ 339,900</span>
+              <span class="track-conf">256GB · 1TB · 1.2TB/s</span>
+            </div>
           </div>
 
           <div class="key-specs-list">
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
-              <span class="spec-value"><strong>30核 CPU · 64核 GPU · 32核 NPU</strong></span>
+              <span class="spec-label"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 核心算力</span>
+              <span class="spec-value"><strong>30 核 CPU · 64 核 GPU · 32 核 NPU</strong></span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
-              <span class="spec-value highlight-text text-rose">256 GB</span>
+              <span class="spec-label"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 記憶體頻寬</span>
+              <span class="spec-value highlight-text text-rose">1,200 GB/s</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
-              <span class="spec-value"><strong>1 TB SSD</strong></span>
+              <span class="spec-label"><i class="fa-solid fa-memory" aria-hidden="true"></i> 記憶體上限</span>
+              <span class="spec-value">256GB；<strong>512GB 需 36 核／80 核版</strong></span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
-              <span class="spec-value"><strong>6× TB5 全滿血</strong> + 10GbE</span>
+              <span class="spec-label"><i class="fa-solid fa-network-wired" aria-hidden="true"></i> Thunderbolt</span>
+              <span class="spec-value"><strong>6 × TB5</strong>（含正面 2 個）· 10GbE</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
-              <span class="spec-value">最多 <strong>8 部螢幕</strong></span>
+              <span class="spec-label"><i class="fa-solid fa-display" aria-hidden="true"></i> 顯示支援</span>
+              <span class="spec-value">最多 <strong>8 部</strong> · 4 部 8K60</span>
             </div>
           </div>
 
           <div class="card-footer">
             <div class="best-for">
-              <i class="fa-solid fa-thumbs-up"></i>
-              <span><strong>適合：</strong>企業級 AI 微調、極限 8K 即時渲染、多螢幕監控</span>
+              <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
+              <span><strong>適合：</strong>大型 MoE 模型、四路 8K 編碼、多螢幕監控牆</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Interactive Spec Matrix Section -->
-    <section class="matrix-section" id="spec-matrix">
+    <!-- 全參數交叉對照表 -->
+    <section class="matrix-section" id="spec-matrix" aria-labelledby="matrix-title">
       <div class="section-header">
-        <h2 class="section-title"><i class="fa-solid fa-table-list"></i> 一頁式全參數交叉對照表</h2>
-        <p class="section-desc">橫向深入比較所有硬體細節，可切換高亮差異與即時複製</p>
+        <h2 class="section-title" id="matrix-title"><i class="fa-solid fa-table-list" aria-hidden="true"></i> 一頁式全參數交叉對照表</h2>
+        <p class="section-desc">價格列同時給入門機與本頁配置。表格可左右捲動；打開上方「高亮關鍵差異」可標出有差別的列</p>
       </div>
 
       <div class="table-responsive-wrapper">
@@ -1743,357 +2287,701 @@ html.light .spec-table thead th {
               <th class="col-m6">
                 <div class="th-title">Mac mini</div>
                 <div class="th-chip">Apple M6</div>
-                <div class="th-price">NT$ 50,900</div>
+                <div class="th-price">NT$ 29,900 起</div>
               </th>
               <th class="col-m5pro">
                 <div class="th-title">Mac mini</div>
                 <div class="th-chip">Apple M5 Pro</div>
-                <div class="th-price">NT$ 94,900</div>
+                <div class="th-price">NT$ 59,900 起</div>
               </th>
               <th class="col-m5max th-highlight">
                 <div class="th-badge">推薦</div>
                 <div class="th-title">Mac Studio</div>
                 <div class="th-chip">Apple M5 Max</div>
-                <div class="th-price">NT$ 175,900</div>
+                <div class="th-price">NT$ 84,900 起</div>
               </th>
               <th class="col-m5ultra">
                 <div class="th-title">Mac Studio</div>
                 <div class="th-chip">Apple M5 Ultra</div>
-                <div class="th-price">NT$ 339,900</div>
+                <div class="th-price">NT$ 199,900 起</div>
               </th>
             </tr>
           </thead>
           <tbody>
             <tr class="section-divider">
-              <td colspan="5"><i class="fa-solid fa-microchip"></i> 晶片與核心架構</td>
-            </tr>
-            <tr>
-              <td class="sticky-col spec-name">處理器晶片</td>
-              <td>Apple M6</td>
-              <td>Apple M5 Pro</td>
-              <td class="col-highlight">Apple M5 Max</td>
-              <td>Apple M5 Ultra</td>
+              <td colspan="5"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 晶片與核心架構</td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">CPU 核心配置</td>
-              <td>12 核心</td>
-              <td>15 核心</td>
-              <td class="col-highlight">18 核心</td>
-              <td><strong class="text-rose">30 核心</strong></td>
+              <td class="sticky-col spec-name">CPU 核心<small class="hint-text">超級／效能／節能</small></td>
+              <td>12 核（2 / 4 / 6）</td>
+              <td>15 核（5 / 10 / —）</td>
+              <td class="col-highlight">18 核（6 / 12 / —）</td>
+              <td><strong class="text-rose">30 核（10 / 20 / —）</strong></td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">GPU 圖形核心</td>
-              <td>12 核心</td>
-              <td>16 核心</td>
-              <td class="col-highlight">40 核心</td>
-              <td><strong class="text-rose">64 核心</strong></td>
+              <td class="sticky-col spec-name">GPU 核心</td>
+              <td>12 核</td>
+              <td>16 核<small class="hint-text">可選 20 核</small></td>
+              <td class="col-highlight">32 核<small class="hint-text">可選 40 核（本頁配置）</small></td>
+              <td><strong class="text-rose">64 核</strong><small class="hint-text">可選 80 核</small></td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">神經網路引擎 (NPU)</td>
+              <td class="sticky-col spec-name">神經網路引擎（NPU）</td>
               <td><strong>雙 16 核心</strong></td>
               <td>16 核心</td>
               <td class="col-highlight">16 核心</td>
-              <td><strong class="text-rose">32 核心 (雙倍)</strong></td>
+              <td><strong class="text-rose">32 核心</strong></td>
             </tr>
-            <tr>
-              <td class="sticky-col spec-name">AI 生態支援</td>
-              <td>Apple Intelligence + Siri AI</td>
-              <td>Apple Intelligence + Siri AI</td>
-              <td class="col-highlight">Apple Intelligence + Siri AI</td>
-              <td>Apple Intelligence + Siri AI</td>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">媒體引擎<small class="hint-text">解碼／編碼／ProRes</small></td>
+              <td>1 / 1 / 1</td>
+              <td>1 / 1 / 1</td>
+              <td class="col-highlight"><strong>1 / 2 / 2</strong></td>
+              <td><strong class="text-rose">2 / 4 / 4</strong></td>
             </tr>
 
             <tr class="section-divider">
-              <td colspan="5"><i class="fa-solid fa-memory"></i> 記憶體與儲存容量</td>
+              <td colspan="5"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 記憶體與頻寬</td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">統一記憶體 (RAM)</td>
-              <td><strong>32 GB</strong></td>
-              <td><strong>64 GB</strong></td>
-              <td class="col-highlight"><strong>128 GB</strong></td>
-              <td><strong class="text-rose">256 GB</strong></td>
-            </tr>
-            <tr class="diff-row cost-row">
-              <td class="sticky-col spec-name">
-                每 1GB 記憶體成本
-                <small class="hint-text">(售價 ÷ 記憶體容量)</small>
-              </td>
-              <td><span class="cost-pill">NT$ 1,591 / GB</span></td>
-              <td><span class="cost-pill">NT$ 1,483 / GB</span></td>
-              <td class="col-highlight"><span class="cost-pill">NT$ 1,374 / GB</span></td>
-              <td><span class="cost-pill pill-best">NT$ 1,328 / GB 👑</span></td>
+              <td class="sticky-col spec-name">記憶體頻寬</td>
+              <td>153 GB/s<small class="hint-text">加購 24／32GB 後為 170</small></td>
+              <td>307 GB/s</td>
+              <td class="col-highlight">460 GB/s<small class="hint-text">40 核 GPU 版為 614</small></td>
+              <td><strong class="text-rose">1.2 TB/s</strong></td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">內建 SSD 容量</td>
-              <td>512 GB</td>
+              <td class="sticky-col spec-name">標配統一記憶體</td>
+              <td>16 GB</td>
+              <td>24 GB</td>
+              <td class="col-highlight">36 GB<small class="hint-text">40 核 GPU 版起跳 48GB</small></td>
+              <td>96 GB</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">記憶體可加購上限</td>
+              <td>32 GB</td>
+              <td>64 GB</td>
+              <td class="col-highlight">128 GB<small class="hint-text">僅 40 核 GPU 版可選</small></td>
+              <td><strong class="text-rose">512 GB</strong><small class="hint-text">需 36 核／80 核版，10 月底推出</small></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">標配 SSD</td>
+              <td>256 GB</td>
               <td>512 GB</td>
               <td class="col-highlight">512 GB</td>
-              <td><strong>1 TB</strong></td>
+              <td><strong>1 TB</strong><small class="hint-text">可加購至 16TB</small></td>
             </tr>
 
             <tr class="section-divider">
-              <td colspan="5"><i class="fa-solid fa-plug"></i> 連接埠與擴充介面</td>
+              <td colspan="5"><i class="fa-solid fa-plug" aria-hidden="true"></i> Thunderbolt 與連接埠</td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">正面連接介面</td>
-              <td>2 × USB-C<br>1 × 3.5mm 耳機孔</td>
-              <td>2 × USB-C<br>1 × 3.5mm 耳機孔</td>
-              <td class="col-highlight">2 × USB-C<br>1 × SDXC 卡槽 (UHS-II)</td>
-              <td><strong>2 × Thunderbolt 5</strong><br>1 × SDXC 卡槽 (UHS-II)</td>
+              <td class="sticky-col spec-name">背面 Thunderbolt</td>
+              <td>3 × <strong>TB4</strong><small class="hint-text">最高 40Gb/s</small></td>
+              <td>3 × <strong>TB5</strong><small class="hint-text">最高 120Gb/s</small></td>
+              <td class="col-highlight">4 × <strong>TB5</strong><small class="hint-text">最高 120Gb/s</small></td>
+              <td>4 × <strong>TB5</strong><small class="hint-text">最高 120Gb/s</small></td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">背面連接介面</td>
-              <td>3 × <strong>Thunderbolt 4</strong><br>1 × HDMI<br>1 × RJ-45</td>
-              <td>3 × <strong>Thunderbolt 5</strong><br>1 × HDMI<br>1 × RJ-45</td>
-              <td class="col-highlight">4 × <strong>Thunderbolt 5</strong><br>2 × USB-A / 1 × HDMI<br>1 × RJ-45 / 3.5mm 孔</td>
-              <td>4 × <strong>Thunderbolt 5</strong><br>2 × USB-A / 1 × HDMI<br>1 × RJ-45 / 3.5mm 孔</td>
+              <td class="sticky-col spec-name">正面連接埠</td>
+              <td>2 × USB-C（10Gb/s）<br>3.5mm 耳機孔</td>
+              <td>2 × USB-C（10Gb/s）<br>3.5mm 耳機孔</td>
+              <td class="col-highlight">2 × USB-C（10Gb/s）<br>SDXC（UHS-II）</td>
+              <td><strong class="text-rose">2 × Thunderbolt 5</strong><br>SDXC（UHS-II）</td>
             </tr>
             <tr class="diff-row">
-              <td class="sticky-col spec-name">乙太網路速度</td>
-              <td>2.5 Gbps</td>
-              <td>2.5 Gbps</td>
-              <td class="col-highlight"><strong>10 Gbps (萬兆)</strong></td>
-              <td><strong>10 Gbps (萬兆)</strong></td>
+              <td class="sticky-col spec-name">USB4 速度上限</td>
+              <td>40 Gb/s</td>
+              <td>40 Gb/s</td>
+              <td class="col-highlight"><strong>120 Gb/s</strong></td>
+              <td><strong>120 Gb/s</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">其他連接埠</td>
+              <td>HDMI</td>
+              <td>HDMI</td>
+              <td class="col-highlight">HDMI 2.1<br>2 × USB-A（5Gb/s）</td>
+              <td>HDMI 2.1<br>2 × USB-A（5Gb/s）</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">乙太網路</td>
+              <td>2.5 Gb<small class="hint-text">可加購 10Gb</small></td>
+              <td>2.5 Gb<small class="hint-text">可加購 10Gb</small></td>
+              <td class="col-highlight"><strong>10 Gb 標配</strong></td>
+              <td><strong>10 Gb 標配</strong></td>
+            </tr>
+
+            <tr class="section-divider">
+              <td colspan="5"><i class="fa-solid fa-display" aria-hidden="true"></i> 顯示器輸出</td>
             </tr>
             <tr class="diff-row">
               <td class="sticky-col spec-name">外接顯示器上限</td>
-              <td>最多 3 部螢幕</td>
-              <td>最多 3 部螢幕</td>
-              <td class="col-highlight">最多 5 部螢幕</td>
-              <td><strong class="text-rose">最多 8 部螢幕</strong></td>
+              <td>3 部</td>
+              <td>3 部</td>
+              <td class="col-highlight"><strong>5 部</strong></td>
+              <td><strong class="text-rose">8 部</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">單一 Thunderbolt 埠可帶</td>
+              <td>2 部</td>
+              <td>3 部</td>
+              <td class="col-highlight"><strong>4 部</strong></td>
+              <td><strong>4 部</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">DisplayPort 版本</td>
+              <td>原生 DP 1.4</td>
+              <td><strong>原生 DP 2.1</strong></td>
+              <td class="col-highlight"><strong>DP 2.1</strong></td>
+              <td><strong>DP 2.1</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">8K 60Hz 最多幾部</td>
+              <td>1 部</td>
+              <td>1 部</td>
+              <td class="col-highlight">2 部</td>
+              <td><strong class="text-rose">4 部</strong></td>
             </tr>
 
             <tr class="section-divider">
-              <td colspan="5"><i class="fa-solid fa-tag"></i> 價格與上市資訊</td>
+              <td colspan="5"><i class="fa-solid fa-bolt" aria-hidden="true"></i> 電力與無線</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">最大連續功率</td>
+              <td>155 W</td>
+              <td>155 W</td>
+              <td class="col-highlight">480 W</td>
+              <td>480 W</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">無線</td>
+              <td>N1 · Wi-Fi 7 · 藍牙 6 · Thread</td>
+              <td>N1 · Wi-Fi 7 · 藍牙 6 · Thread</td>
+              <td class="col-highlight">N1 · Wi-Fi 7 · 藍牙 6 · Thread</td>
+              <td>N1 · Wi-Fi 7 · 藍牙 6 · Thread</td>
+            </tr>
+
+            <tr class="section-divider">
+              <td colspan="5"><i class="fa-solid fa-tag" aria-hidden="true"></i> 售價（兩組皆為官網實價）</td>
             </tr>
             <tr class="diff-row price-row">
-              <td class="sticky-col spec-name">推估售價（加購記憶體後）</td>
-              <td><strong class="price-val">NT$ 50,900</strong></td>
-              <td><strong class="price-val">NT$ 94,900</strong></td>
-              <td class="col-highlight"><strong class="price-val text-amber">NT$ 175,900</strong></td>
-              <td><strong class="price-val text-rose">NT$ 339,900</strong></td>
+              <td class="sticky-col spec-name">官方入門機</td>
+              <td><strong class="price-val">NT$ 29,900</strong><small class="hint-text">16GB / 256GB</small></td>
+              <td><strong class="price-val">NT$ 59,900</strong><small class="hint-text">24GB / 512GB</small></td>
+              <td class="col-highlight"><strong class="price-val">NT$ 84,900</strong><small class="hint-text">36GB / 512GB</small></td>
+              <td><strong class="price-val">NT$ 199,900</strong><small class="hint-text">96GB / 1TB</small></td>
+            </tr>
+            <tr class="diff-row price-row">
+              <td class="sticky-col spec-name">本頁比較的配置</td>
+              <td><strong class="price-val">NT$ 50,900</strong><small class="hint-text">32GB / 512GB</small></td>
+              <td><strong class="price-val">NT$ 94,900</strong><small class="hint-text">64GB / 512GB</small></td>
+              <td class="col-highlight"><strong class="price-val text-amber">NT$ 175,900</strong><small class="hint-text">128GB / 512GB</small></td>
+              <td><strong class="price-val text-rose">NT$ 339,900</strong><small class="hint-text">256GB / 1TB</small></td>
+            </tr>
+            <tr class="diff-row cost-row">
+              <td class="sticky-col spec-name">
+                每 GB/s 頻寬成本
+                <small class="hint-text">入門機售價 ÷ 頻寬</small>
+              </td>
+              <td><span class="cost-pill">NT$ 195</span></td>
+              <td><span class="cost-pill">NT$ 195</span></td>
+              <td class="col-highlight"><span class="cost-pill">NT$ 185</span></td>
+              <td><span class="cost-pill pill-best">NT$ 167</span></td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- RAM Cost Deep Dive & Chart Section -->
-    <section class="ram-analysis-section" id="ram-cost-analysis">
+    <!-- 記憶體真實單價 -->
+    <section class="ram-analysis-section" id="memory-price" aria-labelledby="mem-title">
       <div class="section-header">
-        <h2 class="section-title"><i class="fa-solid fa-chart-column"></i> 每 1GB 記憶體取得成本深度精算</h2>
-        <p class="section-desc">分析「整機售價 ÷ 統一記憶體 (RAM)」的邊際成本遞減趨勢</p>
+        <h2 class="section-title" id="mem-title"><i class="fa-solid fa-coins" aria-hidden="true"></i> 記憶體到底多少錢：答案是一個常數</h2>
+        <p class="section-desc">網路上常見的「售價 ÷ 記憶體」其實在問錯問題。真正該看的是官網加購級距的邊際單價</p>
       </div>
 
-      <div class="ram-chart-container">
-        <div class="chart-bars-wrapper">
-          <div class="chart-item">
-            <div class="chart-info">
-              <span class="chart-model">Mac mini (M6 · 32GB)</span>
-              <span class="chart-cost">NT$ 1,591 / GB</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill fill-m6" style="width: 100%;">
-                <span class="bar-label">基準 (100%)</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="chart-item">
-            <div class="chart-info">
-              <span class="chart-model">Mac mini (M5 Pro · 64GB)</span>
-              <span class="chart-cost">NT$ 1,483 / GB</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill fill-m5pro" style="width: 93.2%;">
-                <span class="bar-label">-6.8% 降幅</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="chart-item">
-            <div class="chart-info">
-              <span class="chart-model">Mac Studio (M5 Max · 128GB)</span>
-              <span class="chart-cost">NT$ 1,374 / GB</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill fill-m5max" style="width: 86.4%;">
-                <span class="bar-label">-13.6% 降幅</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="chart-item">
-            <div class="chart-info">
-              <span class="chart-model">Mac Studio (M5 Ultra · 256GB)</span>
-              <span class="chart-cost text-green">NT$ 1,328 / GB 👑</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill fill-m5ultra" style="width: 83.5%;">
-                <span class="bar-label">-16.5% 最划算</span>
-              </div>
-            </div>
-          </div>
+      <div class="figure-panel">
+        <div>
+          <div class="figure-value">875<span class="unit">元 / GB</span></div>
+          <p class="figure-caption">
+            Apple 台灣官網七個統一記憶體加購級距，跨 M6、M5 Pro、M5 Max、M5 Ultra 四款晶片，
+            換算後單價完全相同。
+          </p>
         </div>
-
-        <div class="analysis-insights-box">
-          <h4 class="box-title"><i class="fa-solid fa-lightbulb text-amber"></i> AI 創作者與算力工程師的核心啟示：</h4>
-          <ul class="insights-list">
-            <li>
-              <strong>規模經濟遞減：</strong> 傳統認知中高階 Mac 溢價極高，但以 <strong>RAM 單位取得成本</strong> 來看，Studio 系列因配備 128GB~256GB，每 GB 成本反而從 1,591 元一路降至 1,328 元。
-            </li>
-            <li>
-              <strong>本地 LLM 的最佳甜點 — M5 Max (128GB)：</strong>
-              128GB 統一記憶體足以在本地以 Q4/Q8 高速推論 <strong>70B 參數模型</strong>（如 Llama-3-70B / Qwen-72B），整機 17.5 萬是專業團隊最具投資報酬率 (ROI) 的首選。
-            </li>
-            <li>
-              <strong>終極算力攻頂 — M5 Ultra (256GB)：</strong>
-              若需運行 MoE 架構（如 8x22B）或同時跑多個 Agent 叢集與微調，256GB 記憶體具備不可替代的獨佔優勢。
-            </li>
-          </ul>
+        <div class="figure-note">
+          <p>
+            <strong>這個數字讓「哪台記憶體比較划算」這個問題直接消失。</strong>
+            不論你買哪一台，多要一個 GB 就是多付 875 元，沒有量大優惠，也沒有高階機比較吃虧。
+            要決定買多少記憶體，只需要問「我需要幾 GB」，不必再比較機型間的單位成本。
+          </p>
+          <p>
+            相對地，<strong>「售價 ÷ 記憶體容量」這個常見指標沒有意義</strong>：它把機殼、散熱、SSD、10GbE
+            全部攤到記憶體頭上。用它算，入門機是 1,869／2,496／2,358／2,082 元／GB（不單調，看起來 M5 Pro 最貴）；
+            換成加購到頂的配置又變成 1,591／1,483／1,374／1,328（一路遞減，看起來越貴越划算）。
+            <strong>同一批機器、兩個相反的結論，只因為換了配置——這說明量的不是記憶體的價格。</strong>
+          </p>
         </div>
       </div>
-    </section>
 
-    <!-- Official Baseline Pricing -->
-    <section class="ram-analysis-section" id="baseline-pricing">
-      <div class="section-header">
-        <h2 class="section-title"><i class="fa-solid fa-tag"></i> 官方標配起售價 × 標配記憶體</h2>
-        <p class="section-desc">上方比的是加購記憶體後的配置；這張是 Apple 官網可直接核對的入門價（2026-08-30 查核）</p>
-      </div>
-
-      <div class="table-responsive-wrapper">
-        <table class="spec-table">
+      <div class="table-responsive-wrapper" style="margin-top:20px;">
+        <table class="spec-table calc-table">
+          <caption class="section-desc" style="text-align:left;padding:0 0 10px;">
+            七個加購級距的逐項驗算（加價金額取自 Apple 官網設定工具）
+          </caption>
           <thead>
             <tr>
-              <th class="sticky-col header-corner">機型</th>
-              <th>晶片</th>
-              <th>官方起售價</th>
-              <th>標配統一記憶體</th>
-              <th>標配 SSD</th>
-              <th>起售價 &divide; 記憶體</th>
+              <th class="sticky-col header-corner">晶片</th>
+              <th>級距</th>
+              <th>算式</th>
+              <th>邊際單價</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="sticky-col spec-name">Mac mini</td>
-              <td>Apple M6</td>
-              <td>NT$ 29,900 起</td>
-              <td>16 GB</td>
-              <td>256 GB</td>
-              <td><strong class="text-green">NT$ 1,869 / GB</strong> &#128081;</td>
+              <td class="sticky-col spec-name">M6</td>
+              <td>16 → 24GB</td>
+              <td class="calc-expr">+7,000 ÷ 8 GB</td>
+              <td class="calc-out">875 元／GB</td>
             </tr>
             <tr>
-              <td class="sticky-col spec-name">Mac mini</td>
-              <td>Apple M5 Pro</td>
-              <td>NT$ 59,900 起</td>
-              <td>24 GB</td>
-              <td>512 GB</td>
-              <td><strong class="text-rose">NT$ 2,496 / GB</strong></td>
+              <td class="sticky-col spec-name">M6</td>
+              <td>16 → 32GB</td>
+              <td class="calc-expr">+14,000 ÷ 16 GB</td>
+              <td class="calc-out">875 元／GB</td>
             </tr>
             <tr>
-              <td class="sticky-col spec-name">Mac Studio</td>
-              <td>Apple M5 Max</td>
-              <td>NT$ 84,900 起</td>
-              <td>36 GB</td>
-              <td>512 GB</td>
-              <td>NT$ 2,358 / GB</td>
+              <td class="sticky-col spec-name">M5 Pro</td>
+              <td>24 → 48GB</td>
+              <td class="calc-expr">+21,000 ÷ 24 GB</td>
+              <td class="calc-out">875 元／GB</td>
             </tr>
             <tr>
-              <td class="sticky-col spec-name">Mac Studio</td>
-              <td>Apple M5 Ultra</td>
-              <td>NT$ 199,900 起</td>
-              <td>96 GB</td>
-              <td>1 TB</td>
-              <td>NT$ 2,082 / GB</td>
+              <td class="sticky-col spec-name">M5 Pro</td>
+              <td>24 → 64GB</td>
+              <td class="calc-expr">+35,000 ÷ 40 GB</td>
+              <td class="calc-out">875 元／GB</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">M5 Max 40 核</td>
+              <td>48 → 64GB</td>
+              <td class="calc-expr">+14,000 ÷ 16 GB</td>
+              <td class="calc-out">875 元／GB</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">M5 Max 40 核</td>
+              <td>48 → 128GB</td>
+              <td class="calc-expr">+70,000 ÷ 80 GB</td>
+              <td class="calc-out">875 元／GB</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">M5 Ultra</td>
+              <td>96 → 256GB</td>
+              <td class="calc-expr">+140,000 ÷ 160 GB</td>
+              <td class="calc-out">875 元／GB</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <div class="analysis-insights-box">
-        <h4 class="box-title"><i class="fa-solid fa-scale-unbalanced text-amber"></i> 這張表和上面那張，結論是相反的：</h4>
+        <h3 class="box-title"><i class="fa-solid fa-lightbulb text-amber" aria-hidden="true"></i> 兩件由這個常數推出來的事：</h3>
         <ul class="insights-list">
           <li>
-            <strong>「越高階每 GB 越划算」只在加購到頂時成立。</strong>
-            上方用加購後配置算出一路遞減的 1,591 &rarr; 1,328 元（&minus;16.5%）；改用官方標配起售價來算，
-            最便宜的反而是入門的 <strong class="text-green">Mac mini (M6) NT$ 1,869 / GB</strong>，
-            而 <strong class="text-rose">M5 Pro 是四者中最貴的 NT$ 2,496 / GB</strong>，完全不是單調遞減。
+            <strong>記憶體是 SSD 的 51 倍貴。</strong>
+            同一份官網級距算下來，1TB 以上的 SSD 加購是每 GB 17.09 元（512GB→1TB 那一階略貴，20.51 元）。
+            875 ÷ 17.09 ≈ <strong>51.2 倍</strong>。這也是為什麼「用外接硬碟當虛擬記憶體跑大模型」不成立——
+            便宜的那個東西，速度是慢兩個數量級的那個（見下一節的頻寬階梯）。
           </li>
           <li>
-            <strong>這個指標把 SSD 的錢算到記憶體頭上。</strong>
-            四台的標配 SSD 是 256GB / 512GB / 512GB / 1TB，差距達四倍。
-            「售價 &divide; 記憶體」會把儲存、機殼、散熱、10GbE 全部攤進「每 GB 記憶體成本」，
-            機型間 SSD 容量不同時這個數字就<strong>不能直接橫向比</strong>。
-            要看純記憶體的邊際價格，該查的是官網設定工具裡「同一台機器加購記憶體」的加價級距。
-          </li>
-          <li>
-            <strong>兩張表回答的是不同問題。</strong>
-            上方問「我要 32/64/128/256GB 的話，哪台單位成本低」——那是加購後的推估值；
-            這張問「用最低門檻進場，每台的入門單位成本是多少」——這是官網可直接核對的官方價。
-            買不到頂規的人該看這張。
+            <strong>Mac Studio 那個「+NT$10,500 升級 40 核 GPU」其實要多花 21,000 元。</strong>
+            官網在晶片頁標示 40 核 GPU 加價 10,500，但基礎機價從 84,900 跳到 105,900。
+            差額是因為 40 核版的<strong>標配記憶體同時從 36GB 變成 48GB</strong>，
+            那 12GB 正好是 12 × 875 = 10,500 元。兩筆加起來才是 21,000。
           </li>
         </ul>
-        <div class="baseline-source" style="margin-top:4px;font-size:0.85rem;line-height:1.7;color:var(--text-muted);">
-          資料來源：Apple 台灣官網 Mac mini / Mac Studio 技術規格頁與購買頁，2026-08-30 查核。
-          兩款機器目前皆為預訂狀態，官網標示 9 月 22 日開始發售。
+      </div>
+    </section>
+
+    <!-- 頻寬階梯 -->
+    <section id="bandwidth" aria-labelledby="bw-title">
+      <div class="section-header">
+        <h2 class="section-title" id="bw-title"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 記憶體頻寬階梯：為什麼模型一定要住在統一記憶體裡</h2>
+        <p class="section-desc">同一條對數軸上，把四台機器的統一記憶體頻寬與所有對外傳輸介面放在一起比</p>
+      </div>
+
+      <div class="ladder">
+    <div class="ladder-group">
+      <div class="ladder-group-title">統一記憶體頻寬</div>
+      <div class="ladder-row is-machine">
+        <div class="ladder-name">Mac Studio M5 Ultra</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:94.32%;background:var(--seq-4)"></span>
+          <span class="ladder-val is-flipped" style="left:94.32%">1,200 GB/s</span>
+        </div>
+      </div>
+      <div class="ladder-row is-machine">
+        <div class="ladder-name">Mac Studio M5 Max（40 核 GPU）</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:86.86%;background:var(--seq-3)"></span>
+          <span class="ladder-val is-flipped" style="left:86.86%">614 GB/s</span>
+        </div>
+      </div>
+      <div class="ladder-row is-machine">
+        <div class="ladder-name">Mac Studio M5 Max（32 核 GPU）</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:83.65%;background:var(--seq-3)"></span>
+          <span class="ladder-val is-flipped" style="left:83.65%">460 GB/s</span>
+        </div>
+      </div>
+      <div class="ladder-row is-machine">
+        <div class="ladder-name">Mac mini M5 Pro</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:79.15%;background:var(--seq-2)"></span>
+          <span class="ladder-val is-flipped" style="left:79.15%">307 GB/s</span>
+        </div>
+      </div>
+      <div class="ladder-row is-machine">
+        <div class="ladder-name">Mac mini M6（24／32GB）</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:72.57%;background:var(--seq-1)"></span>
+          <span class="ladder-val is-flipped" style="left:72.57%">170 GB/s</span>
+        </div>
+      </div>
+      <div class="ladder-row is-machine">
+        <div class="ladder-name">Mac mini M6（16GB）</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:71.40%;background:var(--seq-1)"></span>
+          <span class="ladder-val is-flipped" style="left:71.40%">153 GB/s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ladder-group">
+      <div class="ladder-group-title">對外傳輸介面（同一條軸，供比例對照）</div>
+      <div class="ladder-row is-ref">
+        <div class="ladder-name">Thunderbolt 5 對稱雙向</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:41.05%;background:var(--seq-ref)"></span>
+          <span class="ladder-val" style="left:41.05%">10 GB/s <span style="color:var(--text-subtle);font-weight:400">· 80Gb/s</span></span>
+        </div>
+      </div>
+      <div class="ladder-row is-ref">
+        <div class="ladder-name">Thunderbolt 4 對稱雙向</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:33.33%;background:var(--seq-ref)"></span>
+          <span class="ladder-val" style="left:33.33%">5 GB/s <span style="color:var(--text-subtle);font-weight:400">· 40Gb/s</span></span>
+        </div>
+      </div>
+      <div class="ladder-row is-ref">
+        <div class="ladder-name">10Gb 乙太網路</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:17.91%;background:var(--seq-ref)"></span>
+          <span class="ladder-val" style="left:17.91%">1 GB/s <span style="color:var(--text-subtle);font-weight:400">· 10Gb/s</span></span>
+        </div>
+      </div>
+      <div class="ladder-row is-ref">
+        <div class="ladder-name">USB-A（Mac Studio）</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:10.20%;background:var(--seq-ref)"></span>
+          <span class="ladder-val" style="left:10.20%">0.62 GB/s <span style="color:var(--text-subtle);font-weight:400">· 5Gb/s</span></span>
+        </div>
+      </div>
+      <div class="ladder-row is-ref">
+        <div class="ladder-name">2.5Gb 乙太網路</div>
+        <div class="ladder-plot">
+          <div class="ladder-grid" aria-hidden="true"><span style="left:7.71%"></span><span style="left:15.43%"></span><span style="left:41.05%"></span><span style="left:66.67%"></span><span style="left:92.29%"></span></div>
+          <span class="ladder-dot" style="left:2.48%;background:var(--seq-ref)"></span>
+          <span class="ladder-val" style="left:2.48%">0.31 GB/s <span style="color:var(--text-subtle);font-weight:400">· 2.5Gb/s</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ladder-axis">
+      <div></div>
+      <div class="ladder-ticks" aria-hidden="true"><span class="tick-dense" style="left:7.71%">0.5</span><span style="left:15.43%">1</span><span style="left:41.05%">10</span><span style="left:66.67%">100</span><span style="left:92.29%">1,000</span></div>
+    </div>
+
+        <p class="ladder-caption">
+          橫軸為對數刻度（GB/s），每格代表 10 倍。刻意用點而不用長條——在對數軸上，長條的長度比例是假的。
+          外接介面已從 Gb/s 換算為 GB/s（÷ 8）以便同軸比較。
+        </p>
+      </div>
+
+      <div class="tb-callout" style="margin-top:20px;">
+        <div class="tb-stat">
+          <div class="tb-num">120 倍</div>
+          <p class="tb-lbl">M5 Ultra 的統一記憶體頻寬（1,200 GB/s）相對於 Thunderbolt 5 對稱雙向（10 GB/s）</p>
+        </div>
+        <div class="tb-stat">
+          <div class="tb-num">34 倍</div>
+          <p class="tb-lbl">連最入門的 M6（170 GB/s）都是 Thunderbolt 4（5 GB/s）的 34 倍</p>
+        </div>
+        <div class="tb-stat">
+          <div class="tb-num">960 倍</div>
+          <p class="tb-lbl">M5 Ultra 統一記憶體相對於 10Gb 乙太網路（1.25 GB/s）</p>
+        </div>
+      </div>
+
+      <div class="assumption-box">
+        <strong>這張圖解釋了三件事。</strong>
+        第一，模型權重放不進統一記憶體就是跑不動——外接儲存快不了兩個數量級的差距，
+        「換頁到 SSD」在每個詞元都要讀完整份權重的情況下不可行。
+        第二，Apple Silicon <strong>不支援外接顯示卡</strong>，而就算支援，Thunderbolt 也餵不飽它。
+        第三，Thunderbolt 的角色是接周邊與螢幕，不是擴充算力——所以下一節比的是它能接什麼，而不是它能跑多快模型。
+      </div>
+    </section>
+
+    <!-- Thunderbolt -->
+    <section id="thunderbolt" aria-labelledby="tb-title">
+      <div class="section-header">
+        <h2 class="section-title" id="tb-title"><i class="fa-solid fa-plug" aria-hidden="true"></i> Thunderbolt 4 與 5：那個「120Gb/s」是怎麼回事</h2>
+        <p class="section-desc">四台機器只有 Mac mini M6 還是 Thunderbolt 4。但 TB5 的三個數字代表三種不同情況</p>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">項目</th>
+              <th>Thunderbolt 4</th>
+              <th class="th-highlight">Thunderbolt 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">Apple 官網標示速度</td>
+              <td>最快可達 40 Gb/s</td>
+              <td class="col-highlight"><strong>最快可達 120 Gb/s</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">對稱雙向（一般傳輸）</td>
+              <td>40 Gb/s ↓ / 40 Gb/s ↑</td>
+              <td class="col-highlight"><strong>80 Gb/s ↓ / 80 Gb/s ↑</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">頻寬提升模式<small class="hint-text">高頻寬顯示器用</small></td>
+              <td>無此模式</td>
+              <td class="col-highlight">120 Gb/s ↓ / 40 Gb/s ↑</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">原生 DisplayPort</td>
+              <td>DP 1.4</td>
+              <td class="col-highlight"><strong>DP 2.1</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">單一埠可帶顯示器</td>
+              <td>2 部（Mac mini M6）</td>
+              <td class="col-highlight"><strong>3 部（mini M5 Pro）／ 4 部（Studio）</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">同埠 USB4 速度</td>
+              <td>40 Gb/s</td>
+              <td class="col-highlight">mini 40 Gb/s ／ <strong>Studio 120 Gb/s</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="assumption-box">
+        <strong>「120Gb/s」不是一般傳輸的速度。</strong>
+        Thunderbolt 5 的對稱雙向頻寬是 80Gb/s；120Gb/s 是<strong>頻寬提升模式</strong>下的單向數字，
+        代價是回程只剩 40Gb/s，用途是餵高更新率的高解析度顯示器。
+        接外接硬碟、擴充座、網路介面時，你拿到的是 80Gb/s 這一組，也就是階梯圖上的 10 GB/s。
+        <br><br>
+        <strong>還有一件官網有寫、但很容易略過的事：</strong>
+        同樣是 Thunderbolt 5 埠，Mac Studio 上的 USB4 可達 120Gb/s，Mac mini M5 Pro 上只標 40Gb/s。
+        接 USB4（非 Thunderbolt）擴充座時，兩台機器的天花板不一樣。
+      </div>
+
+      <div class="tb-callout" style="margin-top:20px;">
+        <div class="tb-stat">
+          <div class="tb-num">3 / 3 / 4 / 6</div>
+          <p class="tb-lbl">Thunderbolt 埠總數：M6 / M5 Pro / M5 Max / M5 Ultra。只有 M5 Ultra 的正面兩個埠是 Thunderbolt，另外三台的正面 USB-C 都是 10Gb/s</p>
+        </div>
+        <div class="tb-stat">
+          <div class="tb-num">10GbE</div>
+          <p class="tb-lbl">兩台 Mac Studio 標配萬兆乙太網路；兩台 Mac mini 標配 2.5Gb，10Gb 要另外加購</p>
+        </div>
+        <div class="tb-stat">
+          <div class="tb-num">SDXC UHS-II</div>
+          <p class="tb-lbl">只有 Mac Studio 有讀卡機，Mac mini 兩款都沒有。相機工作流程這一項比埠數更關鍵</p>
         </div>
       </div>
     </section>
 
-    <!-- Interactive AI Model Fit Checker -->
-    <section class="ai-guide-section" id="ai-model-guide">
+    <!-- 本地 LLM -->
+    <section class="ai-guide-section" id="llm" aria-labelledby="llm-title">
       <div class="section-header">
-        <h2 class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> 本地 AI 模型相容度速查器</h2>
-        <p class="section-desc">選擇你想在本地跑的大型語言模型，查看各機型的適配程度</p>
+        <h2 class="section-title" id="llm-title"><i class="fa-solid fa-brain" aria-hidden="true"></i> 本地大型語言模型：生成速度可以先算出來</h2>
+        <p class="section-desc">生成每個詞元都要把整份權重讀過一遍，所以速度上限 = 記憶體頻寬 ÷ 權重大小</p>
       </div>
 
-      <div class="ai-checker-card">
-        <div class="model-selector-pills" id="model-pills">
-          <button class="model-pill active" data-vram="16" data-name="8B ~ 14B 模型 (Llama-3-8B, Qwen2.5-14B)">輕量 8B ~ 14B</button>
-          <button class="model-pill" data-vram="32" data-name="32B 程式碼模型 (Qwen2.5-Coder-32B, DeepSeek-33B)">中量 32B 程式碼</button>
-          <button class="model-pill" data-vram="64" data-name="70B ~ 72B 旗艦模型 (Llama-3.3-70B, Qwen2.5-72B)">重量 70B 旗艦</button>
-          <button class="model-pill" data-vram="140" data-name="120B+ / MoE 巨型模型 (DeepSeek-V2, Llama-405B Q4)">巨型 120B+ / MoE</button>
-        </div>
+      <div class="table-responsive-wrapper">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">模型（Q4 量化）</th>
+              <th>Mac mini M6<div class="th-chip">170 GB/s · 32GB</div></th>
+              <th>Mac mini M5 Pro<div class="th-chip">307 GB/s · 64GB</div></th>
+              <th>Mac Studio M5 Max<div class="th-chip">614 GB/s · 128GB</div></th>
+              <th>Mac Studio M5 Ultra<div class="th-chip">1,200 GB/s · 256GB</div></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sticky-col spec-name">Llama 3.1 8B<small class="hint-text">權重 4.8 GB</small></td>
+              <td><span class="roof-cell"><span class="roof-num">25</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">45</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">90</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">175</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Qwen3 14B<small class="hint-text">權重 8.4 GB</small></td>
+              <td><span class="roof-cell"><span class="roof-num">14</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">26</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">51</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">100</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Qwen2.5-Coder 32B<small class="hint-text">權重 19.2 GB</small></td>
+              <td><span class="roof-cell"><span class="roof-num">6</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-tight"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> 上下文空間吃緊</span></td>
+              <td><span class="roof-cell"><span class="roof-num">11</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">22</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">44</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Llama 3.3 70B<small class="hint-text">權重 42.0 GB</small></td>
+              <td><span class="roof-flag roof-no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> 記憶體不足</span></td>
+              <td><span class="roof-cell"><span class="roof-num">5</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-tight"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> 上下文空間吃緊</span></td>
+              <td><span class="roof-cell"><span class="roof-num">10</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+              <td><span class="roof-cell"><span class="roof-num">20</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 有餘裕</span></td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">Qwen3 235B-A22B（MoE）<small class="hint-text">權重 141.0 GB（每詞元只讀 13.2 GB）</small></td>
+              <td><span class="roof-flag roof-no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> 記憶體不足</span></td>
+              <td><span class="roof-flag roof-no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> 記憶體不足</span></td>
+              <td><span class="roof-flag roof-no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> 記憶體不足</span></td>
+              <td><span class="roof-cell"><span class="roof-num">64</span><span class="roof-unit">tok/s</span></span><br><span class="roof-flag roof-tight"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> 上下文空間吃緊</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <div class="compatibility-result-grid" id="compat-grid"></div>
+      <div class="assumption-box">
+        <strong>算式與假設（想自己重算的話）：</strong><br>
+        <code>tok/s ≈ 記憶體頻寬 ÷ 權重位元組數 × 0.70</code><br>
+        權重大小以 Q4_K_M 量化每參數約 <strong>0.6 位元組</strong>估算（8B ≈ 4.8GB、70B ≈ 42GB）。
+        乘上 <strong>0.70</strong> 是因為實務上讀不滿理論頻寬，這是 llama.cpp／MLX 在 Apple Silicon 上的常見區間；
+        <strong>這個係數是經驗值，不是官方數字</strong>，你的實測會落在附近而不會剛好相等。
+        可用記憶體以總容量的 <strong>72%</strong> 估算（macOS 要留給系統與其他程式）；
+        權重超過可用記憶體 75% 就標為「上下文空間吃緊」——塞得下權重不等於還放得下夠長的上下文。
+        <br><br>
+        <strong>MoE 模型是例外，而且是關鍵的例外：</strong>
+        Qwen3 235B-A22B 總參數 235B（權重 141GB，只有 256GB 機器裝得下），
+        但每個詞元只啟用 22B（13.2GB），所以它在 M5 Ultra 上跑得比稠密的 70B 還快。
+        <strong>大容量統一記憶體真正的價值在這裡</strong>：不是把稠密模型跑更快，是讓 MoE 這種「大而稀疏」的架構變得可行。
+      </div>
+
+      <div class="analysis-insights-box" style="margin-top:18px;">
+        <h3 class="box-title"><i class="fa-solid fa-lightbulb text-amber" aria-hidden="true"></i> 表格讀出來的三個結論：</h3>
+        <ul class="insights-list">
+          <li>
+            <strong>M6 的天花板是 14B，不是 32B。</strong>
+            32B 雖然塞得進 32GB，但只剩很少空間給上下文，而且 6 tok/s 已經低於一般可用的閱讀速度。
+            要在 Mac mini 上舒服跑本地模型，14B 是實際的上限。
+          </li>
+          <li>
+            <strong>M5 Pro 的 64GB 是「70B 跑得動但很勉強」。</strong>
+            42GB 權重對上約 46GB 可用記憶體，剩下的空間放不了多長的上下文，速度也只有 5 tok/s。
+            如果目標明確是 70B，這台是錯的選擇。
+          </li>
+          <li>
+            <strong>M5 Max 128GB 是稠密 70B 的實用起點。</strong>
+            10 tok/s 加上充足的上下文空間，這是四台裡第一台把 70B 從「能載入」變成「能用」的機器。
+            而它的 614GB/s 頻寬，正好是因為 128GB 只有 40 核 GPU 版可選才拿到的。
+          </li>
+        </ul>
       </div>
     </section>
 
-    <!-- Buying Decision Tree & Summary -->
-    <section class="decision-section">
+    <!-- 選購決策 -->
+    <section class="decision-section" aria-labelledby="decision-title">
       <div class="section-header">
-        <h2 class="section-title"><i class="fa-solid fa-compass"></i> 選購決策指南（一分鐘選定）</h2>
+        <h2 class="section-title" id="decision-title"><i class="fa-solid fa-compass" aria-hidden="true"></i> 選購決策：從你要跑什麼往回推</h2>
+        <p class="section-desc">記憶體單價是固定的 875 元／GB，所以問題不是「哪台划算」，而是「我需要多少」</p>
       </div>
 
       <div class="decision-cards-grid">
         <div class="decision-card">
-          <div class="decision-icon"><i class="fa-solid fa-wallet text-blue"></i></div>
-          <h3 class="decision-title">預算 NT$ 5 萬 ~ 6 萬</h3>
-          <div class="decision-target">👉 直選 <strong>Mac mini (M6 32G)</strong></div>
-          <p class="decision-text">標配 32GB 記憶體已達業界黃金標準，軟體開發、日常多工與一般影音剪輯效能完全不卡頓。</p>
+          <div class="decision-icon"><i class="fa-solid fa-wallet text-blue" aria-hidden="true"></i></div>
+          <h3 class="decision-title">開發與日常多工</h3>
+          <div class="decision-target"><i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i> <strong>Mac mini M6</strong>，記憶體加到 24GB</div>
+          <p class="decision-text">NT$36,900（24GB／256GB）就順帶把頻寬從 153 升到 170GB/s。除非確定要跑 14B 以上的本地模型，32GB 那 7,000 元用不太到。</p>
         </div>
 
         <div class="decision-card">
-          <div class="decision-icon"><i class="fa-solid fa-bolt text-purple"></i></div>
-          <h3 class="decision-title">預算 NT$ 9 萬 ~ 10 萬</h3>
-          <div class="decision-target">👉 選擇 <strong>Mac mini (M5 Pro 64G)</strong></div>
-          <p class="decision-text">獲得 64GB 記憶體與 <strong>Thunderbolt 5 (120Gbps)</strong>，適合高強度編譯與重度多工影音團隊。</p>
+          <div class="decision-icon"><i class="fa-solid fa-bolt text-purple" aria-hidden="true"></i></div>
+          <h3 class="decision-title">重度編譯、4K 剪輯</h3>
+          <div class="decision-target"><i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i> <strong>Mac mini M5 Pro</strong> 入門機即可</div>
+          <p class="decision-text">NT$59,900 就有 307GB/s 與 3 個 Thunderbolt 5。真正的取捨在這裡：沒有讀卡機、10GbE 要加購、媒體引擎仍是單編碼器。</p>
         </div>
 
         <div class="decision-card highlight-card">
-          <div class="decision-icon"><i class="fa-solid fa-crown text-amber"></i></div>
-          <h3 class="decision-title">預算 NT$ 17 萬 ~ 18 萬</h3>
-          <div class="decision-target">👉 推薦 <strong>Mac Studio (M5 Max 128G)</strong></div>
-          <p class="decision-text"><strong>AI 研發者的黃金機型！</strong>128GB 統一大記憶體 + 40 核 GPU + 10GbE 網路，能吃下 70B 本地大模型。</p>
+          <div class="decision-icon"><i class="fa-solid fa-crown text-amber" aria-hidden="true"></i></div>
+          <h3 class="decision-title">本地 70B 模型、多軌 8K</h3>
+          <div class="decision-target"><i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i> <strong>Mac Studio M5 Max 40 核／128GB</strong></div>
+          <p class="decision-text">NT$175,900。四台裡唯一把 70B 從「能載入」變成「能用」的；雙編碼引擎與 10GbE 標配同時到位。128GB 與 614GB/s 是綁在一起買的。</p>
         </div>
 
         <div class="decision-card">
-          <div class="decision-icon"><i class="fa-solid fa-server text-rose"></i></div>
-          <h3 class="decision-title">預算 NT$ 30 萬+ (頂級商用)</h3>
-          <div class="decision-target">👉 攻頂 <strong>Mac Studio (M5 Ultra 256G)</strong></div>
-          <p class="decision-text">30 核 CPU + 64 核 GPU + 32 核 NPU，單位記憶體成本最低 (NT$ 1,328/GB)，支援最多 8 部螢幕輸出。</p>
+          <div class="decision-icon"><i class="fa-solid fa-server text-rose" aria-hidden="true"></i></div>
+          <h3 class="decision-title">大型 MoE、多螢幕監控</h3>
+          <div class="decision-target"><i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i> <strong>Mac Studio M5 Ultra</strong></div>
+          <p class="decision-text">NT$199,900 起。要跑 235B 等級的 MoE 才需要加到 256GB（+140,000）。純粹要八螢幕或四路 8K 編碼的話，96GB 入門機就夠。</p>
         </div>
+      </div>
+
+      <div class="assumption-box">
+        <strong>一個容易買錯的地方：</strong>
+        Mac Studio 入門機（NT$84,900）是 32 核 GPU、36GB、460GB/s，
+        它<strong>沒有辦法加購到 128GB</strong>——那個選項只存在於 40 核 GPU 版。
+        如果你的目標是大記憶體，起跳價其實是 NT$105,900（40 核／48GB）而不是 84,900。
+      </div>
+    </section>
+
+    <!-- 數字來源 -->
+    <section aria-labelledby="source-title">
+      <div class="section-header">
+        <h2 class="section-title" id="source-title"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> 數字怎麼來的</h2>
+      </div>
+      <div class="assumption-box">
+        <p class="source-note">
+          <strong>官方數字</strong>（可直接核對）：晶片核心數、記憶體頻寬、記憶體與 SSD 選項、連接埠、顯示器上限、
+          媒體引擎、功率、售價與加購級距，全部取自 Apple 台灣官網的 Mac mini 與 Mac Studio
+          技術規格頁與購買頁，2026-08-30 逐項查核。加購價差是在官網設定工具上實際選出各組配置後讀到的金額。
+        </p>
+        <p class="source-note">
+          <strong>推導值</strong>（本頁算出來的，算式都寫在對應段落）：每 GB 記憶體邊際單價、每 GB/s 頻寬成本、
+          SSD 邊際單價、頻寬倍數、生成速度上限。
+        </p>
+        <p class="source-note">
+          <strong>經驗值</strong>（不是官方數字，會因軟體與設定而異）：Q4_K_M 每參數 0.6 位元組、
+          實務頻寬利用率 0.70、可用記憶體比例 0.72。這三個係數只影響 tok/s 的絕對值，不影響機型之間的比例關係。
+        </p>
+        <p class="source-note">
+          兩款機器官網標示 9 月 22 日開始發售、目前為預訂狀態，Mac Studio 每位顧客限購兩部。
+          M5 Ultra 的 512GB 記憶體選項官網註明 10 月底推出。實際售價以 Apple 官網當下報價為準。
+        </p>
       </div>
     </section>
   </main>
@@ -2108,73 +2996,77 @@ html.light .spec-table thead th {
         </div>
       </div>
       <div class="footer-note">
-        <p>© 2026 Bobo Labs. 晶片規格對照 Apple 官網核實（2026-08-30）；本頁售價為加購記憶體後的推估值，實際以 Apple 官網設定工具報價為準。</p>
+        <p>© 2026 Bobo Labs. 規格與售價 2026-08-30 對照 Apple 台灣官網核實；推導值算式均載於文內，可自行複算。</p>
       </div>
       <div class="footer-back-to-top">
-        <a href="#" class="back-top-btn"><i class="fa-solid fa-arrow-up"></i> 回頂部</a>
+        <a href="#page-title" class="back-top-btn"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> 回頂部</a>
       </div>
     </div>
   </footer>
 
   <!-- Toast Notification -->
-  <div class="toast" id="toast">
-    <i class="fa-solid fa-circle-check"></i>
-    <span id="toast-message">已成功複製 Markdown 表格！</span>
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+    <span id="toast-message"></span>
   </div>
 
   <script>
 document.addEventListener('DOMContentLoaded', () => {
-  initThemeToggle();
-  initScenarioFilters();
-  initDiffHighlight();
-  initAIChecker();
-  initCopyMarkdown();
+  // 各自獨立初始化：任何一塊壞掉都不該把其餘互動一起帶走
+  [initThemeToggle, initScenarioFilters, initDiffHighlight, initCopyMarkdown]
+    .forEach(fn => { try { fn(); } catch (e) { console.error(fn.name, e); } });
 });
+
+// 瀏覽器封鎖網站資料時，連 getItem 都會丟例外，所以讀寫都要包起來
+const themeStore = {
+  read() { try { return localStorage.getItem('moneyai-theme'); } catch (e) { return null; } },
+  write(v) { try { localStorage.setItem('moneyai-theme', v); } catch (e) { /* 記不住偏好，但切換照常運作 */ } }
+};
 
 function initThemeToggle() {
   const toggleBtn = document.getElementById('theme-toggle');
   const htmlEl = document.documentElement;
-  const storedTheme = localStorage.getItem('moneyai-theme') || 'dark';
-  setTheme(storedTheme);
+  setTheme(themeStore.read() || 'dark');
 
   toggleBtn.addEventListener('click', () => {
-    const currentTheme = htmlEl.classList.contains('light') ? 'light' : 'dark';
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('moneyai-theme', newTheme);
+    const next = htmlEl.classList.contains('light') ? 'dark' : 'light';
+    setTheme(next);
+    themeStore.write(next);
   });
 
   function setTheme(theme) {
-    if (theme === 'light') {
-      htmlEl.classList.remove('dark');
-      htmlEl.classList.add('light');
-      toggleBtn.innerHTML = '<i class="fa-solid fa-sun text-amber"></i>';
-    } else {
-      htmlEl.classList.remove('light');
-      htmlEl.classList.add('dark');
-      toggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-    }
+    const light = theme === 'light';
+    htmlEl.classList.toggle('light', light);
+    htmlEl.classList.toggle('dark', !light);
+    toggleBtn.innerHTML = light
+      ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>'
+      : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
+    toggleBtn.setAttribute('aria-label', light ? '切換至深色模式' : '切換至淺色模式');
   }
 }
 
 function initScenarioFilters() {
-  const filterPills = document.querySelectorAll('#scenario-filters .pill');
+  const pills = document.querySelectorAll('#scenario-filters .pill');
   const cards = document.querySelectorAll('.product-card');
 
-  filterPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      filterPills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      const filterValue = pill.getAttribute('data-filter');
+  pills.forEach(pill => {
+    pill.setAttribute('aria-pressed', pill.classList.contains('active') ? 'true' : 'false');
 
+    pill.addEventListener('click', () => {
+      pills.forEach(p => {
+        p.classList.remove('active');
+        p.setAttribute('aria-pressed', 'false');
+      });
+      pill.classList.add('active');
+      pill.setAttribute('aria-pressed', 'true');
+
+      const filter = pill.getAttribute('data-filter');
       cards.forEach(card => {
-        const categories = card.getAttribute('data-category').split(' ');
-        if (filterValue === 'all' || categories.includes(filterValue)) {
-          card.style.display = 'flex';
-          card.style.opacity = '1';
-        } else {
-          card.style.display = 'none';
-        }
+        const shown = filter === 'all'
+          || card.getAttribute('data-category').split(' ').includes(filter);
+        card.style.display = shown ? 'flex' : 'none';
+        // 隱藏的卡片也要退出無障礙樹與 Tab 順序
+        card.toggleAttribute('inert', !shown);
       });
     });
   });
@@ -2182,129 +3074,98 @@ function initScenarioFilters() {
 
 function initDiffHighlight() {
   const toggle = document.getElementById('highlight-diff-toggle');
-  const diffRows = document.querySelectorAll('#matrix-table tr.diff-row');
-
+  const table = document.getElementById('matrix-table');
+  // 用 class 而非 inline style，讓兩個主題各自定義高亮色
   toggle.addEventListener('change', () => {
-    if (toggle.checked) {
-      diffRows.forEach(row => {
-        row.style.backgroundColor = 'rgba(56, 189, 248, 0.08)';
-      });
-    } else {
-      diffRows.forEach(row => {
-        row.style.backgroundColor = '';
-      });
-    }
+    table.classList.toggle('show-diff', toggle.checked);
   });
 }
 
-const AI_MODELS_DATA = {
-  16: [
-    { model: 'Mac mini (M6 32GB)', status: '完美順暢', statusClass: 'status-perfect', desc: '全載入顯存，速度約 35~50 tok/s，極佳體驗。' },
-    { model: 'Mac mini (M5 Pro 64GB)', status: '極速餘裕', statusClass: 'status-perfect', desc: '超大剩餘空間，可同時跑 IDE 與本地 Agent。' },
-    { model: 'Mac Studio (M5 Max 128G)', status: '極致效能', statusClass: 'status-perfect', desc: '可直接啟用 FP16 / 32K 長上下文無需量化。' },
-    { model: 'Mac Studio (M5 Ultra 256G)', status: '極致效能', statusClass: 'status-perfect', desc: '可併發多個實例同時服務多用戶。' }
-  ],
-  32: [
-    { model: 'Mac mini (M6 32GB)', status: '略顯吃緊', statusClass: 'status-tight', desc: '需 Q4_K_M 量化且關閉部分後台，速度約 15 tok/s。' },
-    { model: 'Mac mini (M5 Pro 64GB)', status: '完美順暢', statusClass: 'status-perfect', desc: '完整放進 64GB 記憶體，可長文本上下文推論。' },
-    { model: 'Mac Studio (M5 Max 128G)', status: '極速餘裕', statusClass: 'status-perfect', desc: '40核 GPU 加持，推論速度突破 25+ tok/s。' },
-    { model: 'Mac Studio (M5 Ultra 256G)', status: '頂級體驗', statusClass: 'status-perfect', desc: '支援全精度 Q8 / FP16 跑滿滿速推論。' }
-  ],
-  64: [
-    { model: 'Mac mini (M6 32GB)', status: '不支援 (OOM)', statusClass: 'status-no', desc: '記憶體容量不足以載入 70B 模型。' },
-    { model: 'Mac mini (M5 Pro 64GB)', status: '極限可用 (Q3/Q4)', statusClass: 'status-tight', desc: '需極限 Q3/Q4 量化，系統其餘可用 RAM 極少。' },
-    { model: 'Mac Studio (M5 Max 128G)', status: '最佳甜點 👑', statusClass: 'status-perfect', desc: '128GB 隨意載入 Q4/Q8，速度 12~18 tok/s 實用度極高。' },
-    { model: 'Mac Studio (M5 Ultra 256G)', status: '滿血飛馳', statusClass: 'status-perfect', desc: '64核 GPU + 32核 NPU 頂級算力，可批次推論。' }
-  ],
-  140: [
-    { model: 'Mac mini (M6 32GB)', status: '不支援 (OOM)', statusClass: 'status-no', desc: '容量不足。' },
-    { model: 'Mac mini (M5 Pro 64GB)', status: '不支援 (OOM)', statusClass: 'status-no', desc: '容量不足。' },
-    { model: 'Mac Studio (M5 Max 128G)', status: '需極限量化', statusClass: 'status-tight', desc: '僅能載入低比特量化 MoE 激活部分。' },
-    { model: 'Mac Studio (M5 Ultra 256G)', status: '獨家支援 👑', statusClass: 'status-perfect', desc: '256GB 統一大顯存，完整吃下大型 MoE 與 405B Q4。' }
-  ]
-};
+// 「複製 MD」的內容：與頁面表格同源的資料，抽成常數讓函式只剩邏輯
+const MARKDOWN_TABLE = `# Mac mini vs Mac Studio（2026）— 記憶體頻寬、Thunderbolt 與本地 LLM 對照
 
-function initAIChecker() {
-  const pills = document.querySelectorAll('#model-pills .model-pill');
-  const resultGrid = document.getElementById('compat-grid');
+> 規格與售價 2026-08-30 於 apple.com/tw 逐項核實。兩款機器官網標示 9 月 22 日開始發售。
 
-  function renderGrid(vramNeeded) {
-    const data = AI_MODELS_DATA[vramNeeded] || AI_MODELS_DATA[16];
-    resultGrid.innerHTML = data.map(item => `
-      <div class="compat-card">
-        <div class="compat-model-name">${item.model}</div>
-        <div class="compat-status ${item.statusClass}">
-          <i class="fa-solid ${item.statusClass === 'status-perfect' ? 'fa-circle-check' : item.statusClass === 'status-tight' ? 'fa-triangle-exclamation' : 'fa-circle-xmark'}"></i>
-          <span>${item.status}</span>
-        </div>
-        <p class="compat-desc">${item.desc}</p>
-      </div>
-    `).join('');
-  }
+## 全參數對照
 
-  pills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      pills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      const vram = parseInt(pill.getAttribute('data-vram'), 10);
-      renderGrid(vram);
-    });
-  });
+| 項目 | Mac mini M6 | Mac mini M5 Pro | Mac Studio M5 Max | Mac Studio M5 Ultra |
+| :--- | :--- | :--- | :--- | :--- |
+| **CPU / GPU / NPU** | 12 / 12 / 雙16 核 | 15 / 16 / 16 核 | 18 / 32 / 16 核（可選 40 核 GPU） | 30 / 64 / 32 核（可選 36+80 核） |
+| **記憶體頻寬** | 153 GB/s（24GB 以上 170） | 307 GB/s | 460 GB/s（40 核 GPU 版 614） | **1.2 TB/s** |
+| **標配 / 上限記憶體** | 16GB / 32GB | 24GB / 64GB | 36GB / 128GB | 96GB / **512GB** |
+| **標配 SSD** | 256GB | 512GB | 512GB | 1TB |
+| **背面 Thunderbolt** | 3 × **TB4**（40Gb/s） | 3 × **TB5**（120Gb/s） | 4 × TB5 | 4 × TB5 |
+| **正面連接埠** | 2 × USB-C 10Gb/s | 2 × USB-C 10Gb/s | 2 × USB-C 10Gb/s + SDXC | **2 × TB5** + SDXC |
+| **USB4 速度** | 40Gb/s | 40Gb/s | **120Gb/s** | **120Gb/s** |
+| **乙太網路** | 2.5Gb（10Gb 加購） | 2.5Gb（10Gb 加購） | **10Gb 標配** | **10Gb 標配** |
+| **顯示器上限 / 單埠** | 3 部 / 2 部 | 3 部 / 3 部 | 5 部 / 4 部 | **8 部** / 4 部 |
+| **DisplayPort** | DP 1.4 | **DP 2.1** | DP 2.1 | DP 2.1 |
+| **媒體引擎（解/編/ProRes）** | 1 / 1 / 1 | 1 / 1 / 1 | 1 / 2 / 2 | **2 / 4 / 4** |
+| **官方入門機售價** | NT$29,900 | NT$59,900 | NT$84,900 | NT$199,900 |
+| **本頁配置售價** | NT$50,900（32/512） | NT$94,900（64/512） | NT$175,900（128/512） | NT$339,900（256/1TB） |
+| **每 GB/s 頻寬成本（入門機）** | NT$195 | NT$195 | NT$185 | **NT$167** |
 
-  renderGrid(16);
-}
+## 記憶體加購：全線一律 NT$875 / GB
+
+| 晶片 | 級距 | 算式 | 單價 |
+| :--- | :--- | :--- | :--- |
+| M6 | 16 → 24GB | +7,000 ÷ 8 | 875 |
+| M6 | 16 → 32GB | +14,000 ÷ 16 | 875 |
+| M5 Pro | 24 → 48GB | +21,000 ÷ 24 | 875 |
+| M5 Pro | 24 → 64GB | +35,000 ÷ 40 | 875 |
+| M5 Max 40 核 | 48 → 64GB | +14,000 ÷ 16 | 875 |
+| M5 Max 40 核 | 48 → 128GB | +70,000 ÷ 80 | 875 |
+| M5 Ultra | 96 → 256GB | +140,000 ÷ 160 | 875 |
+
+七個級距單價完全相同，所以「哪台記憶體比較划算」不成立問題。
+SSD 1TB 以上為 17.09 元/GB，記憶體是它的 51.2 倍。
+
+## 本地 LLM 生成速度上限
+
+算式：\`tok/s ≈ 記憶體頻寬 ÷ 權重位元組 × 0.70\`（Q4_K_M 以每參數 0.6 位元組估）
+
+| 模型 | 權重 | M6 32GB | M5 Pro 64GB | M5 Max 128GB | M5 Ultra 256GB |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Llama 3.1 8B | 4.8GB | 25 tok/s | 45 tok/s | 90 tok/s | 175 tok/s |
+| Qwen3 14B | 8.4GB | 14 tok/s | 26 tok/s | 51 tok/s | 100 tok/s |
+| Qwen2.5-Coder 32B | 19.2GB | 6 tok/s（吃緊） | 11 tok/s | 22 tok/s | 44 tok/s |
+| Llama 3.3 70B | 42GB | 記憶體不足 | 5 tok/s（吃緊） | 10 tok/s | 20 tok/s |
+| Qwen3 235B-A22B (MoE) | 141GB / 每詞元 13.2GB | 記憶體不足 | 記憶體不足 | 記憶體不足 | 64 tok/s |
+
+0.70 與 0.72（可用記憶體比例）是經驗係數、非官方數字。
+
+## Thunderbolt 5 的三個數字
+
+- 對稱雙向 **80 Gb/s**（接硬碟、擴充座時拿到的是這組）
+- 頻寬提升模式 **120 Gb/s 下行 / 40 Gb/s 上行**（高頻寬顯示器用，官網標示的就是這個數字）
+- 統一記憶體頻寬是 TB5 對稱頻寬的 **120 倍**（1,200 vs 10 GB/s）——所以模型必須住在統一記憶體裡
+
+---
+來源整理：Bobo Labs — https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html`;
 
 function initCopyMarkdown() {
   const copyBtn = document.getElementById('copy-markdown-btn');
   const toast = document.getElementById('toast');
   const toastMsg = document.getElementById('toast-message');
-
-  const markdownContent = `# 2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較
-
-| 規格項目 | Mac mini (M6) | Mac mini (M5 Pro) | Mac Studio (M5 Max) | Mac Studio (M5 Ultra) |
-| :--- | :--- | :--- | :--- | :--- |
-| **晶片型號** | **Apple M6** | **Apple M5 Pro** | **Apple M5 Max** | **Apple M5 Ultra** |
-| **CPU / GPU / NPU** | 12核 CPU / 12核 GPU / 雙16核 NPU | 15核 CPU / 16核 GPU / 16核 NPU | 18核 CPU / 40核 GPU / 16核 NPU | **30核 CPU / 64核 GPU / 32核 NPU** |
-| **統一記憶體 (RAM)** | **32 GB** | **64 GB** | **128 GB** | **256 GB** |
-| **內建儲存 (SSD)** | 512 GB SSD | 512 GB SSD | 512 GB SSD | **1 TB SSD** |
-| **正面連接埠** | 2 × USB-C、3.5mm 孔 | 2 × USB-C、3.5mm 孔 | 2 × USB-C、SDXC 卡槽 | **2 × Thunderbolt 5**、SDXC 卡槽 |
-| **背面連接埠** | 3 × **TB4**、HDMI、2.5GbE | 3 × **TB5**、HDMI、2.5GbE | 4 × **TB5**、2×USB-A、HDMI、10GbE | 4 × **TB5**、2×USB-A、HDMI、10GbE |
-| **外接顯示器支援** | 最多 **3 部** | 最多 **3 部** | 最多 **5 部** | 最多 **8 部** |
-| **乙太網路** | 2.5 Gbps | 2.5 Gbps | **10 Gbps** | **10 Gbps** |
-| **推估售價（加購記憶體後）** | **NT$ 50,900** | **NT$ 94,900** | **NT$ 175,900** | **NT$ 339,900** |
-| 🏷️ **每 1GB 記憶體成本** | **約 NT$ 1,591 / GB** | **約 NT$ 1,483 / GB** | **約 NT$ 1,374 / GB** | **約 NT$ 1,328 / GB 👑** |
-
-## 官方標配起售價 × 標配記憶體（Apple 台灣官網，2026-08-30 查核）
-
-| 機型 | 晶片 | 官方起售價 | 標配記憶體 | 標配 SSD | 起售價 ÷ 記憶體 |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| Mac mini | Apple M6 | NT$ 29,900 起 | 16 GB | 256 GB | **NT$ 1,869 / GB** 👑 |
-| Mac mini | Apple M5 Pro | NT$ 59,900 起 | 24 GB | 512 GB | NT$ 2,496 / GB |
-| Mac Studio | Apple M5 Max | NT$ 84,900 起 | 36 GB | 512 GB | NT$ 2,358 / GB |
-| Mac Studio | Apple M5 Ultra | NT$ 199,900 起 | 96 GB | 1 TB | NT$ 2,082 / GB |
-
-> 兩張表結論相反：上表（加購到頂）每 GB 成本一路遞減 1,591 → 1,328；改用官方標配起售價，
-> 最便宜的是入門 Mac mini (M6) 1,869 元，M5 Pro 反而最貴 2,496 元。
-> 另注意此指標把 SSD 成本攤進了記憶體——四台標配 SSD 差距達四倍（256GB / 512GB / 512GB / 1TB），
-> 機型間不能直接橫向比。兩款機器官網標示 9 月 22 日開始發售。
-
-*來源整理：Bobo Labs (https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html) — 晶片規格對照 Apple 官網核實 2026-08-30；售價為加購記憶體後的推估值*`;
+  let toastTimer = null;
 
   copyBtn.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(markdownContent);
-      showToast('已成功複製 Markdown 規格對比表！');
+      await navigator.clipboard.writeText(MARKDOWN_TABLE);
+      showToast('已複製 Markdown 對照表', true);
     } catch (err) {
-      showToast('複製失敗，請手動選取文字。');
+      showToast('瀏覽器擋下了複製，請手動選取文字', false);
     }
   });
 
-  function showToast(message) {
+  function showToast(message, ok) {
     toastMsg.textContent = message;
+    toast.querySelector('i').className = ok
+      ? 'fa-solid fa-circle-check'
+      : 'fa-solid fa-triangle-exclamation';
     toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 3000);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
   }
 }
   </script>
