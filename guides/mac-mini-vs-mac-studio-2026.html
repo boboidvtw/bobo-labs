@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較 | Bobo Labs</title>
-  <meta name="description" content="Mac mini (M6 / M5 Pro) 與 Mac Studio (M5 Max / M5 Ultra) 規格與選購對照整理，含每 1GB 記憶體取得成本精算、多螢幕輸出與 I/O 擴充比對。注意：本頁規格與定價為推測整理，非 Apple 官方發表資料。">
+  <meta name="description" content="Mac mini (M6 / M5 Pro) 與 Mac Studio (M5 Max / M5 Ultra) 規格與選購對照整理，含每 1GB 記憶體取得成本精算、多螢幕輸出與 I/O 擴充比對。注意：本頁比較的是加購記憶體後的客製配置，售價為推估值，非官方標準機型定價。">
   <meta name="keywords" content="Mac mini, Mac Studio, M6, M5 Pro, M5 Max, M5 Ultra, Apple Silicon, 規格比較, 每GB記憶體成本, 本地AI模型">
   <link rel="canonical" href="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Bobo Labs">
   <meta property="og:title" content="2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較">
-  <meta property="og:description" content="每 1GB 記憶體取得成本精算、本地 LLM 適配速查、四機全參數交叉對照。規格與定價為推測整理，非 Apple 官方資料。">
+  <meta property="og:description" content="每 1GB 記憶體取得成本精算、本地 LLM 適配速查、四機全參數交叉對照。比較的是加購記憶體後的客製配置，售價為推估值。">
   <meta property="og:url" content="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
   <meta name="twitter:card" content="summary_large_image">
   <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
@@ -1414,16 +1414,20 @@ html.light .spec-table thead th {
       <div class="speculative-notice" role="note">
         <i class="fa-solid fa-triangle-exclamation notice-icon" aria-hidden="true"></i>
         <div class="notice-body">
-          <strong class="notice-title">閱讀前請先看這段：本頁規格與定價為推測整理</strong>
+          <strong class="notice-title">閱讀前請先看這段：本頁比的是「加購記憶體後」的配置，不是官方標準機型</strong>
           <p>
-            文中的 <strong>Apple M6 / M5 Pro / M5 Max / M5 Ultra</strong> 核心配置、記憶體容量、連接埠與新台幣售價，
-            是依產品線世代規律與市場傳聞所做的<strong>推估對照</strong>，<strong>並非 Apple 官方已發表的規格表</strong>。
-            所有「每 GB 成本」「降幅百分比」都是在這組推估數字之上算出來的——
-            算式本身可驗算，但輸入值會隨官方正式發表而改變。
+            晶片規格（CPU／GPU／NPU 核心數、連接埠、螢幕輸出上限）已於 <strong>2026-08-30 對照 Apple 台灣官網技術規格頁核實</strong>。
+            但本頁四台機器的<strong>記憶體容量是加購後的客製配置</strong>——32GB／64GB／128GB／256GB 都不是標準機型的出廠容量，
+            對應的新台幣售價是<strong>推估值，未經 Apple 線上商店設定工具逐項核對</strong>。
           </p>
           <p class="notice-usage">
-            適合當作<strong>選購思路與比較框架</strong>（記憶體容量如何決定本地 LLM 上限、單位記憶體成本為何隨機型遞減）；
-            <strong>不要拿來當下單依據</strong>。實際採購請以 Apple 官方網站公佈的規格與定價為準。
+            官方標準機型起價供你對照：<strong>Mac mini (M6) NT$ 29,900 起</strong>（16GB／256GB）、
+            <strong>Mac mini (M5 Pro) NT$ 59,900 起</strong>（24GB／512GB）、
+            <strong>Mac Studio (M5 Max) NT$ 84,900 起</strong>（36GB／512GB）、
+            <strong>Mac Studio (M5 Ultra) NT$ 199,900 起</strong>（96GB／1TB）。
+            所有「每 GB 成本」與「降幅百分比」都是在本頁那組推估售價之上算出來的：算式可驗算，但輸入值會隨你實際選配而變。
+            本頁適合當作<strong>選購思路與比較框架</strong>（記憶體容量如何決定本地 LLM 上限、單位記憶體成本為何隨機型遞減）；
+            <strong>下單前請以 Apple 官網設定工具跑出的實際報價為準</strong>。
           </p>
         </div>
       </div>
@@ -1520,7 +1524,7 @@ html.light .spec-table thead th {
           <div class="key-specs-list">
             <div class="spec-row">
               <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
-              <span class="spec-value">12核 CPU · 12核 GPU · 16核 NPU</span>
+              <span class="spec-value">12核 CPU · 12核 GPU · 雙16核 NPU</span>
             </div>
             <div class="spec-row">
               <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
@@ -1780,7 +1784,7 @@ html.light .spec-table thead th {
             </tr>
             <tr class="diff-row">
               <td class="sticky-col spec-name">神經網路引擎 (NPU)</td>
-              <td>16 核心</td>
+              <td><strong>雙 16 核心</strong></td>
               <td>16 核心</td>
               <td class="col-highlight">16 核心</td>
               <td><strong class="text-rose">32 核心 (雙倍)</strong></td>
@@ -1857,7 +1861,7 @@ html.light .spec-table thead th {
               <td colspan="5"><i class="fa-solid fa-tag"></i> 價格與上市資訊</td>
             </tr>
             <tr class="diff-row price-row">
-              <td class="sticky-col spec-name">推估售價（非官方）</td>
+              <td class="sticky-col spec-name">推估售價（加購記憶體後）</td>
               <td><strong class="price-val">NT$ 50,900</strong></td>
               <td><strong class="price-val">NT$ 94,900</strong></td>
               <td class="col-highlight"><strong class="price-val text-amber">NT$ 175,900</strong></td>
@@ -2012,7 +2016,7 @@ html.light .spec-table thead th {
         </div>
       </div>
       <div class="footer-note">
-        <p>© 2026 Bobo Labs. 本頁規格與定價為推測整理，非 Apple 官方發表資料，實際以 Apple 官方公佈為準。</p>
+        <p>© 2026 Bobo Labs. 晶片規格對照 Apple 官網核實（2026-08-30）；本頁售價為加購記憶體後的推估值，實際以 Apple 官網設定工具報價為準。</p>
       </div>
       <div class="footer-back-to-top">
         <a href="#" class="back-top-btn"><i class="fa-solid fa-arrow-up"></i> 回頂部</a>
@@ -2168,17 +2172,17 @@ function initCopyMarkdown() {
 | 規格項目 | Mac mini (M6) | Mac mini (M5 Pro) | Mac Studio (M5 Max) | Mac Studio (M5 Ultra) |
 | :--- | :--- | :--- | :--- | :--- |
 | **晶片型號** | **Apple M6** | **Apple M5 Pro** | **Apple M5 Max** | **Apple M5 Ultra** |
-| **CPU / GPU / NPU** | 12核 CPU / 12核 GPU / 16核 NPU | 15核 CPU / 16核 GPU / 16核 NPU | 18核 CPU / 40核 GPU / 16核 NPU | **30核 CPU / 64核 GPU / 32核 NPU** |
+| **CPU / GPU / NPU** | 12核 CPU / 12核 GPU / 雙16核 NPU | 15核 CPU / 16核 GPU / 16核 NPU | 18核 CPU / 40核 GPU / 16核 NPU | **30核 CPU / 64核 GPU / 32核 NPU** |
 | **統一記憶體 (RAM)** | **32 GB** | **64 GB** | **128 GB** | **256 GB** |
 | **內建儲存 (SSD)** | 512 GB SSD | 512 GB SSD | 512 GB SSD | **1 TB SSD** |
 | **正面連接埠** | 2 × USB-C、3.5mm 孔 | 2 × USB-C、3.5mm 孔 | 2 × USB-C、SDXC 卡槽 | **2 × Thunderbolt 5**、SDXC 卡槽 |
 | **背面連接埠** | 3 × **TB4**、HDMI、2.5GbE | 3 × **TB5**、HDMI、2.5GbE | 4 × **TB5**、2×USB-A、HDMI、10GbE | 4 × **TB5**、2×USB-A、HDMI、10GbE |
 | **外接顯示器支援** | 最多 **3 部** | 最多 **3 部** | 最多 **5 部** | 最多 **8 部** |
 | **乙太網路** | 2.5 Gbps | 2.5 Gbps | **10 Gbps** | **10 Gbps** |
-| **推估售價（非官方）** | **NT$ 50,900** | **NT$ 94,900** | **NT$ 175,900** | **NT$ 339,900** |
+| **推估售價（加購記憶體後）** | **NT$ 50,900** | **NT$ 94,900** | **NT$ 175,900** | **NT$ 339,900** |
 | 🏷️ **每 1GB 記憶體成本** | **約 NT$ 1,591 / GB** | **約 NT$ 1,483 / GB** | **約 NT$ 1,374 / GB** | **約 NT$ 1,328 / GB 👑** |
 
-*來源整理：Bobo Labs (https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html) — 規格與定價為推測整理，非 Apple 官方資料*`;
+*來源整理：Bobo Labs (https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html) — 晶片規格對照 Apple 官網核實 2026-08-30；售價為加購記憶體後的推估值*`;
 
   copyBtn.addEventListener('click', async () => {
     try {
