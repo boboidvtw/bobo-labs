@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-30**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/target-heart-rate.html`（#93 · 健康 · Free，(220−年齡)×強度% 的五個強度區間實算，並比較 Karvonen 心率儲備法與 Tanaka 修正式）。
+  Formula 卡片由 placeholder 轉為連結（69 → 68 張），Tier 與文章一致故分類計數與註腳未動；sitemap formulas 區重生為 29 篇。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 21 cases 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-08-30.
+
 - **2026-08-29** — 修正 sitemap `lastmod` 失真（非發文，改的是產生器）：
   `scripts/regen_sitemap.py` 原本對 formulas 區「保留 sitemap 既有值」，等於首次收錄後永遠凍結——實測 **27/28 篇公式頁的 lastmod 是錯的**，2026-06-18 的長尾標題改動（`cce8df3`）從未反映到 sitemap，Google 讀到「5/28 之後沒變過」就沒有回來重爬的理由。
   改以 git 為唯一來源：formulas 取內容最後改動日、未提交的改動算今天、無 git 才退回 mtime（mtime 在全新 clone 會整批變成 clone 當天，不能當常態來源）。writing 維持發布日語意——日期前綴檔取檔名日期，3 篇無前綴舊檔改取 git 首次收錄日，避免 2026-06-04 全站注入 analytics 的單行 commit 讓文章謊稱更新。
