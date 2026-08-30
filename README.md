@@ -20,6 +20,15 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-30**（同日第五次，人工）— `guides/mac-mini-vs-mac-studio-2026.html` 新增「多機叢集」整節，補上前一版漏掉的 Thunderbolt 4／5 使用情境分野：
+  ①**核心缺口**：前一版把 Thunderbolt 定位成「接周邊與螢幕，不是擴充算力」，這句話在 TB5 世代是錯的。macOS 26.2 起支援 RDMA over Thunderbolt，可把多台 Mac 的統一記憶體串成一個池跑單機裝不下的模型——**而這件事硬性要求 TB5，Mac mini M6（TB4）做不到**。官方依據：Apple 台灣 Mac mini 頁「還能讓你將多部 Mac mini 串連成裝置叢集，以執行更大型的本地 AI 模型」（僅 M5 Pro 段落）、Mac Studio 頁「支援叢集運算，分散式 AI 推論速度提升，最快可達 3 倍」。
+  ②**節點上限是埠數推出來的**：全網狀要求每兩台之間一條實體 TB5 線，故上限 = 埠數 + 1（mini M5 Pro 4 台／M5 Max 5 台／M5 Ultra 7 台），N 節點需 N(N−1)/2 條線；市面上無 TB5 switch。Apple 自己示範與標示的都是 4 節點，5／7 台標為理論值。mini 組完 4 節點後 **TB 埠一個不剩**，螢幕只能走 HDMI。
+  ③**釐清「官方 3 倍」與「實測 1.6 倍」不衝突**：Apple 註腳 22 寫明測的是 72B **稠密**模型配 32K 提示詞（算力瓶頸，平行化有效）；第三方實測（Geerling 2025-12，4 × M3 Ultra／1.5TB）測的是巨大 MoE，exo + RDMA 在 Qwen3 235B 上是 19.5 → 31.9 tok/s（1.64 倍），而 llama.cpp 走 TCP 反而 20.4 → 15.2（**越串越慢**）。結論：串連買到的主要是容量，速度是附帶的。
+  ④**回答「TB5 只有 10 GB/s 怎麼串得動」**：跨機器傳的是活化值（每詞元數 MB）不是權重，瓶頸是往返延遲而非頻寬（TCP 約 300 µs → RDMA 50 µs 以下）；並區分張量平行（會變快、吃延遲）與管線平行（只解決裝不裝得下）。
+  ⑤**成本結論（用本頁既有官網實價算的）**：湊 256GB 記憶體池，1 台 M5 Ultra NT$339,900／2 台 M5 Max NT$351,800／4 台 M5 Pro NT$379,600——**單機在售價、頻寬、功率、佈線四項全勝**，因為記憶體單價固定 875 元／GB，串連不會讓那個常數變便宜。串連唯一無可取代的是單機買不到的容量（上限 512GB，10 月底推出）。附七項動手門檻（版本號須完全一致、Recovery 執行 `rdma_ctl enable`、線材須支援 TB5、四台 Studio 峰值 1,920W 超過台灣 110V／15A 迴路的 1,650W 上限等）。
+  ⑥連帶更新 title／meta／og／JSON-LD／導覽列／Markdown 匯出／「數字怎麼來的」段（新增第三方數字類別並註明是前一代硬體、只能看趨勢），並在 TB4／TB5 對照表加一列 RDMA。1232px 與 375px 皆 0 溢出、0 擠壓，未引入任何寫死顏色。
+  Added a full section on multi-Mac RDMA clustering over Thunderbolt 5, correcting the previous claim that Thunderbolt is only for peripherals. Cluster size is capped by port count (full mesh); Apple's 3x claim and the measured 1.6x are both real but measure different things; and at equal capacity a single machine beats a cluster on price, bandwidth, power and cabling.
+
 - **2026-08-30**（同日第四次，人工）— `guides/mac-mini-vs-mac-studio-2026.html` **全文重寫**，加入記憶體頻寬與 Thunderbolt 兩條新軸線：
   ①**四個售價經官網設定工具逐項核實，全部正確**——因此移除前一版「售價為推估值」的標註。該標註本身是錯的（50,900／94,900／175,900／339,900 皆為官網實算金額）。
   ②**新發現：記憶體加購邊際單價全線一律 NT$875／GB**。七個級距（M6 16→24／16→32、M5 Pro 24→48／24→64、M5 Max 48→64／48→128、M5 Ultra 96→256）換算後完全相同。這使舊版兩張互相矛盾的「售價÷記憶體」表失效——該指標把機殼、散熱、SSD、10GbE 都攤進記憶體，故同批機器換個配置就得出相反結論。改以大數字＋七列驗算表呈現，並附 SSD 邊際單價 17.09 元／GB（記憶體是它的 51.2 倍）。
