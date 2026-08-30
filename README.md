@@ -20,6 +20,14 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-30**（同日第三次，人工）— `guides/mac-mini-vs-mac-studio-2026.html` 兩輪內容更正，全部依 Apple 台灣官網實查：
+  ①**M6 的 NPU 是「雙 16 核心神經網路引擎」**，原文寫 16 核心；卡片、參數表、Markdown 匯出三處同步更正（M5 Pro 16 核／M5 Max 16 核／M5 Ultra 32 核核對無誤）。
+  ②**更正前一版標註**——前一版斷言這些晶片「非 Apple 官方已發表資料、依市場傳聞推估」，實查後這是錯的，四款規格官網都查得到；真正的落差是本頁四台機器的記憶體皆為加購後的客製配置、售價為推估值。標註改寫並附官方起價對照，連帶更正 meta / og / 表格欄名 / 頁尾共 6 處。
+  ③**新增「官方標配起售價 × 標配記憶體」對照表**（Mac mini M6 NT,900／16GB，M5 Pro NT,900／24GB，Mac Studio M5 Max NT,900／36GB，M5 Ultra NT,900／96GB），四個起售價於購買頁獨立複查、每 GB 欄位由腳本驗算。此表結論與上方相反：用官方標配算，最便宜的是入門 M6（NT,869/GB）、M5 Pro 反而最貴（NT,496/GB），並寫明此指標把 SSD 成本攤進了記憶體（四台標配 SSD 差距達四倍）故不能直接橫向比。加導覽錨點並同步進「複製 MD」匯出。
+  ④**修兩個色彩缺陷**：`html.light` 未覆寫 `--accent-green` / `--accent-rose`，亮色底僅 1.91:1 與 3.64:1（兩 token 全站只作文字色，badge/chip 底色另外寫死，故可安全覆寫為 #047857 / #be123c）；新區塊註腳誤用 writing 版型的 `.article-foot`（本頁無此類別）且 `--text-subtle` 僅 3.85:1，改為 `.baseline-source` 搭 `--text-muted`。修正後兩主題全數過 AA，並連帶修好既有 NPU 列與 LLM 速查器在亮色模式的失效。
+  Two rounds of fact-checking against Apple Taiwan: corrected the M6 NPU to dual 16-core, replaced an inaccurate disclaimer of my own making, added an official base-price table whose conclusion contradicts the article's, and fixed two light-mode contrast failures.
+
+
 - **2026-08-30**（今日，人工發布）— 新增 `guides/` 區與第一篇選購指南：
   `guides/mac-mini-vs-mac-studio-2026.html`（Mac mini vs Mac Studio 一頁式全參數對比）。
   來源是外部草稿的單檔 `standalone.html`（自帶深色玻璃擬態設計、互動篩選、參數交叉表、每 GB 記憶體成本圖表、本地 LLM 適配速查、複製 Markdown），
