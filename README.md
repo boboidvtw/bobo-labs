@@ -20,6 +20,25 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-31** — sitemap 產生器納入 guides 區（非發文，改的是工具）：
+  ①**動機**：guides 那行原本手動維護（08-30 的紀錄還明寫「`regen_sitemap.py` 重跑不動該區」），
+  等於保留了 08-29 才修掉的那個坑——改了文章但忘記手改 sitemap，**完全沒有症狀**。
+  ②**併入時多出兩個既有兩區沒有的需求，兩個都不做就等於沒併**：
+  (a) **lastmod 精確到秒**。該篇的改動發生在 2026-08-30 23:53:48，寫成日期型 `2026-08-30`
+  依 sitemap 規範等同當日 00:00，**比 sitemap 當時的值還舊**——重生一次就把剛解掉的凍結裝回去。
+  改用 `%cI`（W3C datetime 含時區），同日內的改動仍是嚴格較新的值。
+  (b) **保留 `changefreq`**。guides 那行本來就有 `monthly`，而 `build_block` 只吐 loc/lastmod/priority，
+  直接併入會靜默掉一個既有欄位。兩者都做成 per-section 選填，**writing / formulas 的輸出逐字不變**。
+  ③**驗證**：TDD 先紅後綠，測試從 30 增至 38 項（新增 guides 精度、changefreq 只出現在該區、
+  欄位順序、`<!-- Guides -->` 註解不被吃、別區不被動、冪等、重生後仍是合法 XML）；
+  對真實 sitemap 跑出 **byte-for-byte 無差異**，再故意把值改成 `2026-01-01` 重跑，確認它
+  **真的會糾正**而不是掃描範圍空掉的假通過。`test_verify_formula_math` 46/46 同步不受影響。
+  ④連帶更新 `/bobo-autopublish` 技能檔 Phase 3-C 的描述（它呼叫的是不帶 `--section` 的
+  `regen_sitemap.py`＝`all`，所以 guides 自 2026-08-31 起已納入每日自動化）。
+  Folded the hand-maintained guides entry into regen_sitemap.py so it can no longer silently freeze.
+  Required two new per-section options — second-precision lastmod and changefreq preservation —
+  without changing a byte of the writing/formulas output. Tests 30 -> 38, TDD red first.
+
 - **2026-08-30**（同日第五次，人工）— `guides/mac-mini-vs-mac-studio-2026.html` 新增「多機叢集」整節，補上前一版漏掉的 Thunderbolt 4／5 使用情境分野：
   ①**核心缺口**：前一版把 Thunderbolt 定位成「接周邊與螢幕，不是擴充算力」，這句話在 TB5 世代是錯的。macOS 26.2 起支援 RDMA over Thunderbolt，可把多台 Mac 的統一記憶體串成一個池跑單機裝不下的模型——**而這件事硬性要求 TB5，Mac mini M6（TB4）做不到**。官方依據：Apple 台灣 Mac mini 頁「還能讓你將多部 Mac mini 串連成裝置叢集，以執行更大型的本地 AI 模型」（僅 M5 Pro 段落）、Mac Studio 頁「支援叢集運算，分散式 AI 推論速度提升，最快可達 3 倍」。
   ②**節點上限是埠數推出來的**：全網狀要求每兩台之間一條實體 TB5 線，故上限 = 埠數 + 1（mini M5 Pro 4 台／M5 Max 5 台／M5 Ultra 7 台），N 節點需 N(N−1)/2 條線；市面上無 TB5 switch。Apple 自己示範與標示的都是 4 節點，5／7 台標為理論值。mini 組完 4 節點後 **TB 埠一個不剩**，螢幕只能走 HDMI。
