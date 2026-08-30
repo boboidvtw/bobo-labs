@@ -20,10 +20,20 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-30**（同日第四次，人工）— `guides/mac-mini-vs-mac-studio-2026.html` **全文重寫**，加入記憶體頻寬與 Thunderbolt 兩條新軸線：
+  ①**四個售價經官網設定工具逐項核實，全部正確**——因此移除前一版「售價為推估值」的標註。該標註本身是錯的（50,900／94,900／175,900／339,900 皆為官網實算金額）。
+  ②**新發現：記憶體加購邊際單價全線一律 NT$875／GB**。七個級距（M6 16→24／16→32、M5 Pro 24→48／24→64、M5 Max 48→64／48→128、M5 Ultra 96→256）換算後完全相同。這使舊版兩張互相矛盾的「售價÷記憶體」表失效——該指標把機殼、散熱、SSD、10GbE 都攤進記憶體，故同批機器換個配置就得出相反結論。改以大數字＋七列驗算表呈現，並附 SSD 邊際單價 17.09 元／GB（記憶體是它的 51.2 倍）。
+  ③**新增記憶體頻寬節**：M6 的頻寬綁在容量上（16GB 153GB/s，加購 24／32GB 才是 170GB/s）；Mac Studio 的 128GB 只有 40 核 GPU 版可選，因此 128GB 必然拿到 614GB/s，36GB 版只有 460GB/s。對數軸點圖把四台的統一記憶體頻寬與 TB5／TB4／10GbE／2.5GbE 放在同一條軸上（M5 Ultra 是 TB5 對稱頻寬的 120 倍）。
+  ④**新增 Thunderbolt 節**：釐清官網標示的 120Gb/s 是頻寬提升模式（120 下行／40 上行）而非對稱頻寬（80Gb/s）；補上各機埠數、正面埠速度、USB4 上限（Studio 120Gb/s vs mini 40Gb/s）、DP 1.4 與 2.1、單一埠可帶螢幕數（2／3／4／4）。
+  ⑤**本地 LLM 段改為可驗算的 roofline**：`tok/s ≈ 記憶體頻寬 ÷ 權重位元組 × 0.70`，取代舊版無來源的體感數字，並明確區分官方數字／推導值／經驗係數三類。
+  ⑥**更正舊版兩處事實**：M5 Ultra 記憶體上限是 512GB（36 核／80 核版，官網註明 10 月底推出）而非 256GB；補上媒體引擎階梯（1/1/1 → 1/1/1 → 1/2/2 → 2/4/4）。
+  ⑦**修六個既有前端缺陷**：白字壓在 `--accent-gradient` 上三個色停僅 2.14／2.98／2.64:1（漸層是 background-image，掃描器讀不到底色故長期潛伏）；亮色主題未覆寫 `--accent-blue`／`--accent-purple`／`--accent-amber`（2.14／3.96／1.67:1）；兩張重點卡把深色底 `rgba(22,27,39,.8)` 寫死在漸層裡，亮色主題下變成深底配深字；整份樣式表沒有任何 `:focus-visible` 規則；88 個圖示只有 24 個標了 `aria-hidden`；`localStorage.getItem` 未加 try/catch，瀏覽器封鎖網站資料時會讓整包互動初始化中止。另移除假造即時狀態的無限脈動點與漸層標題字，補上 `prefers-reduced-motion`。兩主題各掃 560 個文字元素、皆 0 違規；375px 無溢出。
+  Full rewrite adding memory-bandwidth and Thunderbolt axes. Key finding: Apple charges a flat NT$875/GB for unified memory across all seven upgrade tiers and all four chips, which invalidates the old price-per-GB metric. Also fixed six pre-existing frontend defects, including white text on a gradient that no contrast scanner could see.
+
 - **2026-08-30**（同日第三次，人工）— `guides/mac-mini-vs-mac-studio-2026.html` 兩輪內容更正，全部依 Apple 台灣官網實查：
   ①**M6 的 NPU 是「雙 16 核心神經網路引擎」**，原文寫 16 核心；卡片、參數表、Markdown 匯出三處同步更正（M5 Pro 16 核／M5 Max 16 核／M5 Ultra 32 核核對無誤）。
   ②**更正前一版標註**——前一版斷言這些晶片「非 Apple 官方已發表資料、依市場傳聞推估」，實查後這是錯的，四款規格官網都查得到；真正的落差是本頁四台機器的記憶體皆為加購後的客製配置、售價為推估值。標註改寫並附官方起價對照，連帶更正 meta / og / 表格欄名 / 頁尾共 6 處。
-  ③**新增「官方標配起售價 × 標配記憶體」對照表**（Mac mini M6 NT,900／16GB，M5 Pro NT,900／24GB，Mac Studio M5 Max NT,900／36GB，M5 Ultra NT,900／96GB），四個起售價於購買頁獨立複查、每 GB 欄位由腳本驗算。此表結論與上方相反：用官方標配算，最便宜的是入門 M6（NT,869/GB）、M5 Pro 反而最貴（NT,496/GB），並寫明此指標把 SSD 成本攤進了記憶體（四台標配 SSD 差距達四倍）故不能直接橫向比。加導覽錨點並同步進「複製 MD」匯出。
+  ③**新增「官方標配起售價 × 標配記憶體」對照表**（Mac mini M6 NT$29,900／16GB，M5 Pro NT$59,900／24GB，Mac Studio M5 Max NT$84,900／36GB，M5 Ultra NT$199,900／96GB），四個起售價於購買頁獨立複查、每 GB 欄位由腳本驗算。此表結論與上方相反：用官方標配算，最便宜的是入門 M6（NT$1,869/GB）、M5 Pro 反而最貴（NT$2,496/GB），並寫明此指標把 SSD 成本攤進了記憶體（四台標配 SSD 差距達四倍）故不能直接橫向比。加導覽錨點並同步進「複製 MD」匯出。
   ④**修兩個色彩缺陷**：`html.light` 未覆寫 `--accent-green` / `--accent-rose`，亮色底僅 1.91:1 與 3.64:1（兩 token 全站只作文字色，badge/chip 底色另外寫死，故可安全覆寫為 #047857 / #be123c）；新區塊註腳誤用 writing 版型的 `.article-foot`（本頁無此類別）且 `--text-subtle` 僅 3.85:1，改為 `.baseline-source` 搭 `--text-muted`。修正後兩主題全數過 AA，並連帶修好既有 NPU 列與 LLM 速查器在亮色模式的失效。
   Two rounds of fact-checking against Apple Taiwan: corrected the M6 NPU to dual 16-core, replaced an inaccurate disclaimer of my own making, added an official base-price table whose conclusion contradicts the article's, and fixed two light-mode contrast failures.
 
