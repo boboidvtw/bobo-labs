@@ -20,6 +20,18 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-30**（今日，人工發布）— 新增 `guides/` 區與第一篇選購指南：
+  `guides/mac-mini-vs-mac-studio-2026.html`（Mac mini vs Mac Studio 一頁式全參數對比）。
+  來源是外部草稿的單檔 `standalone.html`（自帶深色玻璃擬態設計、互動篩選、參數交叉表、每 GB 記憶體成本圖表、本地 LLM 適配速查、複製 Markdown），
+  進站時保留原設計，只做進站整理：加 canonical / OG / Cloudflare Web Analytics beacon、品牌由 MoneyAI Labs 統一為 Bobo Labs、header 品牌改為回首頁連結。
+  **內容誠信處理**：文中 Apple M6 / M5 Pro / M5 Max / M5 Ultra 的規格與新台幣定價並非 Apple 官方已發表資料，
+  原稿只有頁尾一行小字免責、正文卻以「官方參考售價」的既成事實語氣書寫；
+  改為 hero 下方常駐推測性標註（說明數字為推估、算式可驗但輸入值會變、適合當比較框架而非下單依據），
+  表格與 Markdown 匯出的「官方參考售價」一併改為「推估售價（非官方）」。
+  另修兩個顯示缺陷：`fa-microchip-ai` 是 FontAwesome Pro 專屬圖示（免費版載不到、實測 62 個圖示中唯一破圖）改用 `fa-microchip`；窄螢幕品牌名換行擠壓 header，加 640px 斷點讓品牌名不換行並隱藏 Hardware Lab 標籤。
+  驗證：HTML 巢狀無誤、明暗兩主題對比皆過 AA（暗 6.8:1／亮 7.0:1）、375px 無水平溢出、情境篩選與主題切換實測可用、sitemap 加 Guides 區（125 → 127 網址）且 `regen_sitemap.py` 重跑不動該區。
+  Added `guides/` section with a Mac buying guide; kept the source design, added a prominent speculative-data notice since the specs and prices are not official Apple figures.
+
 - **2026-08-30**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/target-heart-rate.html`（#93 · 健康 · Free，(220−年齡)×強度% 的五個強度區間實算，並比較 Karvonen 心率儲備法與 Tanaka 修正式）。
   Formula 卡片由 placeholder 轉為連結（69 → 68 張），Tier 與文章一致故分類計數與註腳未動；sitemap formulas 區重生為 29 篇。
