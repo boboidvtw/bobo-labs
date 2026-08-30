@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較 | Bobo Labs</title>
+  <meta name="description" content="Mac mini (M6 / M5 Pro) 與 Mac Studio (M5 Max / M5 Ultra) 規格與選購對照整理，含每 1GB 記憶體取得成本精算、多螢幕輸出與 I/O 擴充比對。注意：本頁規格與定價為推測整理，非 Apple 官方發表資料。">
+  <meta name="keywords" content="Mac mini, Mac Studio, M6, M5 Pro, M5 Max, M5 Ultra, Apple Silicon, 規格比較, 每GB記憶體成本, 本地AI模型">
+  <link rel="canonical" href="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Bobo Labs">
+  <meta property="og:title" content="2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較">
+  <meta property="og:description" content="每 1GB 記憶體取得成本精算、本地 LLM 適配速查、四機全參數交叉對照。規格與定價為推測整理，非 Apple 官方資料。">
+  <meta property="og:url" content="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,3,00..800;1,300..800&family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+/* ==========================================================================
+   CSS Design System & Styles for Mac Comparison Blog Web App
+   Theme: Modern Apple Dark Glassmorphism + Dynamic Accent Glows
+   Target: labs.moneyai168.com
+   ========================================================================== */
+
+:root {
+  --bg-primary: #090b10;
+  --bg-secondary: #121620;
+  --bg-card: rgba(22, 27, 39, 0.7);
+  --bg-card-hover: rgba(30, 37, 53, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(99, 102, 241, 0.5);
+  --border-glow: rgba(56, 189, 248, 0.3);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+
+  --accent-blue: #38bdf8;
+  --accent-purple: #a855f7;
+  --accent-amber: #fbbf24;
+  --accent-rose: #f43f5e;
+  --accent-green: #34d399;
+  --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 30px rgba(56, 189, 248, 0.15);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 9999px;
+  --max-width: 1280px;
+
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.light {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --bg-glass: rgba(0, 0, 0, 0.02);
+  
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-focus: rgba(99, 102, 241, 0.4);
+  --border-glow: rgba(56, 189, 248, 0.2);
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #94a3b8;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 30px rgba(56, 189, 248, 0.1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ambient-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+}
+
+.glow-1 {
+  top: -100px;
+  left: 20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.35), transparent 70%);
+}
+
+.glow-2 {
+  top: 40%;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.25), transparent 70%);
+}
+
+.glow-3 {
+  bottom: -150px;
+  left: 10%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.2), transparent 70%);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(9, 11, 16, 0.75);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: var(--transition-fast);
+}
+
+html.light .site-header {
+  background: rgba(248, 250, 252, 0.85);
+}
+
+.header-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.brand-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+}
+
+.brand-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--accent-blue);
+  text-transform: uppercase;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition-fast);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.nav-link:hover {
+  color: var(--text-main);
+  background: var(--bg-glass);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition-fast);
+}
+
+.action-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 24px 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: var(--radius-pill);
+  color: var(--accent-blue);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-blue);
+  box-shadow: 0 0 10px var(--accent-blue);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+}
+
+.hero-subtitle-block {
+  display: block;
+  font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: -0.3px;
+  margin-top: 10px;
+}
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-description {
+  max-width: 780px;
+  font-size: 1.08rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.metrics-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: var(--transition-fast);
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-card.highlight-metric {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(56, 189, 248, 0.08));
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--accent-blue);
+}
+
+.highlight-metric .metric-icon {
+  color: var(--accent-green);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.metric-label {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.metric-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.metric-val small {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent-green);
+}
+
+.filter-toolbar-section {
+  position: sticky;
+  top: 70px;
+  z-index: 90;
+}
+
+.filter-toolbar {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.84rem;
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-glass);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+}
+
+.pill.active {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.slider {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-pill);
+  transition: var(--transition-fast);
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: var(--accent-blue);
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(16px);
+}
+
+.toggle-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.section-header {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.section-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-main);
+}
+
+.section-title i {
+  color: var(--accent-blue);
+  font-size: 1.4rem;
+}
+
+.section-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.product-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 24px;
+}
+
+.product-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.product-card.popular-card {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.05) 0%, rgba(22, 27, 39, 0.8) 100%);
+}
+
+.card-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+.badge-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
+.badge-amber { background: rgba(251, 191, 36, 0.18); color: var(--accent-amber); border: 1px solid rgba(251, 191, 36, 0.4); }
+.badge-rose { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+.product-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.product-render {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.apple-device {
+  position: relative;
+  background: linear-gradient(180deg, #d1d5db 0%, #9ca3af 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.mini-device {
+  width: 140px;
+  height: 48px;
+}
+
+.studio-device {
+  width: 140px;
+  height: 78px;
+}
+
+.ultra-glow {
+  box-shadow: 0 8px 25px rgba(244, 63, 94, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.device-front, .studio-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+}
+
+.port-c, .port-tb {
+  width: 6px;
+  height: 14px;
+  background: #374151;
+  border-radius: 3px;
+  border: 1px solid #1f2937;
+}
+
+.port-tb {
+  background: #1e1b4b;
+  border-color: #4338ca;
+}
+
+.port-sd {
+  width: 20px;
+  height: 4px;
+  background: #1f2937;
+  border-radius: 1px;
+}
+
+.port-led {
+  width: 4px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ffffff;
+  margin-left: 8px;
+}
+
+.port-jack {
+  width: 6px;
+  height: 6px;
+  background: #1f2937;
+  border-radius: 50%;
+}
+
+.product-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.chip-tag {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.chip-m6 { color: var(--accent-blue); background: rgba(56, 189, 248, 0.1); }
+.chip-m5pro { color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); }
+.chip-m5max { color: var(--accent-amber); background: rgba(251, 191, 36, 0.12); }
+.chip-m5ultra { color: var(--accent-rose); background: rgba(244, 63, 94, 0.12); }
+
+.product-price-box {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.price-main {
+  font-size: 1.65rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+}
+
+.price-sub {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.price-sub strong {
+  color: var(--text-main);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.key-specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+  margin-bottom: 20px;
+}
+
+.spec-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.spec-label {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spec-label i {
+  font-size: 0.85rem;
+  width: 14px;
+}
+
+.spec-value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.highlight-text {
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.text-amber { color: var(--accent-amber); }
+.text-rose { color: var(--accent-rose); }
+.text-green { color: var(--accent-green); }
+.text-blue { color: var(--accent-blue); }
+.text-purple { color: var(--accent-purple); }
+
+.card-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.best-for {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.best-for i {
+  color: var(--accent-blue);
+  margin-top: 2px;
+}
+
+.table-responsive-wrapper {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
+}
+
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.92rem;
+  min-width: 820px;
+}
+
+.spec-table th, .spec-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.spec-table thead th {
+  background: rgba(18, 22, 32, 0.95);
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+html.light .spec-table thead th {
+  background: rgba(241, 245, 249, 0.95);
+}
+
+.header-corner {
+  width: 220px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.sticky-col {
+  font-weight: 700;
+  color: var(--text-main);
+  background: inherit;
+}
+
+.th-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.th-chip {
+  font-size: 0.8rem;
+  color: var(--accent-blue);
+  font-family: 'JetBrains Mono', monospace;
+  margin: 2px 0;
+}
+
+.th-price {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.th-highlight {
+  position: relative;
+  background: rgba(251, 191, 36, 0.08) !important;
+}
+
+.th-badge {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  background: var(--accent-amber);
+  color: #000;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+}
+
+.col-highlight {
+  background: rgba(251, 191, 36, 0.03);
+}
+
+.section-divider td {
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--accent-blue);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.cost-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+}
+
+.pill-best {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--accent-green);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.hint-text {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  font-weight: 400;
+}
+
+.price-val {
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.ram-chart-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  backdrop-filter: blur(12px);
+}
+
+.chart-bars-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+}
+
+.chart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.chart-cost {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+}
+
+.bar-track {
+  width: 100%;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bar-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.fill-m6 { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+.fill-m5pro { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+.fill-m5max { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.fill-m5ultra { background: linear-gradient(90deg, #059669, #34d399); }
+
+.analysis-insights-box {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.box-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insights-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insights-list li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.insights-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--accent-blue);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.ai-checker-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 30px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.model-selector-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.model-pill {
+  padding: 10px 18px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.model-pill:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+}
+
+.model-pill.active {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.compatibility-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.compat-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compat-model-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.compat-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.status-perfect { color: var(--accent-green); }
+.status-good { color: var(--accent-blue); }
+.status-tight { color: var(--accent-amber); }
+.status-no { color: var(--accent-rose); }
+
+.compat-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.decision-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.decision-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: var(--transition-fast);
+}
+
+.decision-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+}
+
+.decision-card.highlight-card {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.08), rgba(22, 27, 39, 0.9));
+}
+
+.decision-icon {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.decision-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.decision-target {
+  font-size: 0.92rem;
+  color: var(--text-main);
+  padding: 6px 10px;
+  background: var(--bg-glass);
+  border-radius: var(--radius-sm);
+}
+
+.decision-text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.site-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(9, 11, 16, 0.8);
+  padding: 36px 24px;
+}
+
+.footer-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-brand .brand-title {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.footer-brand .brand-desc {
+  font-size: 0.85rem;
+  color: var(--accent-blue);
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 8px;
+}
+
+.footer-note {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+}
+
+.back-top-btn {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  transition: var(--transition-fast);
+}
+
+.back-top-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-glass);
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #1e293b;
+  color: #fff;
+  border: 1px solid var(--border-focus);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast i {
+  color: var(--accent-green);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .ram-chart-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    padding: 24px 16px 60px;
+    gap: 48px;
+  }
+
+  .hero-title {
+    font-size: 1.9rem;
+  }
+
+  .filter-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* --- 資料可信度標註（2026-08-30 進站時新增） --- */
+.speculative-notice {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  gap: 16px;
+  text-align: left;
+  padding: 20px 22px;
+  border-radius: var(--radius-md);
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-left: 4px solid var(--accent-amber);
+}
+
+.speculative-notice .notice-icon {
+  flex: 0 0 auto;
+  font-size: 1.35rem;
+  line-height: 1.4;
+  color: var(--accent-amber);
+}
+
+.speculative-notice .notice-body { min-width: 0; }
+
+.speculative-notice .notice-title {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.speculative-notice p {
+  font-size: 0.94rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+.speculative-notice p + p { margin-top: 8px; }
+
+.speculative-notice strong { color: var(--text-main); }
+
+@media (max-width: 640px) {
+  /* 窄螢幕：品牌名不換行，讓出空間給右側動作鍵 */
+  .brand-title { white-space: nowrap; }
+  .brand-badge { display: none; }
+}
+
+@media (max-width: 600px) {
+  .speculative-notice { padding: 16px; gap: 12px; }
+  .speculative-notice .notice-icon { font-size: 1.1rem; }
+  .speculative-notice p { font-size: 0.88rem; }
+}
+
+  </style>
+</head>
+<body>
+  <!-- Background Glow & Grid -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Navigation Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a class="brand" href="/" title="回 Bobo Labs 首頁">
+        <div class="brand-logo">
+          <i class="fa-solid fa-microchip brand-icon"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Bobo Labs</span>
+          <span class="brand-badge">Hardware Lab</span>
+        </div>
+      </a>
+      
+      <nav class="header-nav">
+        <a href="#quick-summary" class="nav-link"><i class="fa-solid fa-bolt"></i> 快速導覽</a>
+        <a href="#comparison-cards" class="nav-link"><i class="fa-solid fa-table-cells"></i> 四機 PK</a>
+        <a href="#spec-matrix" class="nav-link"><i class="fa-solid fa-list-check"></i> 參數總表</a>
+        <a href="#ram-cost-analysis" class="nav-link"><i class="fa-solid fa-coins"></i> 每GB成本精算</a>
+        <a href="#ai-model-guide" class="nav-link"><i class="fa-solid fa-brain"></i> AI 選購建議</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="theme-toggle" class="action-btn" title="切換色彩模式" aria-label="切換色彩模式">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button id="copy-markdown-btn" class="action-btn btn-primary" title="複製 Markdown 比較表">
+          <i class="fa-regular fa-copy"></i> 複製 MD
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Hero Banner -->
+    <section class="hero-section">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>2026 Apple 旗艦桌面工作站指南</span>
+      </div>
+      <h1 class="hero-title">
+        Mac mini <span class="text-gradient">vs</span> Mac Studio
+        <span class="hero-subtitle-block">一頁式規格參數對比 · 每 GB 成本精算 · 選購指南</span>
+      </h1>
+      <p class="hero-description">
+        從 <strong>NT$ 50,900</strong> 的高性價比全能主機，到 <strong>NT$ 339,900</strong> 的極限算力怪獸！針對 <strong>軟體開發、影音創作、3D 渲染與本地大模型 (LLM)</strong> 深入量化評測。
+      </p>
+
+      <!-- 資料可信度標註 -->
+      <div class="speculative-notice" role="note">
+        <i class="fa-solid fa-triangle-exclamation notice-icon" aria-hidden="true"></i>
+        <div class="notice-body">
+          <strong class="notice-title">閱讀前請先看這段：本頁規格與定價為推測整理</strong>
+          <p>
+            文中的 <strong>Apple M6 / M5 Pro / M5 Max / M5 Ultra</strong> 核心配置、記憶體容量、連接埠與新台幣售價，
+            是依產品線世代規律與市場傳聞所做的<strong>推估對照</strong>，<strong>並非 Apple 官方已發表的規格表</strong>。
+            所有「每 GB 成本」「降幅百分比」都是在這組推估數字之上算出來的——
+            算式本身可驗算，但輸入值會隨官方正式發表而改變。
+          </p>
+          <p class="notice-usage">
+            適合當作<strong>選購思路與比較框架</strong>（記憶體容量如何決定本地 LLM 上限、單位記憶體成本為何隨機型遞減）；
+            <strong>不要拿來當下單依據</strong>。實際採購請以 Apple 官方網站公佈的規格與定價為準。
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="metrics-grid" id="quick-summary">
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+          <div class="metric-info">
+            <span class="metric-label">價格區間</span>
+            <span class="metric-val">NT$ 50.9K ~ 339.9K</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-memory"></i></div>
+          <div class="metric-info">
+            <span class="metric-label">記憶體跨度</span>
+            <span class="metric-val">32GB ~ 256GB</span>
+          </div>
+        </div>
+        <div class="metric-card highlight-metric">
+          <div class="metric-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+          <div class="metric-info">
+            <span class="metric-label">每 1GB 最低成本</span>
+            <span class="metric-val">NT$ 1,328 / GB <small>(M5 Ultra)</small></span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-desktop"></i></div>
+          <div class="metric-info">
+            <span class="metric-label">最高螢幕輸出</span>
+            <span class="metric-val">最多 8 部外接螢幕</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Filter Toolbar -->
+    <section class="filter-toolbar-section">
+      <div class="filter-toolbar">
+        <div class="filter-group">
+          <span class="filter-title"><i class="fa-solid fa-filter"></i> 使用情境篩選：</span>
+          <div class="filter-pills" id="scenario-filters">
+            <button class="pill active" data-filter="all">全部機型 (4)</button>
+            <button class="pill" data-filter="dev"><i class="fa-solid fa-code"></i> 軟體開發 / 日常</button>
+            <button class="pill" data-filter="creator"><i class="fa-solid fa-film"></i> 影音剪輯 / 3D</button>
+            <button class="pill" data-filter="ai"><i class="fa-solid fa-brain"></i> 本地 AI / LLM</button>
+          </div>
+        </div>
+
+        <div class="filter-controls-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="highlight-diff-toggle">
+            <span class="slider"></span>
+            <span class="toggle-label">高亮關鍵差異</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Cards Side by Side Section -->
+    <section class="cards-section" id="comparison-cards">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-cubes-stacked"></i> 四款主力配置速覽</h2>
+        <p class="section-desc">點擊卡片可即時聚焦對比，或查看各機型的每 GB 記憶體取得成本</p>
+      </div>
+
+      <div class="product-cards-grid">
+        <!-- Card 1: Mac mini M6 -->
+        <div class="product-card" data-category="dev" id="card-mini-m6">
+          <div class="card-badge badge-blue">入門全能王</div>
+          <div class="product-visual">
+            <div class="product-render mini-render">
+              <div class="apple-device mini-device">
+                <div class="device-body">
+                  <div class="device-front">
+                    <span class="port-c"></span>
+                    <span class="port-c"></span>
+                    <span class="port-led"></span>
+                    <span class="port-jack"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="product-name">Mac mini</h3>
+            <div class="chip-tag chip-m6">Apple M6</div>
+          </div>
+
+          <div class="product-price-box">
+            <div class="price-main">NT$ 50,900</div>
+            <div class="price-sub">每 1GB 成本：<strong>NT$ 1,591</strong></div>
+          </div>
+
+          <div class="key-specs-list">
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
+              <span class="spec-value">12核 CPU · 12核 GPU · 16核 NPU</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
+              <span class="spec-value highlight-text">32 GB</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
+              <span class="spec-value">512 GB SSD</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
+              <span class="spec-value">3× TB4 + 2.5GbE</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
+              <span class="spec-value">最多 3 部螢幕</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="best-for">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span><strong>適合：</strong>個人開發、輕量 AI、日常高效多工</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Mac mini M5 Pro -->
+        <div class="product-card" data-category="dev creator" id="card-mini-m5pro">
+          <div class="card-badge badge-purple">多工效能王</div>
+          <div class="product-visual">
+            <div class="product-render mini-render">
+              <div class="apple-device mini-device">
+                <div class="device-body">
+                  <div class="device-front">
+                    <span class="port-c"></span>
+                    <span class="port-c"></span>
+                    <span class="port-led"></span>
+                    <span class="port-jack"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="product-name">Mac mini</h3>
+            <div class="chip-tag chip-m5pro">Apple M5 Pro</div>
+          </div>
+
+          <div class="product-price-box">
+            <div class="price-main">NT$ 94,900</div>
+            <div class="price-sub">每 1GB 成本：<strong>NT$ 1,483</strong></div>
+          </div>
+
+          <div class="key-specs-list">
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
+              <span class="spec-value">15核 CPU · 16核 GPU · 16核 NPU</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
+              <span class="spec-value highlight-text">64 GB</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
+              <span class="spec-value">512 GB SSD</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
+              <span class="spec-value">3× <strong>TB5 (120G)</strong> + 2.5GbE</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
+              <span class="spec-value">最多 3 部螢幕</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="best-for">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span><strong>適合：</strong>重度程式編譯、多軌音訊、4K剪輯</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Mac Studio M5 Max -->
+        <div class="product-card popular-card" data-category="creator ai" id="card-studio-m5max">
+          <div class="card-badge badge-amber"><i class="fa-solid fa-crown"></i> AI 甜蜜點首選</div>
+          <div class="product-visual">
+            <div class="product-render studio-render">
+              <div class="apple-device studio-device">
+                <div class="studio-body">
+                  <div class="studio-front">
+                    <span class="port-c"></span>
+                    <span class="port-c"></span>
+                    <span class="port-sd"></span>
+                    <span class="port-led"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="product-name">Mac Studio</h3>
+            <div class="chip-tag chip-m5max">Apple M5 Max</div>
+          </div>
+
+          <div class="product-price-box">
+            <div class="price-main">NT$ 175,900</div>
+            <div class="price-sub">每 1GB 成本：<strong>NT$ 1,374</strong></div>
+          </div>
+
+          <div class="key-specs-list">
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
+              <span class="spec-value">18核 CPU · 40核 GPU · 16核 NPU</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
+              <span class="spec-value highlight-text text-amber">128 GB</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
+              <span class="spec-value">512 GB SSD</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
+              <span class="spec-value">4× TB5 + 2× USB-A + <strong>10GbE</strong></span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
+              <span class="spec-value">最多 <strong>5 部螢幕</strong></span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="best-for">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span><strong>適合：</strong>70B 本地 LLM、3D 動畫、工作室主機</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Mac Studio M5 Ultra -->
+        <div class="product-card" data-category="creator ai" id="card-studio-m5ultra">
+          <div class="card-badge badge-rose">終極算力怪獸</div>
+          <div class="product-visual">
+            <div class="product-render studio-render">
+              <div class="apple-device studio-device ultra-glow">
+                <div class="studio-body">
+                  <div class="studio-front">
+                    <span class="port-tb"></span>
+                    <span class="port-tb"></span>
+                    <span class="port-sd"></span>
+                    <span class="port-led"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="product-name">Mac Studio</h3>
+            <div class="chip-tag chip-m5ultra">Apple M5 Ultra</div>
+          </div>
+
+          <div class="product-price-box">
+            <div class="price-main">NT$ 339,900</div>
+            <div class="price-sub text-green">每 1GB 成本：<strong>NT$ 1,328</strong> 👑</div>
+          </div>
+
+          <div class="key-specs-list">
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-microchip"></i> 核心算力</span>
+              <span class="spec-value"><strong>30核 CPU · 64核 GPU · 32核 NPU</strong></span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-memory"></i> 統一記憶體</span>
+              <span class="spec-value highlight-text text-rose">256 GB</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> 儲存容量</span>
+              <span class="spec-value"><strong>1 TB SSD</strong></span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-network-wired"></i> 傳輸與網路</span>
+              <span class="spec-value"><strong>6× TB5 全滿血</strong> + 10GbE</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label"><i class="fa-solid fa-display"></i> 顯示支援</span>
+              <span class="spec-value">最多 <strong>8 部螢幕</strong></span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="best-for">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span><strong>適合：</strong>企業級 AI 微調、極限 8K 即時渲染、多螢幕監控</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Spec Matrix Section -->
+    <section class="matrix-section" id="spec-matrix">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-table-list"></i> 一頁式全參數交叉對照表</h2>
+        <p class="section-desc">橫向深入比較所有硬體細節，可切換高亮差異與即時複製</p>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="spec-table" id="matrix-table">
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">硬體參數 / 機型</th>
+              <th class="col-m6">
+                <div class="th-title">Mac mini</div>
+                <div class="th-chip">Apple M6</div>
+                <div class="th-price">NT$ 50,900</div>
+              </th>
+              <th class="col-m5pro">
+                <div class="th-title">Mac mini</div>
+                <div class="th-chip">Apple M5 Pro</div>
+                <div class="th-price">NT$ 94,900</div>
+              </th>
+              <th class="col-m5max th-highlight">
+                <div class="th-badge">推薦</div>
+                <div class="th-title">Mac Studio</div>
+                <div class="th-chip">Apple M5 Max</div>
+                <div class="th-price">NT$ 175,900</div>
+              </th>
+              <th class="col-m5ultra">
+                <div class="th-title">Mac Studio</div>
+                <div class="th-chip">Apple M5 Ultra</div>
+                <div class="th-price">NT$ 339,900</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="section-divider">
+              <td colspan="5"><i class="fa-solid fa-microchip"></i> 晶片與核心架構</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">處理器晶片</td>
+              <td>Apple M6</td>
+              <td>Apple M5 Pro</td>
+              <td class="col-highlight">Apple M5 Max</td>
+              <td>Apple M5 Ultra</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">CPU 核心配置</td>
+              <td>12 核心</td>
+              <td>15 核心</td>
+              <td class="col-highlight">18 核心</td>
+              <td><strong class="text-rose">30 核心</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">GPU 圖形核心</td>
+              <td>12 核心</td>
+              <td>16 核心</td>
+              <td class="col-highlight">40 核心</td>
+              <td><strong class="text-rose">64 核心</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">神經網路引擎 (NPU)</td>
+              <td>16 核心</td>
+              <td>16 核心</td>
+              <td class="col-highlight">16 核心</td>
+              <td><strong class="text-rose">32 核心 (雙倍)</strong></td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">AI 生態支援</td>
+              <td>Apple Intelligence + Siri AI</td>
+              <td>Apple Intelligence + Siri AI</td>
+              <td class="col-highlight">Apple Intelligence + Siri AI</td>
+              <td>Apple Intelligence + Siri AI</td>
+            </tr>
+
+            <tr class="section-divider">
+              <td colspan="5"><i class="fa-solid fa-memory"></i> 記憶體與儲存容量</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">統一記憶體 (RAM)</td>
+              <td><strong>32 GB</strong></td>
+              <td><strong>64 GB</strong></td>
+              <td class="col-highlight"><strong>128 GB</strong></td>
+              <td><strong class="text-rose">256 GB</strong></td>
+            </tr>
+            <tr class="diff-row cost-row">
+              <td class="sticky-col spec-name">
+                每 1GB 記憶體成本
+                <small class="hint-text">(售價 ÷ 記憶體容量)</small>
+              </td>
+              <td><span class="cost-pill">NT$ 1,591 / GB</span></td>
+              <td><span class="cost-pill">NT$ 1,483 / GB</span></td>
+              <td class="col-highlight"><span class="cost-pill">NT$ 1,374 / GB</span></td>
+              <td><span class="cost-pill pill-best">NT$ 1,328 / GB 👑</span></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">內建 SSD 容量</td>
+              <td>512 GB</td>
+              <td>512 GB</td>
+              <td class="col-highlight">512 GB</td>
+              <td><strong>1 TB</strong></td>
+            </tr>
+
+            <tr class="section-divider">
+              <td colspan="5"><i class="fa-solid fa-plug"></i> 連接埠與擴充介面</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">正面連接介面</td>
+              <td>2 × USB-C<br>1 × 3.5mm 耳機孔</td>
+              <td>2 × USB-C<br>1 × 3.5mm 耳機孔</td>
+              <td class="col-highlight">2 × USB-C<br>1 × SDXC 卡槽 (UHS-II)</td>
+              <td><strong>2 × Thunderbolt 5</strong><br>1 × SDXC 卡槽 (UHS-II)</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">背面連接介面</td>
+              <td>3 × <strong>Thunderbolt 4</strong><br>1 × HDMI<br>1 × RJ-45</td>
+              <td>3 × <strong>Thunderbolt 5</strong><br>1 × HDMI<br>1 × RJ-45</td>
+              <td class="col-highlight">4 × <strong>Thunderbolt 5</strong><br>2 × USB-A / 1 × HDMI<br>1 × RJ-45 / 3.5mm 孔</td>
+              <td>4 × <strong>Thunderbolt 5</strong><br>2 × USB-A / 1 × HDMI<br>1 × RJ-45 / 3.5mm 孔</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">乙太網路速度</td>
+              <td>2.5 Gbps</td>
+              <td>2.5 Gbps</td>
+              <td class="col-highlight"><strong>10 Gbps (萬兆)</strong></td>
+              <td><strong>10 Gbps (萬兆)</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">外接顯示器上限</td>
+              <td>最多 3 部螢幕</td>
+              <td>最多 3 部螢幕</td>
+              <td class="col-highlight">最多 5 部螢幕</td>
+              <td><strong class="text-rose">最多 8 部螢幕</strong></td>
+            </tr>
+
+            <tr class="section-divider">
+              <td colspan="5"><i class="fa-solid fa-tag"></i> 價格與上市資訊</td>
+            </tr>
+            <tr class="diff-row price-row">
+              <td class="sticky-col spec-name">推估售價（非官方）</td>
+              <td><strong class="price-val">NT$ 50,900</strong></td>
+              <td><strong class="price-val">NT$ 94,900</strong></td>
+              <td class="col-highlight"><strong class="price-val text-amber">NT$ 175,900</strong></td>
+              <td><strong class="price-val text-rose">NT$ 339,900</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RAM Cost Deep Dive & Chart Section -->
+    <section class="ram-analysis-section" id="ram-cost-analysis">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-chart-column"></i> 每 1GB 記憶體取得成本深度精算</h2>
+        <p class="section-desc">分析「整機售價 ÷ 統一記憶體 (RAM)」的邊際成本遞減趨勢</p>
+      </div>
+
+      <div class="ram-chart-container">
+        <div class="chart-bars-wrapper">
+          <div class="chart-item">
+            <div class="chart-info">
+              <span class="chart-model">Mac mini (M6 · 32GB)</span>
+              <span class="chart-cost">NT$ 1,591 / GB</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill fill-m6" style="width: 100%;">
+                <span class="bar-label">基準 (100%)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-item">
+            <div class="chart-info">
+              <span class="chart-model">Mac mini (M5 Pro · 64GB)</span>
+              <span class="chart-cost">NT$ 1,483 / GB</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill fill-m5pro" style="width: 93.2%;">
+                <span class="bar-label">-6.8% 降幅</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-item">
+            <div class="chart-info">
+              <span class="chart-model">Mac Studio (M5 Max · 128GB)</span>
+              <span class="chart-cost">NT$ 1,374 / GB</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill fill-m5max" style="width: 86.4%;">
+                <span class="bar-label">-13.6% 降幅</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-item">
+            <div class="chart-info">
+              <span class="chart-model">Mac Studio (M5 Ultra · 256GB)</span>
+              <span class="chart-cost text-green">NT$ 1,328 / GB 👑</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill fill-m5ultra" style="width: 83.5%;">
+                <span class="bar-label">-16.5% 最划算</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-insights-box">
+          <h4 class="box-title"><i class="fa-solid fa-lightbulb text-amber"></i> AI 創作者與算力工程師的核心啟示：</h4>
+          <ul class="insights-list">
+            <li>
+              <strong>規模經濟遞減：</strong> 傳統認知中高階 Mac 溢價極高，但以 <strong>RAM 單位取得成本</strong> 來看，Studio 系列因配備 128GB~256GB，每 GB 成本反而從 1,591 元一路降至 1,328 元。
+            </li>
+            <li>
+              <strong>本地 LLM 的最佳甜點 — M5 Max (128GB)：</strong>
+              128GB 統一記憶體足以在本地以 Q4/Q8 高速推論 <strong>70B 參數模型</strong>（如 Llama-3-70B / Qwen-72B），整機 17.5 萬是專業團隊最具投資報酬率 (ROI) 的首選。
+            </li>
+            <li>
+              <strong>終極算力攻頂 — M5 Ultra (256GB)：</strong>
+              若需運行 MoE 架構（如 8x22B）或同時跑多個 Agent 叢集與微調，256GB 記憶體具備不可替代的獨佔優勢。
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive AI Model Fit Checker -->
+    <section class="ai-guide-section" id="ai-model-guide">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> 本地 AI 模型相容度速查器</h2>
+        <p class="section-desc">選擇你想在本地跑的大型語言模型，查看各機型的適配程度</p>
+      </div>
+
+      <div class="ai-checker-card">
+        <div class="model-selector-pills" id="model-pills">
+          <button class="model-pill active" data-vram="16" data-name="8B ~ 14B 模型 (Llama-3-8B, Qwen2.5-14B)">輕量 8B ~ 14B</button>
+          <button class="model-pill" data-vram="32" data-name="32B 程式碼模型 (Qwen2.5-Coder-32B, DeepSeek-33B)">中量 32B 程式碼</button>
+          <button class="model-pill" data-vram="64" data-name="70B ~ 72B 旗艦模型 (Llama-3.3-70B, Qwen2.5-72B)">重量 70B 旗艦</button>
+          <button class="model-pill" data-vram="140" data-name="120B+ / MoE 巨型模型 (DeepSeek-V2, Llama-405B Q4)">巨型 120B+ / MoE</button>
+        </div>
+
+        <div class="compatibility-result-grid" id="compat-grid"></div>
+      </div>
+    </section>
+
+    <!-- Buying Decision Tree & Summary -->
+    <section class="decision-section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-compass"></i> 選購決策指南（一分鐘選定）</h2>
+      </div>
+
+      <div class="decision-cards-grid">
+        <div class="decision-card">
+          <div class="decision-icon"><i class="fa-solid fa-wallet text-blue"></i></div>
+          <h3 class="decision-title">預算 NT$ 5 萬 ~ 6 萬</h3>
+          <div class="decision-target">👉 直選 <strong>Mac mini (M6 32G)</strong></div>
+          <p class="decision-text">標配 32GB 記憶體已達業界黃金標準，軟體開發、日常多工與一般影音剪輯效能完全不卡頓。</p>
+        </div>
+
+        <div class="decision-card">
+          <div class="decision-icon"><i class="fa-solid fa-bolt text-purple"></i></div>
+          <h3 class="decision-title">預算 NT$ 9 萬 ~ 10 萬</h3>
+          <div class="decision-target">👉 選擇 <strong>Mac mini (M5 Pro 64G)</strong></div>
+          <p class="decision-text">獲得 64GB 記憶體與 <strong>Thunderbolt 5 (120Gbps)</strong>，適合高強度編譯與重度多工影音團隊。</p>
+        </div>
+
+        <div class="decision-card highlight-card">
+          <div class="decision-icon"><i class="fa-solid fa-crown text-amber"></i></div>
+          <h3 class="decision-title">預算 NT$ 17 萬 ~ 18 萬</h3>
+          <div class="decision-target">👉 推薦 <strong>Mac Studio (M5 Max 128G)</strong></div>
+          <p class="decision-text"><strong>AI 研發者的黃金機型！</strong>128GB 統一大記憶體 + 40 核 GPU + 10GbE 網路，能吃下 70B 本地大模型。</p>
+        </div>
+
+        <div class="decision-card">
+          <div class="decision-icon"><i class="fa-solid fa-server text-rose"></i></div>
+          <h3 class="decision-title">預算 NT$ 30 萬+ (頂級商用)</h3>
+          <div class="decision-target">👉 攻頂 <strong>Mac Studio (M5 Ultra 256G)</strong></div>
+          <p class="decision-text">30 核 CPU + 64 核 GPU + 32 核 NPU，單位記憶體成本最低 (NT$ 1,328/GB)，支援最多 8 部螢幕輸出。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-text">
+          <span class="brand-title">Bobo Labs</span>
+          <a class="brand-desc" href="/">https://labs.moneyai168.com/</a>
+        </div>
+      </div>
+      <div class="footer-note">
+        <p>© 2026 Bobo Labs. 本頁規格與定價為推測整理，非 Apple 官方發表資料，實際以 Apple 官方公佈為準。</p>
+      </div>
+      <div class="footer-back-to-top">
+        <a href="#" class="back-top-btn"><i class="fa-solid fa-arrow-up"></i> 回頂部</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-message">已成功複製 Markdown 表格！</span>
+  </div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
+  initScenarioFilters();
+  initDiffHighlight();
+  initAIChecker();
+  initCopyMarkdown();
+});
+
+function initThemeToggle() {
+  const toggleBtn = document.getElementById('theme-toggle');
+  const htmlEl = document.documentElement;
+  const storedTheme = localStorage.getItem('moneyai-theme') || 'dark';
+  setTheme(storedTheme);
+
+  toggleBtn.addEventListener('click', () => {
+    const currentTheme = htmlEl.classList.contains('light') ? 'light' : 'dark';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('moneyai-theme', newTheme);
+  });
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      htmlEl.classList.remove('dark');
+      htmlEl.classList.add('light');
+      toggleBtn.innerHTML = '<i class="fa-solid fa-sun text-amber"></i>';
+    } else {
+      htmlEl.classList.remove('light');
+      htmlEl.classList.add('dark');
+      toggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+    }
+  }
+}
+
+function initScenarioFilters() {
+  const filterPills = document.querySelectorAll('#scenario-filters .pill');
+  const cards = document.querySelectorAll('.product-card');
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const filterValue = pill.getAttribute('data-filter');
+
+      cards.forEach(card => {
+        const categories = card.getAttribute('data-category').split(' ');
+        if (filterValue === 'all' || categories.includes(filterValue)) {
+          card.style.display = 'flex';
+          card.style.opacity = '1';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
+function initDiffHighlight() {
+  const toggle = document.getElementById('highlight-diff-toggle');
+  const diffRows = document.querySelectorAll('#matrix-table tr.diff-row');
+
+  toggle.addEventListener('change', () => {
+    if (toggle.checked) {
+      diffRows.forEach(row => {
+        row.style.backgroundColor = 'rgba(56, 189, 248, 0.08)';
+      });
+    } else {
+      diffRows.forEach(row => {
+        row.style.backgroundColor = '';
+      });
+    }
+  });
+}
+
+const AI_MODELS_DATA = {
+  16: [
+    { model: 'Mac mini (M6 32GB)', status: '完美順暢', statusClass: 'status-perfect', desc: '全載入顯存，速度約 35~50 tok/s，極佳體驗。' },
+    { model: 'Mac mini (M5 Pro 64GB)', status: '極速餘裕', statusClass: 'status-perfect', desc: '超大剩餘空間，可同時跑 IDE 與本地 Agent。' },
+    { model: 'Mac Studio (M5 Max 128G)', status: '極致效能', statusClass: 'status-perfect', desc: '可直接啟用 FP16 / 32K 長上下文無需量化。' },
+    { model: 'Mac Studio (M5 Ultra 256G)', status: '極致效能', statusClass: 'status-perfect', desc: '可併發多個實例同時服務多用戶。' }
+  ],
+  32: [
+    { model: 'Mac mini (M6 32GB)', status: '略顯吃緊', statusClass: 'status-tight', desc: '需 Q4_K_M 量化且關閉部分後台，速度約 15 tok/s。' },
+    { model: 'Mac mini (M5 Pro 64GB)', status: '完美順暢', statusClass: 'status-perfect', desc: '完整放進 64GB 記憶體，可長文本上下文推論。' },
+    { model: 'Mac Studio (M5 Max 128G)', status: '極速餘裕', statusClass: 'status-perfect', desc: '40核 GPU 加持，推論速度突破 25+ tok/s。' },
+    { model: 'Mac Studio (M5 Ultra 256G)', status: '頂級體驗', statusClass: 'status-perfect', desc: '支援全精度 Q8 / FP16 跑滿滿速推論。' }
+  ],
+  64: [
+    { model: 'Mac mini (M6 32GB)', status: '不支援 (OOM)', statusClass: 'status-no', desc: '記憶體容量不足以載入 70B 模型。' },
+    { model: 'Mac mini (M5 Pro 64GB)', status: '極限可用 (Q3/Q4)', statusClass: 'status-tight', desc: '需極限 Q3/Q4 量化，系統其餘可用 RAM 極少。' },
+    { model: 'Mac Studio (M5 Max 128G)', status: '最佳甜點 👑', statusClass: 'status-perfect', desc: '128GB 隨意載入 Q4/Q8，速度 12~18 tok/s 實用度極高。' },
+    { model: 'Mac Studio (M5 Ultra 256G)', status: '滿血飛馳', statusClass: 'status-perfect', desc: '64核 GPU + 32核 NPU 頂級算力，可批次推論。' }
+  ],
+  140: [
+    { model: 'Mac mini (M6 32GB)', status: '不支援 (OOM)', statusClass: 'status-no', desc: '容量不足。' },
+    { model: 'Mac mini (M5 Pro 64GB)', status: '不支援 (OOM)', statusClass: 'status-no', desc: '容量不足。' },
+    { model: 'Mac Studio (M5 Max 128G)', status: '需極限量化', statusClass: 'status-tight', desc: '僅能載入低比特量化 MoE 激活部分。' },
+    { model: 'Mac Studio (M5 Ultra 256G)', status: '獨家支援 👑', statusClass: 'status-perfect', desc: '256GB 統一大顯存，完整吃下大型 MoE 與 405B Q4。' }
+  ]
+};
+
+function initAIChecker() {
+  const pills = document.querySelectorAll('#model-pills .model-pill');
+  const resultGrid = document.getElementById('compat-grid');
+
+  function renderGrid(vramNeeded) {
+    const data = AI_MODELS_DATA[vramNeeded] || AI_MODELS_DATA[16];
+    resultGrid.innerHTML = data.map(item => `
+      <div class="compat-card">
+        <div class="compat-model-name">${item.model}</div>
+        <div class="compat-status ${item.statusClass}">
+          <i class="fa-solid ${item.statusClass === 'status-perfect' ? 'fa-circle-check' : item.statusClass === 'status-tight' ? 'fa-triangle-exclamation' : 'fa-circle-xmark'}"></i>
+          <span>${item.status}</span>
+        </div>
+        <p class="compat-desc">${item.desc}</p>
+      </div>
+    `).join('');
+  }
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const vram = parseInt(pill.getAttribute('data-vram'), 10);
+      renderGrid(vram);
+    });
+  });
+
+  renderGrid(16);
+}
+
+function initCopyMarkdown() {
+  const copyBtn = document.getElementById('copy-markdown-btn');
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-message');
+
+  const markdownContent = `# 2026 Apple 旗艦桌面對決：Mac mini vs Mac Studio 一頁式全參數比較
+
+| 規格項目 | Mac mini (M6) | Mac mini (M5 Pro) | Mac Studio (M5 Max) | Mac Studio (M5 Ultra) |
+| :--- | :--- | :--- | :--- | :--- |
+| **晶片型號** | **Apple M6** | **Apple M5 Pro** | **Apple M5 Max** | **Apple M5 Ultra** |
+| **CPU / GPU / NPU** | 12核 CPU / 12核 GPU / 16核 NPU | 15核 CPU / 16核 GPU / 16核 NPU | 18核 CPU / 40核 GPU / 16核 NPU | **30核 CPU / 64核 GPU / 32核 NPU** |
+| **統一記憶體 (RAM)** | **32 GB** | **64 GB** | **128 GB** | **256 GB** |
+| **內建儲存 (SSD)** | 512 GB SSD | 512 GB SSD | 512 GB SSD | **1 TB SSD** |
+| **正面連接埠** | 2 × USB-C、3.5mm 孔 | 2 × USB-C、3.5mm 孔 | 2 × USB-C、SDXC 卡槽 | **2 × Thunderbolt 5**、SDXC 卡槽 |
+| **背面連接埠** | 3 × **TB4**、HDMI、2.5GbE | 3 × **TB5**、HDMI、2.5GbE | 4 × **TB5**、2×USB-A、HDMI、10GbE | 4 × **TB5**、2×USB-A、HDMI、10GbE |
+| **外接顯示器支援** | 最多 **3 部** | 最多 **3 部** | 最多 **5 部** | 最多 **8 部** |
+| **乙太網路** | 2.5 Gbps | 2.5 Gbps | **10 Gbps** | **10 Gbps** |
+| **推估售價（非官方）** | **NT$ 50,900** | **NT$ 94,900** | **NT$ 175,900** | **NT$ 339,900** |
+| 🏷️ **每 1GB 記憶體成本** | **約 NT$ 1,591 / GB** | **約 NT$ 1,483 / GB** | **約 NT$ 1,374 / GB** | **約 NT$ 1,328 / GB 👑** |
+
+*來源整理：Bobo Labs (https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html) — 規格與定價為推測整理，非 Apple 官方資料*`;
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(markdownContent);
+      showToast('已成功複製 Markdown 規格對比表！');
+    } catch (err) {
+      showToast('複製失敗，請手動選取文字。');
+    }
+  });
+
+  function showToast(message) {
+    toastMsg.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+}
+  </script>
+</body>
+</html>
