@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>目標心率怎麼算？運動心率區間公式拆解（40歲實例）· Bobo Labs</title>
+  <meta name="description" content="目標心率怎麼算？公式是 (220−年齡)×強度%。本文用 40 歲、靜止心率 60 的實例，把 50% 到 90% 五個強度區間逐格算出，並比較 Karvonen 公式與 Tanaka 修正式差在哪裡。" />
+  <meta property="og:title" content="目標心率怎麼算？運動心率區間公式拆解" />
+  <meta property="og:description" content="(220−年齡)×強度% 解析、Karvonen 心率儲備法對照、Tanaka 修正式。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/target-heart-rate.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/target-heart-rate.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "目標心率怎麼算？運動心率區間公式拆解", "url": "https://labs.moneyai168.com/formulas/target-heart-rate.html", "datePublished": "2026-08-29", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "目標心率", "item": "https://labs.moneyai168.com/formulas/target-heart-rate.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(220 - a) * i",
+    "cases": [
+    {"expr":"220 - a","input":{"a":40},"expect":180,"text":"180"},
+    {"input":{"a":40,"i":0.5},"expect":90,  "tol":0.001,"text":"90"},
+    {"input":{"a":40,"i":0.6},"expect":108,"text":"108"},
+    {"input":{"a":40,"i":0.7},"expect":126,"text":"126"},
+    {"input":{"a":40,"i":0.8},"expect":144,"text":"144"},
+    {"input":{"a":40,"i":0.9},"expect":162,"text":"162"},
+    {"expr":"220 - a - hr","input":{"a":40,"hr":60},"expect":120,"text":"120"},
+    {"expr":"hr + (220 - a - hr) * i","input":{"a":40,"hr":60,"i":0.6},"expect":132,"text":"132"},
+    {"expr":"hr + (220 - a - hr) * i","input":{"a":40,"hr":60,"i":0.7},"expect":144,"text":"144"},
+    {"expr":"hr + (220 - a - hr) * i","input":{"a":40,"hr":60,"i":0.8},"expect":156,"text":"156"},
+    {"expr":"hr + (220 - a - hr) * i","input":{"a":40,"hr":60,"i":0.9},"expect":168,"text":"168"},
+    {"expr":"(hr + (220 - a - hr) * i) - (220 - a) * i","input":{"a":40,"hr":60,"i":0.7},"expect":18,"text":"18"},
+    {"expr":"220 - a","input":{"a":20},"expect":200,"text":"200"},
+    {"expr":"220 - a","input":{"a":60},"expect":160,"text":"160"},
+    {"expr":"220 - a","input":{"a":70},"expect":150,"text":"150"},
+    {"expr":"208 - 0.7 * a","input":{"a":20},"expect":194,"text":"194"},
+    {"expr":"208 - 0.7 * a","input":{"a":40},"expect":180,"text":"180"},
+    {"expr":"208 - 0.7 * a","input":{"a":60},"expect":166,"text":"166"},
+    {"expr":"208 - 0.7 * a","input":{"a":70},"expect":159,"text":"159"},
+    {"expr":"(220 - a) - (208 - 0.7 * a)","input":{"a":20},"expect":6,"text":"6"},
+    {"expr":"(208 - 0.7 * a) - (220 - a)","input":{"a":70},"expect":9,"text":"9"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 健康 · #93 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">目標心率怎麼算？運動心率區間公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-29</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        跑步機上那條「燃脂區間」的線，背後只有一個減法和一個乘法：220 減年齡當最大心率，再乘目標強度。
+        40 歲在 70% 強度下得 126 下／分——但同樣的 70%，換成把靜止心率算進去的 Karvonen 公式是
+        144 下／分。差 18 下，足以把「輕鬆有氧」變成「喘不過氣」。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">THR = (220 − a) × i</div>
+          <div class="formula-box-note">a 年齡（歲）· i 目標強度（小數）· THR 目標心率（下／分）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td>年齡，公式唯一的個人輸入</td><td>歲</td><td>40</td></tr>
+            <tr><td>220 − a</td><td>最大心率估計值 HR<sub>max</sub>（Fox 式）</td><td>下／分</td><td>180</td></tr>
+            <tr><td>i</td><td>目標強度，decimal 不是百分比</td><td>—</td><td>0.5–0.9</td></tr>
+            <tr><td>HR<sub>rest</sub></td><td>靜止心率，只有 Karvonen 用得到</td><td>下／分</td><td>60</td></tr>
+            <tr><td>THR</td><td>目標心率（Target Heart Rate）</td><td>下／分</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>40 歲的目標心率是幾下？五個強度區間算一遍</h2>
+        <p>
+          先算最大心率：220 − 40 = <strong>180</strong> 下／分。這是後面每一格的基準，算錯一次全表皆錯。
+          把 180 乘上各強度：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>強度 i</th><th>目標心率 THR</th><th>ACSM 分級與體感</th></tr></thead>
+          <tbody>
+            <tr><td>50%</td><td>90</td><td>極輕度｜散步、暖身</td></tr>
+            <tr><td>60%</td><td>108</td><td>輕度｜快走，能完整說話</td></tr>
+            <tr><td>70%</td><td>126</td><td>中度｜慢跑，說話斷句</td></tr>
+            <tr><td>80%</td><td>144</td><td>費力｜配速跑，只吐得出單字</td></tr>
+            <tr><td>90%</td><td>162</td><td>極費力｜間歇衝刺，撐不過幾分鐘</td></tr>
+          </tbody>
+        </table>
+        <p>
+          強度每加 10 個百分點，目標心率就跳 18 下（180 的十分之一）。低強度抓個大概無傷大雅，
+          高強度抓錯一格，等於整堂課的訓練意圖被換掉。
+        </p>
+
+        <h2>Karvonen 公式：同樣 70%，為什麼差了 18 下</h2>
+        <p>
+          (220 − a) × i 假設可用心率從 0 起算，但沒有人運動時心跳會掉到 0。真正被強度調度的是
+          靜止心率到最大心率之間那段，叫<strong>心率儲備</strong>（HRR）。Karvonen 1957 年改算這一段：
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">THR = HR<sub>rest</sub> + (HR<sub>max</sub> − HR<sub>rest</sub>) × i</div>
+          <div class="formula-box-note">先取心率儲備，按強度取一部分，再加回靜止心率當基線</div>
+        </div>
+        <p>
+          同一位 40 歲、靜止心率 60 的人，心率儲備 = 180 − 60 = <strong>120</strong> 下／分。
+          把 120 按強度切開再加回 60：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>強度 i</th><th>%HR<sub>max</sub> 法</th><th>Karvonen 法</th></tr></thead>
+          <tbody>
+            <tr><td>60%</td><td>108</td><td>132</td></tr>
+            <tr><td>70%</td><td>126</td><td>144</td></tr>
+            <tr><td>80%</td><td>144</td><td>156</td></tr>
+            <tr><td>90%</td><td>162</td><td>168</td></tr>
+          </tbody>
+        </table>
+        <p>
+          兩條在 70% 差 <strong>18</strong> 下，差距隨強度升高收斂，到 100% 都回到 180——
+          Karvonen 把 60 下當成「強度 0」的地板，愈往低強度看地板差異愈被放大。
+          ACSM 兩種都收，但要求<strong>寫清楚用的是哪一種</strong>。手錶多半用
+          %HR<sub>max</sub>（少一步量靜止心率），心肺復健課表偏向 Karvonen。
+        </p>
+
+        <h2>220 − 年齡 準嗎？Tanaka 修正式在 40 歲交叉</h2>
+        <p>
+          220 − 年齡 是 1971 年 Fox 等人對既有資料的線性擬合，不是實驗測得的定律。Tanaka 等人
+          2001 年重跑 351 篇研究、18,712 位受試者，得到斜率更平緩的 HR<sub>max</sub> = 208 − 0.7 × 年齡。
+          兩條線在 40 歲交會，往兩端拉開：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>年齡</th><th>Fox：220 − a</th><th>Tanaka：208 − 0.7a</th></tr></thead>
+          <tbody>
+            <tr><td>20</td><td>200</td><td>194</td></tr>
+            <tr><td>40</td><td>180</td><td>180</td></tr>
+            <tr><td>60</td><td>160</td><td>166</td></tr>
+            <tr><td>70</td><td>150</td><td>159</td></tr>
+          </tbody>
+        </table>
+        <p>
+          方向一致：220 − 年齡 對 20 歲<strong>高估</strong> 6 下，對 70 歲<strong>低估</strong> 9 下。
+          年長者照舊公式練會被系統性設得太保守——70 歲用 150 當上限，訓練區間整格往下壓。
+          但兩條都是族群迴歸線：Robergs 與 Landwehr 2002 年指出，個體實測值的標準差約 10 到 12 下／分，
+          同齡兩人真實最大心率差 20 下以上很正常。公式給的是起點，不是體檢報告。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>兩條公式的百分比互換</strong>。教練說「練 70%」若指 Karvonen，你用
+            %HR<sub>max</sub> 對錶會照著 126 練而不是 144，整堂課掉到下一個強度分級。
+            <strong>i 是 decimal 不是百分比</strong>：70% 代入 0.7 不是 70。∑ Calc #93
+            的輸入欄提示「強度 %（如 70）」會自動除以 100；試算表要寫 =(220-40)*0.7。
+          </p>
+        </div>
+
+        <h2>心率之外，公式管不到的事</h2>
+        <p>
+          咖啡因、脫水、發燒、睡眠不足與高溫都會在同樣配速下把心率推高十幾下（心血管漂移）；
+          β 阻斷劑則整體壓低，此時以年齡為輸入的公式全部失效，強度只能改用自覺強度量表（RPE）。
+          另一個誤解是「燃脂區間比例高所以減脂要待在那」——比例高不等於總量高，減重看總能量赤字，
+          要放進 <a href="/formulas/tdee.html">TDEE</a> 的框架，不是脂肪供能佔比。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 目標心率計算機。填年齡與強度，看你的區間落在哪。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 目標心率 #93</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=93" title="目標心率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/bmr.html">BMR 基礎代謝率 — 不動也要燒的熱量</a></li>
+          <li><a href="/formulas/tdee.html">TDEE 每日總消耗 — BMR 乘活動係數</a></li>
+          <li><a href="/formulas/bmi.html">BMI 身體質量指數 — 最常被誤讀的健康指標</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        <h2>來源與定義出處</h2>
+        <ul>
+          <li>Fox SM, Naughton JP, Haskell WL. "Physical activity and the prevention of coronary heart disease." <em>Annals of Clinical Research</em>, 1971; 3(6): 404–432.（220 − 年齡 出處）</li>
+          <li>Karvonen MJ, Kentala E, Mustala O. "The effects of training on heart rate: a longitudinal study." <em>Annales Medicinae Experimentalis et Biologiae Fenniae</em>, 1957; 35(3): 307–315.</li>
+          <li>Tanaka H, Monahan KD, Seals DR. "Age-predicted maximal heart rate revisited." <em>Journal of the American College of Cardiology</em>, 2001; 37(1): 153–156.</li>
+          <li>Robergs RA, Landwehr R. "The surprising history of the HRmax = 220−age equation." <em>Journal of Exercise Physiology Online</em>, 2002; 5(2): 1–10.</li>
+          <li>American College of Sports Medicine. <em>ACSM's Guidelines for Exercise Testing and Prescription</em>, 11th ed., 2021.</li>
+        </ul>
+        <p>本文為公式說明，不構成醫療建議。有心血管疾病、服用心率藥物或懷孕者，運動強度請依醫師指示。</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
