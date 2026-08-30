@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 與本地 LLM 速度實算 | Bobo Labs</title>
-  <meta name="description" content="2026 年 Mac mini（M6／M5 Pro）與 Mac Studio（M5 Max／M5 Ultra）選購對照。用官網實價算出記憶體加購一律 NT$875／GB、記憶體頻寬 153～1,200 GB/s 如何決定本地 LLM 生成速度，以及 Thunderbolt 4／5 與螢幕輸出的實際差別。售價與規格 2026-08-30 於 apple.com/tw 逐項核實。">
-  <meta name="keywords" content="Mac mini 還是 Mac Studio, 記憶體頻寬, Thunderbolt 5, M6, M5 Pro, M5 Max, M5 Ultra, 統一記憶體加購價, 本地 LLM Mac, 每GB頻寬成本">
+  <title>Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 5 叢集與本地 LLM 實算 | Bobo Labs</title>
+  <meta name="description" content="2026 年 Mac mini（M6／M5 Pro）與 Mac Studio（M5 Max／M5 Ultra）選購對照。用官網實價算出記憶體加購一律 NT$875／GB、記憶體頻寬 153～1,200 GB/s 如何決定本地 LLM 生成速度，以及 Thunderbolt 4 與 5 的真正分野——TB5 才能用 RDMA 把多台 Mac 串成一個記憶體池。售價與規格 2026-08-30 於 apple.com/tw 逐項核實。">
+  <meta name="keywords" content="Mac mini 還是 Mac Studio, 記憶體頻寬, Thunderbolt 5, Thunderbolt 4 差別, Mac 叢集 跑 LLM, RDMA over Thunderbolt, exo, MLX distributed, M6, M5 Pro, M5 Max, M5 Ultra, 統一記憶體加購價, 本地 LLM Mac, 每GB頻寬成本">
   <link rel="canonical" href="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Bobo Labs">
-  <meta property="og:title" content="Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 與本地 LLM 速度實算">
-  <meta property="og:description" content="記憶體加購全線一律 NT$875／GB、頻寬 153～1,200 GB/s 決定 tok/s、Thunderbolt 4 與 5 的實際差別。售價與規格 2026-08-30 於 Apple 官網逐項核實。">
+  <meta property="og:title" content="Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 5 叢集與本地 LLM 實算">
+  <meta property="og:description" content="記憶體加購全線一律 NT$875／GB、頻寬 153～1,200 GB/s 決定 tok/s、只有 Thunderbolt 5 能用 RDMA 串成多機記憶體池。售價與規格 2026-08-30 於 Apple 官網逐項核實。">
   <meta property="og:url" content="https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html">
   <meta name="twitter:card" content="summary_large_image">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 與本地 LLM 速度實算",
-    "description": "以 Apple 官網實價與技術規格，量化比較 Mac mini（M6／M5 Pro）與 Mac Studio（M5 Max／M5 Ultra）的記憶體單價、記憶體頻寬、Thunderbolt 規格與本地大型語言模型生成速度上限。",
+    "headline": "Mac mini vs Mac Studio 怎麼選：記憶體頻寬、Thunderbolt 5 叢集與本地 LLM 實算",
+    "description": "以 Apple 官網實價與技術規格，量化比較 Mac mini（M6／M5 Pro）與 Mac Studio（M5 Max／M5 Ultra）的記憶體單價、記憶體頻寬、Thunderbolt 4 與 5 規格、RDMA 多機叢集的容量與成本，以及本地大型語言模型生成速度上限。",
     "inLanguage": "zh-TW",
     "datePublished": "2026-08-30",
     "dateModified": "2026-08-30",
@@ -1869,6 +1869,7 @@ html.light .decision-card.highlight-card {
         <a href="#memory-price" class="nav-link"><i class="fa-solid fa-coins" aria-hidden="true"></i> 記憶體單價</a>
         <a href="#bandwidth" class="nav-link"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 頻寬階梯</a>
         <a href="#thunderbolt" class="nav-link"><i class="fa-solid fa-plug" aria-hidden="true"></i> Thunderbolt</a>
+        <a href="#cluster" class="nav-link"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> 多機叢集</a>
         <a href="#llm" class="nav-link"><i class="fa-solid fa-brain" aria-hidden="true"></i> 本地 LLM</a>
       </nav>
 
@@ -1892,7 +1893,7 @@ html.light .decision-card.highlight-card {
       </div>
       <h1 class="hero-title" id="page-title">
         Mac mini <span class="text-gradient">vs</span> Mac Studio
-        <span class="hero-subtitle-block">記憶體頻寬、Thunderbolt 與本地 LLM 速度，全部用官網數字算給你看</span>
+        <span class="hero-subtitle-block">記憶體頻寬、TB5 叢集與本地 LLM 速度，全部用官網數字算給你看</span>
       </h1>
       <p class="hero-description">
         四台機器、兩條軸線：<strong>容量</strong>決定模型跑不跑得動，<strong>記憶體頻寬</strong>決定它跑多快。
@@ -2737,7 +2738,8 @@ html.light .decision-card.highlight-card {
         第一，模型權重放不進統一記憶體就是跑不動——外接儲存快不了兩個數量級的差距，
         「換頁到 SSD」在每個詞元都要讀完整份權重的情況下不可行。
         第二，Apple Silicon <strong>不支援外接顯示卡</strong>，而就算支援，Thunderbolt 也餵不飽它。
-        第三，Thunderbolt 的角色是接周邊與螢幕，不是擴充算力——所以下一節比的是它能接什麼，而不是它能跑多快模型。
+        第三，Thunderbolt 擴充不了<strong>單機</strong>的頻寬——但它可以把另一台 Mac 的統一記憶體接過來湊成一個池，
+        而這件事只有 Thunderbolt 5 做得到。<strong>容量可以橫向擴充、頻寬不行</strong>，這正是接下來兩節分別要處理的事。
       </div>
     </section>
 
@@ -2745,7 +2747,7 @@ html.light .decision-card.highlight-card {
     <section id="thunderbolt" aria-labelledby="tb-title">
       <div class="section-header">
         <h2 class="section-title" id="tb-title"><i class="fa-solid fa-plug" aria-hidden="true"></i> Thunderbolt 4 與 5：那個「120Gb/s」是怎麼回事</h2>
-        <p class="section-desc">四台機器只有 Mac mini M6 還是 Thunderbolt 4。但 TB5 的三個數字代表三種不同情況</p>
+        <p class="section-desc">四台機器只有 Mac mini M6 還是 Thunderbolt 4。TB5 的三個數字代表三種不同情況，而它比 TB4 多出來的還不只是速度</p>
       </div>
 
       <div class="table-responsive-wrapper">
@@ -2788,6 +2790,11 @@ html.light .decision-card.highlight-card {
               <td>40 Gb/s</td>
               <td class="col-highlight">mini 40 Gb/s ／ <strong>Studio 120 Gb/s</strong></td>
             </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">RDMA 多機叢集<small class="hint-text">需 macOS 26.2 以上</small></td>
+              <td>不支援</td>
+              <td class="col-highlight"><strong>支援</strong><small class="hint-text">下一節整節在講這件事</small></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -2816,6 +2823,291 @@ html.light .decision-card.highlight-card {
           <div class="tb-num">SDXC UHS-II</div>
           <p class="tb-lbl">只有 Mac Studio 有讀卡機，Mac mini 兩款都沒有。相機工作流程這一項比埠數更關鍵</p>
         </div>
+      </div>
+    </section>
+
+    <!-- 多機叢集 -->
+    <section id="cluster" aria-labelledby="cluster-title">
+      <div class="section-header">
+        <h2 class="section-title" id="cluster-title"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> 多機叢集：Thunderbolt 5 真正拉開差距的地方</h2>
+        <p class="section-desc">TB5 比 TB4 多的不只是速度——它可以把好幾台 Mac 的統一記憶體串成一個池，跑單機根本裝不下的模型</p>
+      </div>
+
+      <div class="assumption-box">
+        <strong>這件事 Apple 官網有寫，但兩個機型頁各只寫了一句。</strong><br>
+        Mac mini 頁（只出現在 M5 Pro 段落）：「還能讓你將多部 Mac mini 串連成裝置叢集，以執行更大型的本地 AI 模型。」<br>
+        Mac Studio 頁：「支援叢集運算，分散式 AI 推論速度提升，最快可達 3 倍」<br><br>
+        底層是 macOS 26.2 起加入的 <strong>RDMA over Thunderbolt</strong>（remote direct memory access，遠端直接記憶體存取）：
+        一台 Mac 可以直接讀寫另一台的記憶體，不必經過整套網路協定堆疊。
+        Apple 自己用開源的 <strong>JACCL</strong> 函式庫實作，MLX 接在它上面；
+        官網點名的第三方 app 是 <strong>exo</strong> 與 LM Studio Bionic。
+        <strong>它硬性要求 Thunderbolt 5——所以這一節與 Mac mini M6 完全無關。</strong>
+      </div>
+
+      <div class="table-responsive-wrapper" style="margin-top:20px;">
+        <table class="spec-table">
+          <caption class="section-desc" style="text-align:left;padding:0 0 10px;">
+            四台機器誰串得起來（節點上限由埠數推得，算式寫在表格下方）
+          </caption>
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">項目</th>
+              <th>Mac mini M6</th>
+              <th>Mac mini M5 Pro</th>
+              <th class="th-highlight">Mac Studio M5 Max</th>
+              <th>Mac Studio M5 Ultra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">Thunderbolt</td>
+              <td>3 × TB4</td>
+              <td>3 × TB5</td>
+              <td class="col-highlight">4 × TB5</td>
+              <td><strong>6 × TB5</strong><small class="hint-text">含正面 2 個</small></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">可組 RDMA 叢集</td>
+              <td><span class="roof-flag roof-no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> 不支援</span></td>
+              <td><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 可</span></td>
+              <td class="col-highlight"><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 可</span></td>
+              <td><span class="roof-flag roof-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 可</span></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">全網狀節點上限<small class="hint-text">埠數 + 1</small></td>
+              <td>—</td>
+              <td>4 台</td>
+              <td class="col-highlight">5 台</td>
+              <td><strong class="text-rose">7 台</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">組成 4 節點後剩餘 TB 埠</td>
+              <td>—</td>
+              <td><strong class="text-amber">0 個</strong><small class="hint-text">螢幕只能走 HDMI</small></td>
+              <td class="col-highlight">1 個</td>
+              <td>3 個</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">單機記憶體上限</td>
+              <td>32 GB</td>
+              <td>64 GB</td>
+              <td class="col-highlight">128 GB</td>
+              <td><strong>512 GB</strong><small class="hint-text">10 月底推出</small></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">4 節點記憶體池</td>
+              <td>—</td>
+              <td>256 GB</td>
+              <td class="col-highlight">512 GB</td>
+              <td><strong class="text-rose">2,048 GB</strong><small class="hint-text">需 512GB 版</small></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">4 節點峰值功率</td>
+              <td>—</td>
+              <td>620 W</td>
+              <td class="col-highlight"><strong class="text-amber">1,920 W</strong></td>
+              <td><strong class="text-amber">1,920 W</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="assumption-box">
+        <strong>節點上限是這樣算出來的。</strong>
+        RDMA 叢集要求<strong>全網狀（full mesh）</strong>：每兩台之間都得有一條實體 Thunderbolt 5 線，
+        沒有任何兩台可以只靠別人轉接。所以一台機器最多能連的鄰居就是它的 TB5 埠數，
+        <strong>節點上限 = 埠數 + 1</strong>；而 N 個節點要 <strong>N × (N − 1) ÷ 2</strong> 條線——
+        4 節點是 6 條，5 節點就跳到 10 條。目前市面上買不到 Thunderbolt 5 switch，所以這個限制沒有繞路可走。
+        <br><br>
+        <strong>Apple 自己示範與標示的都是 4 節點</strong>，上表的 5 台／7 台是從埠數推出來的理論值，
+        不是官方保證的配置。另外 exo 的說明文件提到 Mac Studio 靠近乙太網路孔的那個 TB5 埠不能用於 RDMA——
+        那份說明寫於 M3 Ultra 世代，<strong>本文沒有辦法證實新機是否相同</strong>；若成立，Studio 的上限要各減一台。
+      </div>
+
+      <div class="analysis-insights-box" style="margin-top:18px;">
+        <h3 class="box-title"><i class="fa-solid fa-lightbulb text-amber" aria-hidden="true"></i> 上一節說 TB5 只有 10 GB/s，那怎麼串得動？</h3>
+        <ul class="insights-list">
+          <li>
+            <strong>因為跨機器傳的不是權重，是活化值（activations）。</strong>
+            權重固定住在各節點自己的統一記憶體裡，一輩子不過線。
+            線上跑的是每層算完的中間結果——以一個詞元計，那是幾 MB 的量級，不是幾十 GB。
+            <strong>階梯圖上那個 120 倍的差距，量的是「權重進不進得了晶片」，不是「跨機器要傳多少」，兩者根本不是同一件事。</strong>
+          </li>
+          <li>
+            <strong>真正的瓶頸是延遲，不是頻寬。</strong>
+            張量平行（tensor parallelism）把同一層切開分給各機器算，每一層、每一個詞元都要同步一次，
+            一次生成要來回上千次。這種時候決定成敗的是往返延遲：
+            走 TCP 約 300 µs，走 RDMA 降到 50 µs 以下——<strong>差了一個數量級，這才是 RDMA 的意義</strong>。
+            也因此串連只能用 Thunderbolt 直連，走 10GbE 交換器不會有同樣的效果。
+          </li>
+          <li>
+            <strong>還有一種切法完全不吃延遲，但也不會變快。</strong>
+            管線平行（pipeline parallelism）是把整個模型按層數切段，一台放前 1/4、下一台放次 1/4，
+            只在段落交界傳一次活化值。通訊量最小、最容易成立，但一個詞元仍得依序穿過每一台，
+            <strong>所以它只解決「裝不裝得下」，不解決「快不快」</strong>。MLX 要用它得自己加 --pipeline 參數。
+          </li>
+        </ul>
+      </div>
+
+      <div class="table-responsive-wrapper" style="margin-top:20px;">
+        <table class="spec-table">
+          <caption class="section-desc" style="text-align:left;padding:0 0 10px;">
+            官方的「3 倍」與第三方實測的「1.6 倍」都是真的，因為量的不是同一件事
+          </caption>
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">來源</th>
+              <th>測試內容</th>
+              <th>1 節點</th>
+              <th class="th-highlight">4 節點</th>
+              <th>倍數</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">Apple 官方<small class="hint-text">2026 年 7 月測試</small></td>
+              <td>72B <strong>稠密</strong>模型 + 32K 提示詞，mlx-lm，全網狀 TB5 + RDMA</td>
+              <td>基準</td>
+              <td class="col-highlight">—</td>
+              <td><strong class="text-rose">最快 3 倍</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">exo 官方宣稱</td>
+              <td>張量平行加速比</td>
+              <td>—</td>
+              <td class="col-highlight">—</td>
+              <td>2 台 1.8 倍<br>4 台 3.2 倍</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">第三方實測<small class="hint-text">Geerling，2025-12<br>4 × M3 Ultra／1.5TB</small></td>
+              <td>Qwen3 235B 8-bit，<strong>exo + RDMA</strong></td>
+              <td>19.5 tok/s</td>
+              <td class="col-highlight"><strong>31.9 tok/s</strong></td>
+              <td><strong>1.64 倍</strong></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">第三方實測<small class="hint-text">同一套硬體的對照組</small></td>
+              <td>Qwen3 235B 8-bit，llama.cpp <strong>走 TCP</strong></td>
+              <td>20.4 tok/s</td>
+              <td class="col-highlight"><strong class="text-amber">15.2 tok/s</strong></td>
+              <td><strong class="text-amber">0.75 倍</strong><small class="hint-text">越串越慢</small></td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">第三方實測</td>
+              <td>DeepSeek V3.1 671B，exo + RDMA</td>
+              <td>—</td>
+              <td class="col-highlight"><strong>32.5 tok/s</strong></td>
+              <td>TCP 對照組僅 14.6</td>
+            </tr>
+            <tr class="diff-row">
+              <td class="sticky-col spec-name">第三方實測</td>
+              <td>Kimi K2 Thinking 1T 4-bit（權重約 658GB）</td>
+              <td><span class="roof-flag roof-no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> 裝不下</span></td>
+              <td class="col-highlight"><strong>28.3 tok/s</strong></td>
+              <td>單機無解</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="assumption-box">
+        <strong>兩個數字的差別在於模型放不放得進單機。</strong>
+        Apple 那個 3 倍，測的是 <strong>72B 稠密模型配 32K 提示詞</strong>——那顆模型一台 Mac Studio 就裝得下，
+        瓶頸在「讀完 32K 提示詞要算多少」，是算力問題，多機平行化當然有效。
+        第三方實測的 1.64 倍，測的是<strong>大到剛好塞滿頂規單機、甚至塞不下的 MoE</strong>，瓶頸在記憶體與跨機同步，
+        加速自然收斂得快。<strong>所以結論不是「官方灌水」，而是：串連買到的主要是容量，速度是附帶的。</strong>
+        <br><br>
+        <strong>要特別提醒兩件事。</strong>
+        第一，上表的實測是 <strong>M3 Ultra 世代</strong>的機器，不是本文比較的四台；引用它是為了看 TCP 與 RDMA 的落差與趨勢，
+        <strong>不能拿來預測 M5 的絕對數字</strong>。第二，該次測試明講<strong>沒有測長上下文的提示詞處理</strong>，
+        只反映穩定生成階段，而 exo 當時仍是 pre-release 版本。
+      </div>
+
+      <div class="table-responsive-wrapper" style="margin-top:20px;">
+        <table class="spec-table calc-table">
+          <caption class="section-desc" style="text-align:left;padding:0 0 10px;">
+            湊出 256GB 記憶體池的三種買法（售價全部取自本頁前面已核實的官網配置）
+          </caption>
+          <thead>
+            <tr>
+              <th class="sticky-col header-corner">買法</th>
+              <th>售價</th>
+              <th>每節點頻寬</th>
+              <th>TB5 線</th>
+              <th>峰值功率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sticky-col spec-name">1 台 M5 Ultra 256GB</td>
+              <td class="calc-out"><strong class="price-val">NT$ 339,900</strong></td>
+              <td><strong>1,200 GB/s</strong></td>
+              <td>0 條</td>
+              <td>480 W</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">2 台 M5 Max 128GB</td>
+              <td class="calc-out"><span class="price-val">NT$ 351,800</span><small class="hint-text">175,900 × 2</small></td>
+              <td>614 GB/s</td>
+              <td>1 條</td>
+              <td>960 W</td>
+            </tr>
+            <tr>
+              <td class="sticky-col spec-name">4 台 M5 Pro 64GB</td>
+              <td class="calc-out"><span class="price-val text-amber">NT$ 379,600</span><small class="hint-text">94,900 × 4</small></td>
+              <td>307 GB/s</td>
+              <td><strong>6 條</strong></td>
+              <td>620 W</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="figure-panel" style="margin-top:20px;">
+        <div>
+          <div class="figure-value">39,700<span class="unit">元</span></div>
+          <p class="figure-caption">
+            四台 Mac mini M5 Pro 串出 256GB 記憶體池，比一台 M5 Ultra 256GB <strong>多花</strong>的錢。
+            而且每個節點的頻寬只有它的 1／3.9。
+          </p>
+        </div>
+        <div class="figure-note">
+          <p>
+            <strong>同樣是 256GB，越串越貴、每節點頻寬越低、線越多。</strong>
+            單機那個買法在售價、頻寬、功率、佈線四項上全部勝出——
+            這不是巧合，因為記憶體單價是全線固定的 875 元／GB，串連並不會讓那個常數變便宜，
+            卻要多買三套機殼、電源、散熱與 SSD。
+          </p>
+          <p>
+            <strong>所以「串連比較划算」是錯的，串連解決的是另一個問題：買不到的容量。</strong>
+            單機天花板是 512GB（而且 10 月底才推出）。
+            要跑 Kimi K2 Thinking 這種 4-bit 權重就 658GB 的模型，
+            <strong>不是划不划算的問題，是單機根本沒有那個選項</strong>——上表第三方實測也記錄了它至少需要 2 個節點。
+            另外兩個串連才有的好處：<strong>可以分批買</strong>（先一台、之後再加），
+            以及那些機器本來就各有各的用途，叢集只是它們閒著時的第二身分。
+          </p>
+        </div>
+      </div>
+
+      <div class="analysis-insights-box" style="margin-top:18px;">
+        <h3 class="box-title"><i class="fa-solid fa-triangle-exclamation text-amber" aria-hidden="true"></i> 真的要動手之前，這七件事會擋住你：</h3>
+        <ul class="insights-list">
+          <li><strong>macOS 26.2 以上，而且每一台的版本號要完全一致</strong>——exo 的說明文件寫明連 beta 版號都必須相同，否則 RDMA 埠彼此看不到對方。</li>
+          <li><strong>每一台都要進 Recovery 模式手動開啟。</strong>關機、長按電源鍵十秒進「選項」、開終端機執行 <code>rdma_ctl enable</code>、重開機。<strong>這件事無法遠端做</strong>，機器不在手邊就別想了。</li>
+          <li><strong>線材必須真的支援 TB5。</strong>手邊的 USB4 或 Thunderbolt 4 線接得上、也會亮，但不會有 RDMA。</li>
+          <li><strong>4 節點要 6 條線</strong>，而且沒有 switch 可買。Mac mini 只有 3 個 TB5 埠，組完 4 節點就<strong>一個埠都不剩</strong>，螢幕得改走 HDMI、外接硬碟只能用前面 10Gb/s 的 USB-C。</li>
+          <li><strong>記憶體池不是單純相加。</strong>每台都各自跑一份 macOS，本頁一律以總容量的 72% 估算可用空間——256GB 的池實際約 184GB 放得下權重，四台的系統開銷是四份、不是一份。</li>
+          <li><strong>電力要先算過。</strong>四台 Mac Studio 峰值 1,920 W，超過台灣家用常見 110V／15A 迴路的 1,650 W 上限，得拆到兩個迴路；四台 Mac mini 只有 620 W，同一條迴路吃得下。</li>
+          <li><strong>軟體還在動。</strong>第三方實測當時 exo 為 pre-release、TCP over TB5 曾出現不穩定與崩潰。這是 2025 年 12 月的狀況，動手前值得先確認當下版本。</li>
+        </ul>
+      </div>
+
+      <div class="assumption-box">
+        <strong>一句話的判準：模型塞得進單機，就不要串。</strong>
+        塞得進的情況下，串連會讓你付更多錢、拿到更低的每節點頻寬，還要處理六條線與兩個電源迴路；
+        單機生成速度反而更快。<strong>串連唯一無可取代的場景，是模型大到單機沒有那個選項</strong>——
+        也就是 512GB 以上、frontier 級的開放權重 MoE。
+        至於 Mac mini M6：它是 Thunderbolt 4，這條路對它是關的，不論買幾台。
       </div>
     </section>
 
@@ -2956,7 +3248,10 @@ html.light .decision-card.highlight-card {
         Mac Studio 入門機（NT$84,900）是 32 核 GPU、36GB、460GB/s，
         它<strong>沒有辦法加購到 128GB</strong>——那個選項只存在於 40 核 GPU 版。
         如果你的目標是大記憶體，起跳價其實是 NT$105,900（40 核／48GB）而不是 84,900。
-      </div>
+        <br><br>
+        <strong>還有一個上面四張卡都沒放的情況：模型比單機上限還大。</strong>
+        512GB 以上就沒有單機選項了，只能靠 Thunderbolt 5 串多台——但那條路的成本、佈線與電力代價，
+        <a href="#cluster">多機叢集那一節</a>已經逐項算過，結論是：塞得進單機就不要串。
     </section>
 
     <!-- 數字來源 -->
@@ -2977,6 +3272,13 @@ html.light .decision-card.highlight-card {
         <p class="source-note">
           <strong>經驗值</strong>（不是官方數字，會因軟體與設定而異）：Q4_K_M 每參數 0.6 位元組、
           實務頻寬利用率 0.70、可用記憶體比例 0.72。這三個係數只影響 tok/s 的絕對值，不影響機型之間的比例關係。
+        </p>
+        <p class="source-note">
+          <strong>第三方數字</strong>（非官方，出處與日期都寫在對應段落）：多機叢集那一節的實測 tok/s、
+          TCP 與 RDMA 的延遲差距，來自 Jeff Geerling 2025 年 12 月以 4 台 M3 Ultra Mac Studio
+          所做的公開測試；叢集的硬性條件（macOS 26.2、全網狀接線、<code>rdma_ctl enable</code>、
+          版本號須一致）取自 exo 專案的說明文件；平行化策略的說明取自 Apple MLX 的 distributed
+          文件與 WWDC26 的相關場次。<strong>這些測試用的是前一代硬體，只能看趨勢，不能當成 M5 的預期值。</strong>
         </p>
         <p class="source-note">
           兩款機器官網標示 9 月 22 日開始發售、目前為預訂狀態，Mac Studio 每位顧客限購兩部。
@@ -3082,7 +3384,7 @@ function initDiffHighlight() {
 }
 
 // 「複製 MD」的內容：與頁面表格同源的資料，抽成常數讓函式只剩邏輯
-const MARKDOWN_TABLE = `# Mac mini vs Mac Studio（2026）— 記憶體頻寬、Thunderbolt 與本地 LLM 對照
+const MARKDOWN_TABLE = `# Mac mini vs Mac Studio（2026）— 記憶體頻寬、TB5 叢集與本地 LLM 對照
 
 > 規格與售價 2026-08-30 於 apple.com/tw 逐項核實。兩款機器官網標示 9 月 22 日開始發售。
 
@@ -3139,6 +3441,57 @@ SSD 1TB 以上為 17.09 元/GB，記憶體是它的 51.2 倍。
 - 對稱雙向 **80 Gb/s**（接硬碟、擴充座時拿到的是這組）
 - 頻寬提升模式 **120 Gb/s 下行 / 40 Gb/s 上行**（高頻寬顯示器用，官網標示的就是這個數字）
 - 統一記憶體頻寬是 TB5 對稱頻寬的 **120 倍**（1,200 vs 10 GB/s）——所以模型必須住在統一記憶體裡
+
+## 多機叢集：TB4 與 TB5 的真正分野
+
+macOS 26.2 起支援 **RDMA over Thunderbolt**，可把多台 Mac 的統一記憶體串成一個池跑大模型。
+硬性要求 Thunderbolt 5，**Mac mini M6（TB4）不支援**。軟體為 MLX / JACCL，官網點名 app 為 exo 與 LM Studio Bionic。
+
+| 項目 | mini M6 | mini M5 Pro | Studio M5 Max | Studio M5 Ultra |
+| :--- | :--- | :--- | :--- | :--- |
+| Thunderbolt | 3 × TB4 | 3 × TB5 | 4 × TB5 | 6 × TB5（含正面 2） |
+| 可組 RDMA 叢集 | 否 | 是 | 是 | 是 |
+| 全網狀節點上限（埠數+1） | — | 4 台 | 5 台 | 7 台 |
+| 組完 4 節點剩餘 TB 埠 | — | **0 個** | 1 個 | 3 個 |
+| 4 節點記憶體池 | — | 256GB | 512GB | **2,048GB**（需 512GB 版） |
+| 4 節點峰值功率 | — | 620W | 1,920W | 1,920W |
+
+全網狀＝每兩台都要一條實體 TB5 線，N 節點需 N(N−1)/2 條（4 節點 6 條）。市面上無 TB5 switch。
+Apple 官方示範與標示皆為 4 節點；5／7 台是由埠數推得的理論值。
+
+### 速度：官方 3 倍 vs 實測 1.6 倍
+
+| 來源 | 測試內容 | 1 節點 | 4 節點 | 倍數 |
+| :--- | :--- | :--- | :--- | :--- |
+| Apple 官方（2026-07 測試） | 72B **稠密**模型 + 32K 提示詞，mlx-lm | 基準 | — | **最快 3 倍** |
+| exo 官方宣稱 | 張量平行 | — | — | 2 台 1.8 倍／4 台 3.2 倍 |
+| 第三方實測（Geerling 2025-12，4 × M3 Ultra） | Qwen3 235B 8-bit，exo + RDMA | 19.5 tok/s | 31.9 tok/s | 1.64 倍 |
+| 同上對照組 | Qwen3 235B 8-bit，llama.cpp 走 TCP | 20.4 tok/s | 15.2 tok/s | **0.75 倍（越串越慢）** |
+| 第三方實測 | Kimi K2 Thinking 1T 4-bit（658GB） | 裝不下 | 28.3 tok/s | 單機無解 |
+
+差別在於模型放不放得進單機：Apple 測的是裝得下的 72B 稠密模型配長提示詞（算力瓶頸，平行化有效）；
+實測測的是裝不下的巨大 MoE（記憶體與同步瓶頸）。**串連買到的主要是容量，速度是附帶的。**
+跨機器傳的是活化值（每詞元數 MB）不是權重，所以 10 GB/s 的 TB5 夠用；
+真正的瓶頸是往返延遲，TCP 約 300 µs、RDMA 降到 50 µs 以下。
+
+### 成本：湊 256GB 的三種買法
+
+| 買法 | 售價 | 每節點頻寬 | TB5 線 | 峰值功率 |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 台 M5 Ultra 256GB | **NT$339,900** | **1,200 GB/s** | 0 條 | 480W |
+| 2 台 M5 Max 128GB | NT$351,800 | 614 GB/s | 1 條 | 960W |
+| 4 台 M5 Pro 64GB | NT$379,600 | 307 GB/s | 6 條 | 620W |
+
+同樣 256GB，單機在售價、頻寬、功率、佈線四項全勝（記憶體單價固定 875 元/GB，串連不會讓它變便宜）。
+**串連唯一無可取代的是單機買不到的容量**（單機上限 512GB，10 月底推出）。
+
+### 動手門檻
+
+- macOS 26.2 以上，每台版本號必須完全一致（連 beta 號）
+- 每台都要進 Recovery 模式執行 \`rdma_ctl enable\` 後重開機，無法遠端
+- 線材必須支援 TB5；USB4／TB4 線接得上但沒有 RDMA
+- 記憶體池非單純相加（本頁以 72% 估可用），四台就是四份系統開銷
+- 四台 Mac Studio 峰值 1,920W，超過台灣 110V／15A 迴路的 1,650W 上限
 
 ---
 來源整理：Bobo Labs — https://labs.moneyai168.com/guides/mac-mini-vs-mac-studio-2026.html`;
