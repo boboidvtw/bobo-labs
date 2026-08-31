@@ -20,6 +20,17 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-08-31**（同日第二次）— 刪除 `scripts/regen-sitemap-writing.py`（2026-06-08 建立，
+  2026-08-05 起已是轉呼叫的相容層）。查核後全站無任何可執行呼叫者：launchd 排程、技能檔、
+  settings.json 皆未提及，只有兩處文件字串。**刪除的真正理由不是「沒人用」而是它會說謊**——
+  它硬寫 `--section writing`，所以同日 guides 併入後，任何走舊入口的呼叫都會**安靜地少重生一區**，
+  而它印的棄用提醒還停在「可一併重生 formulas 區」。連帶更新 `regen_sitemap.py` 的溯源註記
+  （標明該檔已刪，讓日後 grep 到的人不會以為 repo 壞了）與 `/boboweb` 技能檔第 5 步的描述。
+  檔案內容由 git 保存（`54abce4`、`20ef628`），需要時可還原。
+  Removed the regen-sitemap-writing.py compatibility shim. It had no executable callers, but the
+  real reason is that it hardcoded --section writing: after guides was folded in the same day, any
+  call through the old entrypoint would have silently regenerated one section too few.
+
 - **2026-08-31** — sitemap 產生器納入 guides 區（非發文，改的是工具）：
   ①**動機**：guides 那行原本手動維護（08-30 的紀錄還明寫「`regen_sitemap.py` 重跑不動該區」），
   等於保留了 08-29 才修掉的那個坑——改了文章但忘記手改 sitemap，**完全沒有症狀**。

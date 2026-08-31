@@ -2,7 +2,7 @@
 """
 regen_sitemap.py — 冪等重生 sitemap.xml 的 writing / formulas / guides 三區（2026-08-05 建立）
 
-由 regen-sitemap-writing.py（2026-06-08）泛化而來：原版明文「只動 writing 區、不碰
+由 regen-sitemap-writing.py（2026-06-08，已於 2026-08-31 刪除）泛化而來：原版明文「只動 writing 區、不碰
 Formula 區」，導致自動化火力轉向 formulas 後，新公式文章不會進 sitemap。
 
 原則不變：
