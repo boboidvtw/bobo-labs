@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-01**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/daily-water-intake.html`（#98 · 健康 · Free，體重 × 30 mL 的每日水分需求公式，
+  含 30/35 係數之爭、EFSA 總水分定義、Holliday–Segar 4-2-1 分段法對照與 ACSM 運動補水加成）。
+  Formula 卡片由 placeholder 轉為連結（68 → 67），Tier 與名稱／表達式皆與文章一致，分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 21/21）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-01.
+
 - **2026-08-31**（同日第二次）— 刪除 `scripts/regen-sitemap-writing.py`（2026-06-08 建立，
   2026-08-05 起已是轉呼叫的相容層）。查核後全站無任何可執行呼叫者：launchd 排程、技能檔、
   settings.json 皆未提及，只有兩處文件字串。**刪除的真正理由不是「沒人用」而是它會說謊**——
