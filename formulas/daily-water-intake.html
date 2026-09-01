@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>每日喝水量怎麼算？體重×30 mL 公式拆解（70公斤實例）· Bobo Labs</title>
+  <meta name="description" content="每天要喝多少水？公式是體重（kg）× 30 mL。本文用 70 公斤實例算出 2,100 mL，比較 35 mL 係數、臨床 4-2-1 法則與 EFSA 建議量的落差，並說清楚公式算的是總水分而不是白開水。" />
+  <meta property="og:title" content="每日喝水量怎麼算？體重×30 mL 公式拆解" />
+  <meta property="og:description" content="體重 × 30 mL 的完整解析、30 與 35 係數之爭、4-2-1 臨床法則對照。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/daily-water-intake.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/daily-water-intake.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "每日喝水量怎麼算？體重×30 mL 公式拆解", "url": "https://labs.moneyai168.com/formulas/daily-water-intake.html", "datePublished": "2026-08-31", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "每日水分需求", "item": "https://labs.moneyai168.com/formulas/daily-water-intake.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "w * 30",
+    "cases": [
+    {"input":{"w":50},"expect":1500,"tol":0.001,"text":"1,500"},
+    {"input":{"w":60},"expect":1800,"tol":0.001,"text":"1,800"},
+    {"input":{"w":70},"expect":2100,"tol":0.001,"text":"2,100"},
+    {"input":{"w":80},"expect":2400,"tol":0.001,"text":"2,400"},
+    {"input":{"w":90},"expect":2700,"tol":0.001,"text":"2,700"},
+    {"expr":"d * k","input":{"d":10,"k":30},"expect":300,"tol":0.001,"text":"300"},
+    {"expr":"w * 30 / 1000","input":{"w":70},"expect":2.1,"tol":0.0001,"text":"2.1"},
+    {"expr":"w * 30 / g","input":{"w":70,"g":250},"expect":8.4,"tol":0.0001,"text":"8.4"},
+    {"expr":"w * 35","input":{"w":70},"expect":2450,"tol":0.001,"text":"2,450"},
+    {"expr":"w * 35 - w * 30","input":{"w":70},"expect":350,"tol":0.001,"text":"350"},
+    {"expr":"w * 35 / g","input":{"w":70,"g":250},"expect":9.8,"tol":0.0001,"text":"9.8"},
+    {"expr":"w * 30 * (1 - f)","input":{"w":70,"f":0.3},"expect":1470,"tol":0.001,"text":"1,470"},
+    {"expr":"w * 30 * (1 - f)","input":{"w":70,"f":0.2},"expect":1680,"tol":0.001,"text":"1,680"},
+    {"expr":"100 * 10 + 50 * 10 + 20 * (w - 20)","input":{"w":50},"expect":2100,"tol":0.001,"text":"2,100"},
+    {"expr":"(100 * 10 + 50 * 10 + 20 * (w - 20)) - w * 30","input":{"w":50},"expect":600,"tol":0.001,"text":"600"},
+    {"expr":"100 * 10 + 50 * 10 + 20 * (w - 20)","input":{"w":70},"expect":2500,"tol":0.001,"text":"2,500"},
+    {"expr":"(100 * 10 + 50 * 10 + 20 * (w - 20)) - w * 30","input":{"w":70},"expect":400,"tol":0.001,"text":"400"},
+    {"expr":"100 * 10 + 50 * 10 + 20 * (w - 20)","input":{"w":90},"expect":2900,"tol":0.001,"text":"2,900"},
+    {"expr":"(100 * 10 + 50 * 10 + 20 * (w - 20)) - w * 30","input":{"w":90},"expect":200,"tol":0.001,"text":"200"},
+    {"expr":"s * 1.5","input":{"s":1.2},"expect":1.8,"tol":0.0001,"text":"1.8"},
+    {"expr":"w * 30 + s * 1500","input":{"w":70,"s":1.2},"expect":3900,"tol":0.001,"text":"3,900"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 健康 · #98 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">每日喝水量怎麼算？體重×30 mL 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-08-31</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        「一天八杯水」是全世界流傳最廣、卻查不到原始出處的健康數字。真正被臨床拿來估算的版本只有一個乘法：
+        體重乘 30 mL。70 公斤的人得 <strong>2,100</strong> mL，用 250 mL 的馬克杯裝是 8.4 杯——
+        數字碰巧接近八杯，但這 2,100 mL 不全是要用喝的，扣掉食物裡的水之後只剩 1,470 到 1,680 mL。
+        本文把這條公式的係數、適用範圍與三種對照算法一次拆開。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">V = w × 30</div>
+          <div class="formula-box-note">w 體重（kg）· 30 為每公斤係數（mL/kg/day）· V 每日水分需求（mL）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>w</td><td>體重，公式唯一的個人輸入</td><td>kg</td><td>70</td></tr>
+            <tr><td>k</td><td>每公斤係數，成人常用區間 30–35</td><td>mL/kg/day</td><td>30</td></tr>
+            <tr><td>V</td><td>每日總水分需求（含食物水分）</td><td>mL/day</td><td>計算結果</td></tr>
+            <tr><td>g</td><td>杯子容量，只在換算杯數時用到</td><td>mL</td><td>250</td></tr>
+          </tbody>
+        </table>
+
+        <h2>70 公斤一天要喝多少水？五種體重算一遍</h2>
+        <p>
+          公式只有一步：把體重乘 30。因為是線性關係，體重每差 10 公斤，每日水分需求就差 300 mL——
+          剛好是一個大玻璃杯。這也是為什麼同一份「八杯水」建議套在 50 公斤和 90 公斤的人身上必然有一邊是錯的。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>體重 w</th><th>每日水分需求 V</th><th>換算</th></tr></thead>
+          <tbody>
+            <tr><td>50 kg</td><td>1,500 mL</td><td>六個 250 mL 杯</td></tr>
+            <tr><td>60 kg</td><td>1,800 mL</td><td>七個多一點</td></tr>
+            <tr><td>70 kg</td><td>2,100 mL</td><td>八個多一點</td></tr>
+            <tr><td>80 kg</td><td>2,400 mL</td><td>九個多一點</td></tr>
+            <tr><td>90 kg</td><td>2,700 mL</td><td>近十一個</td></tr>
+          </tbody>
+        </table>
+        <p>
+          70 公斤那格是 2,100 mL，也就是 2.1 公升；除以 250 mL 的杯容量得 8.4 杯。
+          八杯水的都市傳說之所以聽起來合理，是因為它默默假設了一個約 70 公斤的成年人。
+          體型偏離這個假設越遠，這句口號就錯得越多。
+        </p>
+
+        <h2>係數為什麼是 30？寫 35 差在哪裡</h2>
+        <p>
+          臨床營養與老年醫學文獻常見的成人估計值是<strong>每公斤 30 到 35 mL</strong>，不是一個固定數字。
+          ∑ Calc 的 #98 取區間下緣的 30，理由是它作為「基礎需求」比較保守，額外活動與流汗另外加。
+        </p>
+        <p>
+          同樣 70 公斤，把係數換成 35 得 2,450 mL，比 30 的版本多 350 mL。換成杯數是 9.8 杯對 8.4 杯，
+          差了一杯半。這個差距對健康成人無關痛癢，但在需要精算輸入輸出量的臨床情境裡足以改變醫囑，
+          所以文獻才會給區間而不是點值：真正的需求取決於腎功能、環境溫度與活動量，公式只負責給起點。
+        </p>
+        <p>
+          係數法假設「需求正比於體重」，在成人身上大致成立，但在嬰幼兒與極端體型上會失準——
+          這正是下一節那條分段法則存在的原因。
+        </p>
+
+        <h2>公式算的是總水分，不是白開水</h2>
+        <p>
+          最常被跳過的一句話：V 是<strong>總水分攝取</strong>，包含食物裡的水。
+          歐洲食品安全局（EFSA）2010 年給出的成人適足攝取量是男性 2.5 公升、女性 2.0 公升，
+          同樣是含食物水分的總量；並估計飲食中的水約占總攝取的兩成到三成。
+        </p>
+        <p>
+          把這個比例套回 70 公斤的 2,100 mL：若食物提供三成，需要用喝的是 1,470 mL；
+          若食物只提供兩成，則是 1,680 mL。湯麵、稀飯、水果比例高的飲食落在前者，
+          以乾食為主的飲食落在後者。直接把 2,100 mL 當成白開水的目標，等於把食物那份重複算了一次。
+        </p>
+        <p>
+          咖啡與茶算數：含咖啡因飲料的利尿效果在習慣攝取者身上很有限，多數指引把它們計入每日總液體。
+          含糖飲料同樣補水，但帶進的熱量要記到 <a href="/formulas/tdee.html">TDEE</a> 那邊去。
+        </p>
+
+        <h2>臨床的 4-2-1 法則算出來差多少</h2>
+        <p>
+          醫院裡估算維持輸液量用的是 Holliday–Segar 法則（1957）：體重前 10 公斤每公斤 100 mL、
+          次 10 公斤每公斤 50 mL、超過 20 公斤的部分每公斤 20 mL。它原本為兒科設計，
+          分段的用意是承認「小體重的人每公斤需水量更高」，而係數法把這件事抹平了。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>體重</th><th>30 mL/kg 係數法</th><th>4-2-1 分段法</th><th>差距</th></tr></thead>
+          <tbody>
+            <tr><td>50 kg</td><td>1,500 mL</td><td>2,100 mL</td><td>600 mL</td></tr>
+            <tr><td>70 kg</td><td>2,100 mL</td><td>2,500 mL</td><td>400 mL</td></tr>
+            <tr><td>90 kg</td><td>2,700 mL</td><td>2,900 mL</td><td>200 mL</td></tr>
+          </tbody>
+        </table>
+        <p>
+          兩法差距隨體重上升而收斂：50 公斤差 600 mL，90 公斤只差 200 mL。
+          原因在斜率——分段法超過 20 公斤後每公斤只加 20 mL，比係數法的 30 mL 平緩。
+        </p>
+        <p>
+          表裡還有一個巧合值得注意：50 公斤的人用 4-2-1 得到 2,100 mL，
+          和 70 公斤的人用係數法得到的數字完全相同。同一個 2,100，一個代表小個子的偏寬估計、
+          一個代表中等身材的基礎需求——這正說明了「一個數字走天下」的建議為什麼靠不住。
+        </p>
+
+        <h2>運動流汗要另外加多少？</h2>
+        <p>
+          公式沒有把流汗算進去。美國運動醫學會（ACSM）的補水建議用的是實測法：
+          運動前後各量一次體重，<strong>每流失 1 公斤體重補 1.5 公升液體</strong>，
+          多出的半公升用來抵銷補水期間繼續排出的尿液。
+        </p>
+        <p>
+          一場流失 1.2 公斤體重的長跑，補水量就是 1.8 公升。把它加回 70 公斤的基礎需求：
+          2,100 + 1,800 = 3,900 mL，接近平日的兩倍。這也解釋了為什麼夏天長時間戶外活動後，
+          按平日目標喝水永遠覺得不夠——基礎需求和運動失水是兩筆帳，要相加而不是取代。
+        </p>
+        <p>
+          量體重比看口渴準：口渴感要等流失約體重 1% 到 2% 的水分才明顯出現，老年人的反應又更遲鈍。
+          這是分段補水優於「渴了再喝」的理由。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 V 當成白開水的目標，而且用理想體重代入。</strong>
+            第一個錯誤前面說過，會多喝掉食物已經提供的那兩三成。
+            第二個錯誤方向相反：w 要填<strong>實際體重</strong>，但脂肪組織的含水量遠低於肌肉，
+            重度肥胖者直接乘 30 會高估需求，臨床上會改用調整體重代入。
+            另外，慢性腎病、心衰竭、肝硬化患者常有明確的限水醫囑，那份醫囑優先於任何公式。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的每日水分需求計算機，填體重就會給出區間。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 每日水分需求 #98</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=98" title="每日水分需求互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/bmr.html">BMR 基礎代謝率 — 同樣以體重為主變數的估算式</a></li>
+          <li><a href="/formulas/tdee.html">TDEE 每日消耗 — 活動係數怎麼把基礎值放大</a></li>
+          <li><a href="/formulas/target-heart-rate.html">目標心率 — 運動強度區間怎麼定</a></li>
+          <li><a href="/formulas/bmi.html">BMI — 體重與身高的比例指標</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        來源與定義：每公斤 30–35 mL 為臨床營養常用成人估計區間；分段法出自 Holliday MA &amp; Segar WE,
+        <em>The maintenance need for water in parenteral fluid therapy</em>, Pediatrics, 1957；
+        總水分適足攝取量與食物水分占比出自 EFSA Panel on Dietetic Products, Nutrition and Allergies,
+        <em>Scientific Opinion on Dietary Reference Values for water</em>, 2010；
+        運動後每流失 1 公斤補 1.5 公升出自 ACSM 運動與液體補充立場聲明。
+        本文只做數學說明，不構成醫療建議；腎臟疾病、心衰竭、肝硬化或服用利尿劑者請依醫師指示調整水分。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
