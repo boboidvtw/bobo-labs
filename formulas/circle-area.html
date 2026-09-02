@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>圓面積怎麼算？πr² 公式拆解（半徑10公分實例）· Bobo Labs</title>
+  <meta name="description" content="圓面積怎麼算？公式是 πr²，半徑平方再乘圓周率。本文用半徑 10 公分算出 314.16 平方公分，並示範只有直徑或周長時怎麼換算、把直徑當半徑會差幾倍、12 吋披薩為什麼贏兩個 9 吋。" />
+  <meta property="og:title" content="圓面積怎麼算？πr² 公式拆解" />
+  <meta property="og:description" content="半徑平方乘 π 的來由、直徑與周長換算、把直徑當半徑差 4 倍的經典錯誤。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/circle-area.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/circle-area.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "圓面積怎麼算？πr² 公式拆解", "url": "https://labs.moneyai168.com/formulas/circle-area.html", "datePublished": "2026-09-01", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "圓的面積", "item": "https://labs.moneyai168.com/formulas/circle-area.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "pi * r ** 2",
+    "cases": [
+      {"input": {"r": 1},  "expect": 3.141592653589793,  "tol": 0.00001, "text": "3.1416"},
+      {"input": {"r": 5},  "expect": 78.53981633974483,  "tol": 0.001,   "text": "78.54"},
+      {"input": {"r": 10}, "expect": 314.1592653589793,  "tol": 0.001,   "text": "314.16"},
+      {"input": {"r": 15}, "expect": 706.8583470577034,  "tol": 0.001,   "text": "706.86"},
+      {"input": {"r": 20}, "expect": 1256.6370614359173, "tol": 0.001,   "text": "1,256.64"},
+      {"expr": "((2 * r) ** 2 * pi) / (r ** 2 * pi)", "input": {"r": 10}, "expect": 4, "tol": 0.000001, "text": "4"},
+      {"expr": "(1 + g) ** 2 - 1", "input": {"g": 0.1}, "expect": 0.21, "tol": 0.000001, "scale": 100, "text": "21"},
+      {"expr": "pi * (d / 2) ** 2", "input": {"d": 24}, "expect": 452.3893421169302, "tol": 0.001, "text": "452.39"},
+      {"expr": "C ** 2 / (4 * pi)", "input": {"C": 20}, "expect": 31.830988618379067, "tol": 0.001, "text": "31.83"},
+      {"expr": "(pi * r ** 2 - p * r ** 2) / (pi * r ** 2)", "input": {"r": 10, "p": 3}, "expect": 0.04507034144862799, "tol": 0.0000001, "scale": 100, "text": "4.51"},
+      {"expr": "pi * (R ** 2 - ri ** 2)", "input": {"R": 10, "ri": 6}, "expect": 201.06192982974676, "tol": 0.001, "text": "201.06"},
+      {"expr": "sqrt(A / pi)", "input": {"A": 50}, "expect": 3.989422804014327, "tol": 0.0001, "text": "3.99"},
+      {"expr": "pi * (d / 2) ** 2", "input": {"d": 12}, "expect": 113.09733552923255, "tol": 0.001, "text": "113.10"},
+      {"expr": "2 * pi * (d / 2) ** 2", "input": {"d": 9}, "expect": 127.23450247038662, "tol": 0.001, "text": "127.23"},
+      {"expr": "2 * pi * (a / 2) ** 2 - pi * (b / 2) ** 2", "input": {"a": 9, "b": 12}, "expect": 14.137166941154064, "tol": 0.001, "text": "14.14"},
+      {"expr": "pi * (d / 2) ** 2 * price", "input": {"d": 2, "price": 1200}, "expect": 3769.9111843077517, "tol": 0.01, "text": "3,769.91"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #1 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">圓面積怎麼算？πr² 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-01</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        半徑 10 公分的圓，面積是 314.16 平方公分。整條計算只有兩步：半徑先平方、再乘圓周率。
+        真正會出錯的地方不在乘法，而在「拿到的數字到底是半徑還是直徑」——把直徑填進 r，
+        答案會變成 4 倍。這篇把 πr² 的來由、直徑與周長的換算路徑，以及披薩尺寸的真實落差一次算清楚。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = πr²</div>
+          <div class="formula-box-note">r 為半徑（圓心到圓周的距離）· π ≈ 3.14159 · A 的單位是 r 的平方</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>圓的面積</td><td>長度單位的平方（cm²、m²、in²）</td><td>披薩 113.10 in²</td></tr>
+            <tr><td>r</td><td>半徑：圓心到圓周任一點的距離</td><td>長度（cm、m、in）</td><td>5 ～ 20 cm</td></tr>
+            <tr><td>π</td><td>圓周率：任何圓的周長除以直徑</td><td>無單位（純比值）</td><td>3.14159…</td></tr>
+          </tbody>
+        </table>
+
+        <h2>πr² 是怎麼來的？把圓剪成扇形拼成長方形</h2>
+        <p>
+          把一個圓沿半徑切成很多片等寬的扇形，像切披薩那樣。再把這些扇形一正一反交錯排開，
+          拼出來的圖形會愈來愈接近一個長方形。切得愈細，邊緣的鋸齒愈平。
+        </p>
+        <p>
+          這個長方形的長是多少？所有扇形的弧加起來，正好是整個圓周長的一半，也就是 πr。
+          寬呢？每一片扇形的高就是圓的半徑 r。長方形面積 = 長 × 寬 = πr × r = πr²。
+        </p>
+        <p>
+          這個推導的價值在於它解釋了「為什麼是平方」：面積是兩個長度相乘，其中一個長度來自圓周（帶 π），
+          另一個長度來自半徑本身。π 不是後來硬乘上去的修正係數，它從圓周長 C = 2πr 一路帶進來。
+        </p>
+
+        <h2>半徑 10 公分算一遍，四種尺寸對照</h2>
+        <p>
+          半徑 10 公分：先平方得 100，再乘 π，得 <strong>314.16 平方公分</strong>。
+          兩步驟，順序不能顛倒——先乘後平方會把 π 也一起平方，那是另一個數字。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>半徑 r（cm）</th><th>r²</th><th>面積 A = πr²（cm²）</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>3.1416</td></tr>
+            <tr><td>5</td><td>25</td><td>78.54</td></tr>
+            <tr><td>10</td><td>100</td><td>314.16</td></tr>
+            <tr><td>15</td><td>225</td><td>706.86</td></tr>
+            <tr><td>20</td><td>400</td><td>1,256.64</td></tr>
+          </tbody>
+        </table>
+        <p>
+          半徑 1 的圓面積剛好就是 π 本身：3.1416。這是 π 最直觀的定義之一——單位圓的面積。
+        </p>
+        <p>
+          從表格看得出面積增加的速度：半徑從 10 變成 20（加倍），面積從 314.16 變成 1,256.64，
+          正好是 <strong>4 倍</strong>。平方項讓半徑的變化被放大兩次方。
+          更小的變動也是同一個規則：半徑只增加 10%，面積增加 <strong>21%</strong>，
+          因為 1.1 的平方是 1.21，不是 1.1。
+        </p>
+
+        <h2>只知道直徑或周長，怎麼換算？</h2>
+        <p>
+          現實中量到的常常不是半徑。捲尺量圓桌會得到直徑，繞著花圃走一圈會得到周長。兩條路徑都通。
+        </p>
+        <p>
+          <strong>已知直徑 d</strong>：半徑是直徑的一半，代入得 A = π(d/2)²。
+          一張直徑 24 公分的圓形披薩烤盤，面積是 <strong>452.39 平方公分</strong>。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">A = π(d/2)² = πd²/4</div>
+          <div class="formula-box-note">直徑版本：除以 2 這步一定要在平方之前做完</div>
+        </div>
+        <p>
+          <strong>已知周長 C</strong>：從 C = 2πr 反解得 r = C/(2π)，代回面積公式得 A = C²/(4π)。
+          一座周長量到 20 公尺的圓形花圃，面積是 <strong>31.83 平方公尺</strong>。
+          這條路徑在無法走到圓心的場合特別有用——樹幹、水塔、圓形廣場，繞一圈永遠比找圓心容易。
+        </p>
+        <p>
+          <strong>反過來由面積求半徑</strong>：把公式倒過來得 r = √(A/π)。
+          要搭一頂遮蔭 50 平方公尺的圓形帳篷，需要的半徑是 <strong>3.99 公尺</strong>，
+          直徑接近 8 公尺。先想清楚要多大的地，再回推尺寸，比先買帳篷再發現放不下務實。
+        </p>
+
+        <h2>環形怎麼算？外圓減內圓</h2>
+        <p>
+          水管截面、墊圈、跑道內側草皮以外的環狀區域，算的都是同一件事：大圓面積減小圓面積。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">A = π(R² − r²)</div>
+          <div class="formula-box-note">R 為外半徑、r 為內半徑（R > r）</div>
+        </div>
+        <p>
+          外半徑 10 公分、內半徑 6 公分的環，面積是 <strong>201.06 平方公分</strong>。
+          注意括號的位置：要先做 R² − r²，再乘 π。寫成 π(R − r)² 是完全不同的東西，
+          那算的是一個半徑 4 公分的圓，數字會小到只剩四分之一左右。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把直徑當半徑填進去</strong>：這是圓面積計算裡最常見、也最貴的一個錯。
+            披薩、輪胎、管線、鑽頭的規格標示幾乎都是直徑，公式吃的卻是半徑。
+            直徑 20 公分的圓，正確面積是 314.16 平方公分；若把 20 直接當成 r，會得到 1,256.64——
+            剛好放大 4 倍。<br /><br />
+            <strong>π 取 3 圖方便</strong>：心算時把 π 當 3，半徑 10 的圓會算成 300 平方公分，
+            比真值少了 <strong>4.51%</strong>。買材料時少估 4.51% 就是短缺。要心算就用 3.14，
+            誤差降到千分之五以內。
+          </p>
+        </div>
+
+        <h2>一個 12 吋披薩，還是兩個 9 吋？</h2>
+        <p>
+          披薩的吋數標的是直徑。12 吋披薩的面積是 <strong>113.10 平方吋</strong>；
+          9 吋披薩兩個加起來是 <strong>127.23 平方吋</strong>。兩個 9 吋多出 <strong>14.14 平方吋</strong>，
+          約多一成二。
+        </p>
+        <p>
+          直覺會說「9 加 9 是 18，比 12 大很多」，但面積比的是平方：兩個 9 吋等價於單一個
+          √2 × 9 ≈ 12.7 吋的披薩，只比 12 吋大一點點。所以當兩個 9 吋的價格明顯高於一個 12 吋時，
+          單價其實較差。同一套算法可以直接搬去比較蛋糕、鍋具、遮陽傘。
+        </p>
+        <p>
+          再看一個直接換成錢的例子：一塊直徑 2 公尺的圓形地毯，面積是 3.1416 平方公尺，
+          以每平方公尺 1,200 元計價，材料費是 <strong>3,769.91 元</strong>。
+          若店家報價時把直徑當半徑算，同一塊地毯會被開成 4 倍價。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的圓面積計算機。試試把半徑輸入 10 是不是 314.16，
+          或把你手上量到的直徑除以 2 再填進去。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 圓的面積 #1</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=1" title="圓面積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 直角三角形的邊長關係</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離公式 — 座標平面上量長度</a></li>
+          <li><a href="/formulas/quadratic-function.html">二次函數 — 另一條靠平方項運作的公式</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：圓柱體積 #8（πr²h，圓面積乘高）— 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：圓周率 π 為圓周長與直徑之比，為無理數，本文取 3.14159 做顯示、計算全程使用完整精度。
+        扇形拼合法的推導可上溯至阿基米德《圓的度量》（Measurement of a Circle）。
+        文中所有數值皆以 πr² 及其變形獨立驗算，數字四捨五入至小數點後兩位顯示。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
