@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-02**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/circle-area.html`（#1 · 數學 · Free，πr² 的扇形拼合推導、直徑／周長／反解半徑三條換算路徑，
+  含環形 π(R²−r²)、把直徑當半徑的 4 倍錯誤、π 取 3 的 4.51% 短缺，以及 12 吋 vs 兩個 9 吋披薩對照）。
+  Formula 卡片由 placeholder 轉為連結（67 → 66），Tier 與名稱／表達式皆與文章一致，分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 16/16）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-02.
+
 - **2026-09-01**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/daily-water-intake.html`（#98 · 健康 · Free，體重 × 30 mL 的每日水分需求公式，
   含 30/35 係數之爭、EFSA 總水分定義、Holliday–Segar 4-2-1 分段法對照與 ACSM 運動補水加成）。
