@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>球體積怎麼算？(4/3)πr³ 公式拆解（半徑10公分實例）· Bobo Labs</title>
+  <meta name="description" content="球體積怎麼算？公式是 (4/3)πr³，半徑先立方再乘 π 與三分之四。本文用半徑 10 公分算出 4,188.79 立方公分，並示範只有直徑或周長時怎麼換算、半球與球殼怎麼扣、把直徑當半徑為什麼差 8 倍。" />
+  <meta property="og:title" content="球體積怎麼算？(4/3)πr³ 公式拆解" />
+  <meta property="og:description" content="三分之四的來由、直徑與周長換算、半球與球殼，以及把直徑當半徑差 8 倍的經典錯誤。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/sphere-volume.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/sphere-volume.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "球體積怎麼算？(4/3)πr³ 公式拆解", "url": "https://labs.moneyai168.com/formulas/sphere-volume.html", "datePublished": "2026-09-04", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "球的體積", "item": "https://labs.moneyai168.com/formulas/sphere-volume.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(4 / 3) * pi * r ** 3",
+    "cases": [
+    {"input": {"r": 1},  "expect": 4.1887902047863905,  "tol": 0.0001, "text": "4.19"},
+    {"input": {"r": 5},  "expect": 523.5987755982989,   "tol": 0.001,  "text": "523.60"},
+    {"input": {"r": 10}, "expect": 4188.790204786391,   "tol": 0.001,  "text": "4,188.79"},
+    {"input": {"r": 15}, "expect": 14137.166941154068,  "tol": 0.001,  "text": "14,137.17"},
+    {"input": {"r": 20}, "expect": 33510.32163829113,   "tol": 0.001,  "text": "33,510.32"},
+    {"expr": "(2 * r) ** 3 / r ** 3", "input": {"r": 10}, "expect": 8, "tol": 0.000001, "text": "8"},
+    {"expr": "(1 + g) ** 3 - 1", "input": {"g": 0.1}, "expect": 0.331, "tol": 0.000001, "scale": 100, "text": "33.1"},
+    {"expr": "(1 + g) ** 3", "input": {"g": 0.1}, "expect": 1.331, "tol": 0.000001, "text": "1.331"},
+    {"expr": "pi * r ** 3", "input": {"r": 10}, "expect": 3141.592653589793, "tol": 0.001, "text": "3,141.59"},
+    {"expr": "pi * d ** 3 / 6", "input": {"d": 24}, "expect": 7238.229473870883, "tol": 0.001, "text": "7,238.23"},
+    {"expr": "((4 / 3) * pi * r ** 3) / (pi * r ** 2 * (2 * r))", "input": {"r": 10}, "expect": 0.6666666666666666, "tol": 0.000001, "scale": 100, "text": "66.7"},
+    {"expr": "(2 / 3) * pi * r ** 3", "input": {"r": 10}, "expect": 2094.3951023931954, "tol": 0.001, "text": "2,094.40"},
+    {"expr": "(4 / 3) * pi * (R ** 3 - ri ** 3)", "input": {"R": 10, "ri": 6}, "expect": 3284.0115205525303, "tol": 0.001, "text": "3,284.01"},
+    {"expr": "(3 * Vv / (4 * pi)) ** (1 / 3)", "input": {"Vv": 1000}, "expect": 6.203504908994, "tol": 0.0001, "text": "6.20"},
+    {"expr": "C ** 3 / (6 * pi ** 2)", "input": {"C": 75}, "expect": 7124.1457248518755, "tol": 0.001, "text": "7,124.15"},
+    {"expr": "C ** 3 / (6 * pi ** 2) / 1000", "input": {"C": 75}, "expect": 7.1241457248518755, "tol": 0.0001, "text": "7.12"},
+    {"expr": "pi * d ** 3 / 6", "input": {"d": 3}, "expect": 14.137166941154069, "tol": 0.0001, "text": "14.14"},
+    {"expr": "2 * (4 / 3) * pi * r ** 3", "input": {"r": 5}, "expect": 1047.1975511965977, "tol": 0.001, "text": "1,047.20"},
+    {"expr": "1 - (pi * r ** 3) / ((4 / 3) * pi * r ** 3)", "input": {"r": 10}, "expect": 0.25, "tol": 0.000001, "scale": 100, "text": "25"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #7 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">球體積怎麼算？(4/3)πr³ 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-04</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        半徑 10 公分的球，體積是 4,188.79 立方公分。三步：半徑立方、乘圓周率、再乘三分之四。
+        會出錯的不是乘法，而是拿到的數字究竟是半徑還是直徑。這篇把 (4/3)πr³ 的來由、
+        直徑與周長的換算、半球與球殼的扣法一次算清楚。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">V = (4/3)πr³</div>
+          <div class="formula-box-note">r 為半徑（球心到球面的距離）· π ≈ 3.14159 · V 的單位是 r 的立方</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>V</td><td>球的體積</td><td>長度單位的立方（cm³、m³、in³）</td><td>籃球 7,124.15 cm³</td></tr>
+            <tr><td>r</td><td>半徑：球心到球面任一點的距離</td><td>長度（cm、m、in）</td><td>1 ～ 20 cm</td></tr>
+            <tr><td>π</td><td>圓周率：圓周長與直徑之比</td><td>無單位（純比值）</td><td>3.14159…</td></tr>
+          </tbody>
+        </table>
+
+        <h2>三分之四是怎麼來的？球是外接圓柱的三分之二</h2>
+        <p>
+          把球剛好塞進一個圓柱：底面半徑等於球半徑 r、高等於直徑 2r，這是裝得下它的最小圓柱。
+          阿基米德證明的是，球體積正好是這個圓柱的三分之二。
+        </p>
+        <p>
+          驗算一遍：圓柱體積是底面積乘高，πr² × 2r = 2πr³；它的三分之二是 (4/3)πr³，正是球體積公式。
+          也就是說，球佔滿外接圓柱的 <strong>66.7%</strong>，剩下三分之一是球面與圓柱之間的空隙。
+        </p>
+        <p>
+          阿基米德要求把「球內接於圓柱」刻在墓碑上，就是這條關係。記不住三分之四時，
+          先想圓柱的 2πr³ 再取三分之二，答案一樣，而且每一步都有幾何意義。
+        </p>
+
+        <h2>半徑 10 公分算一遍，五種尺寸對照</h2>
+        <p>
+          半徑 10 公分：先立方得 1000，乘 π 得 3,141.59，再乘三分之四，
+          得 <strong>4,188.79 立方公分</strong>。順序不能顛倒——先把 (4/3)π 乘進半徑再立方，
+          係數也會被立方。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>半徑 r（cm）</th><th>r³</th><th>體積 V = (4/3)πr³（cm³）</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>4.19</td></tr>
+            <tr><td>5</td><td>125</td><td>523.60</td></tr>
+            <tr><td>10</td><td>1000</td><td>4,188.79</td></tr>
+            <tr><td>15</td><td>3375</td><td>14,137.17</td></tr>
+            <tr><td>20</td><td>8000</td><td>33,510.32</td></tr>
+          </tbody>
+        </table>
+        <p>
+          半徑 1 的球體積是 <strong>4.19</strong>，也就是 (4/3)π 這個係數本身。
+          記住它，估算球體時乘上 r³ 就有答案。
+        </p>
+        <p>
+          成長速度比圓面積更兇：半徑從 10 變成 20（加倍），體積從 4,188.79 跳到 33,510.32，正好是
+          <strong>8</strong> 倍——立方項把半徑的變化放大三次方。細微變動同樣被放大：半徑只增加 10%，
+          體積就增加 <strong>33.1%</strong>，因為 1.1 的三次方是 1.331。容器直徑差一點，能裝的量差很多。
+        </p>
+
+        <h2>只知道直徑或周長，怎麼換算？</h2>
+        <p>
+          現實中拿到的很少是半徑：規格標的是直徑或周長，量測工具也構不到球心。兩條路徑都通。
+        </p>
+        <p>
+          <strong>已知直徑 d</strong>：半徑是直徑一半，代入 (4/3)π(d/2)³，化簡得 πd³/6。
+          直徑 24 公分的球，體積是 <strong>7,238.23 立方公分</strong>。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">V = (4/3)π(d/2)³ = πd³/6</div>
+          <div class="formula-box-note">直徑版本：除以 2 這步一定要在立方之前做完</div>
+        </div>
+        <p>
+          <strong>已知周長 C</strong>：這裡指繞球一圈最大的圓（赤道）。由 C = 2πr 反解 r = C/(2π)，
+          代回得 V = C³/(6π²)。赤道周長 75 公分的球，體積是 <strong>7,124.15 立方公分</strong>，
+          也就是 <strong>7.12</strong> 公升。軟尺繞一圈比量直徑準：沒對準球心就會偏短。
+        </p>
+        <p>
+          <strong>反過來由體積求半徑</strong>：把公式倒過來得 r = ∛(3V/4π)。
+          要做一顆容量剛好 1000 立方公分（1 公升）的球形容器，內半徑得是 <strong>6.20</strong> 公分。
+          先決定裝多少再回推尺寸，比做出來才發現裝不下省事。
+        </p>
+
+        <h2>半球與球殼怎麼扣？</h2>
+        <p>
+          要算的常常不是完整的球：碗、圓頂、量匙是半球；乒乓球的殼、保溫瓶的夾層是球殼。
+          兩者都只從完整球體改一個地方。
+        </p>
+        <p>
+          <strong>半球</strong>：直接取一半，V = (2/3)πr³。半徑 10 公分的半球形容器，
+          容量是 <strong>2,094.40 立方公分</strong>。這裡的 2/3 來自「取一半」，
+          和前面「球佔外接圓柱三分之二」是兩件事。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">V = (4/3)π(R³ − r³)</div>
+          <div class="formula-box-note">R 為外半徑、r 為內半徑（R > r），算的是中空球殼的實體部分</div>
+        </div>
+        <p>
+          <strong>球殼</strong>：外球減內球。外半徑 10 公分、內半徑 6 公分的中空球，殼的體積是
+          <strong>3,284.01 立方公分</strong>。括號的位置是關鍵：先做 R³ − r³ 再乘係數。
+          寫成 (4/3)π(R − r)³ 算的是一顆半徑 4 公分的球，和殼完全無關。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把直徑當半徑填進去</strong>：球的規格標示——軸承、鋼珠、氣球、水塔——
+            幾乎都給直徑，公式吃的卻是半徑。直徑 20 公分的球，
+            正確體積是 4,188.79 立方公分；若把 20 直接當成 r，會得到 33,510.32，剛好放大
+            <strong>8</strong> 倍。圓面積填錯只放大四倍，球體積是三次方，錯得更離譜。<br /><br />
+            <strong>漏掉三分之四</strong>：只寫 πr³ 就送出，答案會少 <strong>25%</strong>。
+            這個誤差不大到一眼看出荒謬，反而最危險：訂料、估重少四分之一，往往等東西做出來才發現。
+          </p>
+        </div>
+
+        <h2>一顆大的，還是幾顆小的？</h2>
+        <p>
+          半徑 10 公分的球，體積是 4,188.79 立方公分。兩顆半徑 5 公分的球加起來只有
+          <strong>1,047.20 立方公分</strong>，正好是大球的四分之一。要湊滿一顆大球得要
+          <strong>8</strong> 顆小球——半徑折半，體積只剩八分之一。
+        </p>
+        <p>
+          同一套算法可以搬去比冰淇淋球、珍珠、鋼珠的用料，也能看容器：直徑 3 公尺的球形水塔，
+          容量是 <strong>14.14</strong> 立方公尺，一萬四千多公升。若把直徑誤當半徑報給廠商，
+          訂單會變成八倍大的塔。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的球體積計算機。試試把半徑輸入 10 是不是 4,188.79，
+          或把量到的直徑除以 2 再填。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 球的體積 #7</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=7" title="球體積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/circle-area.html">圓的面積 — πr²，球體積推導的起點</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 由座標算球心到球面的距離</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離公式 — 半徑本身就是一段距離</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：球的表面積 #99（4πr²，體積對半徑的變化率）— 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：圓周率 π 為無理數，本文取 3.14159 做顯示、計算全程使用完整精度。
+        「球體積為其外接圓柱三分之二」出自阿基米德《論球與圓柱》（On the Sphere and Cylinder）第一卷。
+        文中數值皆以 (4/3)πr³ 及其變形獨立驗算，四捨五入至小數點後兩位顯示。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
