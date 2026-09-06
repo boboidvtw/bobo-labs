@@ -20,7 +20,16 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-05**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-06**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/rectangle-area.html`（#2 · 數學 · Free，長乘寬為何是面積的數格子解釋、
+  坪的精確係數 400/121 與 0.3025、公分／公尺單位差 10,000 倍的量綱陷阱、
+  L 形空間切割法與補滿法互為驗算、周長與面積混淆、權狀含公設 32% 的實坪換算、
+  地板 10% 耗損的採購量與材料費）。
+  Formula 卡片由 placeholder 轉為連結（65 → 64），Tier 與名稱／表達式皆與文章一致，分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 24 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-06.
+
+- **2026-09-05** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/sphere-volume.html`（#7 · 數學 · Free，阿基米德「球為外接圓柱三分之二」的推導、
   直徑 πd³/6 與周長 C³/(6π²) 兩條換算、由體積反解半徑 ∛(3V/4π)，含半球 (2/3)πr³、
   球殼 (4/3)π(R³−r³)、把直徑當半徑的 8 倍錯誤與漏掉 4/3 的 25% 短缺）。
