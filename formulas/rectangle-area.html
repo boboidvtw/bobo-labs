@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>坪數怎麼算？矩形面積公式與坪數換算（3.6×4.2 公尺房間實例）· Bobo Labs</title>
+  <meta name="description" content="坪數怎麼算？先用矩形面積公式長乘寬得平方公尺，再乘 0.3025 換成坪。本文用 3.6 × 4.2 公尺的房間算出 15.12 平方公尺、4.57 坪，並示範 L 形空間怎麼切、單位沒對齊會差幾倍、鋪地板要多買多少。" />
+  <meta property="og:title" content="坪數怎麼算？矩形面積公式與坪數換算" />
+  <meta property="og:description" content="長乘寬得平方公尺、再乘 0.3025 得坪。L 形空間拆解、單位換算陷阱、地板耗損實算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/rectangle-area.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/rectangle-area.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "坪數怎麼算？矩形面積公式與坪數換算", "url": "https://labs.moneyai168.com/formulas/rectangle-area.html", "datePublished": "2026-09-05", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "矩形面積", "item": "https://labs.moneyai168.com/formulas/rectangle-area.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "l * w",
+    "cases": [
+    {"input":{"l":3.6,"w":4.2},"expect":15.12,"tol":0.0001,"text":"15.12"},
+    {"input":{"l":3,"w":3},"expect":9,"tol":0.0001,"text":"9.00"},
+    {"input":{"l":4,"w":5},"expect":20,"tol":0.0001,"text":"20.00"},
+    {"expr":"l * w * 121 / 400","input":{"l":3,"w":3},"expect":2.7225,"tol":0.0001,"text":"2.72"},
+    {"expr":"l * w * 121 / 400","input":{"l":3.6,"w":4.2},"expect":4.5738,"tol":0.0001,"text":"4.57"},
+    {"expr":"l * w * 121 / 400","input":{"l":4,"w":5},"expect":6.05,"tol":0.0001,"text":"6.05"},
+    {"expr":"a * 400 / 121","input":{"a":1},"expect":3.3057851239669422,"tol":1e-07,"text":"3.3058"},
+    {"expr":"a * 121 / 400","input":{"a":1},"expect":0.3025,"tol":1e-07,"text":"0.3025"},
+    {"expr":"t * 400 / 121 - t * 3.3","input":{"t":30},"expect":0.1735537190082663,"tol":1e-06,"text":"0.17"},
+    {"input":{"l":360,"w":420},"expect":151200,"tol":0.001,"text":"151,200"},
+    {"expr":"s ** 2","input":{"s":100},"expect":10000,"tol":0.001,"text":"10,000"},
+    {"input":{"l":5,"w":3.6},"expect":18,"tol":0.0001,"text":"18.00"},
+    {"input":{"l":2,"w":1.8},"expect":3.6,"tol":0.0001,"text":"3.60"},
+    {"expr":"a * b + c * d","input":{"a":5,"b":3.6,"c":2,"d":1.8},"expect":21.6,"tol":0.0001,"text":"21.60"},
+    {"expr":"(a * b + c * d) * 121 / 400","input":{"a":5,"b":3.6,"c":2,"d":1.8},"expect":6.534,"tol":0.0001,"text":"6.53"},
+    {"input":{"l":5,"w":5.4},"expect":27,"tol":0.0001,"text":"27.00"},
+    {"input":{"l":3,"w":1.8},"expect":5.4,"tol":0.0001,"text":"5.40"},
+    {"expr":"2 * (l + w)","input":{"l":3.6,"w":4.2},"expect":15.6,"tol":0.0001,"text":"15.6"},
+    {"expr":"t * (1 - r)","input":{"t":30,"r":0.32},"expect":20.4,"tol":0.0001,"text":"20.4"},
+    {"expr":"t * (1 - r) * 400 / 121","input":{"t":30,"r":0.32},"expect":67.43801652892562,"tol":0.0001,"text":"67.44"},
+    {"expr":"l * w * (1 + loss)","input":{"l":3.6,"w":4.2,"loss":0.1},"expect":16.632,"tol":0.0001,"text":"16.63"},
+    {"expr":"l * w * (1 + loss) * price","input":{"l":3.6,"w":4.2,"loss":0.1,"price":2000},"expect":33264,"tol":0.01,"text":"33,264"},
+    {"expr":"(1 + g) ** 2 - 1","input":{"g":0.1},"expect":0.21,"tol":1e-06,"scale":100,"text":"21"},
+    {"expr":"(1 + g) ** 2","input":{"g":0.1},"expect":1.21,"tol":1e-06,"text":"1.21"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #2 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">坪數怎麼算？矩形面積公式與坪數換算</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-05</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        量到房間是 3.6 公尺乘 4.2 公尺，面積就是 15.12 平方公尺、4.57 坪。
+        矩形面積只有一步乘法，出問題的從來不是乘法，而是三件事：
+        單位有沒有對齊、空間是不是純矩形、換算成坪用哪個係數。
+        這篇把長乘寬的來由、坪的精確換算、L 形空間的拆法與地板耗損一次算清楚。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = l × w</div>
+          <div class="formula-box-note">l 為長、w 為寬（兩者必須是同一單位）· A 的單位是該長度單位的平方</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>矩形面積</td><td>長度單位的平方（m²、坪）</td><td>臥室 9 ～ 20 m²</td></tr>
+            <tr><td>l</td><td>長：較長的一邊</td><td>長度（m、cm、台尺）</td><td>3 ～ 6 m</td></tr>
+            <tr><td>w</td><td>寬：與長垂直的一邊</td><td>同 l</td><td>2 ～ 5 m</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼長乘寬就是面積？數格子數出來的</h2>
+        <p>
+          用邊長 1 公尺的方形磁磚鋪一塊長 4 公尺、寬 3 公尺的地面：橫排 4 塊、直排 3 列，共 12 塊。
+          面積的定義就是「裝得下幾個單位正方形」，排成矩形時這個數量剛好等於兩邊相乘。
+        </p>
+        <p>
+          乘法是數格子的捷徑，也解釋了面積單位為何帶平方：兩個長度相乘，量綱變成長度的二次方，
+          任一邊換單位，面積的換算幅度都是平方級的。長寬不是整數也一樣，只是把格子切得更細。
+        </p>
+        <p>
+          面積是二維的，兩個方向的成長會相乘。長和寬各加 10%，面積不是加 10% 而是加
+          <strong>21</strong>%，因為 1.1 的平方是 <strong>1.21</strong>。同樣的道理反過來看：
+          周長固定時，長寬愈接近，圍出的面積愈大——方正格局比狹長格局放得下更多東西，那是乘法的結果。
+        </p>
+
+        <h2>3.6 × 4.2 的房間算一遍，順便換成坪</h2>
+        <p>
+          長 3.6 公尺、寬 4.2 公尺的主臥，面積是 <strong>15.12 平方公尺</strong>。
+          台灣談居住空間習慣用坪，換算只要再乘一個係數。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>空間</th><th>長 × 寬（m）</th><th>面積（m²）</th><th>坪數</th></tr></thead>
+          <tbody>
+            <tr><td>標準臥室</td><td>3.0 × 3.0</td><td>9.00</td><td>2.72</td></tr>
+            <tr><td>主臥</td><td>3.6 × 4.2</td><td>15.12</td><td>4.57</td></tr>
+            <tr><td>客廳</td><td>4.0 × 5.0</td><td>20.00</td><td>6.05</td></tr>
+          </tbody>
+        </table>
+        <p>
+          坪是台制單位，定義為邊長 6 台尺的正方形。1 台尺等於 10/33 公尺，
+          所以 1 坪等於 (60/33)² 平方公尺，化簡為 400/121，也就是 <strong>3.3058</strong> 平方公尺；
+          反過來 1 平方公尺等於 121/400 坪，恰好是 <strong>0.3025</strong> 坪——
+          有限小數，心算直接乘 0.3 就有八九成準。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">坪 = l × w × 0.3025</div>
+          <div class="formula-box-note">l、w 以公尺為單位時適用；反向為「平方公尺 = 坪 × 3.3058」</div>
+        </div>
+        <p>
+          換算表常寫「1 坪約 3.3 平方公尺」。以 30 坪估算，用 3.3 會比精確值短少
+          <strong>0.17</strong> 平方公尺。係數本身是有限小數、寫全不費事，
+          分區累加多次之後，用 3.3058 或 0.3025 才不會每一段都偏低。
+        </p>
+
+        <h2>單位沒對齊，答案會差 10,000 倍</h2>
+        <p>
+          雷射測距儀常預設輸出公分。同一個房間量成 360 公分乘 420 公分得
+          <strong>151,200</strong>——單位是平方公分。長度倍率是 100，面積倍率是它的平方：
+          1 平方公尺等於 <strong>10,000</strong> 平方公分。
+        </p>
+        <p>
+          這種錯最容易自己抓到：臥室不可能有幾萬平方公尺。做法是
+          <strong>進公式前先把長度統一成公尺</strong>，算完再換到坪——
+          轉換放在乘法之前只轉一次，放在後面就得記得轉兩次方。
+        </p>
+
+        <h2>L 形客廳怎麼算？切成兩塊或補成一塊</h2>
+        <p>
+          真實空間很少是完美矩形。L 形客廳、有柱子的角落、內縮的陽台，處理方法只有兩種，
+          而且必須得到同一個答案。
+        </p>
+        <p>
+          <strong>切割法（加法）</strong>：沿內凹處切成兩個矩形。主體 5.0 × 3.6 得
+          <strong>18.00</strong> 平方公尺，延伸的一段 2.0 × 1.8 得 <strong>3.60</strong> 平方公尺，
+          合計 <strong>21.60</strong> 平方公尺，也就是 <strong>6.53</strong> 坪。
+        </p>
+        <p>
+          <strong>補滿法（減法）</strong>：補成完整的大矩形 5.0 × 5.4，面積 <strong>27.00</strong>
+          平方公尺，再扣掉缺角的 3.0 × 1.8 也就是 <strong>5.40</strong> 平方公尺，同樣得到 21.60。
+          兩條路徑答案相同，本身就是最好的驗算：丈量時兩種都算，對不上就是某一邊量錯或漏了一段。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把周長當成面積</strong>：3.6 × 4.2 的房間，周長是 2(3.6 + 4.2) =
+            <strong>15.6</strong> 公尺，面積是 15.12 平方公尺。兩個數字巧合地接近，單位卻完全不同——
+            一個是牆的長度（買踢腳板用），一個是地板的大小（買磁磚用）。<br /><br />
+            <strong>拿權狀坪數當室內鋪設面積</strong>：權狀 30 坪含公設，公設比 32% 時只剩
+            <strong>20.4</strong> 坪，也就是 <strong>67.44</strong> 平方公尺。
+            訂地板要用實際丈量值，不是權狀數字。
+          </p>
+        </div>
+
+        <h2>鋪地板要買多少？把耗損算進去</h2>
+        <p>
+          面積是需求量，不是採購量。切割、對花、備料都會耗損，一般抓 10%，斜鋪或大尺寸磚更高。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">採購量 = l × w × (1 + 耗損率)</div>
+          <div class="formula-box-note">耗損率一般取 0.1；圖案需對花或斜貼時往上調</div>
+        </div>
+        <p>
+          主臥 15.12 平方公尺，加 10% 耗損後要備 <strong>16.63</strong> 平方公尺的材料；
+          以每平方公尺 2,000 元計價，材料費是 <strong>33,264</strong> 元。
+          估價單上寫的是「面積」還是「含耗損採購量」，問清楚比事後爭執有用。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的矩形面積計算機。輸入 3.6 和 4.2 看看是不是 15.12，
+          再把自己家的丈量值填進去——記得先把公分換成公尺。
+        </p>
+      
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 矩形面積 #2</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=2" title="矩形面積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/circle-area.html">圓的面積 — 另一種基本面積，用 πr² 運作</a></li>
+          <li><a href="/formulas/sphere-volume.html">球的體積 — 面積再往三維推一層</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 量對角線驗證房間是不是真的方正</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>進階：矩形周長 #6（2(l + w)，同一組長寬算的是牆不是地）— 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：坪為台制面積單位，1 坪 = 6 台尺見方；台尺依台灣度量衡換算為 10/33 公尺，
+        故 1 坪 = 400/121 平方公尺（本文顯示為 3.3058，計算全程使用完整精度）。
+        公設比為權狀面積中共有部分的占比，本文僅示範算術換算，不涉及房地產交易建議；
+        文中所有數值皆以 l × w 及其變形獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
