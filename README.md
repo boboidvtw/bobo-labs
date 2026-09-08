@@ -20,7 +20,16 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-06**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-08**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/triangle-area.html`（#3 · 數學 · Free，用「複製一份拼成平行四邊形」解釋為何除以 2、
+  拿斜邊當高會高估 66.7% 的山牆錯算、鈍角三角形的高落在底邊延長線外、
+  13/14/15 三角形換底自我驗算同得 84、三邊 28/45/53 的三角地以海倫公式與 ½bh 交叉驗證同得 630 m²、
+  單位未統一時公分／公尺面積差 10,000 倍）。
+  Formula 卡片由 placeholder 轉為連結（64 → 63），Tier 與名稱／表達式皆與文章一致，分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 21 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-08.
+
+- **2026-09-06** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/rectangle-area.html`（#2 · 數學 · Free，長乘寬為何是面積的數格子解釋、
   坪的精確係數 400/121 與 0.3025、公分／公尺單位差 10,000 倍的量綱陷阱、
   L 形空間切割法與補滿法互為驗算、周長與面積混淆、權狀含公設 32% 的實坪換算、
