@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三角形面積怎麼算？底乘高除以 2 公式拆解（三角地 630 平方公尺實例）· Bobo Labs</title>
+  <meta name="description" content="三角形面積怎麼算？底乘高再除以 2。本文說明為什麼要除以 2、高為何不是斜邊（拿斜邊當高會高估 66.7%）、鈍角三角形的高怎麼量，並用三邊 28/45/53 公尺的三角地示範海倫公式與底乘高互相驗算得到同一個 630.00 平方公尺。" />
+  <meta property="og:title" content="三角形面積怎麼算？底乘高除以 2 公式拆解" />
+  <meta property="og:description" content="為什麼除以 2、高不是斜邊、鈍角三角形的高在圖形外面，以及只知道三邊長時的海倫公式交叉驗算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/triangle-area.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/triangle-area.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "三角形面積怎麼算？底乘高除以 2 公式拆解", "url": "https://labs.moneyai168.com/formulas/triangle-area.html", "datePublished": "2026-09-07", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "三角形面積", "item": "https://labs.moneyai168.com/formulas/triangle-area.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "0.5 * b * h",
+    "cases": [
+    {"expr":"b * h","input":{"b":12,"h":9},"expect":108,"tol":0.0001,"text":"108.00"},
+    {"input":{"b":12,"h":9},"expect":54,"tol":0.0001,"text":"54.00"},
+    {"input":{"b":0.6,"h":0.9},"expect":0.27,"tol":1e-06,"text":"0.27"},
+    {"input":{"b":8,"h":3},"expect":12,"tol":0.0001,"text":"12.00"},
+    {"expr":"0.5 * b * h * 121 / 400","input":{"b":12,"h":9},"expect":16.335,"tol":0.0001,"text":"16.3"},
+    {"expr":"sqrt(s ** 2 - (b / 2) ** 2)","input":{"s":5,"b":8},"expect":3,"tol":1e-09,"text":"3.0"},
+    {"input":{"b":8,"h":5},"expect":20,"tol":0.0001,"text":"20.00"},
+    {"expr":"0.5 * b * s - 0.5 * b * h","input":{"b":8,"s":5,"h":3},"expect":8,"tol":0.0001,"text":"8.00"},
+    {"expr":"(s - h) / h","input":{"s":5,"h":3},"expect":0.6666666666666666,"tol":1e-09,"scale":100,"text":"66.7"},
+    {"input":{"b":10,"h":6},"expect":30,"tol":0.0001,"text":"30.00"},
+    {"expr":"2 * A / b","input":{"A":84,"b":14},"expect":12,"tol":1e-09,"text":"12.00"},
+    {"input":{"b":14,"h":12},"expect":84,"tol":0.0001,"text":"84.00"},
+    {"expr":"2 * A / b","input":{"A":84,"b":15},"expect":11.2,"tol":1e-09,"text":"11.20"},
+    {"input":{"b":15,"h":11.2},"expect":84,"tol":0.0001,"text":"84.00"},
+    {"expr":"(a + b + c) / 2","input":{"a":28,"b":45,"c":53},"expect":63,"tol":1e-09,"text":"63.0"},
+    {"expr":"a ** 2 + b ** 2","input":{"a":28,"b":45},"expect":2809,"tol":0.001,"text":"2,809"},
+    {"input":{"b":28,"h":45},"expect":630,"tol":0.001,"text":"630.00"},
+    {"expr":"sqrt(((a+b+c)/2) * ((a+b+c)/2 - a) * ((a+b+c)/2 - b) * ((a+b+c)/2 - c))","input":{"a":28,"b":45,"c":53},"expect":630,"tol":1e-06,"text":"630.00"},
+    {"expr":"0.5 * b * h * 121 / 400","input":{"b":28,"h":45},"expect":190.575,"tol":0.0001,"text":"190.6"},
+    {"input":{"b":1200,"h":900},"expect":540000,"tol":0.01,"text":"540,000"},
+    {"expr":"s ** 2","input":{"s":100},"expect":10000,"tol":0.001,"text":"10,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #3 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">三角形面積怎麼算？底乘高除以 2 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-07</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一塊三角形建地，兩條互相垂直的邊實測 28 公尺與 45 公尺，面積是 630 平方公尺。
+        三角形面積只有一步：底乘高再除以 2。真正會出錯的地方也只有三個——
+        高不是斜邊、底和高必須互相垂直、鈍角三角形的高會落在圖形外面。
+        這篇把「為什麼除以 2」推一遍，示範一個高估 66.7% 的錯算，
+        再用只有三邊長時的海倫公式做交叉驗算。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = ½ × b × h</div>
+          <div class="formula-box-note">b 為底、h 為對應的高（必須與 b 垂直）· 兩者需為同一長度單位</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>三角形面積</td><td>長度單位的平方（m²、坪）</td><td>山牆 8 ～ 20 m²</td></tr>
+            <tr><td>b</td><td>底：任選的一邊</td><td>長度（m、cm）</td><td>3 ～ 50 m</td></tr>
+            <tr><td>h</td><td>高：對頂點到底邊（或其延長線）的垂直距離</td><td>同 b</td><td>2 ～ 45 m</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼要除以 2？把三角形複製一份就看懂了</h2>
+        <p>
+          取任意三角形，複製一份、旋轉半圈接回原來的一條邊，兩片會拼成一個平行四邊形，
+          底與高和原三角形完全相同。平行四邊形剪下一角補到另一側就是同底同高的矩形，
+          面積是底乘高。三角形恰好是它的一半——除以 2 就是這麼來的。
+        </p>
+        <p>
+          底 12 公尺、高 9 公尺的三角形，拼成的平行四邊形面積是 <strong>108.00</strong> 平方公尺，
+          三角形就是 <strong>54.00</strong> 平方公尺。
+        </p>
+        <p>
+          這個推導同時交代了兩件常被忽略的事。第一，公式對銳角、直角、鈍角三角形一律成立，
+          因為拼接動作不挑角度。第二，「底」不是特指畫在最下面那條邊——任何一邊都能當底，
+          條件只有一個：配上從對頂點垂直落到該邊的距離當高。
+        </p>
+
+        <h2>底 12、高 9 算一遍，順便看三種尺度</h2>
+        <p>
+          公式對尺度沒有偏好，從桌上的三角旗到整塊建地都是同一條式子。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>場景</th><th>底 b（m）</th><th>高 h（m）</th><th>面積（m²）</th></tr></thead>
+          <tbody>
+            <tr><td>桌上三角旗</td><td>0.6</td><td>0.9</td><td>0.27</td></tr>
+            <tr><td>教科書標準題</td><td>12.0</td><td>9.0</td><td>54.00</td></tr>
+            <tr><td>等腰屋頂山牆</td><td>8.0</td><td>3.0</td><td>12.00</td></tr>
+          </tbody>
+        </table>
+        <p>
+          台灣談土地與室內空間習慣用坪。1 平方公尺等於 121/400 坪，也就是 0.3025 坪，
+          所以 54.00 平方公尺是 <strong>16.3</strong> 坪。這個係數是有限小數，寫全不費事；
+          分區累加時用 0.3025 而不是概數 0.3，才不會每一段都偏低。
+        </p>
+
+        <h2>高是垂直高，不是斜邊——最貴的一種算錯</h2>
+        <p>
+          等腰屋頂的山牆是最常見的翻車點。底 8.0 公尺、兩側屋頂斜面各 5.0 公尺，
+          手邊只有斜面長度，很容易直接把 5.0 當成高。斜邊不是高。
+        </p>
+        <p>
+          正確做法是先回推垂直高：等腰三角形的高會把底切成兩段各 4.0 公尺，
+          再用勾股定理得 √(5² − 4²) = <strong>3.0</strong> 公尺。
+          面積因此是 <strong>12.00</strong> 平方公尺。
+        </p>
+        <p>
+          拿斜邊 5.0 當高的話會得到 <strong>20.00</strong> 平方公尺，多算 <strong>8.00</strong>
+          平方公尺，高估 <strong>66.7</strong>%。外牆漆料、隔熱材、防水布都以面積計價，
+          這個差額會原封不動變成多買的材料。斜邊永遠比高長，所以這種錯只會多估、不會少估。
+        </p>
+
+        <h2>底可以任選，答案不變；鈍角三角形的高在圖形外面</h2>
+        <p>
+          三邊長 13、14、15 的三角形是驗算的好例子。以 14 為底時，對應的高是
+          <strong>12.00</strong> 公尺，面積 ½ × 14 × 12.00 = <strong>84.00</strong> 平方公尺。
+          換成以 15 為底，高變成 <strong>11.20</strong> 公尺，面積 ½ × 15 × 11.20 同樣是 84.00。
+        </p>
+        <p>
+          同一個三角形換三組底高得到同一個面積，這是最省事的自我驗算：
+          量兩組配對各算一次，對不上就是某一段量錯，或者高沒有垂直於所配的底。
+        </p>
+        <p>
+          鈍角三角形容易讓人卡住。以較短的一邊 10 公尺為底時，對頂點的垂直投影會落在
+          底邊的<strong>延長線</strong>上，垂線畫在圖形外面。高量的是那條垂線長度，
+          設為 6 公尺，面積仍是 <strong>30.00</strong> 平方公尺。公式一個字都不用改，
+          變的只是高要往外量——這也是為什麼變數表把高定義成「到底邊或其延長線」的距離。
+        </p>
+
+        <h2>只知道三邊長怎麼辦？海倫公式與直角驗算</h2>
+        <p>
+          實地丈量土地時，量三個邊長比量一條垂直高容易得多，因為高的落點在地上沒有標記。
+          這種情況用海倫公式：先算半周長，再開一次根號。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">A = √(s(s−a)(s−b)(s−c))，s = (a + b + c) / 2</div>
+          <div class="formula-box-note">a、b、c 為三邊長 · s 為半周長 · 三邊需滿足任兩邊和大於第三邊</div>
+        </div>
+        <p>
+          一塊三角地實測三邊 28、45、53 公尺。半周長 s = (28 + 45 + 53) / 2 = <strong>63.0</strong>
+          公尺，代進去得 √(63.0 × 35 × 18 × 10) = <strong>630.00</strong> 平方公尺。
+        </p>
+        <p>
+          這塊地剛好能互相驗證：28² + 45² = 784 + 2,025 = <strong>2,809</strong>，而 53² 也是 2,809，
+          兩短邊互相垂直。既然是直角三角形，兩股就是現成的底與高，
+          直接算 ½ × 28 × 45 = <strong>630.00</strong> 平方公尺——與海倫公式完全一致。
+          換成坪是 <strong>190.6</strong> 坪。
+        </p>
+        <p>
+          兩條互不相關的路徑得到同一個數字，比任何一條路徑算兩遍都更有說服力。
+          丈量結果只要湊得出直角，就值得用這招對一次。海倫公式在 ∑ Calc 編為 #26（Pro），
+          本文只借它交叉驗算，不展開推導。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>忘了除以 2</strong>：底 12、高 9 直接相乘得 108.00 平方公尺，
+            正好是正確答案 54.00 的兩倍。這種錯不會讓數字看起來荒謬，所以最難自己抓到——
+            習慣是先寫下平行四邊形的值，再明確地減半。<br /><br />
+            <strong>單位沒統一</strong>：雷射測距儀常預設輸出公分。同一個三角形量成
+            底 1200 公分、高 900 公分，代進公式得 <strong>540,000</strong>，單位是平方公分。
+            長度倍率是 100，面積倍率則是它的平方：1 平方公尺等於 <strong>10,000</strong>
+            平方公分。做法是進公式前先把長度統一成公尺，換算只做一次。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的三角形面積計算機。先輸入 12 和 9 確認是不是 54.00，
+          再把自己量到的底與高填進去——填之前先確認那個「高」是垂直高，不是斜邊。
+        </p>
+
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 三角形面積 #3</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=3" title="三角形面積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 從斜邊回推垂直高，本文第三節用的就是它</a></li>
+          <li><a href="/formulas/rectangle-area.html">矩形面積 — 三角形的兩倍，也是坪數換算的起點</a></li>
+          <li><a href="/formulas/circle-area.html">圓的面積 — 另一種基本面積，用 πr² 運作</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離 — 有座標時直接求邊長，餵給海倫公式</a></li>
+          <li>進階：海倫公式 #26（√(s(s−a)(s−b)(s−c))，只靠三邊長求面積）— 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：三角形面積公式與海倫公式為初等幾何標準結果，本文採教科書定義，
+        高定義為頂點到對邊所在直線的垂直距離（鈍角三角形時垂足落在邊的延長線上）。
+        坪為台制面積單位，1 坪 = 400/121 平方公尺，反向為 1 平方公尺 = 0.3025 坪。
+        文中所有數值皆以 ½ × b × h 及其變形獨立驗算，計算全程使用完整精度、僅顯示時四捨五入。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
