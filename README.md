@@ -20,6 +20,15 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-10**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/trapezoid-area.html`（#4 · 數學 · Free，用「複製一份旋轉半圈拼成平行四邊形」解釋為何除以 2、
+  中位線 (a+b)/2 × 高的等價寫法、780 m² 梯形地以主公式／中位線／矩形+三角形三路徑交叉驗算、
+  拿斜腰 5.0 當高會高估 25.0% 的等腰梯形錯算並以勾股定理回推真高 4.0、
+  a=b 退化成矩形與 a=0 退化成三角形的兩個端點檢查、坪係數 0.3025 與公分／公尺面積差 10,000 倍）。
+  Formula 卡片 #4 由 placeholder 轉為連結（Tier 一致，分類計數不動）；sitemap 已重生。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 22 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-10.
+
 - **2026-09-08**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/triangle-area.html`（#3 · 數學 · Free，用「複製一份拼成平行四邊形」解釋為何除以 2、
   拿斜邊當高會高估 66.7% 的山牆錯算、鈍角三角形的高落在底邊延長線外、
