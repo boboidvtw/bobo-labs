@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>梯形面積怎麼算？上底加下底乘高除以 2 公式拆解（梯形地 780 平方公尺實例）· Bobo Labs</title>
+  <meta name="description" content="梯形面積怎麼算？上底加下底再乘高、除以 2。本文說明為什麼除以 2、中位線為何等於平均底、把腰當高會高估 25%，並用上底 20、下底 32、高 30 公尺的梯形地示範主公式與矩形加三角形分割法互相驗算得到同一個 780.00 平方公尺。" />
+  <meta property="og:title" content="梯形面積怎麼算？上底加下底乘高除以 2 公式拆解" />
+  <meta property="og:description" content="為什麼除以 2、中位線就是平均底、高不是腰，以及矩形與三角形其實都是梯形的特例。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/trapezoid-area.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/trapezoid-area.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "梯形面積怎麼算？上底加下底乘高除以 2 公式拆解", "url": "https://labs.moneyai168.com/formulas/trapezoid-area.html", "datePublished": "2026-09-09", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "梯形面積", "item": "https://labs.moneyai168.com/formulas/trapezoid-area.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "0.5 * (a + b) * h",
+    "cases": [
+    {"input":{"a":8,"b":12,"h":5},"expect":50,"tol":0.0001,"text":"50.00"},
+    {"expr":"(a + b) / 2","input":{"a":20,"b":32},"expect":26,"tol":1e-09,"text":"26.0"},
+    {"input":{"a":20,"b":32,"h":30},"expect":780,"tol":0.001,"text":"780.00"},
+    {"expr":"a * h","input":{"a":20,"h":30},"expect":600,"tol":0.001,"text":"600.00"},
+    {"expr":"0.5 * (b - a) * h","input":{"a":20,"b":32,"h":30},"expect":180,"tol":0.001,"text":"180.00"},
+    {"expr":"0.5 * (a + b) * h * 121 / 400","input":{"a":20,"b":32,"h":30},"expect":235.95,"tol":1e-06,"text":"235.95"},
+    {"expr":"sqrt(L ** 2 - ((b - a) / 2) ** 2)","input":{"L":5,"a":6,"b":12},"expect":4,"tol":1e-09,"text":"4.0"},
+    {"input":{"a":6,"b":12,"h":4},"expect":36,"tol":0.0001,"text":"36.00"},
+    {"input":{"a":6,"b":12,"h":5},"expect":45,"tol":0.0001,"text":"45.00"},
+    {"expr":"0.5 * (a + b) * L - 0.5 * (a + b) * h","input":{"a":6,"b":12,"L":5,"h":4},"expect":9,"tol":0.0001,"text":"9.00"},
+    {"expr":"(L - h) / h","input":{"L":5,"h":4},"expect":0.25,"tol":1e-09,"scale":100,"text":"25.0"},
+    {"input":{"a":20,"b":20,"h":30},"expect":600,"tol":0.001,"text":"600.00"},
+    {"input":{"a":0,"b":32,"h":30},"expect":480,"tol":0.001,"text":"480.00"},
+    {"expr":"(a + b) / 2","input":{"a":8,"b":12},"expect":10,"tol":1e-09,"text":"10.0"},
+    {"expr":"b - a","input":{"a":20,"b":32},"expect":12,"tol":1e-09,"text":"12"},
+    {"expr":"121 / 400","input":{"n":1},"expect":0.3025,"tol":1e-09,"text":"0.3025"},
+    {"expr":"b - a","input":{"a":6,"b":12},"expect":6,"tol":1e-09,"text":"6.0"},
+    {"expr":"(b - a) / 2","input":{"a":6,"b":12},"expect":3,"tol":1e-09,"text":"3.0"},
+    {"input":{"a":32,"b":32,"h":30},"expect":960,"tol":0.001,"text":"960.00"},
+    {"expr":"(a + b) * h","input":{"a":20,"b":32,"h":30},"expect":1560,"tol":0.001,"text":"1,560.00"},
+    {"input":{"a":2000,"b":3200,"h":3000},"expect":7800000,"tol":0.01,"text":"7,800,000"},
+    {"expr":"s ** 2","input":{"s":100},"expect":10000,"tol":0.001,"text":"10,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #4 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">梯形面積怎麼算？上底加下底乘高除以 2 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-09</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一塊臨路的畸零地，面寬 20 公尺、後方底寬 32 公尺、進深 30 公尺，面積是 780 平方公尺。
+        梯形面積只有一步：上底加下底、乘高、再除以 2。會出錯的地方集中在三個——
+        兩底必須是互相平行的那兩邊、高不是腰、除以 2 很容易漏掉。
+        這篇把公式推一遍，示範一個高估 25.0% 的錯算，再用分割法對同一塊地交叉驗算。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = ½ × (a + b) × h</div>
+          <div class="formula-box-note">a、b 為兩條互相平行的邊（上底與下底）· h 為兩者之間的垂直距離 · 三者需為同一長度單位</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>梯形面積</td><td>長度單位的平方（m²、坪）</td><td>畸零地 200 ～ 900 m²</td></tr>
+            <tr><td>a</td><td>上底：較短的那條平行邊</td><td>長度（m、cm）</td><td>4 ～ 30 m</td></tr>
+            <tr><td>b</td><td>下底：較長的那條平行邊</td><td>同 a</td><td>8 ～ 50 m</td></tr>
+            <tr><td>h</td><td>高：兩條平行邊之間的垂直距離</td><td>同 a</td><td>3 ～ 40 m</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼是「上底加下底除以 2」？拼成平行四邊形就看懂了</h2>
+        <p>
+          取任意梯形，複製一份、旋轉半圈接到原來的斜腰上，兩片會拼成一個平行四邊形：
+          底是 a + b（上底接下底），高仍是 h，面積 (a + b) × h。原梯形是它的一半——
+          除以 2 就是這麼來的。推導和三角形同一路數，差別只在拼出的底從 b 變成 a + b。
+        </p>
+        <p>
+          換個角度看更好記：把 (a + b) / 2 拆出來單獨看，那是兩條平行邊的平均長度，
+          也正好是梯形中位線（連接兩腰中點的線段）的長度。梯形面積因此等於
+          「中位線 × 高」，也就是一個等面積矩形的面積。上底 8、下底 12、高 5 的教科書題，
+          中位線是 <strong>10.0</strong>，面積 <strong>50.00</strong> 平方公尺——和 ½ × (8 + 12) × 5 同一件事。
+          由此也可知：兩底怎麼分配長度不影響面積，只有它們的和有影響。
+        </p>
+        <h2>梯形地 780 平方公尺：三條路徑算同一個答案</h2>
+        <p>
+          一塊臨路的梯形建地，面寬（上底）20 公尺、後方底寬（下底）32 公尺、進深（高）30 公尺。
+          三種算法應收斂到同一個數字，對不上就是某一段量錯了。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>路徑</th><th>算式</th><th>結果（m²）</th></tr></thead>
+          <tbody>
+            <tr><td>主公式</td><td>½ × (20 + 32) × 30</td><td>780.00</td></tr>
+            <tr><td>中位線 × 高</td><td>26.0 × 30</td><td>780.00</td></tr>
+            <tr><td>矩形 ＋ 三角形</td><td>600.00 ＋ 180.00</td><td>780.00</td></tr>
+          </tbody>
+        </table>
+        <p>
+          第三條路徑是現場最容易畫在紙上的做法。從上底兩端點垂直往下畫線，
+          梯形被切成中間一個矩形加旁邊的三角形。矩形是 20 × 30 = <strong>600.00</strong> 平方公尺；
+          剩下的部分底邊合計 32 − 20 = <strong>12</strong> 公尺、高 30 公尺，併起來是一個三角形，
+          面積 ½ × 12 × 30 = <strong>180.00</strong> 平方公尺。兩塊相加得 <strong>780.00</strong>
+          平方公尺，與主公式一致。
+        </p>
+        <p>
+          中位線路徑同樣簡短：(20 + 32) / 2 = <strong>26.0</strong> 公尺，乘高 30 得 780.00。
+          三條路徑切法不同卻必然同值，這比同一條式子按兩次計算機可靠得多。
+        </p>
+        <p>
+          台灣談土地習慣用坪。1 平方公尺等於 121/400 坪，也就是 <strong>0.3025</strong> 坪，
+          所以 780.00 平方公尺是 <strong>235.95</strong> 坪。這個係數是有限小數，寫全不費事；
+          分區累加時用 0.3025 而不是概數 0.3，才不會每一段都偏低。
+        </p>
+
+        <h2>高不是腰——最貴的一種算錯</h2>
+        <p>
+          梯形有四條邊，兩條斜腰完全不進公式，卻最常被誤當成高。沿地界走捲尺量到的自然是腰長，
+          垂直高反而要另外拉一條線才量得到，於是腰就被直接代進去。
+        </p>
+        <p>
+          等腰梯形的例子：上底 6.0 公尺、下底 12.0 公尺、兩側斜腰各 5.0 公尺。
+          腰不是高。正確做法是先回推：下底比上底多出 <strong>6.0</strong> 公尺，等腰時左右各分 <strong>3.0</strong> 公尺，
+          斜腰、水平位移、垂直高構成直角三角形，用勾股定理得 √(5² − 3²) = <strong>4.0</strong> 公尺。
+        </p>
+        <p>
+          正解是 ½ × (6.0 + 12.0) × 4.0 = <strong>36.00</strong> 平方公尺。
+          拿腰 5.0 當高則得 <strong>45.00</strong> 平方公尺，多算 <strong>9.00</strong> 平方公尺，
+          高估 <strong>25.0</strong>%。腰恆長於高（腰是直角三角形的斜邊），
+          所以這種錯只會多估、不會少估——鋪面、圍籬布、防水材都以面積計價，差額直接變成多買的料。
+        </p>
+        <p>
+          第二個誤用是搞錯哪兩條邊是底。a 和 b 必須<strong>互相平行</strong>，隨便挑兩條對邊代進去不成立；
+          四邊形若沒有一組對邊平行就不是梯形，得改拆成兩個三角形算。判準很單純：
+          在不同位置量兩條候選邊的間距，值不一樣就是不平行。
+        </p>
+
+        <h2>矩形和三角形都是梯形的特例</h2>
+        <p>
+          把 a 和 b 推到極端，梯形公式會退化成兩條更熟悉的公式，這是檢查記憶有沒有記錯的好方法。
+        </p>
+        <p>
+          令上底等於下底（a = b = 20、h = 30），公式給 ½ × (20 + 20) × 30 = <strong>600.00</strong>
+          平方公尺，正好是 20 × 30 的矩形面積。上下底一樣長時梯形就是平行四邊形，
+          再加上腰垂直就是矩形，數字自然對得上——這也解釋了前一節分割法裡那塊矩形為什麼能用同一條式子算。
+        </p>
+        <p>
+          令上底縮到 0（a = 0、b = 32、h = 30），公式給 ½ × (0 + 32) × 30 = <strong>480.00</strong>
+          平方公尺，正是底 32、高 30 的三角形面積：上底收成一個點時梯形塌成三角形，
+          ½ × (0 + b) × h 化簡後就是 ½ × b × h。
+        </p>
+        <p>
+          兩個端點都對得上，代表公式的形狀沒記錯。對答案沒把握時就用這招框範圍：
+          面積必定落在同高三角形與同高矩形（皆取下底）之間，也就是
+          <strong>480.00</strong> 與 <strong>960.00</strong> 平方公尺之間，780.00 在區間內，合理。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>忘了除以 2</strong>：(20 + 32) × 30 得 <strong>1,560.00</strong>，
+            正好是正確答案 780.00 的兩倍。這錯不會讓數字看起來荒謬，所以最難自己抓到。
+            習慣是先寫中位線 26.0 再乘高——這個寫法根本沒有「除以 2」可以漏。<br /><br />
+            <strong>單位沒統一</strong>：雷射測距儀常預設輸出公分。同一塊地量成上底 2000 公分、
+            下底 3200 公分、高 3000 公分，代進公式得 <strong>7,800,000</strong>，單位是平方公分。
+            長度倍率是 100，面積倍率則是它的平方：1 平方公尺等於 <strong>10,000</strong> 平方公分。
+            做法是進公式前先把長度統一成公尺，換算只做一次。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的梯形面積計算機。先輸入 20、32、30 確認是不是 780.00，
+          再填自己量到的數字——填之前確認兩個底互相平行，且第三欄填的是垂直高，不是腰。
+        </p>
+
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 梯形面積 #4</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=4" title="梯形面積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/triangle-area.html">三角形面積 — 上底縮到 0 的梯形，本文分割法用的就是它</a></li>
+          <li><a href="/formulas/rectangle-area.html">矩形面積 — 上底等於下底的梯形，也是坪數換算的起點</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 從斜腰回推垂直高，本文第三節用的就是它</a></li>
+          <li><a href="/formulas/circle-area.html">圓的面積 — 另一種基本面積，用 πr² 運作</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：梯形面積公式為初等幾何標準結果，本文採教科書定義——梯形為至少一組對邊平行的四邊形，
+        高為兩平行邊之間的垂直距離，中位線為連接兩腰中點的線段（長度等於兩底的算術平均）。
+        坪為台制面積單位，1 坪 = 400/121 平方公尺，反向為 1 平方公尺 = 0.3025 坪。
+        文中數值皆以 ½ × (a + b) × h 及其變形獨立驗算，全程使用完整精度、僅顯示時四捨五入。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
