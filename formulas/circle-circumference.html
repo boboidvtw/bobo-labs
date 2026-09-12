@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>圓周長怎麼算？2πr 公式拆解（跑道分道差 7.67 公尺實例）· Bobo Labs</title>
+  <meta name="description" content="圓周長怎麼算？公式是 2πr，半徑乘 2 再乘圓周率；只有直徑時用 πd。用半徑 10 公分算出 62.83 公分，並解釋 400 公尺跑道每往外一道為何固定多 7.67 公尺、把直徑當半徑只差 2 倍、π 取 3 會少 4.51%。" />
+  <meta property="og:title" content="圓周長怎麼算？2πr 公式拆解" />
+  <meta property="og:description" content="π 就是周長除以直徑、由周長反推直徑的實用路徑、跑道分道固定差 7.67 公尺的來由。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/circle-circumference.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/circle-circumference.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "圓周長怎麼算？2πr 公式拆解", "url": "https://labs.moneyai168.com/formulas/circle-circumference.html", "datePublished": "2026-09-10", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "圓的周長", "item": "https://labs.moneyai168.com/formulas/circle-circumference.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "2 * pi * r",
+    "cases": [
+      {"expr":"pi * d","input":{"d":1},"expect":3.141592653589793,"tol":0.00001,"text":"3.1416"},
+      {"expr":"2 * r","input":{"r":10},"expect":20,"tol":1e-9,"text":"20"},
+      {"input":{"r":5},"expect":31.41592653589793,"tol":0.001,"text":"31.42"},
+      {"input":{"r":10},"expect":62.83185307179586,"tol":0.001,"text":"62.83"},
+      {"input":{"r":15},"expect":94.24777960769379,"tol":0.001,"text":"94.25"},
+      {"input":{"r":20},"expect":125.66370614359172,"tol":0.001,"text":"125.66"},
+      {"expr":"pi * r ** 2","input":{"r":10},"expect":314.1592653589793,"tol":0.001,"text":"314.16"},
+      {"expr":"pi * r ** 2","input":{"r":20},"expect":1256.6370614359173,"tol":0.001,"text":"1,256.64"},
+      {"expr":"(2 * pi * d) / (2 * pi * (d / 2))","input":{"d":20},"expect":2,"tol":1e-9,"text":"2"},
+      {"expr":"(pi * d ** 2) / (pi * (d / 2) ** 2)","input":{"d":20},"expect":4,"tol":1e-9,"text":"4"},
+      {"expr":"C / pi","input":{"C":157},"expect":49.97465213085514,"tol":0.001,"text":"49.97"},
+      {"expr":"2 * p * r","input":{"p":3,"r":10},"expect":60,"tol":1e-9,"text":"60"},
+      {"expr":"(2 * pi * r - 2 * p * r) / (2 * pi * r)","input":{"r":10,"p":3},"expect":0.04507034144862795,"tol":1e-9,"scale":100,"text":"4.51"},
+      {"expr":"k + m","input":{"k":36.50,"m":0.30},"expect":36.80,"tol":0.001,"text":"36.80"},
+      {"expr":"k + w * (n - 1) + m","input":{"k":36.50,"w":1.22,"n":2,"m":0.20},"expect":37.92,"tol":0.001,"text":"37.92"},
+      {"expr":"k + w * (n - 1) + m","input":{"k":36.50,"w":1.22,"n":8,"m":0.20},"expect":45.24,"tol":0.001,"text":"45.24"},
+      {"input":{"r":36.8},"expect":231.22121930420874,"tol":0.001,"text":"231.22"},
+      {"expr":"2 * s + 2 * pi * r","input":{"s":84.39,"r":36.8},"expect":400.00121930420875,"tol":0.001,"text":"400.00"},
+      {"expr":"2 * s + 2 * pi * r","input":{"s":84.39,"r":37.92},"expect":407.03838684824996,"tol":0.001,"text":"407.04"},
+      {"expr":"2 * s + 2 * pi * r","input":{"s":84.39,"r":45.24},"expect":453.0313032968045,"tol":0.001,"text":"453.03"},
+      {"expr":"2 * pi * (w - k)","input":{"w":1.22,"k":0.10},"expect":7.037167544041136,"tol":0.001,"text":"7.04"},
+      {"expr":"2 * pi * w","input":{"w":1.22},"expect":7.665486074759095,"tol":0.001,"text":"7.67"},
+      {"expr":"2 * pi * (r8 - r1)","input":{"r8":45.24,"r1":36.8},"expect":53.030083992595735,"tol":0.001,"text":"53.03"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #5 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">圓周長怎麼算？2πr 公式拆解（跑道分道差 7.67 公尺實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-10</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        半徑 10 公分的圓，周長是 62.83 公分。這條公式比圓面積好記，因為它就是圓周率定義的移項——
+        π 本來就被定義成周長除以直徑。值得算一遍的是它的線性性質：400 公尺跑道每往外一條分道，
+        一圈固定多 7.67 公尺，而這個數字跟跑道有多大無關。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">C = 2πr ＝ πd</div>
+          <div class="formula-box-note">r 為半徑、d 為直徑（d = 2r）· π ≈ 3.14159 · C 的單位與 r 相同</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>C</td><td>繞圓一圈的長度</td><td>長度（cm、m、mm）</td><td>跑道彎道 231.22 m</td></tr>
+            <tr><td>r</td><td>半徑：圓心到圓周的距離</td><td>長度（同 C）</td><td>5 ～ 20 cm</td></tr>
+            <tr><td>π</td><td>圓周率：周長除以直徑</td><td>無單位（純比值）</td><td>3.14159…</td></tr>
+          </tbody>
+        </table>
+
+        <h2>2πr 不是推導出來的，是 π 的定義移項</h2>
+        <p>
+          圓面積的 πr² 要靠「把圓剪成扇形拼成長方形」才講得通，圓周長不需要。π 這個常數最初就是
+          為了記下一件觀測事實：任何一個圓，不論大小，周長除以直徑都是同一個數。
+        </p>
+        <p>
+          既然 π = C / d，把 d 乘回去就是 C = πd；直徑是半徑的兩倍，代入 d = 2r 就得到 C = 2πr。
+          兩式等價，選哪個只看手上量到的是半徑還是直徑。直徑 1 公尺的輪子滾一圈前進
+          <strong>3.1416</strong> 公尺——這就是 π 本身。
+        </p>
+
+        <h2>半徑 10 公分算一遍：周長線性，面積不是</h2>
+        <p>
+          半徑 10 公分：乘 2 得直徑 <strong>20</strong> 公分，再乘 π，周長 <strong>62.83 公分</strong>。
+          兩次乘法、沒有次方項，這是它比圓面積單純的地方。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>半徑 r（cm）</th><th>周長 C = 2πr（cm）</th></tr></thead>
+          <tbody>
+            <tr><td>5</td><td>31.42</td></tr>
+            <tr><td>10</td><td>62.83</td></tr>
+            <tr><td>15</td><td>94.25</td></tr>
+            <tr><td>20</td><td>125.66</td></tr>
+          </tbody>
+        </table>
+        <p>
+          半徑每增加 5 公分，周長固定多 <strong>31.42 公分</strong>，一路到 125.66 都是這個間距——
+          固定增量是線性關係的指紋。放大同一組尺寸就看得出差別：半徑從 10 變 20，周長 62.83 變
+          125.66，剛好 <strong>2</strong> 倍；面積則從 <strong>314.16</strong> 變 <strong>1,256.64</strong>，
+          是 <strong>4</strong> 倍。買圍籬按長度算 2 倍、買草皮按面積算 4 倍，兩者不能共用同一個直覺。
+        </p>
+
+        <h2>只有直徑或周長，怎麼換算？</h2>
+        <p>
+          <strong>已知直徑</strong>：用 C = πd，不必先除以 2 再乘回來。杯口、管線、輪胎、鑽頭的規格
+          標示給的都是直徑，這條路徑才是日常真正會走的。
+        </p>
+        <p>
+          <strong>已知周長反推直徑</strong>：d = C / π。林業測量的胸徑就是這樣得到的——樹幹繞捲尺一圈量到 157 公分，
+          直徑是 <strong>49.97 公分</strong>。樹幹、水塔、圓形柱子都無法直接量直徑，繞一圈永遠比找圓心容易。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把直徑當半徑填進去</strong>：規格標示幾乎都是直徑，公式卻寫成吃半徑的 2πr。
+            直徑 20 公分的杯口，正確周長 62.83 公分；把 20 當成 r 會得到 125.66——放大 <strong>2</strong> 倍。
+            這個錯在周長題比面積題更難抓：面積會錯 <strong>4</strong> 倍，離譜到一看就知道不對；
+            周長只錯一倍，看起來還合理。<br /><br />
+            <strong>π 取 3 圖方便</strong>：半徑 10 的圓周長會算成 <strong>60</strong>，比 62.83 少 <strong>4.51</strong>%。
+            這個百分比與圓面積題相同——兩者都對 π 成一次正比，π 少幾成、答案就少同樣幾成。
+            要心算就用 3.14，誤差壓到千分之五以內。
+          </p>
+        </div>
+
+        <h2>400 公尺跑道為什麼要錯開起跑線？</h2>
+        <p>
+          標準田徑場的規格是公開的：內緣半徑 36.50 公尺、兩條直道各 84.39 公尺、分道寬 1.22 公尺。
+          量測線的位置有一條容易被忽略的規定——第 1 道量在離內緣 30 公分處、第 2 道以後量在離內側
+          分道線 20 公分處，因為選手會貼著線的內側跑。
+        </p>
+        <p>
+          第 1 道的量測半徑因此是 36.50 + 0.30 = <strong>36.80</strong> 公尺。
+          兩個彎道是半徑相同的兩個半圓，合起來正好一個完整的圓，長 2π × 36.80 = <strong>231.22</strong> 公尺；
+          再加上兩條各 84.39 公尺的直道，一圈 <strong>400.00</strong> 公尺。
+          「400 公尺跑道」這個名字不是取整數取出來的，是算出來的。
+        </p>
+        <p>
+          往外每一道，量測半徑按 36.50 + 1.22 ×（道次 − 1）+ 0.20 遞增：第 2 道 <strong>37.92</strong>、
+          第 8 道 <strong>45.24</strong> 公尺。直道長度一模一樣，差別全部來自彎道。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>分道</th><th>量測半徑（m）</th><th>一圈全長（m）</th><th>與第 1 道的差（m）</th></tr></thead>
+          <tbody>
+            <tr><td>第 1 道</td><td>36.80</td><td>400.00</td><td>—</td></tr>
+            <tr><td>第 2 道</td><td>37.92</td><td>407.04</td><td>7.04</td></tr>
+            <tr><td>第 8 道</td><td>45.24</td><td>453.03</td><td>53.03</td></tr>
+          </tbody>
+        </table>
+        <p>
+          第 2 道只比第 1 道長 <strong>7.04</strong> 公尺，比後面各道之間的差略小——量測線規定讓第 1 道
+          多算了 30 公分而不是 20 公分。第 3 道以後每往外一道固定多 <strong>7.67</strong> 公尺，
+          也就是 2π × 1.22。第 1 道到第 8 道一圈差 <strong>53.03</strong> 公尺，超過一整條直道。
+        </p>
+        <p>
+          最有用的推論藏在代數裡：2π(r + Δ) − 2πr = 2πΔ，r 被減掉了。分道差只由分道寬決定，
+          跟跑道有多大無關——把彎道半徑放大成兩倍，每往外一道仍然固定多 7.67 公尺。
+          這就是錯開量能寫成通用規則的原因。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的圓周長計算機。輸入半徑 10 看是不是 62.83，
+          或把分道寬 1.22 填進去，看它是否吐出 7.67。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 圓的周長 #5</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=5" title="圓周長互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/circle-area.html">圓的面積 — 同一個 π，換成平方項</a></li>
+          <li><a href="/formulas/sphere-volume.html">球的體積 — 半徑走到三次方</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 直角三角形的邊長關係</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離 — 座標平面上量長度</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：圓周率 π 為圓周長與直徑之比，為無理數，本文取 3.14159 做顯示、計算全程使用完整精度。
+        田徑場尺寸（內緣半徑 36.50 公尺、直道 84.39 公尺、分道寬 1.22 公尺、量測線第 1 道離內緣 30 公分、
+        第 2 道起離內側分道線 20 公分）採 World Athletics 標準 400 公尺跑道規格。
+        文中數值皆以 C = 2πr 及其變形獨立驗算，四捨五入至小數點後兩位顯示。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

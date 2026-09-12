@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>長方形周長怎麼算？矩形周長公式 2(l+w) 與踢腳板用量（3.6×4.2 房間實例）· Bobo Labs</title>
+  <meta name="description" content="長方形周長怎麼算？把四邊加起來就是 2(長 + 寬)。本文用 3.6 × 4.2 公尺的房間算出周長 15.6 公尺，說明周長為何是一次、面積為何是二次，並實算踢腳板扣門開口加耗損後要買 16.17 公尺、花 6,468 元。" />
+  <meta property="og:title" content="長方形周長怎麼算？矩形周長公式 2(l+w) 與踢腳板用量" />
+  <meta property="og:description" content="四邊相加即 2(長 + 寬)。房間實例 15.6 公尺、周長與面積的一次二次之別、踢腳板扣開口加耗損實算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/rectangle-perimeter.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/rectangle-perimeter.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "長方形周長怎麼算？矩形周長公式 2(l+w) 與踢腳板用量", "url": "https://labs.moneyai168.com/formulas/rectangle-perimeter.html", "datePublished": "2026-09-11", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "矩形周長", "item": "https://labs.moneyai168.com/formulas/rectangle-perimeter.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "2 * (l + w)",
+    "cases": [
+    {"input":{"l":3.6,"w":4.2},"expect":15.6,"tol":0.0001,"text":"15.6"},
+    {"input":{"l":3,"w":3},"expect":12,"tol":0.0001,"text":"12.0"},
+    {"input":{"l":4,"w":5},"expect":18,"tol":0.0001,"text":"18.0"},
+    {"expr":"l * w","input":{"l":3.6,"w":4.2},"expect":15.12,"tol":0.0001,"text":"15.12"},
+    {"input":{"l":360,"w":420},"expect":1560,"tol":0.001,"text":"1,560"},
+    {"expr":"2 * (l + w) * k","input":{"l":3.6,"w":4.2,"k":1.1},"expect":17.16,"tol":0.0001,"text":"17.16"},
+    {"expr":"l * w * k ** 2","input":{"l":3.6,"w":4.2,"k":1.1},"expect":18.2952,"tol":0.01,"text":"18.30"},
+    {"expr":"k ** 2 - 1","input":{"k":1.1},"expect":0.21,"tol":1e-06,"scale":100,"text":"21"},
+    {"expr":"(2 * (l + w) / 4) ** 2","input":{"l":3.6,"w":4.2},"expect":15.21,"tol":0.0001,"text":"15.21"},
+    {"expr":"(2 * (l + w) / 4) ** 2 - l * w","input":{"l":3.6,"w":4.2},"expect":0.09,"tol":0.001,"text":"0.09"},
+    {"expr":"l * w","input":{"l":1,"w":6.8},"expect":6.8,"tol":0.0001,"text":"6.80"},
+    {"expr":"2 * (l + w) - d","input":{"l":3.6,"w":4.2,"d":0.9},"expect":14.7,"tol":0.0001,"text":"14.7"},
+    {"expr":"(2 * (l + w) - d) * (1 + loss)","input":{"l":3.6,"w":4.2,"d":0.9,"loss":0.1},"expect":16.17,"tol":0.0001,"text":"16.17"},
+    {"expr":"(2 * (l + w) - d) * (1 + loss) * price","input":{"l":3.6,"w":4.2,"d":0.9,"loss":0.1,"price":400},"expect":6468,"tol":0.01,"text":"6,468"},
+    {"input":{"l":8,"w":12},"expect":40,"tol":0.0001,"text":"40.0"},
+    {"expr":"l * w","input":{"l":8,"w":12},"expect":96,"tol":0.001,"text":"96"},
+    {"expr":"2 * (l + w) / g","input":{"l":8,"w":12,"g":2},"expect":20,"tol":0.001,"text":"20"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #6 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">長方形周長怎麼算？矩形周長公式與踢腳板用量</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-11</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        長 3.6 公尺、寬 4.2 公尺的房間，周長是 15.6 公尺。
+        周長量的是「繞一圈的距離」，買的是踢腳板、圍籬、相框邊條這類按公尺計價的東西；
+        面積量的是「地板有多大」，買的是磁磚。兩者用同一組長寬，答案卻是不同維度的數字。
+        這篇把 2(l + w) 的來由、周長與面積的一次／二次之別、以及扣開口加耗損的實際採購量算清楚。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P = 2 × (l + w)</div>
+          <div class="formula-box-note">l 為長、w 為寬（兩者必須是同一單位）· P 的單位與 l、w 相同</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>矩形周長：四邊長度總和</td><td>長度（m、cm、台尺）</td><td>臥室 12 ～ 20 m</td></tr>
+            <tr><td>l</td><td>長：較長的一邊</td><td>長度（m、cm、台尺）</td><td>3 ～ 6 m</td></tr>
+            <tr><td>w</td><td>寬：與長垂直的一邊</td><td>同 l</td><td>2 ～ 5 m</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼是 2(l + w)？四邊相加而已</h2>
+        <p>
+          矩形有四條邊，對邊等長：兩條長各為 l，兩條寬各為 w。把它們加起來得
+          l + w + l + w，提出共同的因數就是 2(l + w)。沒有任何隱藏步驟，
+          這條公式只是「四邊相加」的縮寫。
+        </p>
+        <p>
+          寫成 2l + 2w 也完全等價，差別只在心算順序：先加再乘一次，比乘兩次再加省一個動作。
+          丈量時記下長和寬兩個數字、相加、乘以 2，這就是全部流程。
+        </p>
+        <p>
+          正方形是長寬相等的特例，代入 w = l 得 2(l + l)，也就是 4l。
+          所以正方形周長公式不是另一條公式，而是同一條的化簡版本。
+        </p>
+
+        <h2>3.6 × 4.2 的房間算一遍，順便看單位陷阱</h2>
+        <p>
+          長 3.6 公尺、寬 4.2 公尺的主臥，兩邊相加得 7.8，乘以 2 得
+          <strong>15.6</strong> 公尺。這就是沿著牆腳走一圈的距離，也是訂踢腳板的起算基準。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>空間</th><th>長 × 寬（m）</th><th>周長（m）</th><th>面積（m²）</th></tr></thead>
+          <tbody>
+            <tr><td>標準臥室</td><td>3.0 × 3.0</td><td>12.0</td><td>9.00</td></tr>
+            <tr><td>主臥</td><td>3.6 × 4.2</td><td>15.6</td><td>15.12</td></tr>
+            <tr><td>客廳</td><td>4.0 × 5.0</td><td>18.0</td><td>20.00</td></tr>
+          </tbody>
+        </table>
+        <p>
+          主臥那一列值得盯一下：周長 15.6、面積 <strong>15.12</strong>，兩個數字幾乎一樣大。
+          這是巧合，不是規律——單位一個是公尺、一個是平方公尺，代表的東西完全不同。
+          標準臥室那一列就分開了：周長 12.0、面積 9.00。
+        </p>
+        <p>
+          雷射測距儀常預設輸出公分。同一個房間量成 360 公分乘 420 公分，周長算出
+          <strong>1,560</strong>，單位是公分。長度換算的倍率是 100，周長也是 100
+          ——因為周長跟長度一樣是一次的。面積就不是了：同一個房間的面積在公分制下會膨脹
+          10,000 倍。搞混單位時，周長只錯 100 倍，面積錯 10,000 倍，後者反而比較容易被發現。
+        </p>
+
+        <h2>周長是一次的，面積是二次的：同樣加 10% 差在哪</h2>
+        <p>
+          把房間的長和寬各放大 10%，周長變成 2(1.1l + 1.1w)，也就是原本的 1.1 倍：
+          15.6 乘以 1.1 得 <strong>17.16</strong> 公尺，剛好加 10%。
+          面積則是 1.1 乘 1.1，原本的 1.21 倍：15.12 變成 <strong>18.30</strong> 平方公尺，
+          加的是 <strong>21</strong>%，不是 10%。
+        </p>
+        <p>
+          這是一次式與二次式的差別，也是實務上最有用的一句話：
+          <strong>牆的用料隨尺寸線性增加，地板的用料隨尺寸平方增加。</strong>
+          房子放大一成，踢腳板多買一成就夠，磁磚要多買兩成。
+        </p>
+        <p>
+          反過來問更有意思：周長固定時，面積能差多少？
+          15.6 公尺的周長圍成正方形，每邊 3.9 公尺，面積是 <strong>15.21</strong> 平方公尺；
+          圍成 3.6 × 4.2 的長方形，面積 15.12 平方公尺，只少 <strong>0.09</strong> 平方公尺。
+          但圍成 1.0 × 6.8 的狹長格局，周長同樣是 15.6，面積只剩
+          <strong>6.80</strong> 平方公尺，不到正方形的一半。
+        </p>
+        <p>
+          結論是：同樣長度的牆，愈方正的格局圍出愈大的面積，愈狹長愈浪費。
+          這也解釋了為什麼狹長屋的裝潢單價常常偏高——付的是牆的錢，用的是地板的空間。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把周長當面積用（或反過來）</strong>：3.6 × 4.2 的房間，周長 15.6 公尺、
+            面積 15.12 平方公尺，數字接近到很容易拿錯。判斷方法不是看大小，是看買的東西——
+            按「公尺」報價的（踢腳板、收邊條、圍籬、窗簾軌道）用周長，
+            按「平方公尺」或「坪」報價的（磁磚、地板、油漆）用面積。<br /><br />
+            <strong>忘記扣掉開口</strong>：門的位置沒有牆腳，踢腳板不會繞過去。
+            周長是幾何值，採購量要先扣開口。整間房都照周長訂，多出來的料退不掉。<br /><br />
+            <strong>只量一組對邊就相加</strong>：2(l + w) 成立的前提是四個角都是直角。
+            老屋牆面常不方正，兩條對邊不等長。丈量時四邊都量，若對邊差超過一兩公分，
+            就該逐邊相加而不是套公式。
+          </p>
+        </div>
+
+        <h2>踢腳板要買幾公尺？扣開口再加耗損</h2>
+        <p>
+          幾何周長是起點，不是採購量。實際訂料要走兩步：先扣掉沒有牆腳的開口，再加上切割耗損。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">採購量 = (2(l + w) − 開口寬度) × (1 + 耗損率)</div>
+          <div class="formula-box-note">開口＝門、落地窗、開放式隔間等沒有牆腳的段落 · 耗損率一般取 0.1</div>
+        </div>
+        <p>
+          主臥周長 15.6 公尺，扣掉一扇 0.9 公尺寬的門，實際需要
+          <strong>14.7</strong> 公尺。加 10% 的切割與對接耗損後要備
+          <strong>16.17</strong> 公尺；以每公尺 400 元計價，材料費是 <strong>6,468</strong> 元。
+        </p>
+        <p>
+          耗損率為什麼是 10%？踢腳板是定尺出貨（常見 2.4 或 3 公尺一支），
+          每個轉角要 45 度斜切，切口那一段就報廢了。房間轉角愈多、開口愈碎，耗損愈高。
+          四個角的標準矩形抓 10% 夠用，L 形或有樑柱內凹的空間要往上調。
+        </p>
+        <p>
+          室外的圍籬是同一套算法，只是單位換成柱子。一塊 8 × 12 公尺的菜園，
+          周長 <strong>40.0</strong> 公尺、面積 <strong>96</strong> 平方公尺。
+          圍籬柱每 2 公尺一根，需要 <strong>20</strong> 根柱子。
+          注意柱數是用周長除以間距，和面積無關——菜園面積翻倍不代表圍籬材料翻倍，
+          這又是一次式與二次式的分工。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的矩形周長計算機。輸入 3.6 和 4.2 看看是不是 15.6，
+          再把自己家的丈量值填進去——記得先把公分換成公尺，四邊都量過再決定要不要套公式。
+        </p>
+      
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 矩形周長 #6</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=6" title="矩形周長互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/rectangle-area.html">矩形面積 — 同一組長寬，算的是地板不是牆</a></li>
+          <li><a href="/formulas/circle-area.html">圓的面積 — 曲線邊界的二次式版本</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 量對角線驗證四個角是不是真的直角</a></li>
+          <li><a href="/formulas/triangle-area.html">三角形面積 — L 形空間切割後的另一種收尾</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：矩形周長為四邊長度之和，在對邊等長的前提下化簡為 2(l + w)；
+        正方形周長 4l 為其 w = l 的特例。本文的耗損率 10% 與踢腳板單價 400 元／公尺
+        為裝修實務常見區間的示例值，非報價，實際請以廠商估價單為準；
+        文中所有數值皆以 2(l + w) 及其變形獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
