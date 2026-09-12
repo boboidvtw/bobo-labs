@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-12**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/circle-circumference.html`（#5 · 數學 · Free，2πr 是 π 定義的移項，400 公尺跑道每往外一道固定多 7.67 公尺且與跑道大小無關）、
+  `formulas/rectangle-perimeter.html`（#6 · 數學 · Free，2(l + w) 的一次性 vs 面積的二次性，踢腳板扣開口加耗損的實際採購量）。
+  Formula 卡片 #5、#6 由 placeholder 轉為連結，Tier 一致故分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-09-12.
+
 - **2026-09-10**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/trapezoid-area.html`（#4 · 數學 · Free，用「複製一份旋轉半圈拼成平行四邊形」解釋為何除以 2、
   中位線 (a+b)/2 × 高的等價寫法、780 m² 梯形地以主公式／中位線／矩形+三角形三路徑交叉驗算、
