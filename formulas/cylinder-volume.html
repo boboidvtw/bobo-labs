@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>圓柱體積怎麼算？πr²h 公式拆解與公升換算（水塔實例）· Bobo Labs</title>
+  <meta name="description" content="圓柱體積怎麼算？公式是 πr²h，也就是底面積乘高。本文用半徑 10 公分、高 30 公分算出 9,424.78 立方公分、換成 9.42 公升，並示範只知道直徑或周長怎麼換算、水塔半徑怎麼反解、把直徑當半徑為什麼差四倍。" />
+  <meta property="og:title" content="圓柱體積怎麼算？πr²h 公式拆解與公升換算" />
+  <meta property="og:description" content="底面積乘高的拆解、公升與立方公尺換算、直徑與周長反解，以及把直徑當半徑差四倍的錯誤。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/cylinder-volume.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/cylinder-volume.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "圓柱體積怎麼算？πr²h 公式拆解與公升換算", "url": "https://labs.moneyai168.com/formulas/cylinder-volume.html", "datePublished": "2026-09-12", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "圓柱體積", "item": "https://labs.moneyai168.com/formulas/cylinder-volume.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "pi * r ** 2 * h",
+    "cases": [
+    {"input": {"r": 10, "h": 30}, "expect": 9424.77796076938, "tol": 0.001, "text": "9,424.78"},
+    {"expr": "pi * r ** 2", "input": {"r": 10}, "expect": 314.1592653589793, "tol": 0.001, "text": "314.16"},
+    {"input": {"r": 20, "h": 30}, "expect": 37699.11184307752, "tol": 0.001, "text": "37,699.11"},
+    {"input": {"r": 10, "h": 60}, "expect": 18849.55592153876, "tol": 0.001, "text": "18,849.56"},
+    {"input": {"r": 3, "h": 10}, "expect": 282.7433388230814, "tol": 0.001, "text": "282.74"},
+    {"input": {"r": 5, "h": 15}, "expect": 1178.0972450961724, "tol": 0.001, "text": "1,178.10"},
+    {"input": {"r": 15, "h": 40}, "expect": 28274.333882308136, "tol": 0.001, "text": "28,274.33"},
+    {"input": {"r": 20, "h": 50}, "expect": 62831.853071795864, "tol": 0.001, "text": "62,831.85"},
+    {"expr": "pi * r ** 2 * h / 1000", "input": {"r": 10, "h": 30}, "expect": 9.42477796076938, "tol": 0.0001, "text": "9.42"},
+    {"input": {"r": 0.1, "h": 0.3}, "expect": 0.00942477796076938, "tol": 0.0000001, "text": "0.00942"},
+    {"input": {"r": 10, "h": 0.3}, "expect": 94.2477796076938, "tol": 0.001, "text": "94.25"},
+    {"expr": "sqrt(V / (pi * h))", "input": {"V": 1, "h": 1.2}, "expect": 0.5150322693642527, "tol": 0.00001, "text": "0.515"},
+    {"expr": "pi * r ** 2 * h * f * 1000", "input": {"r": 0.5150322693642527, "h": 1.2, "f": 0.8}, "expect": 800, "tol": 0.001, "text": "800"},
+    {"expr": "pi * d ** 2 * h / 4", "input": {"d": 6.6, "h": 11.5}, "expect": 393.4373559723177, "tol": 0.001, "text": "393.44"},
+    {"expr": "C ** 2 * h / (4 * pi)", "input": {"C": 100, "h": 300}, "expect": 238732.414637843, "tol": 0.01, "text": "238,732.41"},
+    {"expr": "C ** 2 * h / (4 * pi) / 1000000", "input": {"C": 100, "h": 300}, "expect": 0.238732414637843, "tol": 0.0000001, "text": "0.2387"},
+    {"input": {"r": 10, "h": 20}, "expect": 6283.185307179587, "tol": 0.001, "text": "6,283.19"},
+    {"expr": "(4 / 3) * pi * r ** 3", "input": {"r": 10}, "expect": 4188.790204786391, "tol": 0.001, "text": "4,188.79"},
+    {"expr": "(1 / 3) * pi * r ** 2 * h", "input": {"r": 10, "h": 20}, "expect": 2094.3951023931954, "tol": 0.001, "text": "2,094.40"},
+    {"expr": "((4 / 3) * pi * r ** 3) / (pi * r ** 2 * (2 * r))", "input": {"r": 10}, "expect": 0.6666666666666666, "tol": 0.000001, "scale": 100, "text": "66.7"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #8 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">圓柱體積怎麼算？πr²h 公式拆解與公升換算</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-12</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        半徑 10 公分、高 30 公分的圓柱桶，容積是 9,424.78 立方公分，也就是 9.42 公升。
+        算式兩步：先算底面積，再乘高。卡住人的通常不是乘法，而是拿到的數字不是半徑——
+        規格給直徑、軟尺量到的是周長。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">V = πr²h</div>
+          <div class="formula-box-note">r 為底面圓半徑 · h 為柱高（與底面垂直）· π ≈ 3.14159 · V 的單位是長度的立方</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>V</td><td>圓柱的體積（容積）</td><td>長度單位的立方（cm³、m³）</td><td>鋁罐 393.44 cm³</td></tr>
+            <tr><td>r</td><td>底面圓半徑</td><td>長度（cm、m）</td><td>3 ～ 20 cm</td></tr>
+            <tr><td>h</td><td>柱高：兩底面的垂直距離</td><td>長度，須與 r 同單位</td><td>10 ～ 50 cm</td></tr>
+            <tr><td>π</td><td>圓周率：圓周長與直徑之比</td><td>無單位（純比值）</td><td>3.14159…</td></tr>
+          </tbody>
+        </table>
+
+        <h2>πr²h 就是「底面積 × 高」：為什麼加粗比加高有效</h2>
+        <p>
+          圓柱是同一個圓往上疊出來的。每一層面積都是 πr²，疊到高度 h，體積就是底面積乘高——
+          πr² 是圓面積，乘 h 只是把它拉成立體，公式裡沒有新東西。
+        </p>
+        <p>
+          半徑 10 公分的底面積是 <strong>314.16 平方公分</strong>，乘上高 30 公分，
+          得 <strong>9,424.78 立方公分</strong>。
+        </p>
+        <p>
+          但 r 是平方項、h 是一次項。半徑從 10 加到 20（兩倍），
+          體積從 9,424.78 跳到 <strong>37,699.11</strong>，是四倍；
+          高從 30 加到 60（同樣兩倍），體積只到 <strong>18,849.56</strong>，剛好兩倍。
+        </p>
+        <p>
+          挑容器時這是有用的判準：同樣加大一成，加粗的容量增幅是加高的兩倍。
+          看到規格只把高度拉長，別預期容量跟著跳一大截。整體尺寸等比放大時，體積才走三次方。
+        </p>
+
+        <h2>半徑 10 公分、高 30 公分算一遍，五種尺寸對照</h2>
+        <p>
+          代入順序是先平方、再乘 π、最後乘高：10² = 100，乘 π 得 314.16，再乘 30
+          得 9,424.78 立方公分。π 在哪一步乘都一樣，但 r 必須先平方——
+          先把 π 乘進半徑再平方，係數也會被平方。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>半徑 r（cm）</th><th>高 h（cm）</th><th>體積 V = πr²h（cm³）</th></tr></thead>
+          <tbody>
+            <tr><td>3</td><td>10</td><td>282.74</td></tr>
+            <tr><td>5</td><td>15</td><td>1,178.10</td></tr>
+            <tr><td>10</td><td>30</td><td>9,424.78</td></tr>
+            <tr><td>15</td><td>40</td><td>28,274.33</td></tr>
+            <tr><td>20</td><td>50</td><td>62,831.85</td></tr>
+          </tbody>
+        </table>
+
+        <h2>怎麼換成公升？水塔要做多粗？</h2>
+        <p>
+          立方公分與公升是固定的 1,000 倍：1 公升就是 1,000 立方公分。
+          所以半徑 10 公分、高 30 公分的桶子裝 <strong>9.42</strong> 公升。
+          同一個桶子改用公尺制——半徑 0.1 公尺、高 0.3 公尺——得 <strong>0.00942</strong> 立方公尺；
+          兩者是同一件事，差在立方公尺與立方公分相差 1,000,000 倍。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">r = √(V / πh)</div>
+          <div class="formula-box-note">反解：已知容量 V 與可用高度 h，回推底面半徑</div>
+        </div>
+        <p>
+          實務上常反過來問：要一座裝 1 公噸水（1 立方公尺、1,000 公升）的圓柱水塔，
+          可用高度 1.2 公尺，底面半徑要多少？反解 r = √(V/πh)，得
+          <strong>0.515</strong> 公尺。先定容量、量好淨高再回推半徑，
+          比做出來才發現放不進去省事。
+        </p>
+        <p>
+          水位同樣好算，因為體積對高度是線性的：同一座水塔只裝到八成高，容量就是八成，
+          <strong>800</strong> 公升。這是 h 只有一次方的好處，不必像球形容器那樣換算。
+        </p>
+
+        <h2>拿到的不是半徑：直徑與周長怎麼換？</h2>
+        <p>
+          量測現場很少直接給半徑。兩種情況各有寫法，重點都是先換成半徑再平方。
+        </p>
+        <p>
+          <strong>已知直徑 d</strong>：代入 r = d/2，化簡得 V = πd²h/4。
+          直徑 6.6 公分、罐身高 11.5 公分的鋁罐，幾何容積是 <strong>393.44 立方公分</strong>。
+          比標示的 330 毫升多，差額來自罐肩收窄與填充頂隙，算的是外形上限。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">V = πd²h/4　｜　V = C²h/(4π)</div>
+          <div class="formula-box-note">左：已知直徑 d · 右：已知底面周長 C</div>
+        </div>
+        <p>
+          <strong>已知周長 C</strong>：由 C = 2πr 反解 r = C/(2π)，代回得 V = C²h/(4π)。
+          軟尺繞一圈 100 公分、高 300 公分的混凝土柱，體積是 <strong>238,732.41 立方公分</strong>，
+          也就是 <strong>0.2387</strong> 立方公尺。柱子和樹幹量不到圓心，繞一圈比卡尺可靠。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把直徑當半徑填進去</strong>：水管、罐頭、水塔的規格幾乎都標直徑，
+            公式吃的是半徑。直徑 20 公分、高 30 公分的桶子，容積是 9,424.78 立方公分；
+            把 20 直接當成 r，得 37,699.11，放大四倍。<br /><br />
+            <strong>r 和 h 用不同單位</strong>：半徑抄公分、高抄公尺是最常見的混用。
+            半徑 10 公分配高 0.3 公尺算出 <strong>94.25</strong>，這個數字既不是立方公分
+            也不是立方公尺。代入前先統一單位。
+          </p>
+        </div>
+
+        <h2>圓柱、球、圓錐：同底同高的固定比例</h2>
+        <p>
+          取半徑 10 公分、高 20 公分（h = 2r，球剛好塞滿圓柱）：圓柱
+          <strong>6,283.19</strong>、球 <strong>4,188.79</strong>、圓錐
+          <strong>2,094.40</strong> 立方公分。
+        </p>
+        <p>
+          球佔圓柱 <strong>66.7%</strong>，圓錐佔三分之一，兩者加起來正好填滿圓柱：
+          圓柱是圓錐的三倍，球是圓錐的兩倍。這條關係出自阿基米德，
+          也是圓柱體積值得先記住的理由——另外兩條公式都能從它推回來。
+        </p>
+        <p>
+          估算時很好用：圓錐形料斗先當圓柱算再除以三，球形容器先算外接圓柱再乘三分之二。
+          只要背 πr²h。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的圓柱體積計算機。試試半徑 10、高 30 是不是 9,424.78。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 圓柱體積 #8</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=8" title="圓柱體積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/circle-area.html">圓的面積 — πr²，圓柱體積的底面積那一半</a></li>
+          <li><a href="/formulas/sphere-volume.html">球的體積 — 同底同高時是圓柱的三分之二</a></li>
+          <li><a href="/formulas/circle-circumference.html">圓的周長 — 由軟尺量到的周長反解半徑</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+          <li>延伸：圓錐體積 #10（⅓πr²h，同底同高的三分之一）— 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：圓周率 π 為無理數，本文取 3.14159 顯示、計算全程使用完整精度。
+「同底同高的圓柱、球、圓錐體積比為三比二比一」出自阿基米德《論球與圓柱》。
+        鋁罐與混凝土柱尺寸為示例值，非特定產品規格。
+        文中數值皆以 πr²h 及其變形獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
