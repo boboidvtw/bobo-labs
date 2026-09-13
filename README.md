@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-13**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/cylinder-volume.html`（#8 · 數學 · Free，πr²h 就是底面積乘高，r 的平方項讓加粗的容量增幅是加高的兩倍；含公升換算、直徑與周長反解半徑，以及同底同高圓柱:球:圓錐 3:2:1）。
+  Formula 卡片 #8 由 placeholder 轉為連結，Tier 一致故分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-13.
+
 - **2026-09-12**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/circle-circumference.html`（#5 · 數學 · Free，2πr 是 π 定義的移項，400 公尺跑道每往外一道固定多 7.67 公尺且與跑道大小無關）、
   `formulas/rectangle-perimeter.html`（#6 · 數學 · Free，2(l + w) 的一次性 vs 面積的二次性，踢腳板扣開口加耗損的實際採購量）。
