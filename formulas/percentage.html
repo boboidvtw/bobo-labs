@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>百分比怎麼算？公式拆解與百分點差在哪（月薪45000調薪實例）· Bobo Labs</title>
+  <meta name="description" content="百分比 = (部分 / 整體) × 100%，一條除法卻有三個最常踩的坑：分母選錯、百分點與百分比混用、連續折扣直接相加。本文用月薪 45,000 調到 47,700、房貸利率 2% 升到 3%、先漲後折的定價三組實例，把每個數字算給你看。" />
+  <meta property="og:title" content="百分比怎麼算？公式拆解與百分點差在哪" />
+  <meta property="og:description" content="(部分/整體)×100% 的完整拆解：基數怎麼選、百分點與百分比差在哪、連續調整為何不能相加。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/percentage.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/percentage.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "百分比怎麼算？公式拆解與百分點差在哪", "url": "https://labs.moneyai168.com/formulas/percentage.html", "datePublished": "2026-09-13", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "百分比", "item": "https://labs.moneyai168.com/formulas/percentage.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+{
+"expr":"part / whole",
+"cases":[
+{"expr":"new - old","input":{"new":47700,"old":45000},"expect":2700,"tol":1e-09,"text":"2,700"},
+{"input":{"part":2700,"whole":45000},"expect":0.06,"scale":100,"tol":1e-09,"text":"6"},
+{"input":{"part":2700,"whole":45000},"expect":0.06,"tol":1e-09,"text":"0.06"},
+{"expr":"1 - d","input":{"d":0.06},"expect":0.94,"tol":1e-09,"text":"0.94"},
+{"expr":"new * (1 - d)","input":{"new":47700,"d":0.06},"expect":44838,"tol":1e-06,"text":"44,838"},
+{"input":{"part":2700,"whole":47700},"expect":0.05660377358,"scale":100,"tol":1e-08,"text":"5.66"},
+{"input":{"part":1,"whole":2},"expect":0.5,"scale":100,"tol":1e-09,"text":"50"},
+{"expr":"P*(r/12)/(1-(1+r/12)**-n)","input":{"P":10000000,"r":0.02,"n":360},"expect":36961.947,"tol":1,"text":"36,962"},
+{"expr":"P*(r/12)/(1-(1+r/12)**-n)","input":{"P":10000000,"r":0.03,"n":360},"expect":42160.403,"tol":1,"text":"42,160"},
+{"expr":"P*(b/12)/(1-(1+b/12)**-n) - P*(a/12)/(1-(1+a/12)**-n)","input":{"P":10000000,"a":0.02,"b":0.03,"n":360},"expect":5198.456,"tol":1,"text":"5,198"},
+{"expr":"(b/12)/(1-(1+b/12)**-n) / ((a/12)/(1-(1+a/12)**-n)) - 1","input":{"a":0.02,"b":0.03,"n":360},"expect":0.1406434587,"scale":100,"tol":1e-08,"text":"14.06"},
+{"expr":"(P*(b/12)/(1-(1+b/12)**-n) - P*(a/12)/(1-(1+a/12)**-n)) * n","input":{"P":10000000,"a":0.02,"b":0.03,"n":360},"expect":1871444.197,"tol":1,"text":"1,871,444"},
+{"expr":"base * (1 + up)","input":{"base":1200,"up":0.1},"expect":1320,"tol":1e-09,"text":"1,320"},
+{"expr":"(1 + up) * off","input":{"up":0.1,"off":0.8},"expect":0.88,"tol":1e-09,"text":"0.88"},
+{"expr":"base * (1 + up) * off","input":{"base":1200,"up":0.1,"off":0.8},"expect":1056,"tol":1e-09,"text":"1,056"},
+{"expr":"(1 + up) * off","input":{"up":0.1,"off":0.8},"expect":0.88,"scale":100,"tol":1e-09,"text":"88"},
+{"expr":"1 - (1 + up) * off","input":{"up":0.1,"off":0.8},"expect":0.12,"scale":100,"tol":1e-09,"text":"12"},
+{"expr":"base * off","input":{"base":1200,"off":0.85},"expect":1020,"tol":1e-09,"text":"1,020"},
+{"expr":"base * (1 - off)","input":{"base":1200,"off":0.85},"expect":180,"tol":1e-09,"text":"180"},
+{"expr":"1 - off","input":{"off":0.85},"expect":0.15,"scale":100,"tol":1e-09,"text":"15"},
+{"expr":"b - a","input":{"a":20,"b":25},"expect":5,"tol":1e-09,"text":"5"},
+{"input":{"part":5,"whole":20},"expect":0.25,"scale":100,"tol":1e-09,"text":"25"}
+]
+}
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #14 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">百分比怎麼算？分母選錯，答案就差一截</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-13</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        百分比是公式庫裡最短的一條，也是被算錯最多次的一條。
+        問題不在算術，在<strong>分母</strong>：月薪 45,000 調到 47,700 是加薪 6%，
+        但 47,700 再砍 6% 只會掉到 44,838，回不到原點。
+        本文把三個真的會算錯的地方——基數怎麼選、百分點不是百分比、連續調整不能相加——各用一組數字走完。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">百分比 = (part / whole) × 100%</div>
+          <div class="formula-box-note">part 部分量 · whole 整體量（基數）· 比值乘 100 後加上 % 符號</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>part</td><td>部分量，或變化量（新值 − 舊值）</td><td>與 whole 同單位</td><td>2,700（元）</td></tr>
+            <tr><td>whole</td><td>基數。比較的參照點，通常是「原本那個值」</td><td>與 part 同單位</td><td>45,000（元）</td></tr>
+            <tr><td>part / whole</td><td>比值，本身沒有單位</td><td>無</td><td>0.06</td></tr>
+            <tr><td>結果</td><td>比值 ×100，改用百分比表示</td><td>%</td><td>6</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          兩個變數必須<strong>同單位、同期間、同口徑</strong>。乘 100 只是換一種寫法，沒有增加任何資訊。
+          真正決定答案的是：whole 你挑了誰。
+        </p>
+
+        <h2>月薪 45,000 調到 47,700，調幅是多少？</h2>
+        <p>
+          變化型的百分比，part 是差額、whole 是<strong>調整前</strong>的值。
+          差額 47,700 − 45,000 = 2,700 元，除以調整前的月薪：2,700 / 45,000 = 0.06，乘 100 得調幅 6%。
+        </p>
+        <p>
+          分母是 45,000 不是 47,700。問題問的是「相對於原本漲了多少」，參照點就是原本那個數。
+        </p>
+
+        <h2>為什麼跌回去要跌更多？</h2>
+        <p>
+          同樣的 2,700 元，從 47,700 往回扣時分母換人了：2,700 / 47,700 = 5.66%。
+          漲 6% 之後，要跌 5.66% 才回得到 45,000。
+        </p>
+        <p>
+          反過來驗證：47,700 直接砍 6%，得 47,700 × 0.94 = 44,838 元，比原本的月薪還少。
+          漲跌同樣的百分比不會互相抵消，因為<strong>第二次計算的基數是放大過的</strong>。
+          這個不對稱在投資上更兇——跌掉一半之後要翻倍才回得了本，
+          <a href="/formulas/return-on-investment.html">投資報酬率 ROI</a> 那篇強調的正是這件事。
+        </p>
+
+        <h2>百分點和百分比差在哪？房貸 1,000 萬實算</h2>
+        <p>
+          利率從 2% 升到 3%，正確說法是<strong>升 1 個百分點</strong>——百分點量的是兩個百分比之間的算術差，直接相減。
+          但若問「利率漲了幾成」，那是百分比問題：(3 − 2) / 2 = 0.5，漲了 50%。
+          同一件事，「升 1 個百分點」和「升 50%」都對，聽起來卻天差地遠。
+        </p>
+        <p>
+          放進金額看。1,000 萬房貸、30 年期、
+          <a href="/formulas/mortgage-payment.html">等額本息</a>共 360 期：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>年利率</th><th>月付金</th></tr></thead>
+          <tbody>
+            <tr><td>2%</td><td>36,962 元</td></tr>
+            <tr><td>3%</td><td>42,160 元</td></tr>
+            <tr><td>差距</td><td>5,198 元／月</td></tr>
+          </tbody>
+        </table>
+        <p>
+          那「1 個百分點」落到月付金上是 5,198 元，相對增幅 14.06%；攤到 360 期，總共多付 1,871,444 元。
+          利率升 50%、月付只升 14.06%，是因為月付金裡有一大塊是本金攤還，利率動不到那塊。
+          <strong>同一個百分點放在不同的分母上，重量完全不同。</strong>
+        </p>
+
+        <h2>先漲 10% 再打 8 折，等於原價嗎？</h2>
+        <p>
+          一件 1,200 元的商品先調漲 10% 變成 1,320 元，再打 8 折，得 1,056 元。比原價便宜，但不是便宜 10%。
+        </p>
+        <p>
+          連續調整要<strong>相乘不是相加</strong>：1.1 × 0.8 = 0.88，最終價是原價的 88%，淨降 12%。
+          想用「漲 10% 減掉降 20% 所以淨降 10%」去湊會直接錯——兩次調整之間分母換過一次，加減法沒把這件事算進去。
+        </p>
+        <p>
+          順手釐清台灣的折扣講法：「8 折」是乘 0.8，不是折掉 80%。同一件 1,200 元商品打 85 折，
+          售價 1,200 × 0.85 = 1,020 元，折抵 180 元，相當於英文的 15% off。
+          折數講的是<strong>留下多少</strong>，percent off 講的是<strong>拿掉多少</strong>。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>分母拿錯，答案一定錯。</strong>三個最常見的版本：
+            一是算跌幅時把新值當分母（該用舊值）；
+            二是把百分點當百分比相加，例如「毛利率從 20% 升到 25%，成長 5%」——那是 5 個百分點、
+            成長 25%（見 <a href="/formulas/gross-profit-margin.html">毛利率</a>）；
+            三是把各期的百分比直接平均，正確做法是連乘後開根號。
+            開始算之前先問一句：我要拿什麼當 100%？
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 百分比計算機，填入部分量與整體量即可。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 百分比 #14</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=14" title="百分比互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 漲跌不對稱的實際代價</a></li>
+          <li><a href="/formulas/gross-profit-margin.html">毛利率 — 百分點在損益表上怎麼一層層扣掉</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 本文房貸月付金的出處</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 兩個利率怎麼才算可比</a></li>
+          <li><a href="/formulas/arithmetic-mean.html">平均值 — 為什麼百分比不能直接平均</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+來源：百分比與百分點之區分依國際計量與統計寫作慣例 ·
+        本文數字均以 (part/whole) 及其衍生式實算並通過站台數值驗算腳本 ·
+        月付金以等額本息公式在未四捨五入的中間值下求得 ·
+        薪資、房貸與售價均為示範假設值 · 全文僅作數學說明，不構成投資或借貸建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
