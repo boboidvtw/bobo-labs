@@ -20,7 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-13**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-14**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/percentage.html`（#14 · 數學 · Free，百分比算錯幾乎都錯在分母：漲 6% 之後要跌 5.66% 才回得到原點；百分點與百分比之別用 1,000 萬房貸實算，利率升 1 個百分點＝升 50%，月付金只升 14.06%；連續調整相乘不相加，漲 10% 再打 8 折淨降 12%）。
+  Formula 卡片 #14 由 placeholder 轉為連結，Tier 一致故分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 22 案全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-14.
+
+- **2026-09-13** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/cylinder-volume.html`（#8 · 數學 · Free，πr²h 就是底面積乘高，r 的平方項讓加粗的容量增幅是加高的兩倍；含公升換算、直徑與周長反解半徑，以及同底同高圓柱:球:圓錐 3:2:1）。
   Formula 卡片 #8 由 placeholder 轉為連結，Tier 一致故分類計數不變。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
