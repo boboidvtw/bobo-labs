@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-21**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/cuboid-volume.html`（#9 · 數學 · Free，長×寬×高只是起點，卡住人的是換算：60×40×30 紙箱＝72,000 cm³＝72 公升＝0.072 CBM；「才」有 28,316.85 與 27,000 兩種口徑，同箱差 4.88%，是報價對不攏的主因；體積重除數 5000 等於假設每立方公尺 200 公斤，同箱 14.4 kg 對 12 kg；等比放大走三次方，三邊各放大 1.1 倍容積變 1.331 倍）。
+  Formula 卡片 #9 由 placeholder 轉為連結，Tier 一致故分類計數與註腳不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 24 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-21.
+
 - **2026-09-14**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/percentage.html`（#14 · 數學 · Free，百分比算錯幾乎都錯在分母：漲 6% 之後要跌 5.66% 才回得到原點；百分點與百分比之別用 1,000 萬房貸實算，利率升 1 個百分點＝升 50%，月付金只升 14.06%；連續調整相乘不相加，漲 10% 再打 8 折淨降 12%）。
   Formula 卡片 #14 由 placeholder 轉為連結，Tier 一致故分類計數不變。
