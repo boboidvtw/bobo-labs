@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三角形周長怎麼算？三邊相加公式與三角不等式（126 公尺圍籬實例）· Bobo Labs</title>
+  <meta name="description" content="三角形周長怎麼算？三邊直接相加。本文說明三邊要滿足什麼條件才圍得成三角形（5、6、12 圍不起來）、只有座標時怎麼先求邊長，並用 28／45／53 公尺的三角地算出 126 公尺圍籬與 107,100 元料費。" />
+  <meta property="og:title" content="三角形周長怎麼算？三邊相加公式與三角不等式" />
+  <meta property="og:description" content="難點不在加法，而在三角不等式、座標求邊長，以及周長相同面積卻差 21.2%。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/triangle-perimeter.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/triangle-perimeter.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "三角形周長怎麼算？三邊相加公式與三角不等式", "url": "https://labs.moneyai168.com/formulas/triangle-perimeter.html", "datePublished": "2026-09-22", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "三角形周長", "item": "https://labs.moneyai168.com/formulas/triangle-perimeter.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "a + b + c",
+    "cases": [
+    {"input":{"a":28,"b":45,"c":53},"expect":126,"tol":1e-09,"text":"126"},
+    {"expr":"(a + b + c) / 2","input":{"a":28,"b":45,"c":53},"expect":63,"tol":1e-09,"text":"63"},
+    {"expr":"0.5 * a * b","input":{"a":28,"b":45},"expect":630,"tol":1e-09,"text":"630"},
+    {"expr":"(a + b + c) * p","input":{"a":28,"b":45,"c":53,"p":850},"expect":107100,"tol":1e-06,"text":"107,100"},
+    {"expr":"a + b + c - d","input":{"a":28,"b":45,"c":53,"d":3},"expect":123,"tol":1e-09,"text":"123"},
+    {"expr":"(a + b + c - d) * p","input":{"a":28,"b":45,"c":53,"d":3,"p":850},"expect":104550,"tol":1e-06,"text":"104,550"},
+    {"expr":"a + b","input":{"a":5,"b":6},"expect":11,"tol":1e-09,"text":"11"},
+    {"input":{"a":5,"b":6,"c":12},"expect":23,"tol":1e-09,"text":"23"},
+    {"expr":"b - a","input":{"a":5,"b":6},"expect":1,"tol":1e-09,"text":"1"},
+    {"expr":"2 * b","input":{"b":6},"expect":12,"tol":1e-09,"text":"12"},
+    {"expr":"2 * (a + b)","input":{"a":5,"b":6},"expect":22,"tol":1e-09,"text":"22"},
+    {"input":{"a":5,"b":6,"c":10},"expect":21,"tol":1e-09,"text":"21"},
+    {"expr":"3 * a","input":{"a":8},"expect":24,"tol":1e-09,"text":"24"},
+    {"input":{"a":5,"b":5,"c":8},"expect":18,"tol":1e-09,"text":"18"},
+    {"expr":"P / 3","input":{"P":36},"expect":12,"tol":1e-09,"text":"12"},
+    {"expr":"x2 - x1","input":{"x1":1,"x2":7},"expect":6,"tol":1e-09,"text":"6"},
+    {"expr":"y2 - y1","input":{"y1":2,"y2":10},"expect":8,"tol":1e-09,"text":"8"},
+    {"expr":"sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)","input":{"x1":1,"y1":2,"x2":7,"y2":10},"expect":10,"tol":1e-09,"text":"10"},
+    {"expr":"sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)","input":{"x1":1,"y1":2,"x2":13,"y2":2},"expect":12,"tol":1e-09,"text":"12"},
+    {"input":{"a":10,"b":10,"c":12},"expect":32,"tol":1e-09,"text":"32"},
+    {"input":{"a":3,"b":4,"c":5},"expect":12,"tol":1e-09,"text":"12"},
+    {"expr":"0.5 * b * h","input":{"b":3,"h":4},"expect":6,"tol":1e-09,"text":"6"},
+    {"expr":"a * k","input":{"a":3,"k":2.5},"expect":7.5,"tol":1e-09,"text":"7.5"},
+    {"expr":"a * k","input":{"a":5,"k":2.5},"expect":12.5,"tol":1e-09,"text":"12.5"},
+    {"input":{"a":7.5,"b":10,"c":12.5},"expect":30,"tol":1e-09,"text":"30"},
+    {"expr":"P2 / P1","input":{"P2":30,"P1":12},"expect":2.5,"tol":1e-09,"text":"2.5"},
+    {"expr":"k ** 2","input":{"k":2.5},"expect":6.25,"tol":1e-09,"text":"6.25"},
+    {"expr":"A * k ** 2","input":{"A":6,"k":2.5},"expect":37.5,"tol":1e-09,"text":"37.5"},
+    {"expr":"P / 3","input":{"P":126},"expect":42,"tol":1e-09,"text":"42"},
+    {"expr":"sqrt(3) / 4 * a ** 2","input":{"a":42},"expect":763.8344061378748,"tol":0.005,"text":"763.83"},
+    {"expr":"(sqrt(3) / 4 * a ** 2) / S - 1","input":{"a":42,"S":630},"expect":0.21243556529821395,"tol":1e-09,"scale":100,"text":"21.2"},
+    {"input":{"a":2800,"b":4500,"c":5300},"expect":12600,"tol":1e-06,"text":"12,600"},
+    {"expr":"k ** 2","input":{"k":100},"expect":10000,"tol":1e-06,"text":"10,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #12 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">三角形周長怎麼算？三邊相加公式與三角不等式</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-22</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一塊三角地三邊實測 28、45、53 公尺，圍一圈要 126 公尺的籬笆。
+        三角形周長沒有係數、沒有次方、沒有根號——三邊加起來就結束。出錯的不是加法，
+        而是三件事：那三個數字圍不圍得成三角形、邊長是否得先從座標算出來、
+        以及周長一樣不代表面積一樣（同樣 126 公尺，等邊三角形多出 21.2%）。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P = a + b + c</div>
+          <div class="formula-box-note">a、b、c 為三邊長 · 需為同一長度單位 · 需滿足任兩邊和大於第三邊</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>周長：沿三邊繞一圈的總長度</td><td>長度（m、cm）</td><td>三角地 60 ～ 200 m</td></tr>
+            <tr><td>a、b、c</td><td>三邊長（順序不影響結果）</td><td>同 P</td><td>3 ～ 60 m</td></tr>
+          </tbody>
+        </table>
+
+        <h2>周長為什麼不需要任何係數？</h2>
+        <p>
+          面積要除以 2、圓要乘 π，因為那些量把長度組合成新的維度。周長不是：
+          沿邊界走一圈走過的正好是三條線段，相加即可，維度從頭到尾都是長度的一次方。
+        </p>
+        <p>
+          三角地三邊 28、45、53 公尺，周長 28 + 45 + 53 = <strong>126</strong> 公尺；
+          圍籬報價每公尺 850 元，料費 126 × 850 = <strong>107,100</strong> 元。
+          實務上很少圍滿一圈：留一道 3 公尺寬的入口，實圍 <strong>123</strong> 公尺，
+          料費降為 <strong>104,550</strong> 元。周長是線性的，扣多少就少算多少，
+          不像面積那樣得重新量一塊形狀。
+        </p>
+        <p>
+          半周長 s = 126 / 2 = <strong>63</strong> 公尺是海倫公式的入口參數——周長除了圍籬、跑道，
+          最常見的用途就是餵給它。這塊地兩短邊垂直，面積用兩股算得
+          <strong>630</strong> 平方公尺。
+        </p>
+
+        <h2>5、6、12 圍不成三角形：三角不等式怎麼判</h2>
+        <p>
+          加法不會出錯，輸入卻可能不合法。三段要能首尾相接，必須滿足任兩邊和大於第三邊。
+          木條量到 5、6、12 公尺時，短的兩段只有 <strong>11</strong> 公尺，比最長的 12 還短，
+          兩端在空中就碰不到——此時算出 <strong>23</strong> 這個「周長」沒有意義。
+        </p>
+        <p>
+          把最長那段改成 10 公尺就成立了：5 + 6 = 11 大於 10，周長是
+          5 + 6 + 10 = <strong>21</strong> 公尺。
+        </p>
+        <p>
+          固定兩邊 5 和 6 時，第三邊 c 的合法範圍是兩邊差到兩邊和之間：<strong>1</strong>
+          &lt; c &lt; 11，周長範圍因此是 <strong>12</strong> &lt; P &lt; <strong>22</strong>。
+          量到的三段若落在範圍外，代表某一段量錯了——這比事後發現圍不起來便宜得多。
+        </p>
+
+        <h2>等邊與等腰：把加法縮成一次乘法</h2>
+        <p>
+          等邊三角形周長是邊長乘 3：邊長 8 公尺的花圃，周長 3 × 8 = <strong>24</strong> 公尺。
+          等腰兩腰相等，腰 5、底 8 時周長 5 + 5 + 8 = <strong>18</strong> 公尺。反解也常用：
+          一捆 36 公尺的繩子圍成等邊三角形，每邊 36 / 3 = <strong>12</strong> 公尺——
+          周長是一次式，反解只是除法，不像面積要開根號。
+        </p>
+
+        <h2>只有座標時：先求三段距離，再相加</h2>
+        <p>
+          圖面或測量軟體給的常是頂點座標而非邊長，做法是用兩點距離公式各求一邊再加總。
+          三個頂點 A(1, 2)、B(7, 10)、C(13, 2)：AB 的水平差 <strong>6</strong>、垂直差
+          <strong>8</strong>，長度 √(6² + 8²) = <strong>10</strong>；BC 同樣是 10；
+          AC 兩點的 y 相同，長度就是 x 的差 <strong>12</strong>。
+          周長 10 + 10 + 12 = <strong>32</strong>。
+        </p>
+        <p>
+          距離公式的開根號通常除不盡，三邊要各自算到完整精度再相加；
+          每段先四捨五入，誤差會累積且永遠同方向。
+        </p>
+
+        <h2>放大 2.5 倍，周長也是 2.5 倍，面積卻是 6.25 倍</h2>
+        <p>
+          三邊 3、4、5 的三角形周長 <strong>12</strong>、面積 ½ × 3 × 4 = <strong>6</strong>。
+          放大 2.5 倍後三邊變成 <strong>7.5</strong>、10、<strong>12.5</strong>，
+          周長 7.5 + 10 + 12.5 = <strong>30</strong>。30 / 12 = <strong>2.5</strong>，
+          周長倍率和邊長倍率一模一樣，因為周長是長度的一次式。面積不是：倍率要平方，
+          2.5² = <strong>6.25</strong>，面積變成 6 × 6.25 = <strong>37.5</strong>。
+          同一個放大動作，圍籬只變 2.5 倍、草皮卻變 6.25 倍，估價不能共用倍率。
+        </p>
+        <p>
+          反過來更違反直覺：周長固定時面積並不固定。同樣 126 公尺的籬笆圍成等邊三角形，
+          每邊 126 / 3 = <strong>42</strong> 公尺，面積 <strong>763.83</strong> 平方公尺，
+          比 28／45／53 那塊直角三角地多出 <strong>21.2</strong>%——籬笆一樣長、地大了兩成。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把面積當成周長報出去</strong>：3、4、5 的三角形周長 12、面積 <strong>6</strong>，
+            同一個數量級，混用時不顯荒謬，最難察覺。分辨法是看單位——周長是公尺、面積是平方公尺；
+            報價寫「每公尺 850 元」卻乘了面積，金額會整個錯掉。<br /><br />
+            <strong>單位倍率套錯</strong>：雷射測距儀預設輸出公分，同一塊地量成
+            2800、4500、5300 公分，周長 <strong>12,600</strong> 公分，除以 100 換回 126 公尺。
+            這裡容易被面積的習慣帶歪——面積換算要除以 100² = <strong>10,000</strong>，周長只除以
+            100。長度、面積、體積的倍率分別是一次、二次、三次方，記混就差好幾個數量級。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的三角形周長計算機。先輸入 28、45、53 確認是不是 126，
+          再填自己量到的三段——記得先檢查最長邊比另兩邊的和短。
+        </p>
+
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 三角形周長 #12</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=12" title="三角形周長互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/triangle-area.html">三角形面積 — 底乘高除以 2</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離 — 有座標時用它求邊長</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 直角缺一邊時的補法</a></li>
+          <li><a href="/formulas/rectangle-perimeter.html">矩形周長 — 邊界相加</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：三角形周長與三角不等式為初等幾何標準結果，採教科書定義，三邊需滿足任兩邊之和
+        嚴格大於第三邊（等號成立時退化為線段）；相似形周長比等於邊長比、面積比等於邊長比平方；
+        等邊三角形面積採 √3⁄4 × a²。文中數值皆以 P = a + b + c 及其變形獨立驗算，
+        計算使用完整精度、僅顯示時四捨五入。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
