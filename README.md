@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-23**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/cone-volume.html`（#10 · 數學 · Free，⅓πr²h 三步拆解；除以 3 來自同底同高圓柱裝得下三個圓錐，r 帶平方所以半徑加倍體積四倍、高加倍只有兩倍；最常見的錯是把沿外側量到的斜高 12.37 當垂直高 12，高估 3.08%；錐球柱在 h=2r 時是 1:2:3）、`formulas/triangle-perimeter.html`（#12 · 數學 · Free，P = a+b+c 沒有係數，出錯的是三角不等式——5、6、12 圍不起來，固定兩邊 5、6 時 12 < P < 22；周長倍率等於邊長倍率、面積要平方，放大 2.5 倍是 2.5 對 6.25；周長固定面積不固定，同樣 126 公尺圍等邊比 28／45／53 直角三角地多 21.2%）。
+  Formula 卡片 #10、#12 由 placeholder 轉為連結，Tier 皆一致故分類計數與註腳不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 18+33 case 全過）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-09-23.
+
 - **2026-09-21**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/cuboid-volume.html`（#9 · 數學 · Free，長×寬×高只是起點，卡住人的是換算：60×40×30 紙箱＝72,000 cm³＝72 公升＝0.072 CBM；「才」有 28,316.85 與 27,000 兩種口徑，同箱差 4.88%，是報價對不攏的主因；體積重除數 5000 等於假設每立方公尺 200 公斤，同箱 14.4 kg 對 12 kg；等比放大走三次方，三邊各放大 1.1 倍容積變 1.331 倍）。
   Formula 卡片 #9 由 placeholder 轉為連結，Tier 一致故分類計數與註腳不變。
