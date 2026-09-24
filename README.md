@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-24**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/square.html`（#15 · 數學 · Free，x² 平方：144 m² 換算 43.56 坪、邊長加倍面積變 4 倍、(a+b)² 的交叉項）。
+  Formula 卡片由 placeholder 轉為連結（55 → 54），Tier 一致故分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 36 cases）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-24.
 - **2026-09-23**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/cone-volume.html`（#10 · 數學 · Free，⅓πr²h 三步拆解；除以 3 來自同底同高圓柱裝得下三個圓錐，r 帶平方所以半徑加倍體積四倍、高加倍只有兩倍；最常見的錯是把沿外側量到的斜高 12.37 當垂直高 12，高估 3.08%；錐球柱在 h=2r 時是 1:2:3）、`formulas/triangle-perimeter.html`（#12 · 數學 · Free，P = a+b+c 沒有係數，出錯的是三角不等式——5、6、12 圍不起來，固定兩邊 5、6 時 12 < P < 22；周長倍率等於邊長倍率、面積要平方，放大 2.5 倍是 2.5 對 6.25；周長固定面積不固定，同樣 126 公尺圍等邊比 28／45／53 直角三角地多 21.2%）。
   Formula 卡片 #10、#12 由 placeholder 轉為連結，Tier 皆一致故分類計數與註腳不變。
