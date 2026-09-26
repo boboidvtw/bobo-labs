@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-09-26**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/square-root.html`（#17 · 數學 · Free，√x 平方根：200 m² 地坪邊長 14.142 公尺、夾擠法與牛頓迭代手算開方、1–15 平方根表、√(a+b) ≠ √a + √b）。
+  Formula 卡片由 placeholder 轉為連結（53 → 52），Tier 一致故分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 33 case）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-26.
+
 - **2026-09-25**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/cube.html`（#16 · 數學 · Free，x³ 立方：2 公尺見方水塔 8 m³／8,000 公升、邊長加五成體積變 3.375 倍、平方立方定律）。
   Formula 卡片由 placeholder 轉為連結（54 → 53），Tier 一致故分類計數與註腳不動。
