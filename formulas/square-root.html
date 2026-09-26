@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>平方根怎麼算？√x 手算開方與估算法（200 平方公尺地坪實例）· Bobo Labs</title>
+  <meta name="description" content="平方根怎麼算？√x 是平方的反運算。本文用 200 平方公尺的正方形地坪算出邊長 14.142 公尺，示範夾擠法與牛頓迭代兩種手算開方、附 1 到 15 平方根表，並說明 √(a+b) 為何不等於 √a + √b。" />
+  <meta property="og:title" content="平方根怎麼算？√x 手算開方與估算法" />
+  <meta property="og:description" content="難的不是按計算機，是沒有計算機時怎麼估、面積加倍為何邊長只乘 1.4142、以及 √(a+b) 不能拆開。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/square-root.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/square-root.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "平方根怎麼算？√x 手算開方與估算法", "url": "https://labs.moneyai168.com/formulas/square-root.html", "datePublished": "2026-09-25", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "平方根", "item": "https://labs.moneyai168.com/formulas/square-root.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "sqrt(x)",
+    "cases": [
+{"input":{"x":200},"expect":14.142135623730951,"tol":1e-09,"text":"14.142"},
+{"expr":"x ** 2","input":{"x":14},"expect":196,"tol":1e-09,"text":"196"},
+{"expr":"x ** 2","input":{"x":15},"expect":225,"tol":1e-09,"text":"225"},
+{"expr":"4 * sqrt(A)","input":{"A":200},"expect":56.568542494923804,"tol":1e-09,"text":"56.57"},
+{"expr":"sqrt(b / a)","input":{"a":200,"b":400},"expect":1.4142135623730951,"tol":1e-09,"text":"1.4142"},
+{"expr":"sqrt(b / a) - 1","input":{"a":200,"b":400},"expect":0.41421356237309515,"tol":1e-09,"scale":100,"text":"41.42"},
+{"expr":"a + (A - a ** 2) / ((a + 1) ** 2 - a ** 2)","input":{"a":14,"A":200},"expect":14.137931034482758,"tol":1e-09,"text":"14.14"},
+{"expr":"A / x","input":{"A":200,"x":14},"expect":14.285714285714286,"tol":1e-09,"text":"14.285714"},
+{"expr":"(x + A / x) / 2","input":{"x":14,"A":200},"expect":14.142857142857142,"tol":1e-09,"text":"14.142857"},
+{"expr":"(x + A / x) / 2","input":{"x":14.142857142857142,"A":200},"expect":14.142135642135642,"tol":1e-09,"text":"14.142"},
+{"input":{"x":2},"expect":1.4142135623730951,"tol":1e-09,"text":"1.4142"},
+{"input":{"x":3},"expect":1.7320508075688772,"tol":1e-09,"text":"1.7321"},
+{"input":{"x":5},"expect":2.23606797749979,"tol":1e-09,"text":"2.2361"},
+{"input":{"x":6},"expect":2.449489742783178,"tol":1e-09,"text":"2.4495"},
+{"input":{"x":7},"expect":2.6457513110645907,"tol":1e-09,"text":"2.6458"},
+{"input":{"x":8},"expect":2.8284271247461903,"tol":1e-09,"text":"2.8284"},
+{"input":{"x":10},"expect":3.1622776601683795,"tol":1e-09,"text":"3.1623"},
+{"input":{"x":11},"expect":3.3166247903554,"tol":1e-09,"text":"3.3166"},
+{"input":{"x":12},"expect":3.4641016151377544,"tol":1e-09,"text":"3.4641"},
+{"input":{"x":13},"expect":3.605551275463989,"tol":1e-09,"text":"3.6056"},
+{"input":{"x":14},"expect":3.7416573867739413,"tol":1e-09,"text":"3.7417"},
+{"input":{"x":15},"expect":3.872983346207417,"tol":1e-09,"text":"3.8730"},
+{"input":{"x":1},"expect":1.0,"tol":1e-09,"text":"1"},
+{"input":{"x":4},"expect":2.0,"tol":1e-09,"text":"2"},
+{"input":{"x":9},"expect":3.0,"tol":1e-09,"text":"3"},
+{"input":{"x":400},"expect":20.0,"tol":1e-09,"text":"20"},
+{"expr":"sqrt(a ** 2 + b ** 2)","input":{"a":6,"b":8},"expect":10.0,"tol":1e-09,"text":"10"},
+{"expr":"sqrt(A / pi)","input":{"A":50},"expect":3.989422804014327,"tol":1e-09,"text":"3.99"},
+{"expr":"d * sqrt(n)","input":{"d":0.01,"n":252},"expect":0.15874507866387544,"tol":1e-09,"scale":100,"text":"15.87"},
+{"expr":"d * sqrt(n)","input":{"d":0.05,"n":12},"expect":0.17320508075688773,"tol":1e-09,"scale":100,"text":"17.32"},
+{"expr":"sqrt(a + b)","input":{"a":9,"b":16},"expect":5.0,"tol":1e-09,"text":"5"},
+{"expr":"sqrt(a) + sqrt(b)","input":{"a":9,"b":16},"expect":7.0,"tol":1e-09,"text":"7"},
+{"expr":"sqrt(x ** 2)","input":{"x":-5},"expect":5.0,"tol":1e-09,"text":"5"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #17 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">平方根怎麼算？√x 手算開方與估算法</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-25</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一塊 200 平方公尺的正方形地坪，邊長是 √200 = 14.142 公尺。
+        平方根是平方的反運算：平方把邊長變成面積，平方根把面積還原成邊長。
+        會用到的場合幾乎都是「知道結果、回推原因」：知道面積回推邊長、知道變異數回推標準差。
+        按計算機只要一秒，難的是沒有計算機時怎麼估，以及面積加倍時邊長為何只乘 1.4142。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = √x，且 y ≥ 0、y<sup>2</sup> = x</div>
+          <div class="formula-box-note">x 為被開方數（必須 ≥ 0）· √x 指非負的那個根，即算術平方根</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>被開方數，幾何上即正方形面積</td><td>面積（m²）或無單位</td><td>x ≥ 0</td></tr>
+            <tr><td>√x</td><td>算術平方根，幾何上即正方形邊長</td><td>x 單位的平方根（m）</td><td>非負實數</td></tr>
+          </tbody>
+        </table>
+
+        <h2>200 平方公尺的正方形地坪，邊長是幾公尺？</h2>
+        <p>
+          先夾擠：14<sup>2</sup> = <strong>196</strong>、15<sup>2</sup> = <strong>225</strong>，
+          200 落在兩者之間且靠近 196，邊長因此在 14 與 15 之間、偏 14。
+          精算得 √200 = <strong>14.142</strong> 公尺，四邊圍籬合計 4 × √200 =
+          <strong>56.57</strong> 公尺。
+        </p>
+        <p>
+          單位也要跟著開方：面積單位是平方公尺，開完根號剩下公尺。
+          反過來量到邊長再平方就回到面積——<a href="/formulas/square.html">平方</a>
+          與平方根互為往返，和<a href="/formulas/cube.html">立方</a>與立方根的關係一致。
+        </p>
+        <p>
+          地坪從 200 平方公尺擴到 400 平方公尺，面積是兩倍，邊長卻只從 14.142 公尺變成
+          <strong>20</strong> 公尺，倍率 √2 = <strong>1.4142</strong>，只多 <strong>41.42</strong>%。
+          想讓邊長翻倍，面積得變四倍。預算抓在面積上、感受卻在長度上，估工程量最易在此低估。
+        </p>
+
+        <h2>沒有計算機怎麼開平方？夾擠法與牛頓迭代</h2>
+        <p>
+          夾擠法只要記得平方表。200 夾在 196 與 225 之間，兩者相差 29，200 比 196 多 4，
+          按比例補 4/29：14 + 4/29 ≈ <strong>14.14</strong>。誤差不到千分之一，工地夠用。
+        </p>
+        <p>
+          要更準就用牛頓迭代，規則是「猜一個數，把它和『被開方數除以它』取平均」。
+          從 14 出發：200 ÷ 14 = <strong>14.285714</strong>，與 14 取平均得
+          <strong>14.142857</strong>，一輪就對到小數第 4 位。
+        </p>
+        <p>
+          把 14.142857 再代回同一式，得 <strong>14.142</strong>——與真值的前 7 位小數完全相同。
+          每迭代一次有效位數約翻倍，計算機內部跑的就是這套邏輯。
+        </p>
+
+        <h2>1 到 15 的平方根表與心算用法</h2>
+        <table class="formula-vars">
+          <thead><tr><th>x</th><th>√x</th><th>x</th><th>√x</th><th>x</th><th>√x</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>6</td><td>2.4495</td><td>11</td><td>3.3166</td></tr>
+            <tr><td>2</td><td>1.4142</td><td>7</td><td>2.6458</td><td>12</td><td>3.4641</td></tr>
+            <tr><td>3</td><td>1.7321</td><td>8</td><td>2.8284</td><td>13</td><td>3.6056</td></tr>
+            <tr><td>4</td><td>2</td><td>9</td><td>3</td><td>14</td><td>3.7417</td></tr>
+            <tr><td>5</td><td>2.2361</td><td>10</td><td>3.1623</td><td>15</td><td>3.8730</td></tr>
+          </tbody>
+        </table>
+        <p>
+          表裡只有 1、4、9 開得盡，根號值是 1、<strong>2</strong>、<strong>3</strong>，其餘都是無理數。
+          完全平方數往上還有 16、25、36、⋯、400，
+          而 √400 = <strong>20</strong>。
+        </p>
+        <p>
+          配合提取平方因數就能擴充。√200 拆成 √(100 × 2) = 10 × √2，查表得 √2 =
+          <strong>1.4142</strong>，乘 10 即得 14.142，與前面精算一致。
+          同理 √50 = 5√2、√300 = 10√3：先把完全平方數提到根號外，剩下的查表。
+        </p>
+
+        <h2>√x 在其他公式裡做什麼？</h2>
+        <p>
+          最常見的是還原長度。<a href="/formulas/pythagorean-theorem.html">畢氏定理</a>算對角線：
+          長 6 公尺寬 8 公尺的房間，對角線 √(6² + 8²) = <strong>10</strong> 公尺，
+          搬長桌進不進得去就看這個數。<a href="/formulas/distance-formula.html">兩點距離</a>同理。
+        </p>
+        <p>
+          <a href="/formulas/circle-area.html">圓面積</a>反推半徑也要開方：要圍出 50 平方公尺的
+          圓形區域，r = √(50 ÷ π) = <strong>3.99</strong> 公尺——面積公式裡半徑是平方項。
+        </p>
+        <p>
+          金融的波動率也靠開方：波動度隨時間的平方根放大，不是等比放大。
+          日波動 1% 換算年化要乘 √252（一年約 252 個交易日），得 <strong>15.87</strong>%；
+          月波動 5% 換算年化乘 √12，得 <strong>17.32</strong>%。把「乘以 252」當年化會大到不能看。
+          標準差同理，變異數開平方後才與原始資料同單位。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>√(a+b) 不等於 √a + √b。</strong>a = 9、b = 16 時，√(9+16) = √25 = <strong>5</strong>，
+            但 √9 + √16 = 3 + 4 = <strong>7</strong>。根號可以拆乘除（√(ab) = √a·√b），不能拆加減。
+            第二個是正負號：√(x²) 等於 |x| 而不是 x，x = -5 時 √((-5)²) = <strong>5</strong>，
+            負號在平方時已被吃掉，開方只會給回非負值。解方程式時 x² = 25 有 ±5 兩個解，
+            但 √25 這個符號本身只代表 5，兩件事不要混為一談。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 平方根計算機，輸入面積或任意非負數值即得結果。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 平方根 #17</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=17" title="平方根互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/square.html">平方 — 平方根的反運算</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">畢氏定理 — 開方最常見的使用現場</a></li>
+          <li><a href="/formulas/circle-area.html">圓面積 — 反推半徑時的根號</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離 — 座標版的開方</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        算術平方根定義依國中數學課綱：√x 指 x 的非負平方根，x 必須非負。
+        年化交易日以 252 日計，為金融業常用慣例值。本文僅作數學說明，不構成投資建議。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
