@@ -20,7 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-26**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-27**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/cube-root.html`（#18 · 數學 · Free，∛x 立方根：2000 公升立方體水塔邊長 1.2599 公尺、夾擠法與牛頓迭代手算開立方、1–12 立方根表、三年年均成長率 16.96%、∛(a+b) ≠ ∛a + ∛b 與負數可開立方根）。
+  Formula 卡片由 placeholder 轉為連結（52 → 51），Tier 一致故分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 31 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-27.
+
+- **2026-09-26** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/square-root.html`（#17 · 數學 · Free，√x 平方根：200 m² 地坪邊長 14.142 公尺、夾擠法與牛頓迭代手算開方、1–15 平方根表、√(a+b) ≠ √a + √b）。
   Formula 卡片由 placeholder 轉為連結（53 → 52），Tier 一致故分類計數與註腳不動。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 33 case）自動上線。
