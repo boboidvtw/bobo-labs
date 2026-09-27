@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>立方根怎麼算？∛x 手算開立方與估算法（2000 公升水塔實例）· Bobo Labs</title>
+  <meta name="description" content="立方根怎麼算？∛x 是立方的反運算。本文用 2000 公升的立方體水塔算出邊長 1.2599 公尺，示範夾擠法與牛頓迭代兩種手算開立方、附 1 到 12 立方根表，並說明負數為何能開立方根、∛(a+b) 為何不等於 ∛a + ∛b。" />
+  <meta property="og:title" content="立方根怎麼算？∛x 手算開立方與估算法" />
+  <meta property="og:description" content="容量加倍、邊長只多 25.99%；三年成長率也是同一條立方根。附手算法與 1 到 12 立方根表。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/cube-root.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/cube-root.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "立方根怎麼算？∛x 手算開立方與估算法", "url": "https://labs.moneyai168.com/formulas/cube-root.html", "datePublished": "2026-09-26", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "立方根", "item": "https://labs.moneyai168.com/formulas/cube-root.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "x**(1/3)",
+    "cases": [
+{"input":{"x":2},"expect":1.2599210498948732,"tol":1e-9,"text":"1.2599"},
+{"expr":"A**(1/3)*100","input":{"A":2},"expect":125.99210498948732,"tol":1e-9,"text":"125.99"},
+{"expr":"x**3","input":{"x":1.2},"expect":1.728,"tol":1e-9,"text":"1.728"},
+{"expr":"x**3","input":{"x":1.3},"expect":2.197,"tol":1e-9,"text":"2.197"},
+{"input":{"x":4},"expect":1.5874010519681994,"tol":1e-9,"text":"1.5874"},
+{"expr":"(b/a)**(1/3)-1","input":{"a":2,"b":4},"expect":0.2599210498948732,"tol":1e-9,"scale":100,"text":"25.99"},
+{"expr":"k**3","input":{"k":2},"expect":8,"tol":1e-9,"text":"8"},
+{"expr":"6*(A**(1/3))**2","input":{"A":2},"expect":9.524406311809198,"tol":1e-9,"text":"9.5244"},
+{"expr":"a+(A-a**3)/((a+0.1)**3-a**3)*0.1","input":{"a":1.2,"A":2},"expect":1.2579957356076759,"tol":1e-9,"text":"1.2580"},
+{"expr":"A/x**2","input":{"A":2,"x":1.2},"expect":1.3888888888888888,"tol":1e-9,"text":"1.388889"},
+{"expr":"(2*x+A/x**2)/3","input":{"x":1.2,"A":2},"expect":1.2629629629629628,"tol":1e-9,"text":"1.262963"},
+{"expr":"(2*x+A/x**2)/3","input":{"x":1.2629629629629628,"A":2},"expect":1.2599283706211464,"tol":1e-9,"text":"1.2599"},
+{"input":{"x":1},"expect":1.0,"tol":1e-9,"text":"1"},
+{"input":{"x":3},"expect":1.4422495703074083,"tol":1e-9,"text":"1.4422"},
+{"input":{"x":5},"expect":1.7099759466766968,"tol":1e-9,"text":"1.7100"},
+{"input":{"x":6},"expect":1.8171205928321397,"tol":1e-9,"text":"1.8171"},
+{"input":{"x":7},"expect":1.912931182772389,"tol":1e-9,"text":"1.9129"},
+{"input":{"x":8},"expect":2.0,"tol":1e-9,"text":"2"},
+{"input":{"x":9},"expect":2.080083823051904,"tol":1e-9,"text":"2.0801"},
+{"input":{"x":10},"expect":2.154434690031884,"tol":1e-9,"text":"2.1544"},
+{"input":{"x":11},"expect":2.2239800905693152,"tol":1e-9,"text":"2.2240"},
+{"input":{"x":12},"expect":2.2894284851066637,"tol":1e-9,"text":"2.2894"},
+{"input":{"x":27},"expect":3.0,"tol":1e-9,"text":"3"},
+{"input":{"x":1000},"expect":10.0,"tol":1e-9,"text":"10"},
+{"input":{"x":2000},"expect":12.59921049894873,"tol":1e-9,"text":"12.599"},
+{"expr":"(3*V/(4*pi))**(1/3)","input":{"V":2},"expect":0.781592641796772,"tol":1e-9,"text":"0.7816"},
+{"expr":"(B/A)**(1/3)-1","input":{"A":5000,"B":8000},"expect":0.1696070952851465,"tol":1e-9,"scale":100,"text":"16.96"},
+{"expr":"B/A-1","input":{"A":5000,"B":8000},"expect":0.6,"tol":1e-9,"scale":100,"text":"60"},
+{"input":{"x":35},"expect":3.2710663101885897,"tol":1e-9,"text":"3.2711"},
+{"expr":"a**(1/3)+b**(1/3)","input":{"a":8,"b":27},"expect":5.0,"tol":1e-9,"text":"5"},
+{"expr":"-((-y)**(1/3))","input":{"y":-27},"expect":-3.0,"tol":1e-9,"text":"-3"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #18 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">立方根怎麼算？∛x 手算開立方與估算法</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-26</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一座 2000 公升的立方體水塔，容積是 2 立方公尺，邊長為 ∛2 = 1.2599 公尺。
+        立方根是立方的反運算：立方把邊長變成體積，立方根把體積還原成邊長。
+        用到它的場合都是「知道結果、回推尺度」——知道容積回推邊長、知道三年總成長回推年均成長。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = ∛x，且 y<sup>3</sup> = x</div>
+          <div class="formula-box-note">x 為被開方數（正負皆可）· ∛x 指唯一的實數立方根，正負號與 x 相同</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>被開方數，幾何上即正立方體體積</td><td>體積（m³）或無單位</td><td>任意實數</td></tr>
+            <tr><td>∛x</td><td>實數立方根，幾何上即立方體邊長</td><td>x 單位的立方根（m）</td><td>與 x 同號</td></tr>
+          </tbody>
+        </table>
+
+        <h2>2000 公升的立方體水塔，邊長是幾公分？</h2>
+        <p>
+          2000 公升等於 2 立方公尺。先夾擠：1.2<sup>3</sup> = <strong>1.728</strong>、
+          1.3<sup>3</sup> = <strong>2.197</strong>，2 落在兩者之間，邊長就在 1.2 與 1.3 公尺之間。
+          精算得 ∛2 = <strong>1.2599</strong> 公尺，即 <strong>125.99</strong> 公分。
+          單位跟著開立方：體積是立方公尺，開完根號剩下公尺。
+        </p>
+        <p>
+          反過來量到邊長再立方就回到體積——<a href="/formulas/cube.html">立方</a>與立方根互為往返，
+          和<a href="/formulas/square.html">平方</a>與<a href="/formulas/square-root.html">平方根</a>的關係一致，只是指數從 2 換成 3。
+        </p>
+        <p>
+          水塔從 2 立方公尺換成 4 立方公尺，容量翻倍，邊長卻只從 1.2599 公尺變成
+          <strong>1.5874</strong> 公尺，只多 <strong>25.99</strong>%；反過來邊長翻倍，容量會變
+          <strong>8</strong> 倍。外殼用料也由邊長決定，六面合計 6 × ∛4 = <strong>9.5244</strong>
+          平方公尺，容量翻倍時鋼板只增加約六成——這是大水塔單位造價較低的幾何原因。
+        </p>
+
+        <h2>沒有計算機怎麼開立方？夾擠法與牛頓迭代</h2>
+        <p>
+          夾擠法只要記得幾個立方值。2 落在 1.728 與 2.197 之間、偏向下界，按兩者的間距線性內插，
+          得 <strong>1.2580</strong>，與真值誤差不到 0.2%，現場放樣夠用。
+        </p>
+        <p>
+          要更準就用牛頓迭代，規則是「兩倍舊值，加上被開方數除以舊值平方，再除以 3」。
+          從 1.2 出發：2 ÷ 1.2<sup>2</sup> = <strong>1.388889</strong>，
+          代入得 (2 × 1.2 + 1.388889) ÷ 3 = <strong>1.262963</strong>，一輪就對到小數第 2 位。
+        </p>
+        <p>
+          把 1.262963 再代回同一式，得 <strong>1.2599</strong>，與真值在小數第 4 位上一致。
+          每迭代一次有效位數約翻倍，計算機內部跑的就是這套邏輯。
+        </p>
+
+        <h2>1 到 12 的立方根表與心算用法</h2>
+        <table class="formula-vars">
+          <thead><tr><th>x</th><th>∛x</th><th>x</th><th>∛x</th><th>x</th><th>∛x</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>5</td><td>1.7100</td><td>9</td><td>2.0801</td></tr>
+            <tr><td>2</td><td>1.2599</td><td>6</td><td>1.8171</td><td>10</td><td>2.1544</td></tr>
+            <tr><td>3</td><td>1.4422</td><td>7</td><td>1.9129</td><td>11</td><td>2.2240</td></tr>
+            <tr><td>4</td><td>1.5874</td><td>8</td><td>2</td><td>12</td><td>2.2894</td></tr>
+          </tbody>
+        </table>
+        <p>
+          表裡只有 1 與 8 開得盡，其餘都是無理數。完全立方數比完全平方數稀疏得多：
+          1、8、27、64、125、216、343、512、729、1000，十個數就跨到四位數。
+          其中 ∛27 = <strong>3</strong>、∛1000 = <strong>10</strong> 建議直接背。
+        </p>
+        <p>
+          配合提取立方因數就能擴充。水塔那題改用公寸算，2000 公升就是 2000 立方公寸，
+          ∛2000 拆成 ∛(1000 × 2) = 10 × ∛2，查表得 <strong>12.599</strong> 公寸，
+          換回公分正是 125.99，與前面吻合。
+        </p>
+
+        <h2>∛x 在其他公式裡做什麼？</h2>
+        <p>
+          最常見的是從體積回推尺寸。<a href="/formulas/sphere-volume.html">球體積</a>反推半徑要開立方：
+          同樣裝 2 立方公尺，球形容器半徑 r = ∛(3 × 2 ÷ 4π) = <strong>0.7816</strong> 公尺，
+          直徑超過立方體的 1.2599 公尺邊長——球省料，佔的方正空間卻更大。
+          <a href="/formulas/cuboid-volume.html">長方體</a>三邊不等時，立方根給的是「等效正立方體邊長」，
+          用來比較不同形狀容器的尺度量級。
+        </p>
+        <p>
+          財務上，三年期的年均成長率就是立方根。營收三年從 5000 萬做到 8000 萬，
+          年均成長率是 ∛(8000 ÷ 5000) − 1 = <strong>16.96</strong>%，不是把 <strong>60</strong>% 除以 3。
+          若三年剛好翻倍，年均成長率是 ∛2 − 1 = 25.99%，和水塔邊長那個 25.99% 是同一個數：
+          兩者都在問「連乘三次變成兩倍的係數是多少」。
+          n 期的一般式見<a href="/formulas/compound-interest.html">複利終值</a>，三期只是 n = 3 的特例。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>∛(a+b) 不等於 ∛a + ∛b。</strong>a = 8、b = 27 時，∛35 = <strong>3.2711</strong>，
+            但 ∛8 + ∛27 = 2 + 3 = <strong>5</strong>。根號可以拆乘除、不能拆加減，這點與平方根相同。
+            不同的是正負號：立方根吃得下負數，∛(-27) = <strong>-3</strong>，因為 (-3)<sup>3</sup> = -27，
+            平方根則沒有實數解。實務上最常踩的是程式寫法——多數語言的 <code>x ** (1 / 3)</code>
+            對負數會回傳 NaN 或複數，要先取絕對值開方再補回符號，或直接呼叫內建的 cbrt。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 立方根計算機，輸入體積或任意實數即得結果。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 立方根 #18</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=18" title="立方根互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/cube.html">立方 — 立方根的反運算</a></li>
+          <li><a href="/formulas/square-root.html">平方根 — 指數換成 2 的同一套手算法</a></li>
+          <li><a href="/formulas/sphere-volume.html">球體積 — 反推半徑時的立方根</a></li>
+          <li><a href="/formulas/cuboid-volume.html">長方體體積 — 三邊不等時的對照組</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 年均成長率的一般式</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        實數立方根定義依國中數學課綱：每個實數恰有一個實數立方根，正負號與被開方數相同。
+        單位換算採公制定義（1 立方公尺 = 1000 公升 = 1000 立方公寸）。
+        財務段僅作數學說明，不構成投資建議。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
