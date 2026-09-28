@@ -20,7 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-27**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-28**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/exponential-function.html`（#19 · 數學 · Free，自然指數 eˣ：伯努利複利極限收斂到 e = 2.718281828、100 萬 6% 30 年年複利 5,743,491 對連續複利 6,049,647 差 306,156 元、泰勒級數 9 項手算、eˣ 常用值表、咖啡因半衰期衰減 32.99 毫克、連續複利 EAR 6.18% 對月複利 6.17%、e^(a+b) ≠ e^a + e^b）。
+  Formula 卡片由 placeholder 轉為連結（51 → 50），Tier 一致故分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 26 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-28.
+
+- **2026-09-27** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/cube-root.html`（#18 · 數學 · Free，∛x 立方根：2000 公升立方體水塔邊長 1.2599 公尺、夾擠法與牛頓迭代手算開立方、1–12 立方根表、三年年均成長率 16.96%、∛(a+b) ≠ ∛a + ∛b 與負數可開立方根）。
   Formula 卡片由 placeholder 轉為連結（52 → 51），Tier 一致故分類計數與註腳不動。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 31 case 全過）自動上線。
