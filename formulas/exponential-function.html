@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>e 的 x 次方怎麼算？自然指數 eˣ 與連續複利（100萬30年實例）· Bobo Labs</title>
+  <meta name="description" content="e 的 x 次方怎麼算？自然指數 eˣ 的底數 e = 2.718281828 是連續複利的極限。用 100 萬放 30 年算出連續複利 6,049,647 元，示範泰勒級數手算，說明 e^(a+b) 為何不等於 e^a 加 e^b。" />
+  <meta property="og:title" content="e 的 x 次方怎麼算？自然指數 eˣ 與連續複利" />
+  <meta property="og:description" content="e 是把複利切到無限細的極限。100 萬 30 年連續複利比年複利多 306,156 元，附泰勒級數手算法與 eˣ 常用值表。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/exponential-function.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/exponential-function.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "e 的 x 次方怎麼算？自然指數 eˣ 與連續複利", "url": "https://labs.moneyai168.com/formulas/exponential-function.html", "datePublished": "2026-09-27", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "指數", "item": "https://labs.moneyai168.com/formulas/exponential-function.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "exp(x)",
+    "cases": [
+{"input":{"x":1},"expect":2.718281828459045,"text":"2.718281828"},
+{"expr":"(1+1/n)**n","input":{"n":1},"expect":2.0,"text":"2"},
+{"expr":"(1+1/n)**n","input":{"n":12},"expect":2.613035290224676,"text":"2.6130"},
+{"expr":"(1+1/n)**n","input":{"n":365},"expect":2.7145674820219727,"text":"2.7146"},
+{"expr":"exp(n*ln(1+1/n))","input":{"n":8760},"expect":2.7181266916179077,"text":"2.7181"},
+{"expr":"P*(1+r)**t","input":{"P":1000000,"r":0.06,"t":30},"expect":5743491.172913259,"tol":1,"text":"5,743,491"},
+{"expr":"P*exp(r*t)","input":{"P":1000000,"r":0.06,"t":30},"expect":6049647.464412944,"tol":1,"text":"6,049,647"},
+{"expr":"P*exp(r*t)-P*(1+r)**t","input":{"P":1000000,"r":0.06,"t":30},"expect":306156.2914996855,"tol":1,"text":"306,156"},
+{"expr":"1+x+x**2/2","input":{"x":1},"expect":2.5,"text":"2.5"},
+{"expr":"1+x+x**2/2+x**3/6","input":{"x":1},"expect":2.6666666666666665,"text":"2.666667"},
+{"expr":"1+x+x**2/2+x**3/6+x**4/24+x**5/120","input":{"x":1},"expect":2.7166666666666663,"text":"2.716667"},
+{"expr":"1+x+x**2/2+x**3/6+x**4/24+x**5/120+x**6/720+x**7/5040+x**8/40320","input":{"x":1},"expect":2.71827876984127,"text":"2.7182788"},
+{"input":{"x":0},"expect":1.0,"text":"1"},
+{"input":{"x":2},"expect":7.38905609893065,"text":"7.3891"},
+{"input":{"x":3},"expect":20.085536923187668,"text":"20.0855"},
+{"input":{"x":-1},"expect":0.36787944117144233,"text":"0.3679"},
+{"input":{"x":-2},"expect":0.1353352832366127,"text":"0.1353"},
+{"input":{"x":10},"expect":22026.465794806718,"text":"22,026.4658"},
+{"expr":"ln(2)/H","input":{"H":5},"expect":0.13862943611198905,"text":"0.1386"},
+{"expr":"A*exp(-ln(2)/H*t)","input":{"A":100,"H":5,"t":8},"expect":32.98769776932236,"text":"32.99"},
+{"expr":"exp(r)-1","input":{"r":0.06},"expect":0.06183654654535964,"scale":100,"text":"6.18"},
+{"expr":"(1+r/n)**n-1","input":{"r":0.06,"n":12},"expect":0.06167781186449828,"scale":100,"text":"6.17"},
+{"expr":"exp(a+b)","input":{"a":2,"b":3},"expect":148.4131591025766,"text":"148.4132"},
+{"expr":"exp(a)*exp(b)","input":{"a":2,"b":3},"expect":148.4131591025766,"text":"148.4132"},
+{"expr":"exp(a)+exp(b)","input":{"a":2,"b":3},"expect":27.47459302211832,"text":"27.4746"},
+{"expr":"b**e","input":{"b":2},"expect":6.5808859910179205,"text":"6.5809"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #19 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">e 的 x 次方怎麼算？自然指數 eˣ 與連續複利</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-27</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        eˣ 的底數 e = 2.718281828 不是誰挑的漂亮數字，是把複利切到無限細之後跑出來的極限。
+        100 萬、年利率 6%、放 30 年，年複利得 5,743,491 元，連續複利得 6,049,647 元。
+        凡是「變化率正比於當下數量」的東西——利息、衰變、藥物代謝——都長成 eˣ。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = e<sup>x</sup>，e = lim<sub>n→∞</sub>(1 + 1/n)<sup>n</sup></div>
+          <div class="formula-box-note">x 為指數（任意實數）· e 為自然對數的底，約 2.718281828 · eˣ 恆為正數</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>指數，通常是速率 × 時間</td><td>無單位</td><td>−3 到 3</td></tr>
+            <tr><td>e</td><td>自然對數的底，固定常數</td><td>無單位</td><td>2.718281828</td></tr>
+            <tr><td>eˣ</td><td>自然指數函數值</td><td>無單位</td><td>恆大於 0</td></tr>
+          </tbody>
+        </table>
+
+        <h2>e 從哪裡來？100 萬連續複利算一遍</h2>
+        <p>
+          伯努利 1683 年問過一題：本金 1 元、年利率 100%，一年結算一次，年底拿到 <strong>2</strong> 元；
+          改成每月結算、利息滾入本金呢？(1 + 1/12)<sup>12</sup> = <strong>2.6130</strong> 元。
+          再切細，每天結算得 <strong>2.7146</strong> 元，每小時（一年 8760 次）得 <strong>2.7181</strong> 元。
+        </p>
+        <p>
+          數字沒有無限膨脹，而是往上限收斂，上限就是 e = <strong>2.718281828</strong>。
+          再怎麼細分也只多千分之一——<a href="/formulas/compound-interest.html">複利終值</a>
+          講的邊際遞減在這裡被推到盡頭。
+        </p>
+        <p>
+          利率換成 r、年數換成 t，複利頻率推到無限大，P(1 + r/n)<sup>nt</sup> 就收斂成 P·e<sup>rt</sup>。
+          100 萬、6%、30 年：年複利 P(1.06)<sup>30</sup> = <strong>5,743,491</strong> 元，
+          連續複利 P·e<sup>1.8</sup> = <strong>6,049,647</strong> 元，相差 <strong>306,156</strong> 元。
+          沒有銀行每一瞬間結息，這個差額就是「複利頻率」的理論天花板。
+        </p>
+
+        <h2>沒有計算機怎麼算 eˣ？泰勒級數手算</h2>
+        <p>
+          eˣ 展開成無窮級數：1 + x + x²/2! + x³/3! + x⁴/4! + …，分母是階乘，收斂極快。
+          以 x = 1 逐項累加，看它怎麼逼近 e：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>取到第幾項</th><th>累計和</th><th>取到第幾項</th><th>累計和</th></tr></thead>
+          <tbody>
+            <tr><td>3 項</td><td>2.5</td><td>6 項</td><td>2.716667</td></tr>
+            <tr><td>4 項</td><td>2.666667</td><td>9 項</td><td>2.7182788</td></tr>
+          </tbody>
+        </table>
+        <p>
+          9 項就對到小數第 5 位。對照前一節：每小時結算 8760 次才勉強對到小數第 4 位，
+          級數加 9 項就超越它——算 eˣ 一律走級數，理由就在這裡。
+        </p>
+
+        <h2>eˣ 常用值表與負指數的讀法</h2>
+        <table class="formula-vars">
+          <thead><tr><th>x</th><th>eˣ</th><th>x</th><th>eˣ</th></tr></thead>
+          <tbody>
+            <tr><td>−2</td><td>0.1353</td><td>1</td><td>2.718281828</td></tr>
+            <tr><td>−1</td><td>0.3679</td><td>2</td><td>7.3891</td></tr>
+            <tr><td>0</td><td>1</td><td>3</td><td>20.0855</td></tr>
+          </tbody>
+        </table>
+        <p>
+          e<sup>0</sup> = <strong>1</strong>，每條指數模型在 t = 0 都回到初始值。負指數等於倒數，
+          e<sup>−1</sup> = 1 ÷ 2.718281828 = <strong>0.3679</strong>，成長與衰減共用一條公式、
+          只差 x 的正負號；eˣ 永遠為正，再大的負指數也只逼近 0、碰不到 0。
+        </p>
+        <p>
+          x 每加 1，結果乘上 e 倍：<strong>7.3891</strong>（x = 2）到 <strong>20.0855</strong>（x = 3）
+          是乘 2.718281828，不是加固定量；推到 x = 10 已是 <strong>22,026.4658</strong>。
+          指數的可怕不在起點陡，在它從不減速。
+        </p>
+
+        <h2>eˣ 在哪些公式裡出現？藥物代謝與實質年利率</h2>
+        <p>
+          衰減寫成 A·e<sup>−kt</sup>，k = ln 2 ÷ 半衰期。咖啡因半衰期約 5 小時，k = <strong>0.1386</strong>
+          / 小時。中午喝下 100 毫克，8 小時後還剩 100 × e<sup>−0.1386×8</sup> = <strong>32.99</strong>
+          毫克，約一杯濃縮咖啡的量——這是下午的咖啡會影響睡眠的定量理由。
+          碳十四定年、電容放電、牛頓冷卻用的都是這條式子。
+        </p>
+        <p>
+          金融這端，連續複利的<a href="/formulas/effective-annual-rate.html">實質年利率 EAR</a>
+          是 e<sup>r</sup> − 1。名目 6% 連續複利的 EAR 是 <strong>6.18</strong>%，
+          月複利則是 (1 + 0.06/12)<sup>12</sup> − 1 = <strong>6.17</strong>%。
+          差距落在小數點後第二位，但廣告寫「連續複利」聽起來就是比「月複利」強——
+          把兩個數字擺在一起，話術就沒有空間了。
+        </p>
+        <p>
+          從結果回推 x 則用自然對數：ln(eˣ) = x。<a href="/formulas/rule-of-72.html">72 法則</a>
+          的分子來源正是 ln 2，取整成 72 只因為它的因數多、好心算。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>e<sup>a+b</sup> 等於 e<sup>a</sup> × e<sup>b</sup>，不等於 e<sup>a</sup> + e<sup>b</sup>。</strong>
+            a = 2、b = 3 時，e<sup>5</sup> = <strong>148.4132</strong>，
+            e<sup>2</sup> × e<sup>3</sup> 同樣是 <strong>148.4132</strong>，
+            但 e<sup>2</sup> + e<sup>3</sup> 只有 <strong>27.4746</strong>。
+            指數相加對應底數相乘，這是複利能逐期相乘的代數基礎。另一個混淆是 eˣ 與 xᵉ 寫反：
+            2<sup>e</sup> = <strong>6.5809</strong>、e<sup>2</sup> = <strong>7.3891</strong>，
+            底數與指數對調結果就不同。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 自然指數計算機，輸入任意實數 x 即得 eˣ。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 指數 #19</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=19" title="自然指數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 連續複利的離散版本</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — eʳ − 1 的實務用法</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 從 ln 2 來的翻倍估算</a></li>
+          <li><a href="/formulas/cube-root.html">立方根 — 分數指數的另一種寫法</a></li>
+          <li><a href="/formulas/ph-value.html">pH 值 — 對數尺度的日常應用</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        e 採標準定義 e = lim(1 + 1/n)ⁿ，n → ∞，與級數 Σ 1/k! 等價；展開依 Maclaurin 級數。
+        咖啡因半衰期 5 小時為成人常用近似值，個體差異大，此處僅作衰減公式示範，不構成醫療建議。
+        金融段僅作數學說明，不構成投資建議、未預測報酬率。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
