@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>自然對數 ln 怎麼算？ln x 的定義與翻倍年數（年利率 6% 實例）· Bobo Labs</title>
+  <meta name="description" content="自然對數 ln 怎麼算？ln x 問的是 e 的幾次方等於 x，ln 2 = 0.6931。用年利率 6% 算出本金翻倍要 11.8957 年，並說明三條運算律、換底公式，以及 ln(a+b) 為何不等於 ln a 加 ln b。" />
+  <meta property="og:title" content="自然對數 ln 怎麼算？ln x 的定義與翻倍年數" />
+  <meta property="og:description" content="ln 把指數裡的時間解出來。年報酬 6% 要 11.8957 年翻倍，附 ln 值表、運算律、換底公式與碳十四定年實例。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/natural-logarithm.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/natural-logarithm.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "自然對數 ln 怎麼算？ln x 的定義與翻倍年數", "url": "https://labs.moneyai168.com/formulas/natural-logarithm.html", "datePublished": "2026-09-28", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "自然對數", "item": "https://labs.moneyai168.com/formulas/natural-logarithm.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "ln(x)",
+    "cases": [
+{"input":{"x":1},"expect":0.0,"text":"0"},
+{"expr":"exp(x)","input":{"x":1},"expect":2.718281828459045,"text":"2.718281828"},
+{"input":{"x":2.718281828459045},"expect":1.0,"text":"1"},
+{"input":{"x":2},"expect":0.6931471805599453,"text":"0.6931"},
+{"input":{"x":3},"expect":1.0986122886681098,"text":"1.0986"},
+{"input":{"x":5},"expect":1.6094379124341003,"text":"1.6094"},
+{"input":{"x":10},"expect":2.302585092994046,"text":"2.3026"},
+{"input":{"x":1.06},"expect":0.058268908123975824,"text":"0.0583"},
+{"expr":"ln(2)/ln(1+r)","input":{"r":0.06},"expect":11.895661045941875,"text":"11.8957"},
+{"expr":"72/p","input":{"p":6},"expect":12.0,"text":"12"},
+{"expr":"ln(2)/ln(1+r)","input":{"r":0.05},"expect":14.206699082890461,"text":"14.2067"},
+{"expr":"ln(2)/r","input":{"r":0.06},"expect":11.552453009332423,"text":"11.5525"},
+{"expr":"exp(ln(3)/t)-1","input":{"t":20},"expect":0.056467308549537965,"scale":100,"text":"5.6467"},
+{"input":{"x":6},"expect":1.791759469228055,"text":"1.7918"},
+{"expr":"ln(a)+ln(b)","input":{"a":2,"b":3},"expect":1.791759469228055,"text":"1.7918"},
+{"expr":"n*ln(a)","input":{"a":2,"n":3},"expect":2.0794415416798357,"text":"2.0794"},
+{"expr":"ln(x)/ln(2)","input":{"x":1000},"expect":9.965784284662087,"text":"9.9658"},
+{"expr":"ln(2)/H","input":{"H":5730},"expect":0.00012096809433855938,"text":"0.000121"},
+{"expr":"ln(4)/(ln(2)/H)","input":{"H":5730},"expect":11460.0,"tol":0.001,"text":"11,460"},
+{"expr":"ln(a)*ln(b)","input":{"a":2,"b":3},"expect":0.761500010418809,"text":"0.7615"},
+{"expr":"ln(a)-ln(b)","input":{"a":6,"b":3},"expect":0.6931471805599453,"text":"0.6931"},
+{"expr":"ln(2)/ln(1+a)-ln(2)/ln(1+b)","input":{"a":0.05,"b":0.06},"expect":2.311038036948586,"text":"2.3110"},
+{"expr":"ln(2)/ln(1+r)-ln(2)/r","input":{"r":0.06},"expect":0.343208036609452,"text":"0.3432"},
+{"expr":"b**n","input":{"b":2,"n":10},"expect":1024.0,"text":"1024"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #20 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">自然對數 ln 怎麼算？ln x 的定義與翻倍年數</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-28</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        ln x 只問一件事：e 的幾次方等於 x。ln 2 = 0.6931，意思是 e 的 0.6931 次方等於 2。
+        它最實用的場合是把卡在指數位置的時間拉下來——年報酬 6% 的本金幾年翻倍，
+        ln 一行算出 11.8957 年，不必一年一年試。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = ln x ⟺ e<sup>y</sup> = x</div>
+          <div class="formula-box-note">x 必須大於 0 · ln 是以 e 為底的對數，e ≈ 2.718281828 · ln 的值可正可負</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>取對數的對象，必須為正數</td><td>無單位</td><td>大於 0</td></tr>
+            <tr><td>ln x</td><td>e 要幾次方才等於 x</td><td>無單位</td><td>任意實數</td></tr>
+            <tr><td>e</td><td>自然對數的底，固定常數</td><td>無單位</td><td>2.718281828</td></tr>
+          </tbody>
+        </table>
+
+        <h2>ln x 是什麼？它是 eˣ 的反運算</h2>
+        <p>
+          <a href="/formulas/exponential-function.html">自然指數 eˣ</a> 由指數算出結果，ln 由結果回推指數，
+          兩者互為反函數：ln(e<sup>x</sup>) = x，e<sup>ln x</sup> = x。
+          所以 ln 1 = <strong>0</strong>，ln e = <strong>1</strong>。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>x</th><th>ln x</th><th>x</th><th>ln x</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>0</td><td>3</td><td>1.0986</td></tr>
+            <tr><td>2</td><td>0.6931</td><td>5</td><td>1.6094</td></tr>
+            <tr><td>e</td><td>1</td><td>10</td><td>2.3026</td></tr>
+          </tbody>
+        </table>
+        <p>
+          x 從 2 漲到 10（五倍），ln x 只從 <strong>0.6931</strong> 漲到 <strong>2.3026</strong>。
+          ln 把乘法壓成加法，這是<a href="/formulas/ph-value.html">對數尺度</a>能把跨量級資料畫進一張圖的原因。
+        </p>
+        <p>
+          x 介於 0 與 1 之間時 ln x 為負：ln 0.5 的絕對值就是 <strong>0.6931</strong>、符號取負。
+        </p>
+
+        <h2>100 萬幾年翻倍？用 ln 把時間解出來</h2>
+        <p>
+          複利終值寫成 P(1 + r)<sup>t</sup>。問「幾年翻倍」就是解 P(1 + r)<sup>t</sup> = 2P，
+          本金 P 兩邊消掉——100 萬或 1000 萬，翻倍年數一樣，只看報酬率。
+          剩下 (1 + r)<sup>t</sup> = 2，t 卡在指數上，兩邊取 ln 才拉得下來：t = ln 2 ÷ ln(1 + r)。
+        </p>
+        <p>
+          年報酬 6%：ln 2 = <strong>0.6931</strong>，ln 1.06 = <strong>0.0583</strong>，
+          t = 0.6931 ÷ 0.0583 = <strong>11.8957</strong> 年；
+          年報酬 5% 要 <strong>14.2067</strong> 年，少 1 個百分點就多等 <strong>2.3110</strong> 年。
+        </p>
+        <p>
+          <a href="/formulas/rule-of-72.html">72 法則</a>估同一題是 72 ÷ 6 = <strong>12</strong> 年，
+          與精算的 11.8957 年幾乎重合——72 法則正是 ln 2 ≈ 0.6931 取整放大後的心算版本。
+        </p>
+        <p>
+          改成連續複利，P·e<sup>rt</sup> = 2P 取 ln 後更乾淨：t = ln 2 ÷ r = 0.6931 ÷ 0.06 =
+          <strong>11.5525</strong> 年，比年複利縮短 <strong>0.3432</strong> 年。
+          那是複利頻率的理論天花板，不是任何銀行的實際條件。
+        </p>
+        <p>
+          反問報酬率也一樣：100 萬要在 20 年變成 300 萬，即 (1 + r)<sup>20</sup> = 3，
+          取 ln 得 r = e<sup>ln3 ÷ 20</sup> − 1 = <strong>5.6467</strong>%。這是解出需求，不是預測市場給得出這個數字。
+        </p>
+
+        <h2>ln 的運算律與換底公式</h2>
+        <p>
+          三條運算律把乘除次方各降一級，是 ln 成為計算工具的根本原因：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>運算律</th><th>效果</th><th>實例</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td>ln(ab) = ln a + ln b</td><td>乘法變加法</td><td>ln 6 與 ln 2 + ln 3</td><td>1.7918</td></tr>
+            <tr><td>ln(a/b) = ln a − ln b</td><td>除法變減法</td><td>ln 6 − ln 3</td><td>0.6931</td></tr>
+            <tr><td>ln(aⁿ) = n·ln a</td><td>次方變乘法</td><td>ln 8 與 3 × ln 2</td><td>2.0794</td></tr>
+          </tbody>
+        </table>
+        <p>
+          第一列逐項核對：ln 6 = <strong>1.7918</strong>，ln 2 + ln 3 = 0.6931 + 1.0986 =
+          <strong>1.7918</strong>。第三列同理，ln 8 = 3 × 0.6931 = <strong>2.0794</strong>；
+          這條正是前一節把 t 從指數位置拉下來的依據——ln((1+r)<sup>t</sup>) = t·ln(1+r)。
+        </p>
+        <p>
+          換底公式讓 ln 一把抓所有底數：log<sub>b</sub> x = ln x ÷ ln b。
+          1000 是 2 的幾次方？log<sub>2</sub> 1000 = ln 1000 ÷ ln 2 = <strong>9.9658</strong>，
+          略小於 10，所以 2<sup>10</sup> = <strong>1024</strong> 比 1000 大一點。
+        </p>
+
+        <h2>ln 在哪裡出現？碳十四定年與衰減常數</h2>
+        <p>
+          凡是「已知衰減比例、反推時間」的題目都用得到 ln。衰減寫成 A·e<sup>−kt</sup>，
+          衰減常數 k = ln 2 ÷ 半衰期。碳十四半衰期 5730 年，k = 0.6931 ÷ 5730 =
+          <strong>0.000121</strong> / 年。
+        </p>
+        <p>
+          樣本的碳十四只剩原始含量 25%，年代就是 t = ln 4 ÷ k = <strong>11,460</strong> 年，
+          正好是 5730 的兩倍——ln 4 = 2 × ln 2 這條運算律在這裡直接看得到。
+        </p>
+        <p>
+          同一套式子換到藥物代謝、電容放電與
+          <a href="/formulas/effective-annual-rate.html">實質年利率</a>的連續複利換算，只有 k 的名字改掉。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>ln(a + b) 不等於 ln a + ln b。</strong>運算律只對乘除次方成立，加減沒有。
+            a = 2、b = 3 時，ln(2 + 3) = ln 5 = <strong>1.6094</strong>，
+            但 ln 2 + ln 3 = <strong>1.7918</strong>（這是 ln 6，不是 ln 5）。
+            順帶一提，ln 2 × ln 3 = <strong>0.7615</strong>，都不一樣。
+            另一個錯誤是餵負數或 0：計算機回 NaN 不是壞掉，是 ln 只接受正數。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 自然對數計算機，輸入正數即得 ln x。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 自然對數 #20</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=20" title="自然對數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/exponential-function.html">自然指數 eˣ — ln 的反函數</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 翻倍年數的原始式子</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — ln 2 的心算版本</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 連續複利換算</a></li>
+          <li><a href="/formulas/ph-value.html">pH 值 — 對數尺度的日常應用</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        ln x = log<sub>e</sub> x，定義域 x &gt; 0，與 eˣ 互為反函數；運算律與換底為對數標準性質。
+        碳十四半衰期採現行值 5730 年，實際定年需再經校正曲線修正，此處僅作衰減公式示範。
+        金融段僅作數學說明，不構成投資建議、未預測報酬率。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
