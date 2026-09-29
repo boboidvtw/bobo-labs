@@ -20,7 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-28**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-29**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/natural-logarithm.html`（#20 · 數學 · Free，自然對數 ln x：ln 2 = 0.6931、ln e = 1、6% 年報酬翻倍 11.8957 年對 72 法則的 12 年、5% 需 14.2067 年差 2.3110 年、連續複利翻倍 11.5525 年少 0.3432 年、20 年三倍反解 5.6467%、運算律 ln 6 = ln 2 + ln 3 = 1.7918、換底 log₂1000 = 9.9658、碳十四衰減常數 0.000121 與剩 25% 定年 11,460 年、ln(a+b) ≠ ln a + ln b 反例）。
+  Formula 卡片由 placeholder 轉為連結（50 → 49），Tier 一致故分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 24 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-29.
+
+- **2026-09-28** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/exponential-function.html`（#19 · 數學 · Free，自然指數 eˣ：伯努利複利極限收斂到 e = 2.718281828、100 萬 6% 30 年年複利 5,743,491 對連續複利 6,049,647 差 306,156 元、泰勒級數 9 項手算、eˣ 常用值表、咖啡因半衰期衰減 32.99 毫克、連續複利 EAR 6.18% 對月複利 6.17%、e^(a+b) ≠ e^a + e^b）。
   Formula 卡片由 placeholder 轉為連結（51 → 50），Tier 一致故分類計數與註腳不動。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 26 case 全過）自動上線。
