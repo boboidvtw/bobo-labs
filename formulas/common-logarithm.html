@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>常用對數 log 怎麼算？log x 的定義、運算律與換底公式（pH 與分貝實例）· Bobo Labs</title>
+  <meta name="description" content="常用對數 log 怎麼算？log x 問的是 10 的幾次方等於 x，log 2 = 0.3010。用 pH 差 5 級等於 100,000 倍、音壓兩倍是 6.0206 分貝說明對數尺度，並給出換底公式與三條運算律。" />
+  <meta property="og:title" content="常用對數 log 怎麼算？log x 的定義、運算律與換底公式" />
+  <meta property="og:description" content="log x 問的是 10 的幾次方等於 x。pH、分貝、地震規模都是它，附 log 值表、換底公式與位數速算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/common-logarithm.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/common-logarithm.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "常用對數 log 怎麼算？log x 的定義、運算律與換底公式", "url": "https://labs.moneyai168.com/formulas/common-logarithm.html", "datePublished": "2026-09-29", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "常用對數", "item": "https://labs.moneyai168.com/formulas/common-logarithm.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "log10(x)",
+    "cases": [
+{"input":{"x":1},"expect":0.0,"text":"0"},
+{"input":{"x":10},"expect":1.0,"text":"1"},
+{"input":{"x":100},"expect":2.0,"text":"2"},
+{"input":{"x":2},"expect":0.3010299956639812,"text":"0.3010"},
+{"input":{"x":2},"expect":0.3010299956639812,"text":"0.30103"},
+{"input":{"x":3},"expect":0.47712125471966244,"text":"0.4771"},
+{"input":{"x":5},"expect":0.6989700043360189,"text":"0.6990"},
+{"input":{"x":7},"expect":0.8450980400142568,"text":"0.8451"},
+{"input":{"x":4},"expect":0.6020599913279624,"text":"0.6021"},
+{"input":{"x":25},"expect":1.3979400086720377,"text":"1.3979"},
+{"input":{"x":1024},"expect":3.010299956639812,"text":"3.0103"},
+{"input":{"x":1.06},"expect":0.02530586526477026,"text":"0.0253"},
+{"expr":"b**n","input":{"b":2,"n":10},"expect":1024.0,"tol":0.000001,"text":"1024"},
+{"expr":"a*b","input":{"a":4,"b":25},"expect":100.0,"tol":0.000001,"text":"100"},
+{"expr":"-log10(c)","input":{"c":0.01},"expect":2.0,"tol":0.000001,"text":"2"},
+{"expr":"-log10(c)","input":{"c":0.0000001},"expect":7.0,"tol":0.000001,"text":"7"},
+{"expr":"10**n","input":{"n":5},"expect":100000.0,"tol":0.001,"text":"100,000"},
+{"expr":"20*log10(r)","input":{"r":2},"expect":6.020599913279624,"text":"6.0206"},
+{"expr":"10*log10(r)","input":{"r":10},"expect":10.0,"tol":0.000001,"text":"10"},
+{"expr":"10**(1.5*d)","input":{"d":1},"expect":31.622776601683793,"text":"31.6228"},
+{"expr":"10**(1.5*d)","input":{"d":2},"expect":1000.0,"tol":0.000001,"text":"1000"},
+{"expr":"ln(x)","input":{"x":10},"expect":2.302585092994046,"text":"2.3026"},
+{"expr":"ln(x)","input":{"x":2},"expect":0.6931471805599453,"text":"0.6931"},
+{"expr":"ln(x)","input":{"x":100},"expect":4.605170185988092,"text":"4.6052"},
+{"expr":"log10(2)/log10(1+r)","input":{"r":0.06},"expect":11.895661045941877,"text":"11.8957"},
+{"expr":"n*log10(b)","input":{"b":2,"n":100},"expect":30.10299956639812,"text":"30.103"},
+{"expr":"(n*log10(b))//1+1","input":{"b":2,"n":100},"expect":31.0,"tol":0.000001,"text":"31"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #21 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">常用對數 log 怎麼算？log x 的定義與換底公式</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-29</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        log x 只問一件事：10 的幾次方等於 x。log 2 = 0.3010，意思是 10 的 0.3010 次方等於 2。
+        pH、分貝、地震規模全是它——pH 差 5 級不是差 5 倍，而是差 100,000 倍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = log x ⟺ 10<sup>y</sup> = x</div>
+          <div class="formula-box-note">x 必須大於 0 · log 省略底數時代表以 10 為底</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>取對數的對象，必須為正數</td><td>無單位</td><td>大於 0</td></tr>
+            <tr><td>log x</td><td>10 要幾次方才等於 x</td><td>無單位</td><td>任意實數</td></tr>
+            <tr><td>底數 10</td><td>常用對數固定的底，寫作 log₁₀ 或省略</td><td>無單位</td><td>10</td></tr>
+          </tbody>
+        </table>
+
+        <h2>log x 是什麼？10 的幾次方等於 x</h2>
+        <p>
+          log 是 10<sup>y</sup> 的反運算：指數由次方算結果，對數由結果回推次方。
+          10<sup>0</sup> = 1，所以 log 1 = <strong>0</strong>；10<sup>1</sup> = 10，所以 log 10 = <strong>1</strong>；
+          10<sup>2</sup> = 100，所以 log 100 = <strong>2</strong>。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>x</th><th>log x</th><th>x</th><th>log x</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>0</td><td>5</td><td>0.6990</td></tr>
+            <tr><td>2</td><td>0.3010</td><td>7</td><td>0.8451</td></tr>
+            <tr><td>3</td><td>0.4771</td><td>10</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <p>
+          x 從 1 漲到 10，log x 只從 0 爬到 <strong>1</strong>；再漲十倍到 100，也只再加 <strong>1</strong>。
+          輸入乘以 10、輸出加 1，壓縮能力讓橫跨十幾個數量級的資料
+          （<a href="/formulas/ph-value.html">氫離子濃度</a>、聲音功率、地震能量）畫得進同一張圖。
+        </p>
+
+        <h2>用真實數字算一遍：pH、分貝與地震規模</h2>
+        <p>
+          <a href="/formulas/ph-value.html">pH 值</a>定義成 pH = −log[H⁺]。胃酸的氫離子濃度約
+          0.01 M，pH = −log 0.01 = <strong>2</strong>；純水在 25°C 是 0.0000001 M，
+          pH = <strong>7</strong>。兩者相差 5 個 pH 單位，實際濃度差
+          10<sup>5</sup> = <strong>100,000</strong> 倍。
+        </p>
+        <p>
+          分貝同理。音壓比轉分貝是 20 log(V/V₀)：音壓變成兩倍，只增加
+          20 × 0.3010 = <strong>6.0206</strong> 分貝。功率比則用 10 log(P/P₀)：
+          功率放大十倍才換得 <strong>10</strong> 分貝。
+        </p>
+        <p>
+          芮氏規模每差 1 級，振幅差 10 倍、釋放能量差 10<sup>1.5</sup> =
+          <strong>31.6228</strong> 倍。規模 5 與規模 7 只差 2 級，能量卻差 <strong>1000</strong> 倍。
+        </p>
+
+        <h2>換底公式：log 與 ln 只差 2.3026 倍</h2>
+        <p>
+          同一個 x，用不同底取對數只差一個固定常數：log x = ln x ÷ ln 10，
+          而 ln 10 = <strong>2.3026</strong>。驗一次：<a href="/formulas/natural-logarithm.html">ln 2</a> = <strong>0.6931</strong>，
+          除以 2.3026 得 <strong>0.3010</strong>，正是 log 2。
+        </p>
+        <p>
+          比例問題的答案因此與底數無關。「年報酬 6% 幾年翻倍」解的是 (1 + r)<sup>t</sup> = 2，
+          兩邊取 log 得 t = log 2 ÷ log 1.06 = 0.3010 ÷ <strong>0.0253</strong> =
+          <strong>11.8957</strong> 年，與 <a href="/formulas/natural-logarithm.html">用 ln 算</a>
+          的結果一模一樣，分子分母的 2.3026 被約掉了；
+          <a href="/formulas/rule-of-72.html">72 法則</a>的心算值就是它的近似。
+        </p>
+        <p>
+          寫程式時最容易踩到底數的雷：多數語言的
+          <code>log(x)</code> 其實是 ln，要常用對數得叫 <code>log10(x)</code>。
+          把 ln 100 = <strong>4.6052</strong> 當成 log 100 = <strong>2</strong> 來用，
+          誤差就是那個 2.3026 倍。
+        </p>
+
+        <h2>運算律與位數速算：2 的 100 次方有幾位？</h2>
+        <p>
+          三條運算律把乘除次方各降一級，也是對數表當年能取代手算乘法的原因：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>運算律</th><th>效果</th><th>實例</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td>log(ab) = log a + log b</td><td>乘法變加法</td><td>log 4 + log 25</td><td>2</td></tr>
+            <tr><td>log(a/b) = log a − log b</td><td>除法變減法</td><td>log 100 − log 4</td><td>1.3979</td></tr>
+            <tr><td>log(aⁿ) = n·log a</td><td>次方變乘法</td><td>10 × log 2</td><td>3.0103</td></tr>
+          </tbody>
+        </table>
+        <p>
+          核對第一列：log 4 = <strong>0.6021</strong>、log 25 = <strong>1.3979</strong>，
+          相加得 <strong>2</strong>，而 4 × 25 = 100，log 100 確實是 2。
+          第三列：2<sup>10</sup> = <strong>1024</strong>，log 1024 = <strong>3.0103</strong>，
+          等於 10 × 0.3010；因為它略大於 3，1024 就比 1000 大一點點。
+        </p>
+        <p>
+          位數速算是常用對數獨有的好處：正整數 N 的位數等於 log N 取整後加 1。
+          2 的 100 次方有幾位？log(2<sup>100</sup>) = 100 × <strong>0.30103</strong> =
+          <strong>30.103</strong>，取整後加 1 得 <strong>31</strong> 位，不必真的算出那個數。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>log(a + b) 不等於 log a + log b。</strong>運算律只對乘除次方成立，加減沒有。
+            a = 2、b = 3 時，log(2 + 3) = log 5 = <strong>0.6990</strong>，
+            但 log 2 + log 3 = <strong>0.4771</strong> 加 0.3010，那是 log 6 而不是 log 5。
+            另一個錯誤是把 log 當成 ln：兩者差 2.3026 倍，算分貝、算 pH 用錯底數，
+            結果會整整偏掉一個倍率。餵 0 或負數則無解，計算機回 NaN 不是壞掉。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 常用對數計算機，輸入正數即得 log x。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 常用對數 #21</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=21" title="常用對數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/natural-logarithm.html">自然對數 ln — 換底公式的另一端</a></li>
+          <li><a href="/formulas/ph-value.html">pH 值 — 常用對數最常見的應用</a></li>
+          <li><a href="/formulas/exponential-function.html">自然指數 eˣ — 對數的反運算</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 翻倍年數的心算版</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 翻倍問題的原始式子</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        log x = log<sub>10</sub> x，定義域 x &gt; 0，與 10<sup>x</sup> 互為反函數；
+        運算律與換底為對數標準性質。分貝採音壓比 20 log、功率比 10 log 的標準定義，
+        地震能量倍率採芮氏規模每級 10<sup>1.5</sup> 的慣用換算。
+        金融段僅作數學說明，不構成投資建議、未預測報酬率。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
