@@ -20,7 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-09-29**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-09-30**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/common-logarithm.html`（#21 · 數學 · Free，常用對數 log x：log 2 = 0.3010、log 1 = 0、log 100 = 2、pH 2 與 pH 7 差 5 級即濃度差 100,000 倍、音壓兩倍 6.0206 分貝、功率十倍 10 分貝、芮氏每級能量 31.6228 倍與差 2 級 1000 倍、換底 ln 10 = 2.3026 與 ln 2 = 0.6931 除得 0.3010、6% 翻倍 11.8957 年、運算律 log 4 + log 25 = 2 與 10 × log 2 = 3.0103 = log 1024、2¹⁰⁰ 位數 30.103 取整加 1 得 31 位、log(a+b) ≠ log a + log b 反例）。
+  Formula 卡片由 placeholder 轉為連結（49 → 48），Tier 一致故分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 27 case 全過）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-09-30.
+
+- **2026-09-29** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/natural-logarithm.html`（#20 · 數學 · Free，自然對數 ln x：ln 2 = 0.6931、ln e = 1、6% 年報酬翻倍 11.8957 年對 72 法則的 12 年、5% 需 14.2067 年差 2.3110 年、連續複利翻倍 11.5525 年少 0.3432 年、20 年三倍反解 5.6467%、運算律 ln 6 = ln 2 + ln 3 = 1.7918、換底 log₂1000 = 9.9658、碳十四衰減常數 0.000121 與剩 25% 定年 11,460 年、ln(a+b) ≠ ln a + ln b 反例）。
   Formula 卡片由 placeholder 轉為連結（50 → 49），Tier 一致故分類計數與註腳不動。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 24 case 全過）自動上線。
