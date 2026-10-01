@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>一次函數怎麼算？y = ax + b 的斜率與截距（計程車車資實例）· Bobo Labs</title>
+  <meta name="description" content="一次函數 y = ax + b 怎麼算？a 是斜率、b 是 y 截距。本文用計程車車資 y = 25x + 53.75 算 5 公里的車錢、用攝氏華氏轉換示範兩點倒推 a 和 b，並解兩條直線的交點。" />
+  <meta property="og:title" content="一次函數怎麼算？y = ax + b 的斜率與截距" />
+  <meta property="og:description" content="a 管每單位變化量、b 管起點。計程車車資、攝氏華氏轉換、損益兩平三個實例拆解一次函數。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/linear-function.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/linear-function.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "一次函數怎麼算？y = ax + b 的斜率與截距", "url": "https://labs.moneyai168.com/formulas/linear-function.html", "datePublished": "2026-09-30", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "一次函數", "item": "https://labs.moneyai168.com/formulas/linear-function.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "a*x + b",
+    "cases": [
+{"expr":"p*(m/g)","input":{"p":5,"m":1000,"g":200},"expect":25.0,"text":"25"},
+{"input":{"a":25,"x":3,"b":53.75},"expect":128.75,"text":"128.75"},
+{"input":{"a":25,"x":4,"b":53.75},"expect":153.75,"text":"153.75"},
+{"expr":"d - d0","input":{"d":5000,"d0":1250},"expect":3750.0,"tol":0.001,"text":"3,750"},
+{"expr":"(d-d0)/g","input":{"d":5000,"d0":1250,"g":200},"expect":18.75,"text":"18.75"},
+{"expr":"(d-d0)//g + 1","input":{"d":5000,"d0":1250,"g":200},"expect":19.0,"tol":0.000001,"text":"19"},
+{"expr":"p-v","input":{"p":250,"v":120},"expect":130.0,"tol":0.000001,"text":"130"},
+{"expr":"s - a*d0","input":{"s":85,"a":25,"d0":1.25},"expect":53.75,"text":"53.75"},
+{"input":{"a":25,"x":5,"b":53.75},"expect":178.75,"text":"178.75"},
+{"expr":"s + ((d-d0)//g + 1)*p","input":{"s":85,"d":5000,"d0":1250,"g":200,"p":5},"expect":180.0,"tol":0.000001,"text":"180"},
+{"expr":"(s + ((d-d0)//g + 1)*p) - (a*x + b)","input":{"s":85,"d":5000,"d0":1250,"g":200,"p":5,"a":25,"x":5,"b":53.75},"expect":1.25,"tol":0.000001,"text":"1.25"},
+{"input":{"a":100,"x":0,"b":399},"expect":399.0,"text":"399"},
+{"input":{"a":100,"x":3,"b":399},"expect":699.0,"text":"699"},
+{"expr":"(y2-y1)/(x2-x1)","input":{"y1":32,"y2":212,"x1":0,"x2":100},"expect":1.8,"text":"1.8"},
+{"input":{"a":1.8,"x":25,"b":32},"expect":77.0,"text":"77"},
+{"input":{"a":1.8,"x":100,"b":32},"expect":212.0,"text":"212"},
+{"input":{"a":1.8,"x":37,"b":32},"expect":98.6,"text":"98.6"},
+{"expr":"(y-b)/a","input":{"y":100,"b":32,"a":1.8},"expect":37.77777777777778,"text":"37.8"},
+{"expr":"-b/(a-1)","input":{"a":1.8,"b":32},"expect":-40.0,"tol":0.000001,"text":"-40"},
+{"expr":"f/(p-v)","input":{"f":39000,"p":250,"v":120},"expect":300.0,"text":"300"},
+{"expr":"p*q","input":{"p":250,"q":300},"expect":75000.0,"tol":0.001,"text":"75,000"},
+{"expr":"(p-v)*q - f","input":{"p":250,"v":120,"q":400,"f":39000},"expect":13000.0,"tol":0.001,"text":"13,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #22 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">一次函數怎麼算？y = ax + b 的斜率與截距</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-09-30</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        手機資費「月租 399 元、超量每 GB 100 元」、計程車「起程價加跳表」、攝氏換華氏——
+        三件事寫成算式後<strong>長得一模一樣</strong>：y = ax + b。a 決定每多一單位加多少、b 決定起點。
+        本文代入 x 算出 178.75 元車資、<strong>77</strong> 度華氏與 300 杯的損益兩平點。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">y = ax + b</div>
+          <div class="formula-box-note">a 斜率（每單位變化量，a ≠ 0）· b y 截距（x = 0 時的 y）· x 自變數</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td>斜率：x 每加 1，y 加 a</td><td>y 單位 ÷ x 單位</td><td>非零實數</td></tr>
+            <tr><td>b</td><td>y 截距：與 y 軸的交點</td><td>y 的單位</td><td>任意實數</td></tr>
+            <tr><td>x</td><td>自變數，你給的輸入</td><td>視題目</td><td>公里 / 度 / GB</td></tr>
+            <tr><td>y</td><td>因變數，算出的輸出</td><td>視題目</td><td>元 / 度</td></tr>
+          </tbody>
+        </table>
+
+        <h2>a 和 b 各管什麼？一個管斜度、一個管起點</h2>
+        <p>
+          用手機資費當最短的例子：月租 399 元含 5 GB、超量每 GB 加 100 元，寫成 y = 100x + 399。
+          沒超用時 x = 0，帳單即截距本身 <strong>399</strong> 元；超用 3 GB 得 100 × 3 + 399 = <strong>699</strong> 元。
+        </p>
+        <p>
+          分工乾淨：<strong>a 只影響「漲得多快」，b 只影響「從哪裡開始漲」</strong>。
+          改 a 讓線變陡或變緩、起點不動；改 b 讓整條線平移、斜度不變。
+          圖形永遠是直線，因為 a 固定——每往右一格就爬 a。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>參數</th><th>圖形與情境（a &lt; 0 則左上往右下）</th></tr></thead>
+          <tbody>
+            <tr><td>a &gt; 0</td><td>左下往右上：用越多付越多</td></tr>
+            <tr><td>a = 0</td><td>水平線 y = b：吃到飽，非一次函數</td></tr>
+            <tr><td>b = 0</td><td>通過原點：純正比，如 y = 25x</td></tr>
+          </tbody>
+        </table>
+        <p>
+          b = 0 即國中的「正比」；多出來的 b 正是現實中「基本費」「固定成本」的位置。
+        </p>
+
+        <h2>用真實數字算一遍：計程車車資 y = 25x + 53.75</h2>
+        <p>
+          以台北市計程車日間費率為例：起程 1.25 公里 85 元，之後每 200 公尺 5 元。
+          先把續程費率換成每公里：5 × (1000 ÷ 200) = <strong>25</strong> 元／公里，即 a。
+        </p>
+        <p>
+          b 不能直接填 85：85 元買到的是「前 1.25 公里」，而截距問的是 x = 0 的值，
+          得把那段續程費扣掉——b = 85 − 25 × 1.25 = <strong>53.75</strong>，
+          完整算式 y = 25x + 53.75，x 為總里程（公里）。
+        </p>
+        <p>
+          代入 5 公里：y = 25 × 5 + 53.75 = <strong>178.75</strong> 元。
+          沒有人搭 0 公里付 53.75 元——它是直線往左延伸到 y 軸才出現的虛擬值，式子只在 x ≥ 1.25 內有意義。
+          <strong>截距不必然可實現，只是方程式的參數。</strong>
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>里程 x（公里）</th><th>y = 25x + 53.75</th><th>比前一列多</th></tr></thead>
+          <tbody>
+            <tr><td>3</td><td>128.75</td><td>—</td></tr>
+            <tr><td>4</td><td>153.75</td><td>+25</td></tr>
+            <tr><td>5</td><td>178.75</td><td>+25</td></tr>
+          </tbody>
+        </table>
+        <p>
+          每一列固定多 25 元——「差值恆定」是一次函數的辨識特徵。拿到一串數據先算相鄰兩項的差：差固定是一次函數，
+          差本身等比縮放才是<a href="/formulas/exponential-function.html">指數函數</a>。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把階梯當直線</strong>：真實跳表每 200 公尺跳一次、不足也算一段。
+            5 公里的續程是 3,750 公尺、共 19 段（18.75 向上進位），實收 85 + 19 × 5 = <strong>180</strong> 元，
+            比直線模型的 178.75 元多 <strong>1.25</strong> 元。
+            y = 25x + 53.75 是階梯的內插直線，估價可以、對帳會差在進位上。
+            階梯電價與雲端按量計費同理：<strong>連續模型算得出小數，計費系統只收整段。</strong>
+          </p>
+        </div>
+
+        <h2>只知道兩個點，怎麼倒推 a 和 b？</h2>
+        <p>
+          實務上更常見的是反方向：有兩組對應數據、要找出那條直線。兩點決定一條直線，a 與 b 都解得出來。
+        </p>
+        <p>
+          以攝氏華氏為例，已知兩點是水的凝固點 (0, 32) 與沸點 (100, <strong>212</strong>)。
+          斜率取 y 的變化量除以 x 的變化量：a = (212 − 32) ÷ (100 − 0) = <strong>1.8</strong>；
+          代回 x = 0 時 y = 32 得 b = 32。完整式子 F = 1.8C + 32。
+        </p>
+        <p>
+          驗一遍：室溫 25 °C 得 F = 1.8 × 25 + 32 = <strong>77</strong> °F；體溫 37 °C 得 <strong>98.6</strong> °F，
+          正是華氏體溫計上那條紅線。a = 1.8 意即<strong>攝氏每升 1 度、華氏升 1.8 度</strong>，華氏刻度比攝氏密。
+        </p>
+        <p>
+          往回換解反函數：C = (F − 32) ÷ 1.8，美國常見的 100 °F 對應 <strong>37.8</strong> °C。
+          a ≠ 0 的直線不會有兩個 x 對到同一個 y，故必可逆，反函數斜率是原斜率的倒數。
+        </p>
+        <p>
+          再問一個小問題：攝氏和華氏會在哪裡讀到同一個數字？解 1.8C + 32 = C 得 C = −32 ÷ (1.8 − 1) = <strong>-40</strong>。
+          −40 °C 與 −40 °F 是同一個溫度，這是兩套刻度唯一重合的點。
+        </p>
+
+        <h2>兩條直線交在哪裡？損益兩平的代數解</h2>
+        <p>
+          上一節的溫度問題就是「兩條直線求交點」的特例（y = 1.8x + 32 與 y = x）；同一招放到生意上即損益兩平。
+          假設一家咖啡店月固定成本 39,000 元，一杯賣 250 元、食材與杯耗 120 元。
+          營收是通過原點的正比 y = 250x；總成本是一次函數 y = 120x + 39,000。
+          兩式相等解 x：(250 − 120)x = 39,000，得 x = <strong>300</strong> 杯。
+        </p>
+        <p>
+          交點意義是「賣到第 300 杯時營收剛好蓋住成本」：營收 250 × 300 = <strong>75,000</strong> 元、
+          總成本同為 75,000 元，利潤零。單價減變動成本的 <strong>130</strong> 元是每杯邊際貢獻，
+          固定成本除以它即所需杯數——見<a href="/formulas/break-even-point.html">損益兩平點</a>。
+        </p>
+        <p>
+          越過交點之後，利潤本身也是一次函數：利潤 = 130x − 39,000。
+          月賣 400 杯時利潤 = (250 − 120) × 400 − 39,000 = <strong>13,000</strong> 元。
+          <strong>一次函數的斜率在整個定義域上不會變</strong>——但真實世界的變動成本會隨採購量下降，
+          所以直線模型只在斜率穩定的區間內可信。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 一次函數計算機，填 a、b、x 得 y。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 一次函數 #22</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=22" title="一次函數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/quadratic-function.html">二次函數 — 斜率會變</a></li>
+          <li><a href="/formulas/break-even-point.html">損益兩平點 — 兩線交點的商業版</a></li>
+          <li><a href="/formulas/exponential-function.html">指數函數 — 差值等比非恆定</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離 — 同由兩座標決定的量</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        y = ax + b 為一次函數（linear function）標準式，a ≠ 0；a = Δy/Δx，b 為 x = 0 時的函數值。
+        F = 1.8C + 32 由水的凝固點與沸點兩個定義點推得。計程車費率取台北市政府交通局公告之日間費率
+        （起程 1.25 公里 85 元、續程每 200 公尺 5 元）為代數示例，實際費率以主管機關最新公告為準；
+        咖啡店數字為假設值，僅作數學說明，不構成經營或投資建議。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
