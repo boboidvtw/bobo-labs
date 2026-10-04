@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>等差數列和怎麼算？求和公式拆解（1加到100與52週存錢法）· Bobo Labs</title>
+  <meta name="description" content="等差數列和怎麼算？S = (n/2)(2a + (n−1)d) 的 a、d、n 各代表什麼？用 1 加到 100 得 5050、52 週存錢法存 13,780 元、等額本金房貸利息 39,000 元算一遍，並處理 n 是項數不是末項的陷阱。" />
+  <meta property="og:title" content="等差數列和怎麼算？求和公式拆解" />
+  <meta property="og:description" content="和 = 項數 × 首末平均。1 加到 100、52 週存錢法、等額本金房貸利息三個實例拆解等差數列求和。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/arithmetic-series-sum.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/arithmetic-series-sum.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "等差數列和怎麼算？求和公式拆解", "url": "https://labs.moneyai168.com/formulas/arithmetic-series-sum.html", "datePublished": "2026-10-03", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "等差數列和", "item": "https://labs.moneyai168.com/formulas/arithmetic-series-sum.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(n/2)*(2*a + (n-1)*d)",
+    "cases": [
+{"input":{"a":1,"d":1,"n":10},"expect":55.0,"tol":0.000001,"text":"55"},
+{"input":{"a":100,"d":0,"n":10},"expect":1000.0,"tol":0.001,"text":"1,000"},
+{"expr":"a + (a + (n-1)*d)","input":{"a":1,"d":1,"n":100},"expect":101.0,"tol":0.000001,"text":"101"},
+{"expr":"n/2","input":{"n":100},"expect":50.0,"tol":0.000001,"text":"50"},
+{"input":{"a":1,"d":1,"n":100},"expect":5050.0,"tol":0.001,"text":"5050"},
+{"expr":"(a + (a + (n-1)*d))/2","input":{"a":1,"d":1,"n":100},"expect":50.5,"tol":0.000001,"text":"50.5"},
+{"expr":"a + (n-1)*d","input":{"a":10,"d":10,"n":52},"expect":520.0,"tol":0.000001,"text":"520"},
+{"expr":"2*a + (n-1)*d","input":{"a":10,"d":10,"n":52},"expect":530.0,"tol":0.000001,"text":"530"},
+{"expr":"n/2","input":{"n":52},"expect":26.0,"tol":0.000001,"text":"26"},
+{"input":{"a":10,"d":10,"n":52},"expect":13780.0,"tol":0.001,"text":"13,780"},
+{"input":{"a":1,"d":1,"n":365},"expect":66795.0,"tol":0.001,"text":"66,795"},
+{"expr":"(l-a)/d","input":{"l":100,"a":7,"d":3},"expect":31.0,"tol":0.000001,"text":"31"},
+{"expr":"(l-a)/d + 1","input":{"l":100,"a":7,"d":3},"expect":32.0,"tol":0.000001,"text":"32"},
+{"input":{"a":7,"d":3,"n":32},"expect":1712.0,"tol":0.001,"text":"1,712"},
+{"input":{"a":7,"d":3,"n":100},"expect":15550.0,"tol":0.001,"text":"15,550"},
+{"expr":"L/n","input":{"L":1200000,"n":12},"expect":100000.0,"tol":0.001,"text":"100,000"},
+{"expr":"L*i","input":{"L":1200000,"i":0.005},"expect":6000.0,"tol":0.001,"text":"6,000"},
+{"expr":"p*i","input":{"p":100000,"i":0.005},"expect":500.0,"tol":0.001,"text":"500"},
+{"input":{"a":1,"d":1,"n":12},"expect":78.0,"tol":0.000001,"text":"78"},
+{"input":{"a":6000,"d":-500,"n":12},"expect":39000.0,"tol":0.001,"text":"39,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #29 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">等差數列和怎麼算？求和公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-03</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        52 週存錢法第一週存 10 元、每週多存 10 元，一年總共進帳 <strong>13,780</strong> 元；
+        高斯把 1 加到 100 算成 <strong>5050</strong>。兩題用的是同一條公式 S = (n/2)(2a + (n−1)d)。
+        本文拆解 a、d、n 三個輸入，並處理最常出錯的那一步：<strong>n 是項數，不是最後一項</strong>。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">S = (n/2)[2a + (n−1)d]</div>
+          <div class="formula-box-note">a 首項 · d 公差（相鄰兩項之差）· n 項數 · S 前 n 項的總和</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td>首項：第一項的值</td><td>與數列同單位</td><td>任意實數</td></tr>
+            <tr><td>d</td><td>公差：每一項比前一項多多少</td><td>與數列同單位</td><td>可正可負，亦可為零</td></tr>
+            <tr><td>n</td><td>項數：一共加了幾項</td><td>無單位</td><td>正整數</td></tr>
+            <tr><td>S</td><td>前 n 項和</td><td>與數列同單位</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>a、d、n 各管什麼？三個數字鎖死整串數列</h2>
+        <p>
+          等差數列的定義只有一句：相鄰兩項的差固定，那個差就是 d。
+          給定首項 a 與公差 d，第幾項是多少就完全確定了——第 n 項 = a + (n−1)d，
+          這是 n 的<a href="/formulas/linear-function.html">一次函數</a>，d 當斜率、a − d 當截距。
+        </p>
+        <p>
+          最短的例子：1、2、3 一路數到 10，a = 1、d = 1、n = 10，和是 <strong>55</strong>。
+          三個輸入各有分工：<strong>a 決定從哪開始、d 決定爬多快、n 決定加到哪裡停</strong>。
+          改 a 讓整串數字平移，改 d 讓間距變寬變窄，改 n 只影響加總的範圍。
+        </p>
+        <p>
+          d 可以是負數（遞減數列，如本節後面的房貸利息），也可以是零。
+          d = 0 時每項都等於 a，公式退化成 S = n × a——每月固定存 100 元存 10 個月，
+          總額就是 <strong>1,000</strong> 元，不需要公式也算得出來。等差數列和真正的用處是 d ≠ 0 的時候。
+        </p>
+
+        <h2>用真實數字算一遍：1 加到 100 為什麼是 5050</h2>
+        <p>
+          高斯的解法不是硬加，而是配對：把 1 和 100、2 和 99、3 和 98 兩兩相加，每一組都是
+          <strong>101</strong>。100 個數字恰好配成 <strong>50</strong> 組，所以總和是 50 × 101 = <strong>5050</strong>。
+        </p>
+        <p>
+          公式做的是同一件事。代入 a = 1、d = 1、n = 100：
+          S = (100/2) × (2 × 1 + 99 × 1) = 50 × 101 = 5050。
+          括號裡的 2a + (n−1)d 其實就是 <strong>a + [a + (n−1)d]＝首項 + 末項</strong>，
+          也就是配對出來的那個 101；括號外的 n/2 則是配對的組數。
+        </p>
+        <p>
+          看懂這層拆解，公式就不必死記：<strong>把首項和末項加起來，乘以項數，再除以二。</strong>
+          末項已知時用 S = n(a + l)/2 更快；只知道公差時才需要把 l 展開成 a + (n−1)d。
+        </p>
+
+        <h2>52 週存錢法一年存多少？365 天版又是多少？</h2>
+        <p>
+          52 週存錢法的規則是遞增存款：第一週 10 元，之後每週比前一週多 10 元。
+          這是 a = 10、d = 10、n = 52 的等差數列。先算末項：第 52 週要存 10 + 51 × 10 = <strong>520</strong> 元。
+        </p>
+        <p>
+          首項加末項得 10 + 520 = <strong>530</strong>，組數是 52 ÷ 2 = <strong>26</strong>，
+          全年總額 S = 26 × 530 = <strong>13,780</strong> 元。
+          月薪族常見的誤判是「每週才幾百塊」——但遞增的尾段很重，後半年 26 週就占掉總額的七成以上。
+        </p>
+        <p>
+          365 天版把單位縮到元、把項數拉到一年：第一天 1 元、第 365 天 365 元，
+          a = 1、d = 1、n = 365，總額 <strong>66,795</strong> 元。項數從 52 變 365、公差從 10 變 1，
+          結果卻將近五倍——因為和對 n 是平方級成長（n² 項來自 n × n/2），對 d 只是線性。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>存錢挑戰</th><th>a</th><th>d</th><th>n</th><th>全期總額</th></tr></thead>
+          <tbody>
+            <tr><td>52 週・首週 10 元遞增</td><td>10</td><td>10</td><td>52</td><td>13,780</td></tr>
+            <tr><td>365 天・首日 1 元遞增</td><td>1</td><td>1</td><td>365</td><td>66,795</td></tr>
+          </tbody>
+        </table>
+        <p>
+          要反過來設定目標也可以：把 S 當已知、解 d。公式對 d 是一次的，移項就得 d = (2S/n − 2a)/(n−1)，
+          不必試誤。這類「每期多存固定金額」的規劃是等差；若改成「每期成長固定百分比」，
+          就換成<a href="/formulas/compound-interest.html">複利</a>那條等比的公式了。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>n 是項數，不是末項</strong>。題目說「從 7 開始每次加 3，一路加到 100」，
+            n 不是 100。先用 n = (末項 − 首項) ÷ d + 1 算項數：(100 − 7) ÷ 3 = <strong>31</strong>，
+            加一得 <strong>32</strong> 項，S = (32/2) × (2 × 7 + 31 × 3) = <strong>1,712</strong>。
+            把 100 誤當 n 代進去會得到 (100/2) × (2 × 7 + 99 × 3) = <strong>15,550</strong>，是正確答案的九倍有餘。
+            <strong>那個除法還兼任檢查：除不盡就表示 100 根本不在這個數列上</strong>，題目本身有問題。
+          </p>
+        </div>
+
+        <h2>和 = 項數 × 平均：公式其實在講這件事</h2>
+        <p>
+          把 (n/2)[2a + (n−1)d] 改寫成 n × (首項 + 末項)/2，右邊那一項正是
+          <a href="/formulas/arithmetic-mean.html">平均值</a>。等差數列有個漂亮性質：
+          <strong>整串數字的平均數就等於首末兩項的平均</strong>，不必把每一項加起來除以項數。
+          1 到 100 的平均是 (1 + 100)/2 = <strong>50.5</strong>，乘以 100 項即 5050。
+        </p>
+        <p>
+          這個視角讓等差數列和在財務上有直接用途。以等額本金（本金平均攤還）房貸為例：
+          借 1,200,000 元、分 12 期、月利率 0.5%。每期攤還的本金固定為
+          1,200,000 ÷ 12 = <strong>100,000</strong> 元，所以剩餘本金每期等額下降，利息也跟著等額下降。
+        </p>
+        <p>
+          第 1 期利息 1,200,000 × 0.5% = <strong>6,000</strong> 元，之後每期少付
+          100,000 × 0.5% = <strong>500</strong> 元。這就是 a = 6,000、d = −500、n = 12 的遞減等差數列，
+          利息總額 S = (12/2) × (2 × 6,000 − 11 × 500) = <strong>39,000</strong> 元。
+        </p>
+        <p>
+          換個算法驗證：12 期的剩餘本金分別是 12、11 … 1 個單位的 100,000 元，
+          單位數加總 1 + 2 + … + 12 = <strong>78</strong>，利息總額就是 500 × 78 = 39,000 元，兩條路同一個答案。
+          要注意的是<a href="/formulas/mortgage-payment.html">等額本息</a>的利息<strong>不是</strong>等差數列——
+          月繳固定時本金攤還逐期加速，利息遞減的幅度每期都在變，得用年金公式而非這條。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 等差數列和計算機，填 a、d、n 得 S。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 等差數列和 #29</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=29" title="等差數列和互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/arithmetic-mean.html">平均值 — 等差數列和的另一半</a></li>
+          <li><a href="/formulas/linear-function.html">一次函數 — 第 n 項的本體</a></li>
+          <li><a href="/formulas/mortgage-payment.html">月繳貸款公式 — 等額本息的對照組</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 等比而非等差的成長</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        等差數列（arithmetic sequence）首項 a、公差 d，第 n 項為 a + (n−1)d；前 n 項和
+        S = (n/2)[2a + (n−1)d] = n(a + l)/2，l 為末項。項數由 n = (l − a)/d + 1 求得，須為正整數。
+        高斯幼年速算 1 到 100 的軼事流傳版本不一，史料未能確證細節，此處僅取其配對解法作為數學說明。
+        52 週與 365 天存錢挑戰的級距為網路流傳的通行版本；房貸數字為假設值，僅作數學說明，
+        不構成投資或借貸建議，實際利率與攤還方式以金融機構契約為準。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
