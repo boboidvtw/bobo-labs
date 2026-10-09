@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>球的表面積怎麼算？4πr² 公式拆解（半徑10公分實例）· Bobo Labs</title>
+  <meta name="description" content="球的表面積怎麼算？公式是 4πr²，正好是四個同半徑的圓面積。本文用半徑 10 公分算出 1,256.64 平方公分，並示範直徑與周長換算、半球表面積、把直徑當半徑為什麼差 4 倍。" />
+  <meta property="og:title" content="球的表面積怎麼算？4πr² 公式拆解" />
+  <meta property="og:description" content="四個圓面積的來由、直徑與周長換算、半球的曲面與底面，以及把直徑當半徑差 4 倍的經典錯誤。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/sphere-surface-area.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/sphere-surface-area.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "球的表面積怎麼算？4πr² 公式拆解", "url": "https://labs.moneyai168.com/formulas/sphere-surface-area.html", "datePublished": "2026-10-09", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "球的表面積", "item": "https://labs.moneyai168.com/formulas/sphere-surface-area.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "4 * pi * r ** 2",
+    "cases": [
+    {"input": {"r": 1},  "expect": 12.566370614359172, "tol": 0.0001, "text": "12.57"},
+    {"input": {"r": 5},  "expect": 314.1592653589793,  "tol": 0.001,  "text": "314.16"},
+    {"input": {"r": 10}, "expect": 1256.6370614359173, "tol": 0.001,  "text": "1,256.64"},
+    {"input": {"r": 15}, "expect": 2827.4333882308138, "tol": 0.001,  "text": "2,827.43"},
+    {"input": {"r": 20}, "expect": 5026.548245743669,  "tol": 0.001,  "text": "5,026.55"},
+    {"expr": "pi * r ** 2", "input": {"r": 10}, "expect": 314.1592653589793, "tol": 0.001, "text": "314.16"},
+    {"expr": "(2 * r) ** 2 / r ** 2", "input": {"r": 10}, "expect": 4, "tol": 0.000001, "text": "4"},
+    {"expr": "(2 * r) ** 3 / r ** 3", "input": {"r": 10}, "expect": 8, "tol": 0.000001, "text": "8"},
+    {"expr": "(1 + g) ** 2 - 1", "input": {"g": 0.1}, "expect": 0.21, "tol": 0.000001, "scale": 100, "text": "21"},
+    {"expr": "(1 + g) ** 2", "input": {"g": 0.1}, "expect": 1.21, "tol": 0.000001, "text": "1.21"},
+    {"expr": "2 * pi * r * (2 * r)", "input": {"r": 10}, "expect": 1256.6370614359173, "tol": 0.001, "text": "1,256.64"},
+    {"expr": "(4 * pi * r ** 2) / (2 * pi * r ** 2 + 2 * pi * r * (2 * r))", "input": {"r": 10}, "expect": 0.6666666666666666, "tol": 0.000001, "scale": 100, "text": "66.7"},
+    {"expr": "pi * d ** 2", "input": {"d": 24}, "expect": 1809.5573684677208, "tol": 0.001, "text": "1,809.56"},
+    {"expr": "C ** 2 / pi", "input": {"C": 75}, "expect": 1790.4931097838225, "tol": 0.001, "text": "1,790.49"},
+    {"expr": "sqrt(Aa / (4 * pi))", "input": {"Aa": 1000}, "expect": 8.920620580763856, "tol": 0.0001, "text": "8.92"},
+    {"expr": "2 * pi * r ** 2", "input": {"r": 10}, "expect": 628.3185307179587, "tol": 0.001, "text": "628.32"},
+    {"expr": "3 * pi * r ** 2", "input": {"r": 10}, "expect": 942.4777960769379, "tol": 0.001, "text": "942.48"},
+    {"expr": "r / 3", "input": {"r": 10}, "expect": 3.3333333333333335, "tol": 0.0001, "text": "3.33"},
+    {"expr": "8 * 4 * pi * r ** 2", "input": {"r": 5}, "expect": 2513.2741228718346, "tol": 0.001, "text": "2,513.27"},
+    {"expr": "(8 * 4 * pi * a ** 2) / (4 * pi * b ** 2)", "input": {"a": 5, "b": 10}, "expect": 2, "tol": 0.000001, "text": "2"},
+    {"expr": "pi * d ** 2", "input": {"d": 3}, "expect": 28.274333882308138, "tol": 0.001, "text": "28.27"},
+    {"expr": "2 * pi * d ** 2", "input": {"d": 3}, "expect": 56.548667764616276, "tol": 0.001, "text": "56.55"},
+    {"expr": "4 * pi * r ** 2 / 100000000", "input": {"r": 6371}, "expect": 5.1006447190978825, "tol": 0.0001, "text": "5.10"},
+    {"expr": "(4 * pi * r ** 2) / (2 * pi * r ** 2) - 1", "input": {"r": 10}, "expect": 1, "tol": 0.000001, "scale": 100, "text": "100"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #99 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">球的表面積怎麼算？4πr² 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-09</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        半徑 10 公分的球，表面積是 1,256.64 平方公分。兩步：半徑平方、再乘 4π。
+        容易出錯的地方不在乘法，而在三件事：拿到的是半徑還是直徑、要的是整顆球還是半球、
+        以及把表面積和體積的公式混在一起。這篇把 4πr² 的來由、換算與扣法一次算清楚。</p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = 4πr²</div>
+          <div class="formula-box-note">r 為半徑（球心到球面的距離）· π ≈ 3.14159 · A 的單位是 r 的平方</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>球的表面積：包住整顆球的曲面面積</td><td>長度單位的平方（cm²、m²、in²）</td><td>籃球約 1,790.49 cm²</td></tr>
+            <tr><td>r</td><td>半徑：球心到球面任一點的距離</td><td>長度（cm、m、in）</td><td>1 ～ 20 cm</td></tr>
+            <tr><td>π</td><td>圓周率：圓周長與直徑之比</td><td>無單位（純比值）</td><td>3.14159…</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼是 4？正好是四個同半徑的圓</h2>
+        <p>
+          把球從正中間切開，切面是一個半徑同樣為 r 的圓，叫做大圓，面積 πr²。
+          半徑 10 公分時，大圓面積是 314.16 平方公分。球的表面積正好等於
+          <strong>4</strong> 個大圓：4 × 314.16 = 1,256.64。
+        </p>
+        <p>
+          這個 4 有幾何來源。阿基米德證明，球面積等於外接圓柱的側面積：圓柱底半徑 r、高 2r，
+          側面攤平是一張長 2πr、寬 2r 的長方形，面積 2πr × 2r = 4πr²。
+          半徑 10 公分時這張長方形也是 1,256.64 平方公分，和球面一模一樣。
+        </p>
+        <p>
+          若把圓柱上下兩個底也算進去，圓柱總表面積是 6πr²，球面佔其中的
+          <strong>66.7%</strong>。和體積的結論一樣是三分之二——球在外接圓柱裡，
+          體積與表面積都佔三分之二，這是阿基米德最得意的發現。
+        </p>
+
+        <h2>半徑 10 公分算一遍，五種尺寸對照</h2>
+        <p>
+          半徑 10 公分：先平方得 100，乘 π 得 314.16，再乘 4，得
+          <strong>1,256.64 平方公分</strong>。順序要先平方再乘係數；寫成 (4πr)² 會把 4π 也平方，
+          結果會多乘一個 4π，也就是放大約 12.57 倍。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>半徑 r（cm）</th><th>r²</th><th>表面積 A = 4πr²（cm²）</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>12.57</td></tr>
+            <tr><td>5</td><td>25</td><td>314.16</td></tr>
+            <tr><td>10</td><td>100</td><td>1,256.64</td></tr>
+            <tr><td>15</td><td>225</td><td>2,827.43</td></tr>
+            <tr><td>20</td><td>400</td><td>5,026.55</td></tr>
+          </tbody>
+        </table>
+        <p>
+          半徑 1 的球表面積是 <strong>12.57</strong>，就是 4π 這個係數本身。估算時把 r² 乘上 12.57 即可。
+        </p>
+        <p>
+          表面積隨半徑平方成長：半徑從 10 加倍到 20，表面積從 1,256.64 變成 5,026.55，是 4 倍，
+          比體積的 8 倍溫和。半徑只多 10%，表面積就多 <strong>21%</strong>，因為 1.1 的平方是
+          <strong>1.21</strong>。做球形外殼、估包裝用料時，半徑的小誤差會被放大成兩倍左右的百分比誤差。
+        </p>
+
+        <h2>只知道直徑或周長，怎麼換算？</h2>
+        <p>
+          產品規格多半標直徑，運動用球則常標周長。兩種都能直接代入，不必先算出半徑。
+        </p>
+        <div class="formula-box">
+          <div class="formula-box-eq">A = 4π(d/2)² = πd² = C²/π</div>
+          <div class="formula-box-note">d 為直徑、C 為大圓周長（繞球最粗處一圈）</div>
+        </div>
+        <p>
+          <strong>已知直徑 d</strong>：4π(d/2)² 化簡後是 πd²，係數剛好消成 1。
+          直徑 24 公分的球，表面積是 <strong>1,809.56 平方公分</strong>。
+        </p>
+        <p>
+          <strong>已知周長 C</strong>：由 C = 2πr 得 r = C/(2π)，代回得 A = C²/π。
+          赤道周長 75 公分的球（接近標準 7 號籃球），表面積是 <strong>1,790.49 平方公分</strong>。
+          用軟尺量周長比用尺量直徑準，因為量直徑必須剛好對準球心。
+        </p>
+        <p>
+          <strong>由表面積反推半徑</strong>：r = √(A/4π)。手上有 1000 平方公分的布料，
+          剛好包住的球半徑是 <strong>8.92</strong> 公分（不計接縫與重疊）。
+        </p>
+
+        <h2>半球要算幾面？曲面與底面分開看</h2>
+        <p>
+          半球最容易算錯，因為「半球表面積」有兩種意思，要先確定題目要哪一種。
+        </p>
+        <p>
+          <strong>只要曲面</strong>（碗的外側、圓頂屋頂、要上漆的拱頂）：整顆球的一半，
+          2πr²。半徑 10 公分是 <strong>628.32 平方公分</strong>。
+        </p>
+        <p>
+          <strong>曲面加平的底</strong>（實心半球、要整個包起來的物件）：再加一個大圓 πr²，
+          合計 3πr²。半徑 10 公分是 <strong>942.48 平方公分</strong>。
+          兩種答案差了一個大圓 314.16，報價或用料時要先問清楚。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把直徑當半徑填進去</strong>：直徑 20 公分的球，正確表面積是 1,256.64 平方公分；
+            若把 20 直接當 r，會得到 5,026.55，放大 <strong>4</strong> 倍。<br /><br />
+            <strong>和體積公式混用</strong>：表面積 4πr² 是平方，體積 (4/3)πr³ 是立方。
+            寫成 4πr³ 會讓單位變成 cm³，算出來根本不是面積；寫成 (4/3)πr² 單位雖然是 cm²，係數卻錯了，只剩正確值的三分之一。<br /><br />
+            <strong>半球只取 2πr² 卻要包整個物件</strong>：少算底面，用料少了一個大圓。
+            反過來，若用整顆球的公式去算半球曲面，會多算一倍，也就是 <strong>100</strong>% 的面積。
+          </p>
+        </div>
+
+        <h2>表面積和體積是什麼關係？一顆大的 vs 八顆小的</h2>
+        <p>
+          體積 (4/3)πr³ 對半徑求導數，得到的正是 4πr²：半徑增加一層薄薄的厚度，
+          體積的增量就是表面積乘上那層厚度。這也是為什麼兩條公式長得那麼像。
+          兩者相除，體積 ÷ 表面積 = r/3，半徑 10 公分時是 <strong>3.33</strong> 公分。
+        </p>
+        <p>
+          這個比值決定了「單位體積有多少表面」。八顆半徑 5 公分的小球，總體積剛好等於一顆半徑 10 公分的大球，
+          但總表面積是 <strong>2,513.27 平方公分</strong>，是大球 1,256.64 的 <strong>2</strong> 倍。
+          碎冰比冰塊融得快、小顆藥丸溶得快、細粉燃燒比塊狀猛烈，都是同一條算式：同樣的量切得越碎，
+          接觸面越大。
+        </p>
+        <p>
+          尺度放大到地球，取平均半徑 6,371 公里，表面積約 <strong>5.10</strong> 億平方公里。
+          工程上的例子則是球形水塔：直徑 3 公尺的塔，外表面積是 <strong>28.27 平方公尺</strong>；
+          若要刷兩道漆，塗刷面積以 <strong>56.55 平方公尺</strong> 估料，再依油漆罐標示的每公升塗佈率換算用量。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的球表面積計算機。試試把半徑輸入 10 是不是 1,256.64，
+          或把量到的直徑除以 2 再填。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 球的表面積 #99</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=99" title="球表面積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/sphere-volume.html">球的體積 — (4/3)πr³，對半徑求導數就是表面積</a></li>
+          <li><a href="/formulas/circle-area.html">圓的面積 — πr²，球面等於四個大圓</a></li>
+          <li><a href="/formulas/circle-circumference.html">圓周長 — 由周長反推半徑的那一步</a></li>
+          <li><a href="/formulas/cylinder-volume.html">圓柱體積 — 阿基米德的外接圓柱</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：圓周率 π 為無理數，本文取 3.14159 做顯示、計算全程使用完整精度。
+        「球面積等於外接圓柱側面積」出自阿基米德《論球與圓柱》（On the Sphere and Cylinder）第一卷。
+        地球平均半徑 6,371 公里取自 IUGG 平均半徑定義。文中數值皆以 4πr² 及其變形獨立驗算，
+        四捨五入至小數點後兩位顯示。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p>
+    </div>
+  </footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
