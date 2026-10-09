@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-10-09** — 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/sphere-surface-area.html`（#99 · 數學 · Free，球的表面積 4πr²：四個大圓的來由、直徑與周長換算、半球曲面與底面、表面積與體積的關係）。
+  Formula 卡片由 placeholder 轉為連結，Tier 一致故分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-09.
+
 - **2026-10-07** — 修正 5 個公式頁的閱讀增強腳本路徑：
   `formulas/arithmetic-mean.html`、`distance-formula.html`、`mortgage-payment.html`、`newtons-second-law.html`、`universal-gravitation.html`
   原本引用 `../article.js`（站台根目錄沒有此檔，線上 404），改為與其他 46 頁一致的 `../writing/article.js`。
