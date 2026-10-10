@@ -20,7 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-10-10**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-10-10**（今日）— 人工發布 1 篇文章：
+  `writing/2026-10-10-zhonghua-minguo-acrostic-poem.html`（〈中華民國〉藏頭詩與賞析：國慶七言絕句、平仄格律表、初稿第三句失黏與重字的修改過程、逐句賞析）。
+  首頁 Writing 區置頂新增條目，sitemap 重生（writing 94 篇）。
+  Published 1 writing post by hand: a National Day acrostic poem with meter table and commentary.
+- **2026-10-10** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/herons-formula.html`（#26 · 數學 · Pro，海倫公式三邊長求三角形面積：半周長 s 的角色、把周長當半周長會得到 11.4 倍答案、與底乘高／勾股／等邊公式交叉驗算、量錯最短邊的槓桿最大）。
   Formula 卡片由 placeholder 轉為連結，Tier 一致故分類計數不變。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 40 case）自動上線。
