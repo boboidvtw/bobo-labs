@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-10-10**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/herons-formula.html`（#26 · 數學 · Pro，海倫公式三邊長求三角形面積：半周長 s 的角色、把周長當半周長會得到 11.4 倍答案、與底乘高／勾股／等邊公式交叉驗算、量錯最短邊的槓桿最大）。
+  Formula 卡片由 placeholder 轉為連結，Tier 一致故分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 40 case）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-10.
 - **2026-10-09** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/sphere-surface-area.html`（#99 · 數學 · Free，球的表面積 4πr²：四個大圓的來由、直徑與周長換算、半球曲面與底面、表面積與體積的關係）。
   Formula 卡片由 placeholder 轉為連結，Tier 一致故分類計數不變。
