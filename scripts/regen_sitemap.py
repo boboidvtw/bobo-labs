@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-regen_sitemap.py — 冪等重生 sitemap.xml 的 writing / formulas / guides 三區（2026-08-05 建立）
+regen_sitemap.py — 冪等重生 sitemap.xml 的 writing / formulas / guides / daily 四區（2026-08-05 建立）
 
 由 regen-sitemap-writing.py（2026-06-08，已於 2026-08-31 刪除）泛化而來：原版明文「只動 writing 區、不碰
 Formula 區」，導致自動化火力轉向 formulas 後，新公式文章不會進 sitemap。
@@ -54,6 +54,8 @@ SECTIONS: dict[str, dict] = {
     "formulas": {"dir": "formulas", "priority": "0.8", "by_date": False, "exclude": {"index.html"}},
     "guides": {"dir": "guides", "priority": "0.9", "by_date": False, "exclude": {"index.html"},
                "changefreq": "monthly", "precise": True},
+    # 2026-10-10 新增「日常記事」：非技術的個人記事（詩作等），規則同 writing。
+    "daily": {"dir": "daily", "priority": "0.5", "by_date": True, "exclude": {"index.html"}},
 }
 
 
@@ -177,7 +179,7 @@ def regen_section(sitemap_path: Path, section: str) -> tuple[bool, int]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="冪等重生 sitemap 的 writing / formulas / guides 區")
+    parser = argparse.ArgumentParser(description="冪等重生 sitemap 的 writing / formulas / guides / daily 區")
     parser.add_argument("--section", choices=[*SECTIONS, "all"], default="all")
     args = parser.parse_args()
 

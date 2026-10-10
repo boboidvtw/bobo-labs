@@ -319,6 +319,29 @@ def run_integration(tmp: Path) -> None:
     check("兩次重生內容一致", after == stable)
 
 
+def run_daily(tmp: Path) -> None:
+    """daily 區規格（2026-10-10 新增「日常記事」）。
+
+    跟 writing 一樣以檔名日期為發布日、依日期排序；URL 落在 /daily/ 底下。
+    """
+    check("SECTIONS 收錄 daily", "daily" in SECTIONS)
+    if "daily" not in SECTIONS:
+        return
+    check("daily 依檔名日期排序", SECTIONS["daily"].get("by_date") is True)
+
+    daily = make_repo(tmp / "daily_repo", "daily")
+    write(daily, "2026-10-10-poem.html", "<h1>poem</h1>")
+    write(daily, "2026-09-01-older.html", "<h1>older</h1>")
+    got = derive_lastmod("2026-10-10-poem.html", daily, by_date=True)
+    check("daily lastmod 取檔名日期", got == "2026-10-10", f"得到 {got}")
+
+    block = build_block(daily.parent, "daily")
+    check("daily 兩篇都收錄", len(block) == 2, f"得到 {len(block)}")
+    check("daily URL 在 /daily/ 底下",
+          all("https://labs.moneyai168.com/daily/" in ln for ln in block), block)
+    check("daily 依日期升序", block and "2026-09-01-older" in block[0], block)
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as td:
         run(Path(td))
@@ -326,6 +349,7 @@ def main() -> int:
         run_guides(Path(td))
         run_changefreq(Path(td))
         run_guides_integration(Path(td))
+        run_daily(Path(td))
     total = PASSED + len(FAILED)
     for line in FAILED:
         print(f"  ✗ {line}")
