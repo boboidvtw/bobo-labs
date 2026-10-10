@@ -20,7 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-10-10**（今日）— 人工發布 1 篇文章：
+- **2026-10-10**（今日）— 新增第五個內容區「日常記事」`daily/`（非技術的個人記事，如詩作）：
+  首頁新增 `#daily` 區塊與導覽連結（Contact 編號改為 04）；藏頭詩由 `writing/` 移入
+  `daily/2026-10-10-zhonghua-minguo-acrostic-poem.html`（舊網址不保留）；`scripts/regen_sitemap.py`
+  納入 daily 區並補測試（44/44 通過）。
+  Added a new "Daily notes" section (`daily/`) for non-technical posts; moved the acrostic poem there and taught the sitemap generator about it.
+- **2026-10-10** — 人工發布 1 篇文章：
   `writing/2026-10-10-zhonghua-minguo-acrostic-poem.html`（〈中華民國〉藏頭詩與賞析：國慶七言絕句、平仄格律表、初稿第三句失黏與重字的修改過程、逐句賞析）。
   首頁 Writing 區置頂新增條目，sitemap 重生（writing 94 篇）。
   Published 1 writing post by hand: a National Day acrostic poem with meter table and commentary.
