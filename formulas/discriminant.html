@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>判別式怎麼算？b²−4ac 判斷實根個數（圍籬 40 公尺實例）· Bobo Labs</title>
+  <meta name="description" content="判別式 b²−4ac 怎麼算？Δ 的正負決定二次方程式有幾個實根。本文用 40 公尺圍籬圍出 64、100、130 平方公尺三個目標，算出 Δ = 144、0 與負值，說明為什麼第三個目標做不到，以及 Δ 為完全平方數時可以直接因式分解。" />
+  <meta property="og:title" content="判別式怎麼算？b²−4ac 判斷實根個數" />
+  <meta property="og:description" content="Δ 的正負如何決定實根個數、Δ 與頂點高度的關係、完全平方數與因式分解，以及 Δ 趨近 0 時兩根靠多近。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/discriminant.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/discriminant.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "判別式怎麼算？b²−4ac 判斷實根個數", "url": "https://labs.moneyai168.com/formulas/discriminant.html", "datePublished": "2026-10-10", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "判別式", "item": "https://labs.moneyai168.com/formulas/discriminant.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "b**2 - 4*a*c",
+    "cases": [
+    {"expr": "(p/4)**2", "input": {"p": 40}, "expect": 100.0, "tol": 0.000001, "text": "100"},
+
+    {"expr": "b**2", "input": {"b": -20}, "expect": 400.0, "tol": 0.000001, "text": "400"},
+    {"expr": "4*a*c", "input": {"a": 1, "c": 64}, "expect": 256.0, "tol": 0.000001, "text": "256"},
+    {"input": {"a": 1, "b": -20, "c": 64}, "expect": 144.0, "tol": 0.000001, "text": "144"},
+    {"expr": "sqrt(b**2 - 4*a*c)", "input": {"a": 1, "b": -20, "c": 64}, "expect": 12.0, "tol": 0.000001, "text": "12"},
+    {"expr": "(-b + sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -20, "c": 64}, "expect": 16.0, "tol": 0.000001, "text": "16"},
+    {"expr": "(-b - sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -20, "c": 64}, "expect": 4.0, "tol": 0.000001, "text": "4"},
+    {"expr": "r1 * r2", "input": {"r1": 16, "r2": 4}, "expect": 64.0, "tol": 0.000001, "text": "64"},
+    {"expr": "(b**2 - 4*a*c) / (4*a)", "input": {"a": 1, "b": -20, "c": 64}, "expect": 36.0, "tol": 0.000001, "text": "36"},
+    {"expr": "2*(r1 + r2)", "input": {"r1": 16, "r2": 4}, "expect": 40.0, "tol": 0.000001, "text": "40"},
+
+    {"expr": "4*a*c", "input": {"a": 1, "c": 100}, "expect": 400.0, "tol": 0.000001, "text": "400"},
+    {"input": {"a": 1, "b": -20, "c": 100}, "expect": 0.0, "tol": 0.000001, "text": "0"},
+    {"expr": "-b / (2*a)", "input": {"a": 1, "b": -20}, "expect": 10.0, "tol": 0.000001, "text": "10"},
+
+    {"expr": "4*a*c", "input": {"a": 1, "c": 130}, "expect": 520.0, "tol": 0.000001, "text": "520"},
+    {"expr": "4*a*c - b**2", "input": {"a": 1, "b": -20, "c": 130}, "expect": 120.0, "tol": 0.000001, "text": "120"},
+    {"expr": "(4*a*c - b**2) / (4*a)", "input": {"a": 1, "b": -20, "c": 130}, "expect": 30.0, "tol": 0.000001, "text": "30"},
+    {"expr": "sqrt(4*a*c - b**2) / (2*a)", "input": {"a": 1, "b": -20, "c": 130}, "expect": 5.477225575051661, "tol": 0.0001, "text": "5.4772"},
+
+    {"expr": "b**2", "input": {"b": -7}, "expect": 49.0, "tol": 0.000001, "text": "49"},
+    {"expr": "4*a*c", "input": {"a": 2, "c": 3}, "expect": 24.0, "tol": 0.000001, "text": "24"},
+    {"input": {"a": 2, "b": -7, "c": 3}, "expect": 25.0, "tol": 0.000001, "text": "25"},
+    {"expr": "sqrt(b**2 - 4*a*c)", "input": {"a": 2, "b": -7, "c": 3}, "expect": 5.0, "tol": 0.000001, "text": "5"},
+    {"expr": "(-b + sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 2, "b": -7, "c": 3}, "expect": 3.0, "tol": 0.000001, "text": "3"},
+    {"expr": "(-b - sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 2, "b": -7, "c": 3}, "expect": 0.5, "tol": 0.000001, "text": "0.5"},
+    {"expr": "sqrt(b**2 - 4*a*c) / abs(a)", "input": {"a": 2, "b": -7, "c": 3}, "expect": 2.5, "tol": 0.000001, "text": "2.5"},
+
+    {"input": {"a": 6, "b": -21, "c": 9}, "expect": 225.0, "tol": 0.000001, "text": "225"},
+    {"expr": "sqrt(b**2 - 4*a*c)", "input": {"a": 6, "b": -21, "c": 9}, "expect": 15.0, "tol": 0.000001, "text": "15"},
+    {"expr": "sqrt(b**2 - 4*a*c) / abs(a)", "input": {"a": 6, "b": -21, "c": 9}, "expect": 2.5, "tol": 0.000001, "text": "2.5"},
+    {"expr": "k**2", "input": {"k": 3}, "expect": 9.0, "tol": 0.000001, "text": "9"},
+
+    {"expr": "4*a*c", "input": {"a": 1, "c": 5}, "expect": 20.0, "tol": 0.000001, "text": "20"},
+    {"input": {"a": 1, "b": -8, "c": 5}, "expect": 44.0, "tol": 0.000001, "text": "44"},
+    {"expr": "sqrt(b**2 - 4*a*c)", "input": {"a": 1, "b": -8, "c": 5}, "expect": 6.6332495807108, "tol": 0.0001, "text": "6.6332"},
+    {"expr": "(-b + sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -8, "c": 5}, "expect": 7.3166247903554, "tol": 0.0001, "text": "7.3166"},
+    {"expr": "(-b - sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -8, "c": 5}, "expect": 0.6833752096446002, "tol": 0.0001, "text": "0.6834"},
+    {"expr": "p + sqrt(q)", "input": {"p": 4, "q": 11}, "expect": 7.3166247903554, "tol": 0.0001, "text": "7.3166"},
+
+    {"input": {"a": 1, "b": -20, "c": 99}, "expect": 4.0, "tol": 0.000001, "text": "4"},
+    {"expr": "sqrt(b**2 - 4*a*c)", "input": {"a": 1, "b": -20, "c": 99}, "expect": 2.0, "tol": 0.000001, "text": "2"},
+    {"expr": "(-b + sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -20, "c": 99}, "expect": 11.0, "tol": 0.000001, "text": "11"},
+    {"expr": "(-b - sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -20, "c": 99}, "expect": 9.0, "tol": 0.000001, "text": "9"},
+
+    {"expr": "4*a*c", "input": {"a": 1, "c": 99.9}, "expect": 399.6, "tol": 0.000001, "text": "399.6"},
+    {"input": {"a": 1, "b": -20, "c": 99.9}, "expect": 0.4, "tol": 0.000001, "text": "0.4"},
+    {"expr": "sqrt(b**2 - 4*a*c)", "input": {"a": 1, "b": -20, "c": 99.9}, "expect": 0.6324555320336579, "tol": 0.0001, "text": "0.6325"},
+    {"expr": "(-b + sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -20, "c": 99.9}, "expect": 10.316227766016828, "tol": 0.0001, "text": "10.3162"},
+    {"expr": "(-b - sqrt(b**2 - 4*a*c)) / (2*a)", "input": {"a": 1, "b": -20, "c": 99.9}, "expect": 9.683772233983172, "tol": 0.0001, "text": "9.6838"},
+    {"expr": "2 * sqrt(m - A)", "input": {"m": 100, "A": 99.9}, "expect": 0.6324555320336579, "tol": 0.0001, "text": "0.6325"},
+
+    {"expr": "(A2 - A1) / A1", "input": {"A1": 99, "A2": 99.9}, "expect": 0.00909090909090909, "tol": 0.0000001, "scale": 100, "text": "0.9"},
+
+    {"expr": "-c / b", "input": {"b": 5, "c": -3}, "expect": 0.6, "tol": 0.000001, "text": "0.6"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #24 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">判別式怎麼算？b²−4ac 判斷實根個數</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-10</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        手上有 40 公尺圍籬，想圍出一塊矩形。目標面積 64 平方公尺有兩種圍法，
+        目標 100 平方公尺只有一種，目標 130 平方公尺一種都沒有。
+        不必畫圖也不必試誤，判別式 b²−4ac 算出來是正的、零、還是負的，一步就分得出這三種情況。
+        這條公式的價值不在求出答案，而在<strong>先知道答案存不存在</strong>——
+        解方程式之前就擋掉做不到的目標。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">Δ = b² − 4ac</div>
+          <div class="formula-box-note">用於二次方程式 ax² + bx + c = 0，其中 a ≠ 0 · Δ &gt; 0 兩個實根 · Δ = 0 一個重根 · Δ &lt; 0 沒有實根</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td>二次項係數，必須不為 0，否則方程式退化成一次</td><td>無因次（或視題目）</td><td>1、2、−5</td></tr>
+            <tr><td>b</td><td>一次項係數，可為任意實數（含 0 與負數）</td><td>同題目</td><td>−20、7、0</td></tr>
+            <tr><td>c</td><td>常數項，幾何上是拋物線與 y 軸的交點高度</td><td>同題目</td><td>64、130</td></tr>
+            <tr><td>Δ</td><td>判別式（discriminant），只看它的正負號即可判斷實根個數</td><td>b 單位的平方</td><td>144、0、負值</td></tr>
+          </tbody>
+        </table>
+
+        <h2>40 公尺圍籬要圍 64 平方公尺，怎麼用判別式判斷？</h2>
+        <p>
+          周長固定 40 公尺的矩形，長寬相加必為 20 公尺。設一邊為 x，另一邊就是 20 − x，
+          面積條件寫成 x(20 − x) = 64，整理成標準式 x² − 20x + 64 = 0。
+          對照 ax² + bx + c = 0，得 a = 1、b = −20、c = 64。
+        </p>
+        <p>
+          代入判別式：b² 是 (−20)² = 400，4ac 是 4 × 1 × 64 = 256，
+          相減得 Δ = 144。
+          正數，所以有兩個不同的實根。開根號得 12，
+          兩根是 (20 + 12) / 2 = 16 與 (20 − 12) / 2 = 4。
+          16 × 4 = 64 平方公尺，驗算無誤——
+          <a href="/formulas/rectangle-perimeter.html">周長</a> 2 × (16 + 4) 正好 40 公尺。
+        </p>
+        <p>
+          換成目標 100 平方公尺：x² − 20x + 100 = 0，4ac 變成 400，
+          與 b² 相等，Δ = 0。
+          只有一個重根 x = 10，長寬都是 10 公尺的正方形。
+          這不是巧合：固定周長下<a href="/formulas/rectangle-area.html">矩形面積</a>的最大值就出現在正方形，
+          40 公尺圍籬能圍出的上限是 (40 / 4)² = 100 平方公尺。
+        </p>
+        <p>
+          再換成 130 平方公尺：4ac 成長到 520，
+          比 b² 的 400 大，Δ 變成負數，絕對值是 120。
+          沒有實根，意思是「40 公尺圍籬圍出 130 平方公尺」在幾何上不存在：不是解不出來，是沒有解。
+          上一段算出的上限是 100，130 超過了。
+        </p>
+
+        <h2>為什麼 b²−4ac 的正負就決定實根個數？</h2>
+        <p>
+          判別式不是另外發明的規則，它就藏在公式解裡。
+          ax² + bx + c = 0 配方之後得 x = (−b ± √(b² − 4ac)) / 2a，
+          根號裡的那一塊正是 Δ。整條公式解唯一可能出事的地方就是這個根號。
+        </p>
+        <p>
+          Δ 為正時，<a href="/formulas/square-root.html">平方根</a>是個正數，± 讓它分岔成兩個不同的答案；
+          Δ 等於 0 時，√0 也是 0，± 加減的都是 0，兩個答案塌成同一個，這就是「重根」；
+          Δ 為負時，實數裡沒有數字的平方是負的，根號算不出實數，方程式在實數範圍內無解。
+        </p>
+        <p>
+          看懂這點還會多拿到一個結果：兩根相差多少。
+          兩根是 (−b + √Δ)/2a 與 (−b − √Δ)/2a，相減後 −b 抵銷，差距是 √Δ / |a|。
+          圍籬那題 a = 1、√Δ = 12，兩根差 12——
+          16 和 4 確實差 12 公尺。
+          <strong>Δ 不只回答「有沒有解」，它的大小還量出兩個解分得多開。</strong>
+        </p>
+
+        <h2>Δ 同時告訴你拋物線頂點離 x 軸多遠</h2>
+        <p>
+          把左式看成<a href="/formulas/quadratic-function.html">二次函數</a> y = ax² + bx + c，
+          「有幾個實根」就是「拋物線和 x 軸交幾個點」。頂點高度剛好等於 −Δ / (4a)，
+          Δ 與頂點高度是同一件事的兩種寫法，只差一個 −4a 倍率。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>目標面積（m²）</th><th>方程式</th><th>Δ = b² − 4ac</th><th>頂點相對 x 軸</th><th>實根</th></tr></thead>
+          <tbody>
+            <tr><td>64</td><td>x² − 20x + 64 = 0</td><td>144（正）</td><td>低 36</td><td>16 與 4</td></tr>
+            <tr><td>100</td><td>x² − 20x + 100 = 0</td><td>0</td><td>正好相切</td><td>10（重根）</td></tr>
+            <tr><td>130</td><td>x² − 20x + 130 = 0</td><td>負（絕對值 120）</td><td>高 30</td><td>無實根</td></tr>
+          </tbody>
+        </table>
+        <p>
+          a = 1 時開口向上，頂點沉到 x 軸下面才有機會穿過它兩次。
+          第一列的頂點比 x 軸低 36，穿兩次；
+          第三列的頂點高 30，整條拋物線懸在 x 軸上方，一次也碰不到。
+          這個對照也解釋了為什麼目標面積越大越難達成：c 每增加 1，Δ 就減少 4，
+          頂點等速往上抬，碰到 100 這個門檻時正好相切。
+        </p>
+        <p>
+          順帶一提，Δ 為負並不等於「這個方程式沒有根」，只等於「沒有實根」。
+          在複數範圍內它仍有兩個共軛根：x = 10 ± 5.4772i，虛部就是 √120 / 2。
+          RLC 電路與結構振動分析都靠這個虛部判斷系統會不會振盪，所以 Δ &lt; 0 是有意義的結果，不是失敗。
+        </p>
+
+        <h2>Δ 是完全平方數時，可以直接因式分解</h2>
+        <p>
+          整數係數的方程式還能從 Δ 多讀出一件事：根是不是有理數。判準是 Δ 為完全平方數——
+          公式解只在 √Δ 這一步可能冒出無理數，Δ 開得出整數，兩根就必定是分數，方程式也就能在整數範圍內分解。
+        </p>
+        <p>
+          看 2x² − 7x + 3 = 0：Δ = 49 − 24 = 25，
+          而 25 是 5 的平方。
+          √Δ = 5，兩根是 (7 + 5) / 4 = 3 與
+          (7 − 5) / 4 = 0.5，兩根差 2.5。
+          兩個都是有理數，於是可以寫成 (2x − 1)(x − 3) = 0，不必套公式解。
+        </p>
+        <p>
+          對照 x² − 8x + 5 = 0：Δ = 64 − 20 = 44。
+          44 夾在 6² = 36 與 7² = 49 之間，不是完全平方數。
+          √44 ≈ 6.6332，兩根是
+          7.3166 與
+          0.6834，實際上是 4 ± √11 這兩個無理數。
+          4 + √11 展開確實是 7.3166，
+          拿整數去湊因式分解注定失敗，只能走公式解。
+        </p>
+        <p>
+          還有一個容易踩的性質：Δ 的數值不是方程式的不變量，只有正負號是。
+          把 2x² − 7x + 3 = 0 整條乘以 3 得 6x² − 21x + 9 = 0，同一組根，
+          但 Δ 從 25 變成 225，
+          放大 9 倍，也就是倍率 3 的平方。
+          √Δ / |a| 這個兩根差的算式則會自動抵銷：√225 = 15，
+          除以 a = 6 仍得 2.5。
+          所以比較兩個方程式的 Δ 大小沒有意義，先把係數約到最簡再談。
+        </p>
+
+        <h2>目標面積從 64 提到 99.9，兩根會靠多近？</h2>
+        <p>
+          Δ 從正數縮到 0 的過程，就是兩個解互相靠近到重合的過程。
+          把圍籬目標面積一路往上限 100 推，看兩根怎麼收斂：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>目標面積（m²）</th><th>4ac</th><th>Δ</th><th>√Δ</th><th>兩邊長（m）</th></tr></thead>
+          <tbody>
+            <tr><td>64</td><td>256</td><td>144</td><td>12</td><td>16 與 4</td></tr>
+            <tr><td>99</td><td>396</td><td>4</td><td>2</td><td>11 與 9</td></tr>
+            <tr><td>99.9</td><td>399.6</td><td>0.4</td><td>0.6325</td><td>10.3162 與 9.6838</td></tr>
+            <tr><td>100</td><td>400</td><td>0</td><td>0</td><td>10 與 10</td></tr>
+          </tbody>
+        </table>
+        <p>
+          面積從 99 加到 99.9，只多了 0.9 %，兩邊長的差距卻從
+          2 公尺壓到 0.6325 公尺，縮掉將近七成。
+          原因是 Δ 對 c 是線性的，而兩根差要再開一次根號：
+          這題的 Δ = 400 − 4c，兩根差等於 2√(100 − c)。
+          面積離上限的距離每縮小到十分之一，兩邊長的差距只縮小到約三分之一。
+        </p>
+        <p>
+          實務上的意思是：目標壓在極限附近時，尺寸會變得極端敏感。想圍 99.9 平方公尺，兩邊得量到
+          10.3162 與 9.6838 公尺，
+          捲尺量到公分都還不夠；退一步接受 99 平方公尺，尺寸就變成乾淨的
+          11 和 9 公尺。
+          判別式越接近 0，答案越脆弱——這是它除了正負號之外最實用的訊號。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0 0 0.6em;">
+            <strong>b 是負數時漏掉平方</strong>：b² 要先平方再看符號。b = −20 時
+            b² = 400，不是負的 400。
+            這一步錯了，Δ 會從 144 翻成負數，
+            結論也從「兩種圍法」翻成「圍不出來」。
+            防呆做法是先把 b 平方的結果寫下來，確認它是非負數再接著減。
+          </p>
+          <p style="margin: 0;">
+            <strong>忘記確認 a ≠ 0</strong>：a = 0 時方程式根本不是二次式，判別式沒有意義。
+            例如 5x − 3 = 0 代進 b² − 4ac 會得到 b² 本身（恆為非負），
+            看起來像「有兩個實根」，但一次方程式只有一個根 x = 0.6。
+            看到 a 含有未知參數時，先分 a = 0 與 a ≠ 0 兩種情況討論。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。先用 a = 1、b = −20、c = 64 確認是不是
+          144，再填自己的係數。
+          填之前記得確認 a 不是 0，並留意 b 的正負號要照標準式 ax² + bx + c = 0 原樣輸入。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 判別式 #24</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=24" title="判別式互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/quadratic-function.html">二次函數 — 判別式判斷的就是這條拋物線與 x 軸的交點數</a></li>
+          <li><a href="/formulas/square-root.html">平方根 — 公式解裡的 √Δ，Δ 為負就卡在這一步</a></li>
+          <li><a href="/formulas/square.html">平方 — b² 這一步，也是 b 為負數時最常出錯的地方</a></li>
+          <li><a href="/formulas/rectangle-area.html">矩形面積 — 本文圍籬實例的面積條件來源</a></li>
+          <li><a href="/formulas/rectangle-perimeter.html">矩形周長 — 40 公尺圍籬如何變成 x 與 20 − x</a></li>
+          <li><a href="/formulas/herons-formula.html">海倫公式 — 另一個「根號內為負就無解」的幾何判準</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：判別式（discriminant）為代數標準結果，本文採教科書定義 Δ = b² − 4ac，
+        適用於實係數二次方程式 ax² + bx + c = 0（a ≠ 0），搭配公式解
+        x = (−b ± √(b² − 4ac)) / 2a。符號 Δ 取自 discriminant 的希臘字首慣例，部分教材寫作 D。
+        完全平方數判準僅在係數為整數（或有理數）時成立。
+        文中數值皆以 b² − 4ac 及其等價變形獨立驗算，計算全程使用完整精度，
+        無理數四捨五入至小數點後四位顯示。本文僅作數學說明。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
