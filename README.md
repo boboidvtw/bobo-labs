@@ -20,7 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-10-10**（今日）— 新增第五個內容區「日常記事」`daily/`（非技術的個人記事，如詩作）：
+- **2026-10-11**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/discriminant.html`（#24 · 數學 · Pro，以 40 公尺圍籬圍出指定面積為例，說明 Δ = b²−4ac 的正負如何在解方程式之前判斷實根個數，並延伸到頂點高度 −Δ/(4a)、兩根差 √Δ/|a|、完全平方數與有理根、Δ 趨近 0 時尺寸的敏感度）。
+  Formula 卡片 #24 由 placeholder 轉為連結；Tier 與文章一致，分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 46 case）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-11.
+- **2026-10-10** — 新增第五個內容區「日常記事」`daily/`（非技術的個人記事，如詩作）：
   首頁新增 `#daily` 區塊與導覽連結（Contact 編號改為 04）；藏頭詩由 `writing/` 移入
   `daily/2026-10-10-zhonghua-minguo-acrostic-poem.html`（舊網址不保留）；`scripts/regen_sitemap.py`
   納入 daily 區並補測試（44/44 通過）。
