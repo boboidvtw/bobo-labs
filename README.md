@@ -20,7 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-10-11**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-10-13**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/exponential-growth-decay.html`（#100 · 數學 · Pro，A = A₀·e^(kt) 不分成長衰減、差別只在 k 的正負：以 200 毫克咖啡因半衰期 5 小時算到睡前剩 65.98 毫克、降到 10 % 需 16.61 小時；成長側由 90 天 1,200→4,800 人反解 k = ln4/90、倍增時間 45 天並點出外推一年得 331,794 人的失效邊界；換底 1.05^t = e^(t·ln1.05) 與複利終值交叉驗算、72 法則精度、半衰期 3 與 7 小時的指數放大、線性近似 e^x ≈ 1+x 的 kt 界線）。
+  Formula 卡片 #100 由 placeholder 轉為連結；Tier 與文章一致，分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 49 case）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-13.
+- **2026-10-11** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/discriminant.html`（#24 · 數學 · Pro，以 40 公尺圍籬圍出指定面積為例，說明 Δ = b²−4ac 的正負如何在解方程式之前判斷實根個數，並延伸到頂點高度 −Δ/(4a)、兩根差 √Δ/|a|、完全平方數與有理根、Δ 趨近 0 時尺寸的敏感度）。
   Formula 卡片 #24 由 placeholder 轉為連結；Tier 與文章一致，分類計數與註腳不動。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 46 case）自動上線。
