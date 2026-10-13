@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>指數成長與衰減怎麼算？A·e^(kt) 公式拆解（咖啡因半衰期實例）· Bobo Labs</title>
+  <meta name="description" content="指數成長與衰減怎麼算？A = A₀·e^(kt) 的 k 要怎麼求？本文用 200 毫克咖啡因（半衰期 5 小時）算出 8 小時後剩多少，再用 90 天從 1200 人成長到 4800 人的實例反解 k，並說明倍增時間、半衰期與任意底數換成 e 的方法。" />
+  <meta property="og:title" content="指數成長與衰減怎麼算？A·e^(kt) 公式拆解" />
+  <meta property="og:description" content="k 的正負決定成長或衰減、半衰期與倍增時間如何換算、任意底數怎麼換成 e。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/exponential-growth-decay.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/exponential-growth-decay.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "指數成長與衰減怎麼算？A·e^(kt) 公式拆解", "url": "https://labs.moneyai168.com/formulas/exponential-growth-decay.html", "datePublished": "2026-10-12", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "指數成長與衰減", "item": "https://labs.moneyai168.com/formulas/exponential-growth-decay.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "A0 * exp(k * t)",
+    "cases": [
+    {"expr": "ln(2)", "input": {"x": 1}, "expect": 0.6931471805599453, "tol": 0.0000001, "text": "0.693"},
+
+    {"expr": "1/T", "input": {"T": 5}, "expect": 0.2, "tol": 0.0000001, "text": "0.2"},
+    {"expr": "h - t", "input": {"h": 24, "t": 1}, "expect": 23.0, "tol": 0.0001, "text": "23"},
+    {"expr": "A0*exp(-w*t)", "input": {"A0": 200, "w": 0.2, "t": 8}, "expect": 40.379303598931074, "tol": 0.0001, "text": "40.38"},
+    {"expr": "(A0*exp(-ln(2)/T*t) - A0*exp(-w*t)) / (A0*exp(-ln(2)/T*t))", "input": {"A0": 200, "T": 5, "w": 0.2, "t": 8}, "expect": 0.3879642059094724, "tol": 0.0000001, "scale": 100, "text": "38.8"},
+
+    {"expr": "A/A0", "input": {"A": 4800, "A0": 1200}, "expect": 4.0, "tol": 0.0001, "text": "4"},
+
+    {"expr": "(-ln(b) - d)/d", "input": {"b": 0.9, "d": 0.1}, "expect": 0.05360515657826276, "tol": 0.0000001, "scale": 100, "text": "5.4"},
+    {"expr": "(72/r)/(ln(2)/ln(1+r/100)) - 1", "input": {"r": 5}, "expect": 0.013606321636131291, "tol": 0.0000001, "scale": 100, "text": "1.4"},
+
+    {"expr": "T2/T1", "input": {"T1": 3, "T2": 7}, "expect": 2.3333333333333335, "tol": 0.0000001, "text": "2.3"},
+
+    {"expr": "0.1/k", "input": {"k": 0.015403270679109895}, "expect": 6.492127684000336, "tol": 0.0000001, "text": "6.5"},
+    {"expr": "(exp(k*t) - (1+k*t))/exp(k*t)", "input": {"k": 0.015403270679109895, "t": 7}, "expect": 0.005411466461781367, "tol": 0.0000001, "scale": 100, "text": "0.54"},
+    {"expr": "k*t", "input": {"k": 0.015403270679109895, "t": 30}, "expect": 0.46209812037329684, "tol": 0.0000001, "text": "0.46"},
+
+    {"expr": "ln(2)/T", "input": {"T": 5}, "expect": 0.13862943611198905, "tol": 0.0000001, "text": "0.1386"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 5, "t": 5}, "expect": 100.0, "tol": 0.0001, "text": "100"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 5, "t": 8}, "expect": 65.97539553864472, "tol": 0.0001, "text": "65.98"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 5, "t": 10}, "expect": 50.0, "tol": 0.0001, "text": "50"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 5, "t": 16}, "expect": 21.763764082403107, "tol": 0.0001, "text": "21.76"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 5, "t": 24}, "expect": 7.179364718731472, "tol": 0.0001, "text": "7.18"},
+    {"expr": "T * ln(A0/A) / ln(2)", "input": {"T": 5, "A0": 200, "A": 20}, "expect": 16.609640474436812, "tol": 0.0001, "text": "16.61"},
+
+    {"expr": "ln(A/A0)/t", "input": {"A": 4800, "A0": 1200, "t": 90}, "expect": 0.015403270679109895, "tol": 0.0000001, "text": "0.0154"},
+    {"expr": "ln(2)/k", "input": {"k": 0.015403270679109895}, "expect": 45.0, "tol": 0.0001, "text": "45"},
+    {"input": {"A0": 1200, "k": 0.015403270679109895, "t": 30}, "expect": 1904.8812623618392, "tol": 0.001, "text": "1,905"},
+    {"input": {"A0": 1200, "k": 0.015403270679109895, "t": 90}, "expect": 4800.0, "tol": 0.001, "text": "4,800"},
+    {"input": {"A0": 1200, "k": 0.015403270679109895, "t": 180}, "expect": 19200.0, "tol": 0.001, "text": "19,200"},
+    {"input": {"A0": 1200, "k": 0.015403270679109895, "t": 365}, "expect": 331794.35178771644, "tol": 0.001, "text": "331,794"},
+
+    {"expr": "ln(b)", "input": {"b": 1.05}, "expect": 0.04879016416943205, "tol": 0.0000001, "text": "0.0488"},
+    {"expr": "exp(ln(b)*t)", "input": {"b": 1.05, "t": 30}, "expect": 4.321942375150668, "tol": 0.0000001, "text": "4.322"},
+    {"expr": "P * exp(ln(b)*t)", "input": {"P": 1000000, "b": 1.05, "t": 30}, "expect": 4321942.375150668, "tol": 0.001, "text": "4,321,942"},
+    {"expr": "-ln(b)", "input": {"b": 0.9}, "expect": 0.10536051565782628, "tol": 0.0000001, "text": "0.1054"},
+    {"expr": "ln(2)/ln(b)", "input": {"b": 1.05}, "expect": 14.206699082890461, "tol": 0.0001, "text": "14.21"},
+    {"expr": "72/r", "input": {"r": 5}, "expect": 14.4, "tol": 0.0001, "text": "14.4"},
+    {"expr": "ln(2)/k", "input": {"k": 0.06}, "expect": 11.552453009332423, "tol": 0.0001, "text": "11.55"},
+    {"expr": "72/r", "input": {"r": 6}, "expect": 12.0, "tol": 0.0001, "text": "12"},
+    {"expr": "P*(1+r)**t", "input": {"P": 1000000, "r": 0.06, "t": 30}, "expect": 5743491.172913259, "tol": 0.001, "text": "5,743,491"},
+    {"expr": "P*exp(r*t)", "input": {"P": 1000000, "r": 0.06, "t": 30}, "expect": 6049647.464412944, "tol": 0.001, "text": "6,049,647"},
+    {"expr": "P*exp(r*t) - P*(1+r)**t", "input": {"P": 1000000, "r": 0.06, "t": 30}, "expect": 306156.2914996848, "tol": 0.001, "text": "306,156"},
+
+    {"expr": "ln(2)/T", "input": {"T": 3}, "expect": 0.23104906018664842, "tol": 0.0000001, "text": "0.231"},
+    {"expr": "ln(2)/T", "input": {"T": 7}, "expect": 0.09902102579427789, "tol": 0.0000001, "text": "0.099"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 3, "t": 8}, "expect": 31.498026247371836, "tol": 0.0001, "text": "31.50"},
+    {"expr": "A0 * exp(-ln(2)/T * t)", "input": {"A0": 200, "T": 7, "t": 8}, "expect": 90.57236642639067, "tol": 0.0001, "text": "90.57"},
+    {"expr": "exp(-ln(2)/T2 * t) / exp(-ln(2)/T1 * t)", "input": {"T1": 3, "T2": 7, "t": 8}, "expect": 2.875493394890035, "tol": 0.0001, "text": "2.9"},
+
+    {"expr": "(exp(x) - (1+x))/exp(x)", "input": {"x": 0.1}, "expect": 0.004678840160444468, "tol": 0.0000001, "scale": 100, "text": "0.47"},
+    {"expr": "(exp(k*t) - (1+k*t))/exp(k*t)", "input": {"k": 0.015403270679109895, "t": 30}, "expect": 0.07893590056497757, "tol": 0.0000001, "scale": 100, "text": "7.89"},
+    {"expr": "exp(x)", "input": {"x": 0.05}, "expect": 1.0512710963760241, "tol": 0.0000001, "text": "1.0513"},
+    {"expr": "(exp(x) - (1+x))/exp(x)", "input": {"x": 0.05}, "expect": 0.0012091042742503214, "tol": 0.0000001, "scale": 100, "text": "0.12"},
+    {"expr": "exp(x)", "input": {"x": 0.5}, "expect": 1.6487212707001282, "tol": 0.0000001, "text": "1.6487"},
+    {"expr": "(exp(x) - (1+x))/exp(x)", "input": {"x": 0.5}, "expect": 0.0902040104310499, "tol": 0.0000001, "scale": 100, "text": "9.02"},
+    {"expr": "exp(x)", "input": {"x": 1}, "expect": 2.718281828459045, "tol": 0.0000001, "text": "2.71828"},
+    {"expr": "(exp(x) - (1+x))/exp(x)", "input": {"x": 1}, "expect": 0.26424111765711533, "tol": 0.0000001, "scale": 100, "text": "26.4"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #100 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">指數成長與衰減怎麼算？A·e^(kt) 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-12</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        下午三點喝一杯含 200 毫克咖啡因的美式，晚上十一點躺上床時，體內還留著
+        65.98 毫克——相當於睡前補了一杯濃縮。同一條公式換個符號，就能算出一個產品
+        90 天內使用者從 1,200 人長到 4,800 人、下一個 90 天會長到哪裡。
+        <strong>A = A₀·e^(kt) 不分成長或衰減，差別只在 k 的正負號</strong>。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = A₀·e<sup>kt</sup></div>
+          <div class="formula-box-note">A₀ 初始量 · k 連續變化率（正為成長、負為衰減）· t 時間 · e ≈ 2.71828</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>A₀</td><td>t = 0 時的初始量</td><td>依題目</td><td>200 毫克咖啡因</td></tr>
+            <tr><td>k</td><td>連續變化率，正為成長、負為衰減</td><td>每單位時間</td><td>咖啡因 −0.1386 /小時</td></tr>
+            <tr><td>t</td><td>經過時間，單位須和 k 一致</td><td>小時 / 天 / 年</td><td>8</td></tr>
+            <tr><td>A</td><td>t 時刻的量</td><td>同 A₀</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>k 怎麼求？200 毫克咖啡因的 8 小時實測</h2>
+        <p>
+          題目很少直接給 k，給的是「半衰期」或「倍增時間」。咖啡因在健康成年人體內的半衰期約
+          5 小時。半衰期 T 的意思是 t = T 時剩一半，代入得 e^(kT) = 0.5，兩邊取自然對數後
+          kT = −ln 2，於是 k = −ln 2 / T。ln 2 固定是 0.693，所以咖啡因的
+          k = −0.693 / 5 ≈ −0.1386（每小時）。
+        </p>
+        <p>A₀ = 200 毫克、下午三點喝完，之後的殘留量如下。</p>
+        <table class="formula-vars">
+          <thead><tr><th>t（小時，15:00 起算）</th><th>殘留量 A（毫克）</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>200</td></tr>
+            <tr><td>5（一個半衰期）</td><td>100</td></tr>
+            <tr><td>8（睡前）</td><td>65.98</td></tr>
+            <tr><td>10（兩個半衰期）</td><td>50</td></tr>
+            <tr><td>16（隔天早上）</td><td>21.76</td></tr>
+            <tr><td>24</td><td>7.18</td></tr>
+          </tbody>
+        </table>
+        <p>
+          關鍵是<strong>砍半的是「當下的量」，不是初始量</strong>：200 砍到 100 花
+          5 小時，100 砍到 50 也是 5 小時，但後面這段只消掉 50 毫克。
+          衰減前陡後平，同樣的等待換到的效果越來越少。
+        </p>
+        <p>
+          反過來問「剩 10 % 要多久」只是把公式倒解：t = T·ln(A₀/A) / ln 2，代
+          A₀ = 200、A = 20 得 16.61 小時——那杯要到隔天早上七點多才降到 10 %。
+        </p>
+
+        <h2>成長側：90 天從 1,200 人到 4,800 人，k 是多少？</h2>
+        <p>
+          成長題給的是兩個時間點的量，要反解 k：把 A = A₀·e^(kt) 兩邊取 ln 得
+          k = ln(A/A₀) / t。使用者 90 天內從 1,200 人變成 4,800 人，比值
+          4 倍，所以 k = ln 4 / 90 ≈ 0.0154（每天），倍增時間
+          ln 2 / k = 45 天——90 天翻 4 倍就是翻兩次倍。
+          模型也能回填沒量到的日子，第 30 天的理論值是 1,905 人。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>天數 t</th><th>模型值（人）</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>1,200</td></tr>
+            <tr><td>30</td><td>1,905</td></tr>
+            <tr><td>90</td><td>4,800</td></tr>
+            <tr><td>180</td><td>19,200</td></tr>
+            <tr><td>365</td><td>331,794</td></tr>
+          </tbody>
+        </table>
+        <p>
+          表中只有 t = 0 與 90 是實測，其餘都是模型值；外推到一年就暴露問題：模型說 331,794 人。
+          把 45 天翻倍硬套 365 天，等於假設沒有市場上限、沒有獲客成本上升、沒有流失。
+          真實成長曲線幾乎都是 S 形，早期像指數、後期趨平，
+          指數模型因此只適合內插與短期外推。
+        </p>
+
+        <h2>為什麼用 e？任何底數都能換成 e</h2>
+        <p>
+          「每年成長 5 %」直覺上寫成 A₀·1.05^t，但兩者是同一條線：1.05^t = e^(t·ln 1.05)，
+          所以 k = ln 1.05 ≈ 0.0488。任何底數 b 都能寫成 e^(kt)、k = ln b。
+          e 不是必要的，是方便的——微分 e^(kt) 得 k·e^(kt)，變化率正好等於當下量的
+          k 倍，連續變化的模型因此統一成同一個形狀。
+        </p>
+        <p>
+          驗一下有沒有失真：k = 0.0488 跑 30 年得
+          e^(kt) = 4.322 倍，和 1.05^30 完全相同；100 萬本金 30 年後是
+          4,321,942 元，與<a href="/formulas/compound-interest.html">複利終值</a>一文用
+          P(1+r/n)^(nt) 算出的數字一致。衰減方向同理，「每年掉 10 %」是 0.9^t，
+          k = ln 0.9 ≈ −0.1054 而不是 −0.1，兩者差 5.4 %。
+        </p>
+        <p>
+          k 與倍增時間只差一個 ln 2，順手可以檢驗
+          <a href="/formulas/rule-of-72.html">72 法則</a>的精度：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>情境</th><th>k</th><th>倍增時間 ln2/k</th><th>72 法則估計</th></tr></thead>
+          <tbody>
+            <tr><td>年成長 5 %（每年複利）</td><td>0.0488</td><td>14.21 年</td><td>14.4 年</td></tr>
+            <tr><td>年率 6 %（連續複利）</td><td>0.06</td><td>11.55 年</td><td>12 年</td></tr>
+          </tbody>
+        </table>
+        <p>
+          72 法則在 5 % 到 10 % 這段的最大誤差落在 5 % 這端，高估 1.4 %，心算夠用；
+          但它只是 ln 2 / ln(1+r) 的近似，利率越極端誤差越大。
+        </p>
+        <p>
+          e 的形式在金融上有個具體對應：連續複利，也就是 A₀·e^(kt) 在 k = 名目年利率時的樣子。
+          100 萬、年率 6 %、30 年，一年複利一次得 5,743,491 元，連續複利得
+          6,049,647 元，差 306,156 元。
+        </p>
+
+        <h2>半衰期 3 小時和 7 小時差多少？個體差異實測</h2>
+        <p>
+          咖啡因半衰期的常見引用範圍是 3 到 7 小時。這個差異會被放大多少？
+          把 t 固定在 8 小時算兩端：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>半衰期 T（小時）</th><th>k（每小時）</th><th>t = 8 小時的殘留量（毫克）</th></tr></thead>
+          <tbody>
+            <tr><td>3（代謝快）</td><td>−0.231</td><td>31.50</td></tr>
+            <tr><td>5（平均）</td><td>−0.1386</td><td>65.98</td></tr>
+            <tr><td>7（代謝慢）</td><td>−0.099</td><td>90.57</td></tr>
+          </tbody>
+        </table>
+        <p>
+          半衰期只差 2.3 倍（3 比 7），殘留量卻差 2.9 倍——T 在指數的分母，
+          k 的變化會被 e 再放大一次。代謝快的人睡前剩 31.50 毫克、代謝慢的剩
+          90.57 毫克，同一杯咖啡對兩個人不是同一件事。
+        </p>
+        <p>
+          <strong>k 的誤差不是線性傳遞，是指數傳遞</strong>——用這條公式做決策前，
+          先問 k 是量出來的還是猜出來的，再決定結果要信到第幾位數。
+        </p>
+
+        <h2>kt 很小的時候可以不用 e 嗎？</h2>
+        <p>
+          可以。e^x 的泰勒展開是 1 + x + x²/2 + …，x 很小時後面的項可以丟掉，於是
+          e^x ≈ 1 + x——這就是短期小幅成長可以直接用百分比加減的原因。誤差有多大：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>kt</th><th>e^(kt) 真值</th><th>低估幅度</th></tr></thead>
+          <tbody>
+            <tr><td>0.05</td><td>1.0513</td><td>0.12 %</td></tr>
+            <tr><td>0.5</td><td>1.6487</td><td>9.02 %</td></tr>
+            <tr><td>1</td><td>2.71828</td><td>26.4 %</td></tr>
+          </tbody>
+        </table>
+        <p>
+          界線很清楚：<strong>kt = 0.1 時線性近似只低估 0.47 %，心算就夠</strong>；
+          kt 到 0.5 低估 9.02 %、到 1 低估 26.4 %，非用公式不可。
+          回到使用者成長 k = 0.0154：kt 累積到 0.1 要
+          6.5 天，所以用 1 + kt 估一週（7 天）只低估
+          0.54 %；但講到一個月，kt 是 0.46、低估
+          7.89 %，就得老實算 e^(kt)。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0 0 0.6em;">
+            <strong>把半衰期的倒數當成 k</strong>：k 是 ln 2 / T，不是 1 / T。半衰期
+            5 小時的 k 是 0.1386，不是 1 / 5 = 0.2；用 0.2 算 t = 8 會得到
+            40.38 毫克，比正確的 65.98 毫克少 38.8 %。少掉的 ln 2 = 0.693 就是誤差來源。
+          </p>
+          <p style="margin: 0 0 0.6em;">
+            <strong>k 與 t 的單位不一致</strong>：k = −0.1386 是「每小時」，t 就得填小時。
+            想改用天，k 要先乘 24；直接把 t = 1（天）代進每小時的 k，
+            算出來是一小時後的值，差了 23 小時。公式不會報錯，只會安靜給錯答案。
+          </p>
+          <p style="margin: 0;">
+            <strong>把「每期變化 x %」直接當成 k</strong>：每年成長 5 % 的 k 是
+            ln 1.05 = 0.0488 而不是 0.05。前者是離散的期末複利率，後者是連續的瞬時率；
+            題目寫「連續」或「瞬時」才可以直接當 k 用。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。先用 A₀ = 200、k = −0.1386、t = 8
+          對一下答案是不是 65.98，再換成自己的數字；只有半衰期或倍增時間的話，
+          先用 k = ln 2 / T 換算，正負號由衰減或成長決定。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 指數成長/衰減 #100</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=100" title="指數成長與衰減互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/exponential-function.html">指數 eˣ — 本文公式的骨幹</a></li>
+          <li><a href="/formulas/natural-logarithm.html">自然對數 ln x — 反解 k 靠它</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 離散版本，n → ∞ 收斂成 e^(kt)</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 倍增時間的心算近似</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：A = A₀·e^(kt) 為微分方程 dA/dt = kA 的通解，本文採標準教科書形式，
+        k = −ln 2 / T 與倍增時間 ln 2 / k 皆由該式直接推得。
+        咖啡因半衰期採健康成年人常見引用值 5 小時、個體範圍 3 至 7 小時，實際代謝速率受
+        CYP1A2 活性、吸菸與用藥影響，本文僅作數學示範，不構成醫療建議。
+        使用者成長實例為示意資料，外推值僅說明模型適用邊界，不是對任何產品的預測。
+        文中數值皆以 A₀·e^(kt) 及其等價變形獨立驗算，全程使用完整精度，
+        無理數四捨五入至顯示位數。金融實例不構成投資建議。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
