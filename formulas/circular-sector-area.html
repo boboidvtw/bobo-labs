@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>扇形面積怎麼算？½r²θ 公式拆解（灑水器 120 度實例）· Bobo Labs</title>
+  <meta name="description" content="扇形面積怎麼算？½r²θ 的 θ 只吃弧度，角度直接代進去會差 57.3 倍。本文用灑水器半徑 6 公尺、擺動 120 度算出 37.70 平方公尺，附角度版公式、弧長與面積對照表、弓形面積的差別，以及已知面積反解角度的做法。" />
+  <meta property="og:title" content="扇形面積怎麼算？½r²θ 公式拆解" />
+  <meta property="og:description" content="弧度版與角度版的換算、面積等於弧長乘半徑除以 2、角度當弧度會差 57.3 倍，以及已知面積反解角度。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/circular-sector-area.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/circular-sector-area.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "扇形面積怎麼算？½r²θ 公式拆解", "url": "https://labs.moneyai168.com/formulas/circular-sector-area.html", "datePublished": "2026-10-13", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "扇形面積", "item": "https://labs.moneyai168.com/formulas/circular-sector-area.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "0.5 * r**2 * radians(d)",
+    "cases": [
+    {"expr": "radians(d)", "input": {"d": 30}, "expect": 0.5235987755982988, "tol": 0.000000001, "text": "0.5236"},
+    {"expr": "radians(d)", "input": {"d": 45}, "expect": 0.7853981633974483, "tol": 0.000000001, "text": "0.7854"},
+    {"expr": "radians(d)", "input": {"d": 60}, "expect": 1.0471975511965976, "tol": 0.000000001, "text": "1.0472"},
+    {"expr": "radians(d)", "input": {"d": 90}, "expect": 1.5707963267948966, "tol": 0.000000001, "text": "1.5708"},
+    {"expr": "radians(d)", "input": {"d": 120}, "expect": 2.0943951023931953, "tol": 0.000000001, "text": "2.0944"},
+    {"expr": "radians(d)", "input": {"d": 140}, "expect": 2.443460952792061, "tol": 0.000000001, "text": "2.4435"},
+    {"expr": "radians(d)", "input": {"d": 180}, "expect": 3.141592653589793, "tol": 0.000000001, "text": "3.1416"},
+    {"expr": "radians(d)", "input": {"d": 360}, "expect": 6.283185307179586, "tol": 0.000000001, "text": "6.2832"},
+
+    {"input": {"r": 6, "d": 30}, "expect": 9.42477796076938, "tol": 0.001, "text": "9.42"},
+    {"input": {"r": 6, "d": 60}, "expect": 18.84955592153876, "tol": 0.001, "text": "18.85"},
+    {"input": {"r": 6, "d": 90}, "expect": 28.274333882308138, "tol": 0.001, "text": "28.27"},
+    {"input": {"r": 6, "d": 120}, "expect": 37.69911184307752, "tol": 0.001, "text": "37.70"},
+    {"input": {"r": 6, "d": 180}, "expect": 56.548667764616276, "tol": 0.001, "text": "56.55"},
+    {"input": {"r": 6, "d": 360}, "expect": 113.09733552923255, "tol": 0.001, "text": "113.10"},
+
+    {"expr": "r * radians(d)", "input": {"r": 6, "d": 30}, "expect": 3.141592653589793, "tol": 0.001, "text": "3.14"},
+    {"expr": "r * radians(d)", "input": {"r": 6, "d": 60}, "expect": 6.283185307179586, "tol": 0.001, "text": "6.28"},
+    {"expr": "r * radians(d)", "input": {"r": 6, "d": 90}, "expect": 9.42477796076938, "tol": 0.001, "text": "9.42"},
+    {"expr": "r * radians(d)", "input": {"r": 6, "d": 120}, "expect": 12.566370614359172, "tol": 0.001, "text": "12.57"},
+    {"expr": "r * radians(d)", "input": {"r": 6, "d": 180}, "expect": 18.84955592153876, "tol": 0.001, "text": "18.85"},
+    {"expr": "r * radians(d)", "input": {"r": 6, "d": 360}, "expect": 37.69911184307752, "tol": 0.001, "text": "37.70"},
+
+    {"expr": "(d/360) * pi * r**2", "input": {"r": 6, "d": 120}, "expect": 37.69911184307752, "tol": 0.001, "text": "37.70"},
+    {"expr": "0.5 * (r * radians(d)) * r", "input": {"r": 6, "d": 120}, "expect": 37.69911184307752, "tol": 0.001, "text": "37.70"},
+    {"expr": "pi * r**2", "input": {"r": 6}, "expect": 113.09733552923255, "tol": 0.001, "text": "113.10"},
+    {"expr": "(0.5 * r**2 * radians(d)) / (r * radians(d))", "input": {"r": 6, "d": 120}, "expect": 3.0, "tol": 0.000001, "text": "3"},
+
+    {"expr": "0.5 * r**2 * d", "input": {"r": 6, "d": 120}, "expect": 2160.0, "tol": 0.001, "text": "2,160"},
+    {"expr": "(0.5 * r**2 * d) / (0.5 * r**2 * radians(d))", "input": {"r": 6, "d": 120}, "expect": 57.29577951308232, "tol": 0.000001, "text": "57.3"},
+
+    {"expr": "0.5 * dia**2 * radians(d)", "input": {"dia": 12, "d": 120}, "expect": 150.79644737231007, "tol": 0.001, "text": "150.80"},
+    {"expr": "(0.5 * dia**2 * radians(d)) / (0.5 * r**2 * radians(d))", "input": {"dia": 12, "r": 6, "d": 120}, "expect": 4.0, "tol": 0.000001, "text": "4"},
+
+    {"expr": "0.5 * r**2 * sin(radians(d))", "input": {"r": 6, "d": 120}, "expect": 15.588457268119896, "tol": 0.001, "text": "15.59"},
+    {"expr": "0.5 * r**2 * (radians(d) - sin(radians(d)))", "input": {"r": 6, "d": 120}, "expect": 22.110654574957614, "tol": 0.001, "text": "22.11"},
+    {"expr": "(radians(d) - sin(radians(d))) / radians(d)", "input": {"d": 120}, "expect": 0.5865033284336558, "tol": 0.0000001, "scale": 100, "text": "58.65"},
+
+    {"expr": "0.5 * r2**2 * radians(d)", "input": {"r2": 7, "d": 120}, "expect": 51.312680008633286, "tol": 0.001, "text": "51.31"},
+    {"expr": "0.5 * r2**2 * radians(d) - 0.5 * r**2 * radians(d)", "input": {"r": 6, "r2": 7, "d": 120}, "expect": 13.613568165555769, "tol": 0.001, "text": "13.61"},
+    {"expr": "(r2**2 - r**2) / r**2", "input": {"r": 6, "r2": 7}, "expect": 0.3611111111111111, "tol": 0.0000001, "scale": 100, "text": "36.11"},
+    {"expr": "(r2 - r) / r", "input": {"r": 6, "r2": 7}, "expect": 0.16666666666666666, "tol": 0.0000001, "scale": 100, "text": "16.67"},
+
+    {"expr": "0.5 * r**2 * radians(d2)", "input": {"r": 6, "d2": 140}, "expect": 43.982297150257104, "tol": 0.001, "text": "43.98"},
+    {"expr": "0.5 * r**2 * radians(d2) - 0.5 * r**2 * radians(d)", "input": {"r": 6, "d": 120, "d2": 140}, "expect": 6.283185307179586, "tol": 0.001, "text": "6.28"},
+    {"expr": "(d2 - d) / d", "input": {"d": 120, "d2": 140}, "expect": 0.16666666666666666, "tol": 0.0000001, "scale": 100, "text": "16.67"},
+
+    {"input": {"r": 5, "d": 45}, "expect": 9.817477042468104, "tol": 0.001, "text": "9.82"},
+    {"expr": "pi * r**2", "input": {"r": 5}, "expect": 78.53981633974483, "tol": 0.001, "text": "78.54"},
+    {"expr": "r * radians(d)", "input": {"r": 5, "d": 45}, "expect": 3.9269908169872414, "tol": 0.001, "text": "3.93"},
+
+    {"expr": "r**2", "input": {"r": 6}, "expect": 36.0, "tol": 0.000001, "text": "36"},
+    {"expr": "2 * A / r**2", "input": {"A": 50, "r": 6}, "expect": 2.7777777777777777, "tol": 0.000000001, "text": "2.7778"},
+    {"expr": "degrees(2 * A / r**2)", "input": {"A": 50, "r": 6}, "expect": 159.15494309189535, "tol": 0.001, "text": "159.15"},
+    {"expr": "0.5 * r**2 * (2 * A / r**2)", "input": {"A": 50, "r": 6}, "expect": 50.0, "tol": 0.000001, "text": "50.00"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #27 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">扇形面積怎麼算？½r²θ 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-13</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一台旋轉灑水器射程 6 公尺、噴頭只擺過 120 度，淋到的那塊草皮是個扇形，面積 37.70 平方公尺。
+        算這個數字只需要半徑和角度兩個輸入，但公式 ½r²θ 有個硬性前提：<strong>θ 必須是弧度</strong>。
+        把 120 直接塞進去會得到 2,160 平方公尺——比整個圓還大，錯了 57.3 倍。
+        本文拆解弧度版與角度版的關係、用三條互不相關的路徑交叉驗算同一個面積，
+        再實測半徑和角度各多給一成七，哪一邊比較划算。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">A = ½ r²θ（θ 為弧度）　｜　A = (θ° / 360) × πr²（θ° 為角度）</div>
+          <div class="formula-box-note">r 半徑 · θ 圓心角，弧度版與角度版是同一條式子的兩種寫法</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>r</td><td>扇形半徑，也就是圓心到弧的距離</td><td>長度（m、cm、吋）</td><td>灑水器射程 3 ～ 12 m</td></tr>
+            <tr><td>θ</td><td>圓心角，弧度版公式唯一接受的單位</td><td>弧度（rad）</td><td>整圓 6.2832，半圓 3.1416</td></tr>
+            <tr><td>θ°</td><td>同一個圓心角的角度寫法，角度版公式用它</td><td>度（°）</td><td>0 ～ 360</td></tr>
+            <tr><td>L</td><td>弧長，等於 rθ，是扇形的外緣長度</td><td>同 r</td><td>半徑 6 m、120 度時為 12.57 m</td></tr>
+            <tr><td>A</td><td>扇形面積</td><td>長度單位的平方（m²、平方吋）</td><td>須 &gt; 0 且不超過 πr²</td></tr>
+          </tbody>
+        </table>
+
+        <h2>灑水器擺 120 度、射程 6 公尺，覆蓋多少面積？</h2>
+        <p>
+          先把角度換成弧度。換算係數是 π/180，所以 120 度等於 120 × π/180 = 2.0944 弧度。
+          代進公式：A = ½ × 6² × 2.0944，得到 37.70 平方公尺。
+        </p>
+        <p>
+          手邊只有角度時可以跳過換算，直接用角度版：A = (120/360) × π × 6² = 37.70 平方公尺。
+          半徑 6 公尺的整圓面積是 113.10 平方公尺，120 度正好是整圓的三分之一，
+          兩條路徑落在同一個答案上，這就是最便宜的一次驗算。
+        </p>
+        <p>
+          扇形的外弧長度 L = rθ = 6 × 2.0944 = 12.57 公尺，是水柱尖端一次掃過的距離。
+          灑水器規格表常只給射程和擺動角度，這兩個數字就足以把覆蓋面積和邊界長度都算出來。
+        </p>
+
+        <h2>為什麼 ½r²θ 只吃弧度？角度代進去會差 57.3 倍</h2>
+        <p>
+          弧度的定義是「弧長除以半徑」——一個沒有單位的比值。
+          整圓的弧長是 2πr，除以 r 得 2π = 6.2832 弧度，而不是 360。
+          公式 ½r²θ 之所以乾淨到只有一個乘號，正是因為它把角度表達成這個比值；
+          360 這套刻度是巴比倫人的歷史產物，和圓本身的幾何沒有關係。
+        </p>
+        <p>
+          把 120 當成弧度代入：A = ½ × 6² × 120 = 2,160 平方公尺，是正確答案的 57.3 倍。
+          這個倍數不是巧合，它就是 180/π，也就是 1 弧度換成角度的值。
+          這類錯誤有個現成的攔截點：扇形面積不可能超過整圓的 113.10 平方公尺，
+          算出 2,160 時不必檢查公式，看一眼量級就知道單位錯了。
+        </p>
+        <p>
+          角度版 A = (θ°/360)πr² 本質上是同一條式子。
+          把 θ = θ° × π/180 代回 ½r²θ，π 與 180 重整後就得到 (θ°/360)πr²。
+          兩個版本沒有精度差別，選擇標準只有一個：輸入資料本來是什麼單位，就用對應的版本，少一次換算就少一個出錯的地方。
+        </p>
+
+        <h2>面積就是弧長乘半徑除以 2</h2>
+        <p>
+          把 ½r²θ 的一個 r 併進 θ 裡：½ r²θ = ½ (rθ) r = ½ L r。
+          扇形面積等於弧長乘半徑除以 2，和三角形的 ½ × 底 × 高 完全同形——
+          弧當底、半徑當高。用 12.57 公尺的弧和 6 公尺的半徑走這條路徑，答案仍是 37.70 平方公尺，
+          這是本文第三條獨立驗算。
+        </p>
+        <p>
+          半徑固定 6 公尺時，面積與弧長的比值恆為 r/2 = 3，和角度完全無關。
+          下表把常用角度一次列出，最後兩欄的比值處處是 3：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>角度 θ°</th><th>弧度 θ</th><th>弧長 L = rθ（m）</th><th>面積 A = ½r²θ（m²）</th></tr></thead>
+          <tbody>
+            <tr><td>30</td><td>0.5236</td><td>3.14</td><td>9.42</td></tr>
+            <tr><td>60</td><td>1.0472</td><td>6.28</td><td>18.85</td></tr>
+            <tr><td>90</td><td>1.5708</td><td>9.42</td><td>28.27</td></tr>
+            <tr><td>120</td><td>2.0944</td><td>12.57</td><td>37.70</td></tr>
+            <tr><td>180</td><td>3.1416</td><td>18.85</td><td>56.55</td></tr>
+            <tr><td>360</td><td>6.2832</td><td>37.70</td><td>113.10</td></tr>
+          </tbody>
+        </table>
+        <p>
+          表裡有個看起來像錯誤的巧合：90 度的弧長 9.42 和 30 度的面積 9.42 是同一個數字，
+          180 度的弧長 18.85 和 60 度的面積 18.85 也一樣。
+          這是 r = 6 的特例——面積比弧長多乘一個 r/2 = 3，角度放大三倍剛好抵掉。
+          換成別的半徑就不成立，不要把它當規律記。
+        </p>
+        <p>
+          換個場景：10 吋披薩的半徑是 5 吋，切 8 片，每片的圓心角是 45 度 = 0.7854 弧度。
+          單片面積 ½ × 5² × 0.7854 = 9.82 平方吋；整個披薩 78.54 平方吋，除以 8 正好回到 9.82。
+          每片的餅皮外緣（弧長）是 5 × 0.7854 = 3.93 吋——切得愈多片，每片的餅皮比例愈低，
+          這是「邊邊派」和「中心派」真正在爭的數字。
+        </p>
+
+        <h2>半徑和角度各多給一成七，哪邊划算？</h2>
+        <p>
+          半徑在公式裡是平方項，角度是一次項，兩者的槓桿差一個數量級的直覺。
+          半徑從 6 加到 7 公尺（+16.67%），面積從 37.70 變成 51.31 平方公尺，
+          多出 13.61 平方公尺，增幅 36.11%。
+        </p>
+        <p>
+          角度從 120 加到 140 度（同樣是 +16.67%），弧度變成 2.4435，
+          面積從 37.70 變成 43.98 平方公尺，只多 6.28 平方公尺，增幅 16.67%——
+          輸入加幾成，輸出就加幾成，一次項不放大也不縮小。
+          同樣的一成七，加在半徑上的效果是加在角度上的兩倍多，
+          所以灑水器選型時射程比擺動範圍值錢。
+        </p>
+        <p>
+          公式也可以反著用。一塊 50 平方公尺的扇形花圃，半徑受限於 6 公尺的水管長度，圓心角該開多少？
+          把 A = ½r²θ 解開得 θ = 2A/r² = 2 × 50 / 36 = 2.7778 弧度，換回角度是 159.15 度。
+          代回原式驗算：½ × 6² × 2.7778 = 50.00，反解正確。
+          注意這條反解只在 θ 不超過 2π 時有意義——如果算出來超過 6.2832，表示半徑太短，面積目標本身做不到。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0 0 0.6em;">
+            <strong>直徑當半徑</strong>：把 12 公尺的直徑填進 r，得 ½ × 12² × 2.0944 = 150.80 平方公尺，
+            正好是正確值的 4 倍。半徑進平方，所以這個錯不是差 2 倍而是差 4 倍，
+            而且 150.80 仍落在「看起來合理」的量級裡，不像單位錯那樣會自己暴露。
+            規格表寫「射程」通常是半徑、寫「覆蓋直徑」則要先除以 2。
+          </p>
+          <p style="margin: 0;">
+            <strong>扇形和弓形搞混</strong>：扇形是兩條半徑夾著一段弧；弓形（circular segment）是一條弦夾著一段弧，
+            等於扇形再扣掉中間那塊三角形。r = 6、θ = 120 度時，三角形面積 ½r²·sin θ = 15.59 平方公尺，
+            弓形是 37.70 − 15.59 = 22.11 平方公尺，只有扇形的 58.65%。
+            判斷方法很直接：邊界上有兩條直線就是扇形，只有一條就是弓形。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。
+          先用半徑 6、圓心角 120 度確認結果是不是 37.70，再換成自己的數字——
+          填之前先看清楚輸入框要的是角度還是弧度，這是這條公式唯一真正會翻車的地方。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 扇形面積 #27</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=27" title="扇形面積互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/circle-area.html">圓的面積 — 扇形在 θ = 2π 時的特例，本文的 113.10 就從 πr² 來</a></li>
+          <li><a href="/formulas/circle-circumference.html">圓的周長 — 弧長的完整版，2πr 即 θ 轉滿一圈的 rθ</a></li>
+          <li><a href="/formulas/triangle-area.html">三角形面積 — ½ 底 × 高，和 ½ 弧長 × 半徑 同形；弓形要扣的也是它</a></li>
+          <li><a href="/formulas/square.html">平方 — 半徑進平方，是它比角度敏感兩倍多的原因</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：扇形面積 A = ½r²θ（θ 以弧度計）與角度版 A = (θ°/360)πr² 為初等幾何標準結果，本文採教科書定義。
+        弧度定義為弧長與半徑之比，整圓為 2π 弧度，等於 360 度，因此 1 弧度等於 180/π 度，約 57.3 度。
+        弓形（circular segment）面積採 ½r²(θ − sin θ)。
+        文中數值皆以 ½r²θ 及其等價變形獨立驗算，計算全程使用完整精度，
+        面積與長度顯示至小數點後兩位、弧度值顯示至小數點後四位。本文僅作數學說明。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
