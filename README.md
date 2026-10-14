@@ -20,7 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-10-13**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-10-14**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/circular-sector-area.html`（#27 · 數學 · Pro，½r²θ 的 θ 只吃弧度：灑水器射程 6 公尺、擺動 120 度覆蓋 37.70 平方公尺，角度直接代入得 2,160 會差 57.3 倍；用角度版 (θ°/360)πr²、弧長版 ½Lr 兩條獨立路徑交叉驗算同一答案，附 30～360 度的弧長面積對照表與「比值恆為 r/2 = 3」、10 吋披薩切 8 片單片 9.82 平方吋；半徑與角度各加 16.67 % 的槓桿對比（36.11 % vs 16.67 %）、已知面積 50 反解圓心角 159.15 度，並區分直徑誤代差 4 倍與弓形 ½r²(θ−sin θ) = 22.11 只佔扇形 58.65 %）。
+  Formula 卡片 #27 由 placeholder 轉為連結；Tier 與文章一致（Pro），分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 45 case）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-14.
+
+- **2026-10-13** — 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/exponential-growth-decay.html`（#100 · 數學 · Pro，A = A₀·e^(kt) 不分成長衰減、差別只在 k 的正負：以 200 毫克咖啡因半衰期 5 小時算到睡前剩 65.98 毫克、降到 10 % 需 16.61 小時；成長側由 90 天 1,200→4,800 人反解 k = ln4/90、倍增時間 45 天並點出外推一年得 331,794 人的失效邊界；換底 1.05^t = e^(t·ln1.05) 與複利終值交叉驗算、72 法則精度、半衰期 3 與 7 小時的指數放大、線性近似 e^x ≈ 1+x 的 kt 界線）。
   Formula 卡片 #100 由 placeholder 轉為連結；Tier 與文章一致，分類計數與註腳不動。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 49 case）自動上線。
