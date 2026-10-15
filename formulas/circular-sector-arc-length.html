@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>弧長怎麼算？扇形弧長 rθ 公式拆解（吊臂 25 公尺轉 70 度實例）· Bobo Labs</title>
+  <meta name="description" content="弧長怎麼算？L = rθ 的 θ 只吃弧度，角度直接代進去會差 57.3 倍。本文用吊臂 25 公尺、旋轉 70 度算出 30.54 公尺，附三條路徑交叉驗算、弧長與弦長的誤差對照表、跑道分道錯開 7.04 公尺的由來與反解做法。" />
+  <meta property="og:title" content="弧長怎麼算？扇形弧長 rθ 公式拆解" />
+  <meta property="og:description" content="角度與弧度的換算、弧長與弦長在 30 度以下可以互換、跑道分道錯開 7.04 公尺的由來，以及已知弧長反解圓心角。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/circular-sector-arc-length.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/circular-sector-arc-length.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "弧長怎麼算？扇形弧長 rθ 公式拆解", "url": "https://labs.moneyai168.com/formulas/circular-sector-arc-length.html", "datePublished": "2026-10-14", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "扇形弧長", "item": "https://labs.moneyai168.com/formulas/circular-sector-arc-length.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "r * radians(d)",
+    "cases": [
+    {"expr": "radians(d)", "input": {"d": 70}, "expect": 1.2217304763960306, "tol": 0.000000001, "text": "1.2217"},
+    {"expr": "radians(d)", "input": {"d": 360}, "expect": 6.283185307179586, "tol": 0.000000001, "text": "6.2832"},
+    {"expr": "radians(d)", "input": {"d": 1}, "expect": 0.017453292519943295, "tol": 0.000000001, "text": "0.017453"},
+
+    {"input": {"r": 25, "d": 70}, "expect": 30.543261909900764, "tol": 0.001, "text": "30.54"},
+    {"expr": "2 * pi * r", "input": {"r": 25}, "expect": 157.07963267948966, "tol": 0.001, "text": "157.08"},
+    {"expr": "d / 360", "input": {"d": 70}, "expect": 0.19444444444444445, "tol": 0.000000001, "text": "0.1944"},
+    {"expr": "(d/360) * 2 * pi * r", "input": {"r": 25, "d": 70}, "expect": 30.543261909900764, "tol": 0.001, "text": "30.54"},
+    {"expr": "0.5 * r**2 * radians(d)", "input": {"r": 25, "d": 70}, "expect": 381.7907738737596, "tol": 0.001, "text": "381.79"},
+    {"expr": "2 * (0.5 * r**2 * radians(d)) / r", "input": {"r": 25, "d": 70}, "expect": 30.543261909900764, "tol": 0.001, "text": "30.54"},
+
+    {"expr": "r * d", "input": {"r": 25, "d": 70}, "expect": 1750.0, "tol": 0.001, "text": "1,750"},
+    {"expr": "(r * d) / (r * radians(d))", "input": {"r": 25, "d": 70}, "expect": 57.29577951308233, "tol": 0.000001, "text": "57.3"},
+    {"expr": "(r * d) / (2 * pi * r)", "input": {"r": 25, "d": 70}, "expect": 11.140846016432674, "tol": 0.000001, "text": "11.14"},
+
+    {"expr": "R * radians(d)", "input": {"R": 6371, "d": 1}, "expect": 111.19492664455873, "tol": 0.001, "text": "111.19"},
+    {"expr": "R * radians(d/60)", "input": {"R": 6371, "d": 1}, "expect": 1.8532487774093123, "tol": 0.000001, "text": "1.8532"},
+    {"expr": "(R * radians(d/60)) / 1.852 - 1", "input": {"R": 6371, "d": 1}, "expect": 0.0006742858581598732, "tol": 0.000000001, "scale": 100, "text": "0.067"},
+
+    {"expr": "2 * r * sin(radians(d)/2)", "input": {"r": 25, "d": 70}, "expect": 28.678821817552304, "tol": 0.001, "text": "28.68"},
+    {"expr": "r * radians(d) - 2 * r * sin(radians(d)/2)", "input": {"r": 25, "d": 70}, "expect": 1.8644400923484596, "tol": 0.001, "text": "1.86"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 70}, "expect": 0.06501104209264863, "tol": 0.000000001, "scale": 100, "text": "6.50"},
+
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 1}, "expect": 0.00001269250525970378, "tol": 0.000000001, "scale": 100, "text": "0.0013"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 5}, "expect": 0.0003173803062910263, "tol": 0.000000001, "scale": 100, "text": "0.0317"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 10}, "expect": 0.0012703678331200674, "tol": 0.000000001, "scale": 100, "text": "0.1270"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 30}, "expect": 0.011515159927462548, "tol": 0.000000001, "scale": 100, "text": "1.1515"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 60}, "expect": 0.04719755119659785, "tol": 0.000000001, "scale": 100, "text": "4.7198"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 90}, "expect": 0.11072073453959153, "tol": 0.000000001, "scale": 100, "text": "11.0721"},
+
+    {"expr": "2 * pi * w", "input": {"w": 1.22}, "expect": 7.665486074759095, "tol": 0.000001, "text": "7.67"},
+    {"expr": "pi * w", "input": {"w": 1.22}, "expect": 3.8327430373795475, "tol": 0.000001, "text": "3.83"},
+    {"expr": "2 * pi * (w - off)", "input": {"w": 1.22, "off": 0.10}, "expect": 7.037167544041138, "tol": 0.000001, "text": "7.04"},
+    {"expr": "2 * pi * (7 * w - off)", "input": {"w": 1.22, "off": 0.10}, "expect": 53.030083992595706, "tol": 0.000001, "text": "53.03"},
+
+    {"expr": "L / r", "input": {"L": 12, "r": 30}, "expect": 0.4, "tol": 0.000000001, "text": "0.4"},
+    {"expr": "degrees(L / r)", "input": {"L": 12, "r": 30}, "expect": 22.918311805232932, "tol": 0.001, "text": "22.92"},
+    {"expr": "r * (L / r)", "input": {"L": 12, "r": 30}, "expect": 12.0, "tol": 0.000001, "text": "12.00"},
+
+    {"expr": "2 * pi * N", "input": {"N": 100}, "expect": 628.3185307179587, "tol": 0.000001, "text": "628.32"},
+    {"expr": "r * (2 * pi * N)", "input": {"r": 0.35, "N": 100}, "expect": 219.9114857512855, "tol": 0.000001, "text": "219.91"},
+    {"expr": "r * 2 * pi", "input": {"r": 0.35}, "expect": 2.199114857512855, "tol": 0.000001, "text": "2.20"},
+
+    {"expr": "dia * radians(d)", "input": {"dia": 50, "d": 70}, "expect": 61.08652381980153, "tol": 0.001, "text": "61.09"},
+    {"expr": "(dia * radians(d)) / (r * radians(d))", "input": {"dia": 50, "r": 25, "d": 70}, "expect": 2.0, "tol": 0.000000001, "text": "2"},
+    {"expr": "(dia / r)**2", "input": {"dia": 50, "r": 25}, "expect": 4.0, "tol": 0.000000001, "text": "4"},
+    {"expr": "d / 2", "input": {"d": 70}, "expect": 35.0, "tol": 0.000000001, "text": "35"},
+    {"expr": "radians(d) / (2 * sin(radians(d)/2)) - 1", "input": {"d": 90}, "expect": 0.11072073453959153, "tol": 0.000000001, "scale": 100, "text": "11.07"},
+    {"expr": "w - off", "input": {"w": 1.22, "off": 0.10}, "expect": 1.12, "tol": 0.000000001, "text": "1.12"},
+    {"expr": "7 * w - off", "input": {"w": 1.22, "off": 0.10}, "expect": 8.44, "tol": 0.000000001, "text": "8.44"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #28 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">弧長怎麼算？扇形弧長 rθ 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-14</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一台吊臂伸到 25 公尺的吊車，車身只轉了 70 度，吊鉤在空中劃過的那條弧有 30.54 公尺長。
+        這條公式短到只有兩個符號：L = rθ。短的代價是它沒有任何地方可以藏單位，
+        <strong>θ 必須是弧度</strong>，把 70 直接代進去會得到 1,750 公尺，錯了 57.3 倍。
+        本文用三條互不相關的路徑驗算同一條弧、量化弧長和弦長到幾度以下可以互換、
+        解釋田徑跑道分道起跑線錯開 7.04 公尺是哪裡來的，最後把公式反過來用。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">L = rθ（θ 為弧度）　｜　L = (θ° / 360) × 2πr（θ° 為角度）</div>
+          <div class="formula-box-note">r 半徑 · θ 圓心角 · L 弧長，弧度版與角度版是同一條式子的兩種寫法</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>r</td><td>圓心到弧的距離，也就是扇形的半徑</td><td>長度（m、cm、km）</td><td>吊臂 8 ～ 60 m</td></tr>
+            <tr><td>θ</td><td>圓心角，弧度版公式唯一接受的單位</td><td>弧度（rad）</td><td>整圓 6.2832，1 度 0.017453</td></tr>
+            <tr><td>θ°</td><td>同一個圓心角的角度寫法，角度版公式用它</td><td>度（°）</td><td>0 ～ 360</td></tr>
+            <tr><td>L</td><td>弧長，沿著弧量出來的曲線長度</td><td>同 r</td><td>須 &gt; 0 且不超過 2πr</td></tr>
+            <tr><td>N</td><td>轉動圈數，換算成圓心角就是 θ = 2πN</td><td>圈（無單位）</td><td>可大於 1，不受 2π 上限</td></tr>
+          </tbody>
+        </table>
+
+        <h2>吊臂 25 公尺、旋轉 70 度，吊鉤掃過多遠？</h2>
+        <p>
+          先把角度換成弧度，換算係數是 π/180：70 × π/180 = 1.2217 弧度。
+          代進公式 L = 25 × 1.2217，得到 30.54 公尺。
+          這就是吊鉤水平掃過的距離，也是地面上必須清空的警戒弧長度。
+        </p>
+        <p>
+          手邊只有角度時可以跳過換算，直接用角度版：L = (70/360) × 2π × 25 = 30.54 公尺。
+          半徑 25 公尺的整圓周長是 157.08 公尺，而 70 度佔整圓的 0.1944，
+          兩條路徑落在同一個答案上，這是最便宜的一次驗算。
+        </p>
+        <p>
+          第三條路徑從面積繞回來。同一個扇形的面積是 ½r²θ = 381.79 平方公尺，
+          而面積等於 ½ × 弧長 × 半徑，反解得 L = 2A/r = 2 × 381.79 / 25 = 30.54 公尺。
+          三條路徑用的是不同的中間量——弧度、整圓周長、扇形面積——卻收斂到同一個數字，
+          這比把同一條式子按兩次計算機可靠得多。
+        </p>
+
+        <h2>為什麼 θ 只吃弧度？角度代進去會差 57.3 倍</h2>
+        <p>
+          弧度的定義就是「弧長除以半徑」，是個沒有單位的比值。
+          把這個定義移項，L = rθ 根本不是一條需要證明的公式，而是弧度定義的改寫。
+          公式之所以乾淨到只有一個乘號，代價就是它只認得這個定義下的 θ；
+          360 這套刻度是巴比倫人留下的歷史產物，和圓的幾何沒有關係。
+        </p>
+        <p>
+          把 70 當成弧度代入：L = 25 × 70 = 1,750 公尺，是正確答案的 57.3 倍。
+          這個倍數不是巧合，它就是 180/π，也就是 1 弧度換成角度的值。
+          這類錯誤有現成的攔截點：一段弧不可能比整個圓周還長，
+          而 1,750 是 157.08 的 11.14 倍，看一眼量級就知道單位錯了，不必回去檢查公式。
+        </p>
+        <p>
+          r 和 L 共用單位，這點讓 rθ 在大尺度上特別好用。
+          地球平均半徑 6,371 公里，緯度 1 度等於 0.017453 弧度，
+          沿經線走 1 度的距離就是 6371 × 0.017453 = 111.19 公里——
+          這是地圖上「一度有多遠」的來源，也解釋了為什麼緯度每差一度，距離幾乎固定。
+          再往下切，1 角分（1/60 度）是 1.8532 公里，和現行定義的 1 海里 1.852 公里只差 0.067%；
+          海里原本就定義成地球大圓上的一角分，這個吻合是設計出來的，不是碰巧。
+        </p>
+
+        <h2>弧長和弦長差多少？30 度以下可以互換</h2>
+        <p>
+          弧長沿著曲線量，弦長是兩端點之間的直線距離，兩者永遠不等：弦長 = 2r·sin(θ/2)。
+          吊臂那個例子裡，弦長 = 2 × 25 × sin 35° = 28.68 公尺，比弧短了 1.86 公尺，
+          弧比弦長 6.50%。70 度已經大到不能混用，但角度一小下來，差距塌陷得非常快。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>圓心角 θ°</th><th>弧比弦長（%）</th><th>實務上可否互換</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>0.0013</td><td>可以，誤差比量測精度還小</td></tr>
+            <tr><td>5</td><td>0.0317</td><td>可以</td></tr>
+            <tr><td>10</td><td>0.1270</td><td>可以，千分之一級</td></tr>
+            <tr><td>30</td><td>1.1515</td><td>臨界，百分之一級誤差</td></tr>
+            <tr><td>60</td><td>4.7198</td><td>不行</td></tr>
+            <tr><td>90</td><td>11.0721</td><td>不行</td></tr>
+          </tbody>
+        </table>
+        <p>
+          這一欄只和角度有關，和半徑無關——弧和弦同時隨 r 等比放大，比值被約掉了。
+          所以「半徑很大所以可以當直線」是錯的理由，真正的條件只有角度小。
+          一條半徑 6,371 公里、圓心角 1 度的弧（也就是前面那 111.19 公里），
+          弧與弦只差萬分之一；但半徑 1 公分、圓心角 90 度的弧，照樣差 11.07% 以上。
+        </p>
+        <p>
+          這也是小角度近似 sin θ ≈ θ 的幾何版本：θ 夠小時，弧、弦、切線三者混在一起，
+          工程上才敢把微小的旋轉位移當成直線位移處理。表裡 30 度那一列是個方便記的分界，
+          要求千分之一精度就壓到 10 度以內。
+        </p>
+
+        <h2>跑道分道錯開 7.04 公尺，和把公式反過來用</h2>
+        <p>
+          400 公尺跑道的兩個彎道合起來正好是一個整圓，直道長度每道相同，
+          所以不同分道跑一圈的差距，完全由彎道半徑差決定：ΔL = 2π × Δr。
+          分道寬 1.22 公尺，代進去得 2π × 1.22 = 7.67 公尺。
+          這就是為什麼 400 公尺賽跑一定要錯開起跑線——不錯開的話，外道每圈多跑 7.67 公尺。
+        </p>
+        <p>
+          實際的錯開值比 7.67 小一點，原因在量測線的位置：
+          第 1 道從內緣護欄外側 0.30 公尺處量，第 2 道以後從分道線外側 0.20 公尺處量。
+          第 1 道到第 2 道的有效半徑差因此只有 1.22 − 0.10 = 1.12 公尺，
+          錯開 2π × 1.12 = 7.04 公尺；第 2 道之後每道的差才是完整的 7.67 公尺。
+          累積到第 8 道，有效半徑比第 1 道大 8.44 公尺，一圈多 53.03 公尺——
+          這也是 400 公尺比賽外側起跑線看起來前面得誇張的原因。只跑半圈（一個彎道）時，
+          相鄰道的差減半為 3.83 公尺。
+        </p>
+        <p>
+          公式反過來用也只是移項。一段曲線軌道量出來 12 公尺長、設計半徑 30 公尺，
+          轉了幾度？θ = L/r = 12/30 = 0.4 弧度，換成角度是 22.92 度。
+          代回原式驗算：30 × 0.4 = 12.00 公尺，反解正確。
+          已知弧長與角度要反求半徑同理：r = L/θ。
+        </p>
+        <p>
+          圈數也只是換個寫法的 θ。轉 N 圈等於 θ = 2πN，不受 2π 上限的限制。
+          一個直徑 70 公分（半徑 0.35 公尺）的車輪轉 100 圈，θ = 628.32 弧度，
+          地面上滾過 0.35 × 628.32 = 219.91 公尺，等於每圈前進 2.20 公尺。
+          單車碼表就是這樣把輪轉數換成里程，而它唯一需要校正的參數是輪徑。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0 0 0.6em;">
+            <strong>直徑當半徑</strong>：把 50 公尺的直徑填進 r，得 50 × 1.2217 = 61.09 公尺，
+            正好是正確值的 2 倍。這裡只差 2 倍，而不是扇形面積那種 4 倍，因為 r 在弧長裡是一次項；
+            換句話說同一個填錯，在長度上被低估、在面積上被放大，兩邊都要各自檢查。
+            設備規格寫「迴轉半徑」是 r，寫「迴轉直徑」要先除以 2。
+          </p>
+          <p style="margin: 0;">
+            <strong>弧長當弦長</strong>：現場用捲尺拉兩端點量到的是弦長，不是弧長。
+            70 度那條弧照弦長 28.68 公尺採購材料，會短 1.86 公尺。
+            彎曲的鋼筋、管線、圍籬要用 rθ 算下料長度；要確認兩端點裝不裝得進既有空間，
+            才看 2r·sin(θ/2)。兩個數字用途不同，不是精度不同。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。
+          先用半徑 25、圓心角 70 度確認結果是不是 30.54，再換成自己的數字——
+          填之前先看清楚輸入框要的是角度還是弧度，這是這條公式唯一真正會翻車的地方。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 扇形弧長 #28</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=28" title="扇形弧長互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/circular-sector-area.html">扇形面積 — ½r²θ，等於 ½ × 本文的弧長 × 半徑，本文第三條驗算路徑</a></li>
+          <li><a href="/formulas/circle-circumference.html">圓的周長 — 弧長的滿圈版，2πr 即 θ = 6.2832 的 rθ</a></li>
+          <li><a href="/formulas/circle-area.html">圓的面積 — πr²，扇形面積在 θ 轉滿一圈時的上限</a></li>
+          <li><a href="/formulas/pythagorean-theorem.html">畢氏定理 — 弦長那條直線距離的來源，和弧長量的是兩回事</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：弧長 L = rθ（θ 以弧度計）與角度版 L = (θ°/360)·2πr 為初等幾何標準結果，本文採教科書定義。
+        弧度定義為弧長與半徑之比，整圓為 2π 弧度等於 360 度，故 1 弧度等於 180/π 度，約 57.3 度。
+        弦長採 2r·sin(θ/2)。地球平均半徑取 6,371 公里（IUGG 平均半徑），海里現行定義為 1,852 公尺。
+        跑道幾何採分道寬 1.22 公尺、第 1 道量測線距內緣 0.30 公尺、第 2 道起距分道線 0.20 公尺的通行量測慣例。
+        文中數值皆以 rθ 及其等價變形獨立驗算，計算全程使用完整精度，
+        長度顯示至小數點後兩位、弧度值顯示至小數點後四位。本文僅作數學說明。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
