@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>等比數列和怎麼算？公比 q 與求和公式拆解（年存 10 萬 3% 十年實例）· Bobo Labs</title>
+  <meta name="description" content="等比數列和怎麼算？S = a(1−qⁿ)/(1−q) 的 a、q、n 各代表什麼？用年存 10 萬、年利率 3% 連存十年得 1,146,388 元算一遍，再看無窮等比級數 a/(1−q) 為何收斂，並避開把 3% 當公比的陷阱。" />
+  <meta property="og:title" content="等比數列和怎麼算？公比 q 與求和公式拆解" />
+  <meta property="og:description" content="公比把加法換成乘法。年存 10 萬 3% 十年、永續年金、貨幣乘數三個實例拆解等比數列求和與無窮等比級數。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/geometric-series-sum.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/geometric-series-sum.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "等比數列和怎麼算？公比 q 與求和公式拆解", "url": "https://labs.moneyai168.com/formulas/geometric-series-sum.html", "datePublished": "2026-10-15", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "等比數列和", "item": "https://labs.moneyai168.com/formulas/geometric-series-sum.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "a*(1 - q**n)/(1 - q)",
+    "cases": [
+{"input":{"a":2,"q":3,"n":5},"expect":242.0,"tol":0.000001,"text":"242"},
+{"expr":"a*q**(n-1)","input":{"a":2,"q":3,"n":5},"expect":162.0,"tol":0.000001,"text":"162"},
+{"expr":"a*q**(k-1)","input":{"a":2,"q":3,"k":2},"expect":6.0,"tol":0.000001,"text":"6"},
+{"expr":"a*q**(k-1)","input":{"a":2,"q":3,"k":3},"expect":18.0,"tol":0.000001,"text":"18"},
+{"expr":"a*q**(k-1)","input":{"a":2,"q":3,"k":4},"expect":54.0,"tol":0.000001,"text":"54"},
+{"expr":"n*a","input":{"a":500,"n":12},"expect":6000.0,"tol":0.000001,"text":"6,000"},
+{"expr":"(n/2)*(2*a + (n-1)*d)","input":{"a":10000,"d":1000,"n":10},"expect":145000.0,"tol":0.001,"text":"145,000"},
+{"expr":"a + (n-1)*d","input":{"a":10000,"d":1000,"n":10},"expect":19000.0,"tol":0.000001,"text":"19,000"},
+{"input":{"a":10000,"q":1.1,"n":10},"expect":159374.24601,"tol":1,"text":"159,374"},
+{"expr":"a*q**(n-1)","input":{"a":10000,"q":1.1,"n":10},"expect":23579.47691,"tol":1,"text":"23,579"},
+{"expr":"q**n","input":{"q":1.1,"n":10},"expect":2.5937424601,"tol":0.000000001,"text":"2.59"},
+{"expr":"a*(1 - q**n)/(1 - q) - (n/2)*(2*a + (n-1)*d)","input":{"a":10000,"q":1.1,"n":10,"d":1000},"expect":14374.24601,"tol":1,"text":"14,374"},
+{"expr":"q**n","input":{"q":1.03,"n":10},"expect":1.3439163793441222,"tol":0.000000001,"text":"1.3439"},
+{"expr":"q**n - 1","input":{"q":1.03,"n":10},"expect":0.3439163793441222,"tol":0.000000001,"text":"0.3439"},
+{"expr":"(q**n - 1)/(q - 1)","input":{"q":1.03,"n":10},"expect":11.463879311470741,"tol":0.000000001,"text":"11.4639"},
+{"input":{"a":100000,"q":1.03,"n":10},"expect":1146387.9311470732,"tol":1,"text":"1,146,388"},
+{"expr":"a*n","input":{"a":100000,"n":10},"expect":1000000.0,"tol":0.001,"text":"1,000,000"},
+{"expr":"a*(1 - q**n)/(1 - q) - a*n","input":{"a":100000,"q":1.03,"n":10},"expect":146387.93114707316,"tol":1,"text":"146,388"},
+{"expr":"a*q**k","input":{"a":100000,"q":1.03,"k":9},"expect":130477.3183829245,"tol":1,"text":"130,477"},
+{"expr":"a*q**k","input":{"a":100000,"q":1.03,"k":5},"expect":115927.40742829999,"tol":1,"text":"115,927"},
+{"expr":"a*(1 - q**n)/(1 - q)*q","input":{"a":100000,"q":1.03,"n":10},"expect":1180779.5690814855,"tol":1,"text":"1,180,780"},
+{"expr":"a*(1 - q**n)/(1 - q)*(q - 1)","input":{"a":100000,"q":1.03,"n":10},"expect":34391.63793441234,"tol":1,"text":"34,392"},
+{"expr":"PMT/r","input":{"PMT":50000,"r":0.04},"expect":1250000.0,"tol":0.001,"text":"1,250,000"},
+{"expr":"PMT/(1 + r)","input":{"PMT":50000,"r":0.04},"expect":48076.92307692308,"tol":1,"text":"48,077"},
+{"expr":"1/(1 + r)","input":{"r":0.04},"expect":0.9615384615384615,"tol":0.000000001,"text":"0.9615"},
+{"expr":"PMT*(1 - (1 + r)**(-n))/r","input":{"PMT":50000,"r":0.04,"n":30},"expect":864601.6650332245,"tol":1,"text":"864,602"},
+{"expr":"1 - (1 + r)**(-n)","input":{"r":0.04,"n":30},"expect":0.6916813320265796,"tol":0.000000001,"scale":100,"text":"69.17"},
+{"expr":"a/(1 - q)","input":{"a":100,"q":0.9},"expect":1000.0,"tol":0.000001,"text":"1,000"},
+{"input":{"a":100,"q":0.9,"n":10},"expect":651.3215599,"tol":0.000001,"text":"651.32"},
+{"expr":"1 - q**n","input":{"q":0.9,"n":10},"expect":0.6513215599,"tol":0.000000001,"scale":100,"text":"65.13"},
+{"input":{"a":100000,"q":0.03,"n":10},"expect":103092.78350515458,"tol":1,"text":"103,093"},
+{"expr":"(a*(1 - q1**n)/(1 - q1))/(a*(1 - q2**n)/(1 - q2))","input":{"a":100000,"q1":1.03,"q2":0.03,"n":10},"expect":11.119962932126615,"tol":0.000000001,"text":"11.12"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #58 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">等比數列和怎麼算？公比 q 與求和公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-15</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        每年年底存 100,000 元進年利率 3% 的帳戶，連存十年，最後結算是
+        <strong>1,146,388</strong> 元——不是存進去的那 1,000,000 元。
+        多出來的 <strong>146,388</strong> 元全部由等比數列和 S = a(1 − qⁿ)/(1 − q) 決定。
+        本文拆解 a、q、n 三個輸入，並處理最常出錯的那一步：<strong>q 是 1.03，不是 0.03</strong>。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">S = a(1 − qⁿ) / (1 − q)　（q ≠ 1）</div>
+          <div class="formula-box-note">a 首項 · q 公比（相鄰兩項之比）· n 項數 · S 前 n 項的總和；q = 1 時分母為零，改用 S = na</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td>首項：第一項的值</td><td>與數列同單位</td><td>任意非零實數</td></tr>
+            <tr><td>q</td><td>公比：每一項是前一項的幾倍</td><td>無單位（倍數）</td><td>成長 q &gt; 1、衰減 0 &lt; q &lt; 1</td></tr>
+            <tr><td>n</td><td>項數：一共加了幾項</td><td>無單位</td><td>正整數</td></tr>
+            <tr><td>S</td><td>前 n 項和</td><td>與數列同單位</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>a、q、n 各管什麼？公比把加法換成乘法</h2>
+        <p>
+          <a href="/formulas/arithmetic-series-sum.html">等差數列</a>靠「每項加 d」往前走，等比數列靠「每項乘 q」。
+          定義同樣只有一句：相鄰兩項的比固定，那個比就是 q。
+          第 n 項 = a·q⁽ⁿ⁻¹⁾，指數位置擺的是 n——這是
+          <a href="/formulas/exponential-function.html">指數</a>而不是一次函數，
+          也是等比和與等差和長得完全不同的根源。
+        </p>
+        <p>
+          最短的例子：2、6、18、54、162，a = 2、q = 3、n = 5。
+          第 5 項是 2 × 3⁴ = <strong>162</strong>，前 5 項和
+          S = 2(1 − 3⁵)/(1 − 3) = 2 × (−242)/(−2) = <strong>242</strong>。
+          分子與分母同時為負，負號互相抵消——q &gt; 1 時這是常態，算出負數才是代錯了。
+        </p>
+        <p>
+          q = 1 必須單獨處理。每一項都等於 a，公式的分母 1 − q 變成零，不能用，直接 S = n × a：
+          每期固定存 500 元存 12 期就是 <strong>6,000</strong> 元。
+          這也說明 q = 1 是等比和的分界——公式在 q 趨近 1 時雖然極限正確，但直接代入會除以零。
+        </p>
+        <p>
+          同一個起點，加法與乘法差多少？本金 10,000 元起跳、連續 10 期，
+          等差每期加 1,000 元，等比每期乘 1.1（第一期的增量恰好也是 1,000 元）：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>成長方式</th><th>第 10 項</th><th>前 10 項和</th></tr></thead>
+          <tbody>
+            <tr><td>等差・a = 10,000、d = 1,000</td><td>19,000</td><td>145,000</td></tr>
+            <tr><td>等比・a = 10,000、q = 1.1</td><td>23,579</td><td>159,374</td></tr>
+          </tbody>
+        </table>
+        <p>
+          等差第 10 項 10,000 + 9 × 1,000 = <strong>19,000</strong>，總和
+          (10/2)(2 × 10,000 + 9 × 1,000) = <strong>145,000</strong>；
+          等比第 10 項 10,000 × 1.1⁹ = <strong>23,579</strong>，總和
+          10,000(1 − 1.1¹⁰)/(1 − 1.1) = <strong>159,374</strong>。
+          1.1 連乘十次是 <strong>2.59</strong> 倍，而不是把每期 10% 累加起來的那種直覺。
+          十期下來等比多出 <strong>14,374</strong> 元；期數再拉長，差距只會擴大。
+          「每年多存一萬」和「每年多存一成」是兩種本質不同的計畫。
+        </p>
+
+        <h2>用真實數字算一遍：年存 10 萬、利率 3%、十年後是多少</h2>
+        <p>
+          場景設定：每年年底存入 100,000 元進一個年利率 3%、每年複利一次的固定利率帳戶，
+          連存 10 年，最後一筆存完當天結算。先看懂這為什麼是等比數列。
+        </p>
+        <p>
+          第 1 筆存進去後還有 9 年可以滾，到期值 100,000 × 1.03⁹ = <strong>130,477</strong> 元；
+          第 5 筆滾 5 年，<strong>115,927</strong> 元；最後一筆當天存當天結算，一毛利息都沒有，
+          就是 100,000 元。把十筆的到期值由後往前排，正好是 a = 100,000、q = 1.03、n = 10 的等比數列。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>存入順位</th><th>滾存年數</th><th>到期值</th></tr></thead>
+          <tbody>
+            <tr><td>第 1 筆</td><td>9 年</td><td>130,477</td></tr>
+            <tr><td>第 5 筆</td><td>5 年</td><td>115,927</td></tr>
+            <tr><td>第 10 筆</td><td>0 年</td><td>100,000</td></tr>
+            <tr><td>十筆合計</td><td>—</td><td>1,146,388</td></tr>
+          </tbody>
+        </table>
+        <p>
+          代進公式：1.03 的十次方是 <strong>1.3439</strong>，所以
+          S = 100,000 × (1 − 1.3439)/(1 − 1.03) = 100,000 × (−<strong>0.3439</strong>)/(−0.03)
+          = 100,000 × <strong>11.4639</strong> = <strong>1,146,388</strong> 元。
+          中間那個 11.4639 就是年金因子：存十期、利率 3%，相當於「存了 11.4639 期的本金」。
+        </p>
+        <p>
+          總共投入 10 × 100,000 = <strong>1,000,000</strong> 元，
+          利息部分 1,146,388 − 1,000,000 = <strong>146,388</strong> 元。
+          利息只佔投入的一成多，因為後面幾筆幾乎沒有時間滾——
+          等比和的大部分重量壓在早期的項上，這點和
+          <a href="/formulas/compound-interest.html">單筆複利</a>的直覺相反。
+        </p>
+        <p>
+          存款時點是另一個容易被略過的變數。上面算的是期末年金（每期結束才存）。
+          若改成期初存入，每一筆都多滾一年，整串乘以 1.03，結果變
+          <strong>1,180,780</strong> 元，多 <strong>34,392</strong> 元。
+          同一筆錢、同樣十年，差別只在提早一期進場。
+        </p>
+        <p>
+          這條公式就是<a href="/formulas/future-value-annuity.html">年金終值</a>的本體。
+          把 a 換成 PMT、q 換成 1 + r，S = a(1 − qⁿ)/(1 − q) 立刻變成
+          PMT × ((1 + r)ⁿ − 1)/r——分子分母各乘 −1 而已，兩者不是相似，是同一個式子。
+        </p>
+
+        <h2>q 小於 1 為什麼會收斂？無窮等比級數 a/(1 − q)</h2>
+        <p>
+          當 |q| &lt; 1，qⁿ 隨 n 變大趨近 0，公式裡的 (1 − qⁿ) 趨近 1，
+          整個和收斂到 S∞ = a/(1 − q)。
+          <strong>項數無限多不代表總和無限大</strong>，這是等比數列和最反直覺也最有用的性質，
+          而且它給的是一個可以直接算的有限數字，不是估計值。
+        </p>
+        <p>
+          永續年金（perpetuity）就是這個極限的金融版。假設每年年底可領 50,000 元、永遠領下去，
+          折現率 4%。第 1 年那筆的現值是 50,000 ÷ 1.04 = <strong>48,077</strong> 元，
+          之後每年再多除一次 1.04，所以這是 a = 48,077、
+          q = 1 ÷ 1.04 = <strong>0.9615</strong> 的無窮等比數列。
+          代 a/(1 − q) 化簡後只剩一句話：PV = 50,000 ÷ 0.04 = <strong>1,250,000</strong> 元。
+        </p>
+        <p>
+          「永遠」到底值多少？拿有限期的版本對照就看得出收斂速度。
+          只領 30 年的現值是 50,000 × (1 − 1.04⁻³⁰)/0.04 = <strong>864,602</strong> 元，
+          已經是永續版 1,250,000 元的 <strong>69.17</strong>%。
+          第 31 年以後那無窮多期全部加起來，也只佔剩下的三成出頭。
+          這就是<a href="/formulas/present-value-annuity.html">年金現值</a>與永續年金的距離：
+          折現率越高，尾巴越不值錢，兩者越接近。
+        </p>
+        <p>
+          同一個極限也解釋了貨幣乘數。存款準備率 10% 時，銀行每收到一筆存款可以把 90% 再放出去，
+          下一家銀行再放 90%，一輪一輪遞減。初始 100 億元的存款，理論上最多創造
+          100/(1 − 0.9) = <strong>1,000</strong> 億元的存款總量。
+          但收斂需要時間：前 10 輪只累積到 <strong>651.32</strong> 億元，
+          佔最終值的 <strong>65.13</strong>%。
+        </p>
+        <p>
+          q ≥ 1 時沒有極限可言：每一項不減反增，加再多項只會越跑越遠，公式只能用在有限的 n 上。
+          這解釋了一件常被混淆的事——上一節的年金終值（q = 1.03）沒有「永續終值」這種東西，
+          但永續年金現值（q = 0.9615）存在。差別不在金融設計，在公比落在 1 的哪一側。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把利率直接當公比</strong>。年利率 3% 對應的 q 是 1.03，不是 0.03。
+            代錯會得到 S = 100,000 × (1 − 0.03¹⁰)/(1 − 0.03) = <strong>103,093</strong> 元，
+            正確答案是它的 <strong>11.12</strong> 倍。
+            這個錯誤有個現成的攔截法：結果 103,093 元連投入的 1,000,000 元都不到，
+            <strong>q &gt; 1 的等比和不可能小於本金總額</strong>，量級一眼就不對。
+            第二個常錯的是 n：存 10 年、每年存一次就是 10 項，不是 11 項。
+            n 在指數上，多算一項就多乘一個 q，誤差隨期數放大而不是固定。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。
+          先用 a = 100,000、q = 1.03、n = 10 確認結果是不是 1,146,388，再換成自己的數字——
+          填之前先確認輸入框要的是公比 q 還是成長率 r，這是這條公式最常翻車的地方。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 等比數列和 #58</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=58" title="等比數列和互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/future-value-annuity.html">年金終值 — 等比數列和的金融化身</a></li>
+          <li><a href="/formulas/present-value-annuity.html">年金現值 — 公比落在 1 以下的那一側</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 單筆的等比成長</a></li>
+          <li><a href="/formulas/arithmetic-series-sum.html">等差數列和 — 加法版的對照組</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 等比成長幾期翻倍的速算</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        等比數列（geometric sequence）首項 a、公比 q，第 n 項為 a·q⁽ⁿ⁻¹⁾；
+        前 n 項和 S = a(1 − qⁿ)/(1 − q)，其中 q ≠ 1，q = 1 時 S = na。
+        |q| &lt; 1 時級數收斂，無窮項和為 a/(1 − q)；|q| ≥ 1 時發散。
+        年金終值 PMT·((1 + r)ⁿ − 1)/r 與永續年金現值 PMT/r 均為本式的特例。
+        文中利率、折現率、存款準備率與存款金額皆為假設值，僅作數學說明，
+        不構成投資、借貸或理財建議，實際商品條件以金融機構契約為準；
+        貨幣乘數為教科書簡化模型，未計現金漏損與超額準備。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
