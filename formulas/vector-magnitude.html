@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>向量長度怎麼算？2D 向量大小公式 √(x²+y²) 拆解（位移 1,500 公尺實例）· Bobo Labs</title>
+  <meta name="description" content="向量長度怎麼算？|v| = √(x² + y²) 的 x、y 是什麼、為什麼要平方再開根號？用往東 1,200 公尺、往北 900 公尺走出 1,500 公尺直線距離算一遍，再看單位向量、方向角與把分量直接相加會高估多少。" />
+  <meta property="og:title" content="向量長度怎麼算？2D 向量大小公式 √(x²+y²) 拆解" />
+  <meta property="og:description" content="平方消掉負號，開根號換回長度。用市區兩段位移、無人機速度與單位向量三個實例拆解 2D 向量長度。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/vector-magnitude.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/vector-magnitude.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "向量長度怎麼算？2D 向量大小公式 √(x²+y²) 拆解", "url": "https://labs.moneyai168.com/formulas/vector-magnitude.html", "datePublished": "2026-10-16", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "向量長度 (2D)", "item": "https://labs.moneyai168.com/formulas/vector-magnitude.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "sqrt(x**2 + y**2)",
+    "cases": [
+{"input":{"x":3,"y":4},"expect":5.0,"tol":0.000001,"text":"5"},
+{"expr":"x**2","input":{"x":3},"expect":9.0,"tol":0.000001,"text":"9"},
+{"expr":"y**2","input":{"y":4},"expect":16.0,"tol":0.000001,"text":"16"},
+{"expr":"x**2 + y**2","input":{"x":3,"y":4},"expect":25.0,"tol":0.000001,"text":"25"},
+{"expr":"x + y","input":{"x":3,"y":4},"expect":7.0,"tol":0.000001,"text":"7"},
+{"input":{"x":-4,"y":3},"expect":5.0,"tol":0.000001,"text":"5"},
+{"expr":"2*pi*r","input":{"r":5},"expect":31.41592653589793,"tol":0.000000001,"text":"31.42"},
+{"input":{"x":-8,"y":15},"expect":17.0,"tol":0.000001,"text":"17"},
+{"expr":"x**2","input":{"x":-8},"expect":64.0,"tol":0.000001,"text":"64"},
+{"expr":"y**2","input":{"y":15},"expect":225.0,"tol":0.000001,"text":"225"},
+{"expr":"x**2 + y**2","input":{"x":-8,"y":15},"expect":289.0,"tol":0.000001,"text":"289"},
+{"expr":"x**2 + y**2","input":{"x":1200,"y":900},"expect":2250000.0,"tol":0.000001,"text":"2250000"},
+{"input":{"x":1200,"y":900},"expect":1500.0,"tol":0.000001,"text":"1,500"},
+{"expr":"x + y","input":{"x":1200,"y":900},"expect":2100.0,"tol":0.000001,"text":"2,100"},
+{"expr":"x + y - sqrt(x**2 + y**2)","input":{"x":1200,"y":900},"expect":600.0,"tol":0.000001,"text":"600"},
+{"expr":"(x + y)/sqrt(x**2 + y**2) - 1","input":{"x":1200,"y":900},"expect":0.4,"tol":0.000000001,"scale":100,"text":"40"},
+{"input":{"x":-400,"y":300},"expect":500.0,"tol":0.000001,"text":"500"},
+{"expr":"ax + bx","input":{"ax":1200,"bx":-400},"expect":800.0,"tol":0.000001,"text":"800"},
+{"expr":"ay + by","input":{"ay":900,"by":300},"expect":1200.0,"tol":0.000001,"text":"1,200"},
+{"expr":"sqrt((ax + bx)**2 + (ay + by)**2)","input":{"ax":1200,"ay":900,"bx":-400,"by":300},"expect":1442.2205101855957,"tol":0.00001,"text":"1,442.22"},
+{"expr":"sqrt(ax**2 + ay**2) + sqrt(bx**2 + by**2)","input":{"ax":1200,"ay":900,"bx":-400,"by":300},"expect":2000.0,"tol":0.000001,"text":"2,000"},
+{"expr":"sqrt(ax**2 + ay**2) + sqrt(bx**2 + by**2) - sqrt((ax + bx)**2 + (ay + by)**2)","input":{"ax":1200,"ay":900,"bx":-400,"by":300},"expect":557.7794898144043,"tol":0.00001,"text":"557.78"},
+{"expr":"x/sqrt(x**2 + y**2)","input":{"x":3,"y":4},"expect":0.6,"tol":0.000000001,"text":"0.6"},
+{"expr":"y/sqrt(x**2 + y**2)","input":{"x":3,"y":4},"expect":0.8,"tol":0.000000001,"text":"0.8"},
+{"expr":"(x/sqrt(x**2 + y**2))**2 + (y/sqrt(x**2 + y**2))**2","input":{"x":3,"y":4},"expect":1.0,"tol":0.000000001,"text":"1"},
+{"expr":"degrees(atan(y/x))","input":{"x":3,"y":4},"expect":53.13010235415598,"tol":0.000000001,"text":"53.13"},
+{"input":{"x":12,"y":5},"expect":13.0,"tol":0.000001,"text":"13"},
+{"expr":"degrees(atan(y/x))","input":{"x":12,"y":5},"expect":22.61986494804043,"tol":0.000000001,"text":"22.62"},
+{"expr":"x**2 + y**2","input":{"x":12,"y":5},"expect":169.0,"tol":0.000001,"text":"169"},
+{"expr":"0.5*m*(x**2 + y**2)","input":{"m":1.2,"x":12,"y":5},"expect":101.4,"tol":0.000001,"text":"101.4"},
+{"expr":"abs(x) + abs(y)","input":{"x":-8,"y":15},"expect":23.0,"tol":0.000001,"text":"23"},
+{"expr":"(abs(x) + abs(y))/sqrt(x**2 + y**2) - 1","input":{"x":-8,"y":15},"expect":0.3529411764705883,"tol":0.000000001,"scale":100,"text":"35.29"},
+{"expr":"sqrt(-(x**2) + y**2)","input":{"x":-8,"y":15},"expect":12.68857754044952,"tol":0.000000001,"text":"12.69"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 數學 · #59 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">向量長度怎麼算？2D 向量大小公式 √(x²+y²) 拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-16</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        往東走 1,200 公尺、再往北走 900 公尺，腳下走了 <strong>2,100</strong> 公尺，
+        但起點到終點的直線距離只有 <strong>1,500</strong> 公尺——中間那 <strong>600</strong> 公尺
+        是轉彎吃掉的。算出這條直線的就是向量長度 |v| = √(x² + y²)。
+        本文拆解 x、y 兩個分量怎麼變成一個長度，並處理最常出錯的那一步：
+        <strong>分量不能直接相加</strong>。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">|v| = √(x² + y²)</div>
+          <div class="formula-box-note">x 水平分量 · y 垂直分量 · |v| 向量長度（又稱大小、模、範數）；平方先消掉負號，開根號再把面積換回長度</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>水平分量：向量在 x 軸上的投影</td><td>與 y 同單位（公尺、m/s…）</td><td>任意實數，可負</td></tr>
+            <tr><td>y</td><td>垂直分量：向量在 y 軸上的投影</td><td>與 x 同單位</td><td>任意實數，可負</td></tr>
+            <tr><td>|v|</td><td>向量長度：起點到終點的直線距離</td><td>與分量同單位</td><td>恆為非負，零向量時為零</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼是平方再開根號，不是 x 加 y？</h2>
+        <p>
+          向量 (x, y) 在座標平面上就是一個直角三角形的斜邊：
+          底邊長 x、高 y、斜邊就是向量本身。所以這條公式不是新東西，
+          它是<a href="/formulas/pythagorean-theorem.html">勾股定理</a> a² + b² = c² 換個寫法，
+          把 c 單獨解出來而已。
+        </p>
+        <p>
+          拿最乾淨的例子：v = (3, 4)。先平方，3² = <strong>9</strong>、4² = <strong>16</strong>，
+          相加得 <strong>25</strong>，<a href="/formulas/square-root.html">開根號</a>後 |v| = <strong>5</strong>。
+          走 3 格再走 4 格，直線距離是 5 格而不是 7 格——這個差距就是公式存在的全部理由。
+        </p>
+        <p>
+          分量可以是負的，長度不行。v = (−8, 15) 代表往西 8、往北 15：
+          (−8)² = <strong>64</strong>、15² = <strong>225</strong>，
+          和是 <strong>289</strong>，|v| = <strong>17</strong>。
+          <strong>平方這一步的作用就是消掉負號</strong>——方向資訊留在 x、y 各自的正負上，
+          長度只回答「多遠」，不回答「往哪」。
+        </p>
+        <p>
+          反過來說，長度相同的向量有無限多個。(3, 4)、(−4, 3)、(5, 0)、(0, 5)
+          長度全都是 <strong>5</strong>，因為它們的終點全都落在半徑 5 的圓上，
+          繞一圈是 2π × 5 = <strong>31.42</strong> 個單位長。
+          |v| 把二維的兩個數壓成一維的一個數，壓縮的代價就是方向被丟掉了。
+          需要方向就得另外算角度，或改用<a href="/formulas/distance-formula.html">兩點距離</a>
+          那樣保留座標的寫法。
+        </p>
+
+        <h2>用真實數字算一遍：市區兩段位移</h2>
+        <p>
+          場景設定：從捷運站出來，沿街往東走 1,200 公尺，接著往北走 900 公尺到第一個客戶。
+          把這段路當成向量 a = (1200, 900)，x 軸朝東、y 軸朝北，單位公尺。
+        </p>
+        <p>
+          直線距離 |a| = √(1200² + 900²) = √2250000 = <strong>1,500</strong> 公尺。
+          但腳實際踩過的街道長度是 1,200 + 900 = <strong>2,100</strong> 公尺，
+          兩者差 <strong>600</strong> 公尺，等於多走了 <strong>40</strong>%。
+          街廓越方正、兩段距離越接近，這個差距越大；完全同方向時才會相等。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>量測方式</th><th>算法</th><th>距離（公尺）</th></tr></thead>
+          <tbody>
+            <tr><td>街道路程</td><td>1,200 + 900</td><td>2,100</td></tr>
+            <tr><td>直線距離</td><td>√(1200² + 900²)</td><td>1,500</td></tr>
+            <tr><td>差額</td><td>相減</td><td>600</td></tr>
+          </tbody>
+        </table>
+        <p>
+          接著第二段：往西 400 公尺、往北 300 公尺到第二個客戶，
+          也就是 b = (−400, 300)，長度 |b| = √((−400)² + 300²) = <strong>500</strong> 公尺。
+          注意這裡的西向用負號記在 x，而不是另外記一個「方向欄位」——
+          有正負號，向量才能直接相加。
+        </p>
+        <p>
+          兩段合起來的總位移是 a + b = (1200 − 400, 900 + 300) = (<strong>800</strong>, <strong>1,200</strong>)，
+          長度 √(800² + 1200²) = <strong>1,442.22</strong> 公尺。
+          而兩段直線距離加總是 1,500 + 500 = <strong>2,000</strong> 公尺。
+          <strong>路程會相加，位移不會</strong>：中間差的 <strong>557.78</strong> 公尺
+          是第二段往回走的那 400 公尺折抵掉的。
+          先把分量加完再開根號，和先各自開根號再相加，是兩個不同的問題。
+        </p>
+
+        <h2>單位向量、方向角與 |v|² 的用處</h2>
+        <p>
+          把向量除以自己的長度，就得到長度為 1 的單位向量。
+          v = (3, 4) 除以 5 得 (<strong>0.6</strong>, <strong>0.8</strong>)，
+          驗算 0.6² + 0.8² = <strong>1</strong>，確實是單位長度。
+          這一步叫正規化，用途是「只要方向、不要大小」：
+          地圖上的指向箭頭、物理模擬裡的受力方向、
+          機器學習把特徵向量拉到同一尺度，用的都是這個除法。
+        </p>
+        <p>
+          長度配上方向角才算完整描述。方向角 θ = atan(y ÷ x)，
+          v = (3, 4) 的 θ = <strong>53.13</strong> 度（從 x 軸正向逆時針量）。
+          長度與角度這組極座標寫法，和 (x, y) 這組直角座標寫法，資訊量完全相同，
+          只是哪一個算起來方便的差別。
+        </p>
+        <p>
+          換個領域，公式一字不改。一架無人機水平飛 12 m/s、同時爬升 5 m/s，
+          實際速率 √(12² + 5²) = <strong>13</strong> m/s，
+          爬升角 atan(5 ÷ 12) = <strong>22.62</strong> 度。
+          儀表上那兩個分量讀數都不是真實速率，合成後才是。
+        </p>
+        <p>
+          最後一個實務細節：很多時候根本不需要開根號。
+          <a href="/formulas/kinetic-energy.html">動能</a> ½mv² 要的是速率的平方，
+          而 |v|² = x² + y² = <strong>169</strong>，開根號再平方等於白做。
+          機體質量 1.2 公斤時，動能 ½ × 1.2 × 169 = <strong>101.4</strong> 焦耳。
+          比較兩個向量誰長、找最近的點、判斷是否進入半徑範圍，
+          一律可以直接比 x² + y²——省下開根號，結果完全一樣。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把分量直接相加</strong>。v = (−8, 15) 的長度不是 8 + 15 = <strong>23</strong>，
+            是 <strong>17</strong>，直接相加會高估 <strong>35.29</strong>%。
+            兩個分量越接近，高估越嚴重；只有其中一個為零時兩種算法才一致。
+            第二個常錯的是<strong>把負號帶進平方</strong>：(−8)² 是 64 不是 −64，
+            代成 −64 + 225 會得到 <strong>12.69</strong>，比正確的 17 還小——
+            長度算出來比任何一個分量的絕對值（這裡是 15）還小，就一定是這個錯。
+            第三個是<strong>忘記開根號</strong>，把 289 當成答案；
+            單位是判斷依據：x² + y² 的單位是公尺平方，長度必須是公尺。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。
+          先用 x = 3、y = 4 確認結果是不是 5，再換成自己的數字——
+          填之前先確認兩個分量是同一組座標軸上的投影、而且單位相同，
+          這是這條公式最常翻車的地方。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 向量長度 (2D) #59</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=59" title="向量長度 (2D) 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/pythagorean-theorem.html">勾股定理 — 向量長度的幾何本體</a></li>
+          <li><a href="/formulas/distance-formula.html">兩點距離 — 把起點平移到原點的版本</a></li>
+          <li><a href="/formulas/square-root.html">平方根 — 把平方和換回長度的那一步</a></li>
+          <li><a href="/formulas/circle-circumference.html">圓的周長 — 等長向量終點的軌跡</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 — 用 |v|² 就夠，不必開根號</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        二維向量 v = (x, y) 的長度（magnitude、模、歐幾里得範數 ‖v‖₂）定義為 √(x² + y²)，
+        即內積 v·v 的平方根；三維為 √(x² + y² + z²)，n 維同理逐項平方後開根號。
+        長度恆為非負，等於零若且唯若 x = y = 0。方向角 θ = atan2(y, x)，
+        本文實例皆取 x &gt; 0 的第一象限，故可直接寫成 atan(y ÷ x)。
+        文中距離、速度、質量皆為假設值，僅作數學說明。
+        全文數字均經 <code>scripts/verify_formula_math.py</code> 獨立驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
