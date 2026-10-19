@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>電功率怎麼算？P=VI 瓦數與電費公式拆解（1.2 kW 冷氣實例）· Bobo Labs</title>
+  <meta name="description" content="電功率怎麼算？P = VI 的瓦特、伏特、安培怎麼對應，瓦數又怎麼換成電費的「度」？用 110 V 插座、1.2 kW 冷氣與 20,000 mAh 行動電源算一遍，並說明 P = I²R、P = V²/R 兩個變形與交流電 VA 不等於 W 的常見誤算。" />
+  <meta property="og:title" content="電功率怎麼算？P=VI 瓦數與電費公式拆解" />
+  <meta property="og:description" content="電壓乘電流就是瓦數。用 110 V 插座、1.2 kW 冷氣電費與行動電源續航三個實例拆解 P = VI 與它的兩個變形。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/electrical-power.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/electrical-power.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "電功率怎麼算？P=VI 瓦數與電費公式拆解", "url": "https://labs.moneyai168.com/formulas/electrical-power.html", "datePublished": "2026-10-18", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "電功率", "item": "https://labs.moneyai168.com/formulas/electrical-power.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "V * I",
+    "cases": [
+{"input":{"V":110,"I":10},"expect":1100.0,"tol":0.000001,"text":"1,100"},
+{"input":{"V":5,"I":2},"expect":10.0,"tol":0.000001,"text":"10"},
+{"expr":"kW*1000","input":{"kW":1.2},"expect":1200.0,"tol":0.000001,"text":"1,200"},
+{"expr":"P/V","input":{"P":1200,"V":220},"expect":5.454545454545454,"tol":0.000000001,"text":"5.45"},
+{"expr":"kW*h*d","input":{"kW":1.2,"h":8,"d":30},"expect":288.0,"tol":0.000001,"text":"288"},
+{"expr":"kW*h*d*rate","input":{"kW":1.2,"h":8,"d":30,"rate":5},"expect":1440.0,"tol":0.000001,"text":"1,440"},
+{"expr":"(Pa-Pb)/1000*h*d","input":{"Pa":60,"Pb":10,"h":5,"d":365},"expect":91.25,"tol":0.000000001,"text":"91.25"},
+{"expr":"(Pa-Pb)/1000*h*d*rate","input":{"Pa":60,"Pb":10,"h":5,"d":365,"rate":5},"expect":456.25,"tol":0.000000001,"text":"456.25"},
+{"expr":"V/R","input":{"V":110,"R":11},"expect":10.0,"tol":0.000001,"text":"10"},
+{"expr":"V**2","input":{"V":110},"expect":12100.0,"tol":0.000001,"text":"12,100"},
+{"expr":"V**2/R","input":{"V":110,"R":11},"expect":1100.0,"tol":0.000001,"text":"1,100"},
+{"expr":"I**2","input":{"I":10},"expect":100.0,"tol":0.000001,"text":"100"},
+{"expr":"I**2*R","input":{"I":10,"R":11},"expect":1100.0,"tol":0.000001,"text":"1,100"},
+{"expr":"P/V","input":{"P":1100,"V":220},"expect":5.0,"tol":0.000001,"text":"5"},
+{"expr":"(P/V)**2*Rw","input":{"P":1100,"V":110,"Rw":0.5},"expect":50.0,"tol":0.000001,"text":"50"},
+{"expr":"I**2","input":{"I":5},"expect":25.0,"tol":0.000001,"text":"25"},
+{"expr":"(P/V)**2*Rw","input":{"P":1100,"V":220,"Rw":0.5},"expect":12.5,"tol":0.000000001,"text":"12.5"},
+{"expr":"(P/V1)**2*Rw - (P/V2)**2*Rw","input":{"P":1100,"V1":110,"V2":220,"Rw":0.5},"expect":37.5,"tol":0.000000001,"text":"37.5"},
+{"expr":"mAh/1000*Vcell","input":{"mAh":20000,"Vcell":3.7},"expect":74.0,"tol":0.000001,"text":"74"},
+{"expr":"mAh/1000*Vcell*eff","input":{"mAh":20000,"Vcell":3.7,"eff":0.85},"expect":62.9,"tol":0.000000001,"text":"62.9"},
+{"expr":"mAh/1000*Vcell*eff/P","input":{"mAh":20000,"Vcell":3.7,"eff":0.85,"P":10},"expect":6.29,"tol":0.000000001,"text":"6.29"},
+{"input":{"V":220,"I":6},"expect":1320.0,"tol":0.000001,"text":"1,320"},
+{"expr":"V*I*pf","input":{"V":220,"I":6,"pf":0.9},"expect":1188.0,"tol":0.000001,"text":"1,188"},
+{"expr":"Pa/Pb","input":{"Pa":1100,"Pb":10},"expect":110.0,"tol":0.000001,"text":"110"},
+{"expr":"(1-eff)*100","input":{"eff":0.85},"expect":15.0,"tol":0.000000001,"text":"15"},
+{"expr":"(a-b)/a","input":{"a":3.7,"b":3.6},"expect":0.02702702702702703,"scale":100,"tol":0.000000001,"text":"2.7"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #31 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">電功率怎麼算？P = VI 從瓦數算到電費</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-18</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        電器銘牌上的瓦數不是廠商隨便標的，它是<strong>電壓乘電流</strong>的結果。
+        110 V 插座配 10 A 電流就是 1,100 W；1.2 kW 的冷氣每天開 8 小時、一個月要吃掉 288 度電。
+        同一條公式還能回答「20,000 mAh 行動電源能充幾次手機」和「為什麼高壓輸電比較省」。
+        本文把 P = VI 以及它的兩個變形 P = I²R、P = V²/R 逐一算給你看。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P = V × I</div>
+          <div class="formula-box-note">P 功率（瓦特 W）· V 電壓（伏特 V）· I 電流（安培 A）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>電功率，單位時間轉換的電能</td><td>Watt (W)</td><td>10（手機充電）～ 3,000（電熱水器）</td></tr>
+            <tr><td>V</td><td>元件兩端的電壓差</td><td>Volt (V)</td><td>5（USB）/ 110（台灣插座）/ 220（冷氣專線）</td></tr>
+            <tr><td>I</td><td>流過元件的電流</td><td>Ampere (A)</td><td>0.1 ～ 15（家用迴路上限常為 15 或 20）</td></tr>
+          </tbody>
+        </table>
+
+        <h2>P = VI 怎麼用？110 V 插座實算</h2>
+        <p>
+          瓦特的定義是「每秒轉換 1 焦耳的能量」。電壓是「每庫侖電荷帶的能量」，電流是「每秒通過的庫侖數」，
+          兩者相乘，庫侖互相消掉，剩下的正好是焦耳／秒。這就是 P = VI 成立的理由 —— 它不是實驗歸納出來的經驗式，
+          而是單位定義的直接結果。
+        </p>
+        <p>
+          台灣家用插座是 110 V。一台快煮壺量到的電流是 10 A，它的功率就是
+          110 × 10 = 1,100 W。手機充電器那端標 5 V／2 A，功率是 5 × 2 = 10 W —— 兩者差 110 倍，
+          這也解釋了為什麼快煮壺要單獨一個插座、充電器可以十個併排插。
+        </p>
+        <p>
+          反過來用也成立：已知功率與電壓就能回推電流。1.2 kW 的冷氣換算成
+          1.2 × 1,000 = 1,200 W，接在 220 V 專用迴路上，電流是 1,200 ÷ 220 = 5.45 A。
+          這個數字決定了該拉幾號線、該用幾安培的無熔絲開關，是配電盤上最實際的一個計算。
+        </p>
+
+        <h2>電費怎麼算？從瓦數到「度」只差兩個乘法</h2>
+        <p>
+          電費帳單的單位是「度」，一度就是 1 kWh，也就是 1,000 W 的電器連續運轉 1 小時。
+          所以電費只需要把功率換成 kW，再乘小時數：
+        </p>
+        <p>
+          剛才那台 1.2 kW 的冷氣，每天開 8 小時、連開 30 天：
+          1.2 × 8 × 30 = 288 度。以每度 5 元的概算單價計（實際單價依分段費率與夏月／非夏月而異），
+          一個月的冷氣電費是 288 × 5 = 1,440 元。
+        </p>
+        <p>
+          同一個算法可以量化省電的效益。把一顆 60 W 白熾燈換成亮度相當的 10 W LED，
+          每天亮 5 小時、一年 365 天，省下的電是 (60 − 10) ÷ 1,000 × 5 × 365 = 91.25 度，
+          折合 456.25 元。一顆 LED 燈泡的售價通常不到兩百元，回收期不到半年 ——
+          這是少數用國中程度算術就能驗證的省錢方案，計算方式和
+          <a href="/formulas/return-on-investment.html">投資報酬率 ROI</a> 完全同構。
+        </p>
+
+        <h2>P = I²R 與 P = V²/R 是怎麼來的？</h2>
+        <p>
+          把 <a href="/formulas/ohms-law.html">歐姆定律 V = IR</a> 代進 P = VI，就得到兩個等價變形：
+          代掉 V 得 P = (IR)·I = I²R；代掉 I 得 P = V·(V/R) = V²/R。
+          三條式子算的是同一件事，差別只在<strong>你手上已知哪兩個量</strong>。
+        </p>
+        <p>
+          驗算一次：一支電阻值 11 Ω 的加熱線接在 110 V 上，電流是 110 ÷ 11 = 10 A。
+          用 P = V²/R 算，110² = 12,100，12,100 ÷ 11 = 1,100 W。
+          用 P = I²R 算，10² = 100，100 × 11 = 1,100 W。三條路殊途同歸。
+        </p>
+        <p>
+          P = I²R 之所以重要，是因為它說明<strong>導線損耗隨電流平方成長</strong>。
+          同樣要送 1,100 W 到負載端，假設來回導線總電阻 0.5 Ω：走 110 V 時電流 10 A，
+          導線上白白燒掉 100 × 0.5 = 50 W；走 220 V 時電流降到 1,100 ÷ 220 = 5 A，
+          損耗只有 25 × 0.5 = 12.5 W。電壓加倍，損耗變四分之一，省下 37.5 W。
+        </p>
+        <p>
+          這就是台電用 345 kV 超高壓做長距離輸電、到用戶端才一路降壓的原因。
+          電壓拉高 10 倍，同功率下電流降到十分之一，線損降到百分之一。
+          也是同一個理由，讓快充協定一路從 5 V 往 9 V、12 V、20 V 爬 ——
+          在不加粗線材的前提下，提高電壓是唯一能繼續堆瓦數的方法。
+        </p>
+
+        <h2>行動電源標的 mAh 不是能量</h2>
+        <p>
+          mAh（毫安培小時）量的是<strong>電荷量</strong>，不是能量。要變成能量得乘上電壓，
+          這一步是比較行動電源時最常被跳過的。
+        </p>
+        <p>
+          一顆標示 20,000 mAh 的行動電源，鋰電芯標稱電壓 3.7 V，真正的能量是
+          20 × 3.7 = 74 Wh。但輸出端要先把 3.7 V 升壓到 5 V 或 9 V，升壓電路與線損大約吃掉 15%，
+          實際可用約 74 × 0.85 = 62.9 Wh。拿來餵一台 10 W 的手機充電，理論上能連續供電
+          62.9 ÷ 10 = 6.29 小時。
+        </p>
+        <p>
+          所以兩顆都標 20,000 mAh 的行動電源，若其中一顆標稱電壓是 3.6 V 而非 3.7 V，
+          能量就少 2.7%；而把 mAh 直接當成「能充幾次手機」的依據，更會高估一到兩成。
+          判斷依據應該是 Wh，那也是航空公司管制隨身電池的單位（通常以 100 Wh 為界）。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>交流電的 V × I 不是瓦特，是伏安（VA）。</strong>
+            在直流電路裡 P = VI 直接成立；但交流電路若帶電感或電容（馬達、壓縮機、日光燈安定器），
+            電壓與電流不同相，真正做功的只有同相的那部分。完整式是 P = V·I·cos φ，
+            cos φ 就是功率因數。量到 220 V、6 A，視在功率是 220 × 6 = 1,320 VA，
+            功率因數 0.9 的話，實功率只有 1,320 × 0.9 = 1,188 W。
+            UPS 和發電機標 VA、電器標 W，就是這個差別 —— 用 VA 當 W 來挑 UPS 會買小。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 電功率計算機。填電壓與電流，或反推你家電器的耗電電流。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 電功率 #31</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=31" title="電功率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/ohms-law.html">歐姆定律 V = IR — P = I²R 與 P = V²/R 的來源</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv² — 瓦特背後的焦耳是什麼</a></li>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 換 LED 的回收期怎麼算</a></li>
+          <li><a href="/formulas/percentage.html">百分比 — 功率因數與升壓效率都是百分比</a></li>
+          <li><a href="/formulas/common-logarithm.html">常用對數 log — 分貝與功率比的橋樑</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：瓦特、伏特、安培均為 SI 導出單位，依國際度量衡局（BIPM）SI Brochure 第 9 版定義；
+        P = VI 由 1 W = 1 J/s、1 V = 1 J/C、1 A = 1 C/s 直接導出。
+        交流電實功率 P = V·I·cos φ 與視在功率（VA）之區分依 IEC 60050 電工術語。
+        文中電費單價 5 元／度為概算假設，非台電公告費率；行動電源 85% 轉換效率為常見實測區間的概估。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
