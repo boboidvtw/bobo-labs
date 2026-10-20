@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>電阻串聯怎麼算？總電阻與分壓公式拆解（3 顆電阻 12V 實例）· Bobo Labs</title>
+  <meta name="description" content="電阻串聯怎麼算？總電阻就是把阻值相加 R₁+R₂+R₃，但為什麼可以直接加？本文用 100Ω、220Ω、330Ω 接 12 V 的實例算出電流與各段分壓，再用 LED 限流電阻與電池內阻兩個實例說明串聯的用法與分壓器不能當電源的常見誤算。" />
+  <meta property="og:title" content="電阻串聯怎麼算？總電阻與分壓公式拆解" />
+  <meta property="og:description" content="串聯總電阻就是相加。用 100Ω/220Ω/330Ω 接 12 V 算出電流與分壓，並拆解 LED 限流電阻與電池串聯內阻。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/resistors-in-series.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/resistors-in-series.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "電阻串聯怎麼算？總電阻與分壓公式拆解", "url": "https://labs.moneyai168.com/formulas/resistors-in-series.html", "datePublished": "2026-10-19", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "電阻串聯", "item": "https://labs.moneyai168.com/formulas/resistors-in-series.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "R1 + R2 + R3",
+    "cases": [
+{"input":{"R1":100,"R2":220,"R3":330},"expect":650.0,"tol":0.000001,"text":"650"},
+{"expr":"V/Rt*1000","input":{"V":12,"Rt":650},"expect":18.46153846153846,"tol":0.000000001,"text":"18.46"},
+{"expr":"V*R1/(R1+R2+R3)","input":{"V":12,"R1":100,"R2":220,"R3":330},"expect":1.8461538461538463,"tol":0.000000001,"text":"1.85"},
+{"expr":"V*R2/(R1+R2+R3)","input":{"V":12,"R1":100,"R2":220,"R3":330},"expect":4.061538461538462,"tol":0.000000001,"text":"4.06"},
+{"expr":"V*R3/(R1+R2+R3)","input":{"V":12,"R1":100,"R2":220,"R3":330},"expect":6.092307692307692,"tol":0.000000001,"text":"6.09"},
+{"expr":"V*R1/(R1+R2+R3) + V*R2/(R1+R2+R3) + V*R3/(R1+R2+R3)","input":{"V":12,"R1":100,"R2":220,"R3":330},"expect":12.0,"tol":0.000001,"text":"12"},
+{"expr":"(Vs-Vf)/I","input":{"Vs":12,"Vf":3.2,"I":0.02},"expect":440.0,"tol":0.000001,"text":"440"},
+{"expr":"R1+R2","input":{"R1":220,"R2":220},"expect":440.0,"tol":0.000001,"text":"440"},
+{"expr":"((Vs-Vf)/R)**2*R*1000","input":{"Vs":12,"Vf":3.2,"R":440},"expect":176.0,"tol":0.000001,"text":"176"},
+{"expr":"((Vs-Vf)/R)**2*Rk*1000","input":{"Vs":12,"Vf":3.2,"R":440,"Rk":220},"expect":88.0,"tol":0.000001,"text":"88"},
+{"expr":"W*1000","input":{"W":0.25},"expect":250.0,"tol":0.000001,"text":"250"},
+{"expr":"(R1+R2)*p","input":{"R1":220,"R2":220,"p":0.05},"expect":22.0,"tol":0.000001,"text":"22"},
+{"expr":"n*Vc","input":{"n":4,"Vc":1.5},"expect":6.0,"tol":0.000001,"text":"6"},
+{"expr":"n*rc","input":{"n":4,"rc":0.2},"expect":0.8,"tol":0.000000001,"text":"0.8"},
+{"expr":"Vt/(RL+r)","input":{"Vt":6,"RL":5,"r":0.8},"expect":1.0344827586206897,"tol":0.000000001,"text":"1.03"},
+{"expr":"Vt/(RL+r)*r","input":{"Vt":6,"RL":5,"r":0.8},"expect":0.8275862068965517,"tol":0.000000001,"text":"0.83"},
+{"expr":"Vt - Vt/(RL+r)*r","input":{"Vt":6,"RL":5,"r":0.8},"expect":5.172413793103448,"tol":0.000000001,"text":"5.17"},
+{"expr":"V*R2/(R1+R2)","input":{"V":12,"R1":1000,"R2":1000},"expect":6.0,"tol":0.000001,"text":"6"},
+{"expr":"V/Rt","input":{"V":12,"Rt":650},"expect":0.01846153846153846,"tol":0.000000001,"text":"0.01846"},
+{"expr":"R1/(R1+R2+R3)","input":{"R1":100,"R2":220,"R3":330},"expect":0.15384615384615385,"scale":100,"tol":0.000000001,"text":"15.4"},
+{"expr":"R2/(R1+R2+R3)","input":{"R1":100,"R2":220,"R3":330},"expect":0.3384615384615385,"scale":100,"tol":0.000000001,"text":"33.8"},
+{"expr":"R3/(R1+R2+R3)","input":{"R1":100,"R2":220,"R3":330},"expect":0.5076923076923077,"scale":100,"tol":0.000000001,"text":"50.8"},
+{"expr":"R/1000*10","input":{"R":220},"expect":2.2,"tol":0.000000001,"text":"2.2"},
+{"expr":"R/1000*10","input":{"R":330},"expect":3.3,"tol":0.000000001,"text":"3.3"},
+{"expr":"Vs-Vf","input":{"Vs":12,"Vf":3.2},"expect":8.8,"tol":0.000000001,"text":"8.8"},
+{"expr":"((Vs-Vf)/R)**2*R","input":{"Vs":12,"Vf":3.2,"R":440},"expect":0.176,"tol":0.000000001,"text":"0.176"},
+{"expr":"Prated/Ptotal","input":{"Prated":250,"Ptotal":176},"expect":1.4204545454545454,"tol":0.000000001,"text":"1.4"},
+{"expr":"R*p","input":{"R":220,"p":0.05},"expect":11.0,"tol":0.000001,"text":"11"},
+{"expr":"RL+r","input":{"RL":5,"r":0.8},"expect":5.8,"tol":0.000000001,"text":"5.8"},
+{"expr":"R1+R2","input":{"R1":1000,"R2":1000},"expect":2000.0,"tol":0.000001,"text":"2000"},
+{"expr":"R2*RL/(R2+RL)","input":{"R2":1000,"RL":1000},"expect":500.0,"tol":0.000001,"text":"500"},
+{"expr":"R1+Req","input":{"R1":1000,"Req":500},"expect":1500.0,"tol":0.000001,"text":"1500"},
+{"expr":"V*(R2*RL/(R2+RL))/(R1+R2*RL/(R2+RL))","input":{"V":12,"R1":1000,"R2":1000,"RL":1000},"expect":4.0,"tol":0.000001,"text":"4"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #32 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">電阻串聯：總電阻直接相加，電壓按比例分</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-19</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        串聯是電路裡少見的「直覺剛好等於正確答案」的情況：電阻接成一串，總電阻就是把阻值加起來。
+        100 Ω、220 Ω、330 Ω 串起來是 650 Ω，接上 12 V 電源，整串只流 18.46 mA。
+        真正有用的是接下來那一步 —— 這 12 V 會按阻值比例分配到三顆電阻上，
+        而這個「分壓」性質既是 LED 限流電阻的設計依據，也是最多人用錯的地方。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">R<sub>總</sub> = R₁ + R₂ + R₃ + … + R<sub>n</sub></div>
+          <div class="formula-box-note">串聯時電流處處相同，各段電壓相加等於總電壓</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>R₁ … R<sub>n</sub></td><td>串聯路徑上每一顆電阻的阻值</td><td>Ohm (Ω)</td><td>10 ～ 1,000,000</td></tr>
+            <tr><td>R<sub>總</sub></td><td>整串的等效電阻，一定大於其中任一顆</td><td>Ohm (Ω)</td><td>計算結果</td></tr>
+            <tr><td>I</td><td>串聯電流，每一顆電阻都是同一個值</td><td>Ampere (A)</td><td>0.001 ～ 0.1（訊號與指示電路）</td></tr>
+            <tr><td>V<sub>k</sub></td><td>第 k 顆電阻分到的電壓</td><td>Volt (V)</td><td>= V × R<sub>k</sub> ÷ R<sub>總</sub></td></tr>
+          </tbody>
+        </table>
+
+        <h2>三顆電阻接 12 V，電流與分壓實算</h2>
+        <p>
+          取三顆標準阻值：R₁ = 100 Ω、R₂ = 220 Ω、R₃ = 330 Ω，串成一串接上 12 V 直流電源。
+          總電阻先加起來：100 + 220 + 330 = 650 Ω。
+        </p>
+        <p>
+          有了總電阻，電流用 <a href="/formulas/ohms-law.html">歐姆定律</a> 一步得到：
+          12 ÷ 650 = 0.01846 A，也就是 18.46 mA。
+          這個值對整串都成立 —— 串聯只有一條路，電荷無處可分流，
+          所以三顆電阻上量到的電流都是同一個 18.46 mA。
+        </p>
+        <p>
+          電壓則不同，它按阻值比例被切開。把電流分別乘上各自的阻值：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>電阻</th><th>阻值</th><th>佔總電阻</th><th>分到的電壓</th></tr></thead>
+          <tbody>
+            <tr><td>R₁</td><td>100 Ω</td><td>15.4%</td><td>1.85 V</td></tr>
+            <tr><td>R₂</td><td>220 Ω</td><td>33.8%</td><td>4.06 V</td></tr>
+            <tr><td>R₃</td><td>330 Ω</td><td>50.8%</td><td>6.09 V</td></tr>
+          </tbody>
+        </table>
+        <p>
+          三段電壓加回來是 12 V，一伏特都沒有多也沒有少。
+          阻值最大的 R₃ 分到一半以上的電壓，這就是分壓定則
+          V<sub>k</sub> = V × R<sub>k</sub> ÷ R<sub>總</sub> 的全部內容 ——
+          電阻在串聯裡扮演的是「<strong>比例權重</strong>」，不是絕對值。
+          也因此把三顆阻值同時放大十倍（1 kΩ、2.2 kΩ、3.3 kΩ），分壓結果完全不變，
+          只有電流會降到十分之一。
+        </p>
+
+        <h2>為什麼可以直接相加？一行推導</h2>
+        <p>
+          串聯相加不是規定，是兩個事實的結果。第一，串聯只有一條路徑，電流 I 處處相同。
+          第二，繞一圈回到起點，電位必須回到原值，所以電源電壓等於各段電壓降之和（克希荷夫電壓定律）。
+          把這兩件事寫在一起：
+        </p>
+        <p>
+          V = I·R₁ + I·R₂ + I·R₃ = I·(R₁ + R₂ + R₃)
+        </p>
+        <p>
+          右邊把 I 提出來之後，括號裡那一整塊的作用和「單獨一顆電阻」完全一樣 ——
+          它就是等效電阻。推導只用到乘法分配律，所以串聯幾顆都成立，一百顆也是照加。
+        </p>
+        <p>
+          有個附帶結論在採購時很實用：<strong>串聯不會放大百分比公差</strong>。
+          兩顆 220 Ω ±5% 的電阻串聯，最壞情況下各自偏 11 Ω、合計偏 22 Ω，
+          而 440 Ω 的 5% 正好也是 22 Ω。誤差的絕對值相加，但相對誤差守恆。
+          並聯就沒有這種乾淨性質 —— 它的等效電阻是倒數相加，數學上更接近
+          <a href="/formulas/arithmetic-mean.html">平均值</a> 家族裡的調和平均，而不是算術相加。
+        </p>
+
+        <h2>LED 限流電阻：用串聯湊出買不到的阻值</h2>
+        <p>
+          串聯最日常的用途不是算總電阻，而是「湊值」。
+          12 V 電源要點一顆白光 LED，資料表給的順向電壓 V<sub>F</sub> = 3.2 V、建議工作電流 20 mA。
+          電阻要吃掉的電壓是 12 − 3.2 = 8.8 V，所需阻值：
+          8.8 ÷ 0.02 = 440 Ω。
+        </p>
+        <p>
+          問題是 440 Ω 不在 E12 標準系列裡 —— 市售常見的是 390 Ω 和 470 Ω。
+          用 390 Ω 電流會偏大、用 470 Ω 會偏暗。串聯給出第三條路：
+          兩顆 220 Ω 串起來，220 + 220 = 440 Ω，剛好命中。
+          這就是為什麼電子零件盒裡不需要備齊所有阻值，常用值加上串聯就能覆蓋絕大多數需求。
+        </p>
+        <p>
+          還要檢查功率，否則電阻會燒。整串電阻上的耗散用
+          <a href="/formulas/electrical-power.html">P = I²R</a> 算：
+          0.02² × 440 = 0.176 W，也就是 176 mW。
+          但這是<strong>兩顆分攤</strong>的總量，單顆只承受 0.02² × 220 = 88 mW。
+          一般 1/4 W 電阻的額定是 250 mW，單顆 88 mW 有近三倍餘裕；
+          若當初只用一顆 440 Ω，176 mW 對上 250 mW 額定就只剩 1.4 倍，
+          在密閉外殼裡會明顯發燙。<strong>拆成兩顆串聯同時解決了阻值與散熱兩個問題</strong>，
+          這是實務上刻意串聯的常見理由。
+        </p>
+
+        <h2>電池串聯：電壓相加，內阻也一起相加</h2>
+        <p>
+          串聯相加的對象不限於外接電阻。四顆 1.5 V 的 AA 鹼性電池串成電池盒，
+          端電壓是 4 × 1.5 = 6 V —— 這是大家都知道的部分。
+          容易被忽略的是，每顆電池的內阻同樣在相加：以新電池內阻約 0.2 Ω 概估，
+          四顆串聯的總內阻是 4 × 0.2 = 0.8 Ω。
+        </p>
+        <p>
+          內阻的影響要接上負載才看得見。這組電池驅動一個 5 Ω 的小馬達，
+          電路的總電阻是 5 + 0.8 = 5.8 Ω，電流 6 ÷ 5.8 = 1.03 A。
+          其中有 0.83 V 被白白消耗在電池自己的內阻上（發熱），
+          真正送到馬達兩端的只有 5.17 V，而不是標稱的 6 V。
+        </p>
+        <p>
+          這解釋了兩件常見現象：電池越舊（內阻上升）馬達越沒力；
+          以及多串幾顆電池雖然電壓變高，內阻也同步累積，
+          所以高電流應用（馬達、點火、功率放大）寧可選內阻低的電芯，而不是一味堆串數。
+          電池內阻與負載電阻構成的，本質上就是一個分壓器 —— 下一節的誤區正是從這裡來的。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把分壓器當電源用。</strong>
+            要從 12 V 取 6 V，拿兩顆 1 kΩ 串聯、從中間抽出來，空載時量到的確實是
+            12 × 1000 ÷ 2000 = 6 V。但一旦接上負載，負載就和下半顆電阻並聯，
+            比例立刻被改寫。接一個同樣 1 kΩ 的負載，下半部的等效電阻變成 500 Ω，
+            輸出掉到 12 × 500 ÷ 1500 = 4 V —— 掉了三分之一，而不是穩穩的 6 V。
+            分壓器只適合取「不供電流」的參考電壓（例如餵進運算放大器或 ADC 的高阻抗輸入）；
+            要供電給實際負載，該用降壓轉換器或線性穩壓器。
+            這個誤區在感測器接線上特別常見：萬用電表量得到 6 V，是因為電表本身幾乎不吃電流。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 電阻串聯計算機。填入各顆阻值得到總電阻，再搭配歐姆定律回推電流與分壓。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 電阻串聯 #32</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=32" title="電阻串聯互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/ohms-law.html">歐姆定律 V = IR — 串聯相加的推導前提</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 檢查電阻會不會燒掉</a></li>
+          <li><a href="/formulas/arithmetic-mean.html">平均值 — 並聯等效電阻與調和平均的關係</a></li>
+          <li><a href="/formulas/percentage.html">百分比 — 阻值公差與分壓比例都是百分比</a></li>
+          <li>進階：分壓定則 V<sub>in</sub>·R₂/(R₁+R₂)（#105）— Pro 版即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：串聯等效電阻由克希荷夫電壓定律（KVL）與歐姆定律推得，符號與單位依
+        IEC 60050 電工術語；E12／E24 標準阻值系列依 IEC 60063 偏好數系列。
+        文中 LED 順向電壓 3.2 V 與建議電流 20 mA 為一般白光 5 mm LED 資料表的典型值，
+        實際須查個別型號；AA 鹼性電池內阻 0.2 Ω 為新電池的概估量級，隨放電深度與溫度上升。
+        電阻額定功率 1/4 W 指自由空氣中的連續額定，密閉或高溫環境需降額使用。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
