@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>電阻並聯怎麼算？總電阻與分流公式拆解（220Ω/330Ω 接 12V 實例）· Bobo Labs</title>
+  <meta name="description" content="電阻並聯怎麼算？總電阻不是相加也不是平均，而是倒數相加：兩顆用 R₁R₂/(R₁+R₂)。本文用 220 Ω 並 330 Ω 接 12 V 算出總電阻 132 Ω 與兩路分流，再用湊阻值、分攤功率與家用迴路跳電三個實例說明並聯的用法與分流比例最常算反的地方。" />
+  <meta property="og:title" content="電阻並聯怎麼算？總電阻與分流公式拆解" />
+  <meta property="og:description" content="並聯總電阻是倒數相加，兩顆就是乘積除以和。用 220Ω 並 330Ω 接 12 V 算出 132 Ω 與分流，並拆解湊阻值、分攤功率與家用迴路過載。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/resistors-in-parallel.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/resistors-in-parallel.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "電阻並聯怎麼算？總電阻與分流公式拆解", "url": "https://labs.moneyai168.com/formulas/resistors-in-parallel.html", "datePublished": "2026-10-20", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "電阻並聯", "item": "https://labs.moneyai168.com/formulas/resistors-in-parallel.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "R1*R2/(R1 + R2)",
+    "cases": [
+{"input":{"R1":220,"R2":330},"expect":132.0,"tol":0.000001,"text":"132"},
+{"expr":"V/Rt*1000","input":{"V":12,"Rt":132},"expect":90.9090909090909,"tol":0.000000001,"text":"90.91"},
+{"expr":"V/R1*1000","input":{"V":12,"R1":220},"expect":54.54545454545454,"tol":0.000000001,"text":"54.55"},
+{"expr":"V/R2*1000","input":{"V":12,"R2":330},"expect":36.36363636363636,"tol":0.000000001,"text":"36.36"},
+{"expr":"V/R1*1000 + V/R2*1000","input":{"V":12,"R1":220,"R2":330},"expect":90.9090909090909,"tol":0.000000001,"text":"90.91"},
+{"expr":"R2/(R1+R2)","input":{"R1":220,"R2":330},"expect":0.6,"scale":100,"tol":0.000000001,"text":"60"},
+{"expr":"R1/(R1+R2)","input":{"R1":220,"R2":330},"expect":0.4,"scale":100,"tol":0.000000001,"text":"40"},
+{"expr":"R1 - R1*R2/(R1+R2)","input":{"R1":220,"R2":330},"expect":88.0,"tol":0.000001,"text":"88"},
+{"expr":"(R1+R2)/2","input":{"R1":220,"R2":330},"expect":275.0,"tol":0.000001,"text":"275"},
+{"input":{"R1":330,"R2":330},"expect":165.0,"tol":0.000001,"text":"165"},
+{"input":{"R1":1000,"R2":100000},"expect":990.0990099009902,"tol":0.000000001,"text":"990.10"},
+{"expr":"R1 - R1*R2/(R1+R2)","input":{"R1":1000,"R2":100000},"expect":9.900990099009846,"tol":0.000000001,"text":"9.90"},
+{"expr":"(R1 - R1*R2/(R1+R2))/R1","input":{"R1":1000,"R2":100000},"expect":0.009900990099009846,"scale":100,"tol":0.000000001,"text":"0.99"},
+{"expr":"V**2/Rt","input":{"V":12,"Rt":132},"expect":1.0909090909090908,"tol":0.000000001,"text":"1.09"},
+{"expr":"V**2/R1","input":{"V":12,"R1":220},"expect":0.6545454545454545,"tol":0.000000001,"text":"0.65"},
+{"expr":"V**2/R2","input":{"V":12,"R2":330},"expect":0.43636363636363634,"tol":0.000000001,"text":"0.44"},
+{"expr":"(V**2/R1)/Pr","input":{"V":12,"R1":220,"Pr":0.25},"expect":2.618181818181818,"tol":0.000000001,"text":"2.62"},
+{"input":{"R1":150,"R2":150},"expect":75.0,"tol":0.000001,"text":"75"},
+{"expr":"V**2/Rt","input":{"V":6,"Rt":75},"expect":0.48,"tol":0.000000001,"text":"0.48"},
+{"expr":"V**2/R1","input":{"V":6,"R1":150},"expect":0.24,"tol":0.000000001,"text":"0.24"},
+{"expr":"(V**2/R1)/Pr","input":{"V":6,"R1":150,"Pr":0.25},"expect":0.96,"scale":100,"tol":0.000000001,"text":"96"},
+{"expr":"P1+P2","input":{"P1":1200,"P2":800},"expect":2000.0,"tol":0.000001,"text":"2000"},
+{"expr":"(P1+P2)/V","input":{"P1":1200,"P2":800,"V":110},"expect":18.181818181818183,"tol":0.000000001,"text":"18.18"},
+{"expr":"V**2/P1","input":{"V":110,"P1":1200},"expect":10.083333333333334,"tol":0.000000001,"text":"10.08"},
+{"expr":"V**2/P2","input":{"V":110,"P2":800},"expect":15.125,"tol":0.000000001,"text":"15.125"},
+{"expr":"V**2/(P1+P2)","input":{"V":110,"P1":1200,"P2":800},"expect":6.05,"tol":0.000000001,"text":"6.05"},
+{"expr":"(P1+P2)/V/Ibk","input":{"P1":1200,"P2":800,"V":110,"Ibk":15},"expect":1.2121212121212122,"tol":0.000000001,"text":"1.21"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #33 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">電阻並聯：總電阻一定變小，電流按倒數比例分</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-20</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        並聯是串聯的反面，而且反得不太直覺：兩顆電阻並在一起，總電阻不是相加，也不是平均，
+        而是比其中<strong>任何一顆都小</strong>。220 Ω 並上 330 Ω 得到 132 Ω，
+        比最小的那顆還少 88 Ω。接上 12 V，整個電路拉 90.91 mA，
+        但這個電流會分成兩路 —— 阻值小的那一路拿走比較多。
+        把這件事算清楚，從湊阻值、分攤功率，到家裡為什麼吹風機配電熱水瓶會跳電，都是同一條公式。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">1 / R<sub>總</sub> = 1/R₁ + 1/R₂ + … + 1/R<sub>n</sub>　　→　　兩顆時 R<sub>總</sub> = R₁R₂ / (R₁ + R₂)</div>
+          <div class="formula-box-note">並聯時各支路電壓相同，各支路電流相加等於總電流</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>R₁、R₂</td><td>並聯的兩條支路各自的阻值</td><td>Ohm (Ω)</td><td>10 ～ 1,000,000</td></tr>
+            <tr><td>R<sub>總</sub></td><td>並聯等效電阻，一定<strong>小於</strong>其中最小的一顆</td><td>Ohm (Ω)</td><td>計算結果</td></tr>
+            <tr><td>V</td><td>跨在並聯區段兩端的電壓，每條支路都是同一個值</td><td>Volt (V)</td><td>1.5 ～ 220</td></tr>
+            <tr><td>I<sub>k</sub></td><td>第 k 條支路分到的電流</td><td>Ampere (A)</td><td>= V ÷ R<sub>k</sub></td></tr>
+          </tbody>
+        </table>
+
+        <h2>220 Ω 並 330 Ω 接 12 V，總電阻與分流實算</h2>
+        <p>
+          取兩顆標準阻值 R₁ = 220 Ω、R₂ = 330 Ω 並聯。兩顆時不必處理倒數，
+          直接用「乘積除以和」：220 × 330 ÷ 550 = 132 Ω。
+        </p>
+        <p>
+          注意這個結果：132 Ω 不只比 330 Ω 小，連比 220 Ω 都還小了 88 Ω。
+          並聯的物理意義是「多開一條路」，路變多電阻必然下降，所以結果一定小於原本最窄的那條路。
+          也因此順手就能做合理性檢查 —— 算出來的並聯總電阻如果大於任一顆，那就是算錯了。
+        </p>
+        <p>
+          接上 12 V 之後，電壓對兩條支路都是 12 V（並聯的定義），
+          各路電流各自用 <a href="/formulas/ohms-law.html">歐姆定律</a> 算：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>支路</th><th>阻值</th><th>支路電流</th><th>佔總電流</th></tr></thead>
+          <tbody>
+            <tr><td>R₁</td><td>220 Ω</td><td>54.55 mA</td><td>60%</td></tr>
+            <tr><td>R₂</td><td>330 Ω</td><td>36.36 mA</td><td>40%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          兩路相加是 90.91 mA，而用總電阻直接算也是 12 ÷ 132 = 90.91 mA ——
+          兩條路殊途同歸，這正是「等效電阻」這個詞的意思：
+          外面的電源分不出接的是 132 Ω 一顆，還是 220 Ω 配 330 Ω 兩顆。
+        </p>
+        <p>
+          比例那一欄值得停一下。阻值較<strong>小</strong>的 220 Ω 拿到 60% 的電流，
+          較大的 330 Ω 只拿 40%。並聯裡電阻扮演的是「阻力」而不是「權重」：
+          阻力小的路走的人多。這個反比關係是下一節分流定則容易寫反的根源。
+        </p>
+
+        <h2>為什麼是倒數相加？一行推導</h2>
+        <p>
+          並聯相加倒數同樣不是規定，而是兩個事實的結果。第一，並聯的兩端是同兩個節點，
+          所以每條支路跨的電壓都是同一個 V。第二，流進節點的電流等於流出的總和
+          （克希荷夫電流定律，KCL）。寫在一起：
+        </p>
+        <p>
+          I = I₁ + I₂ = V/R₁ + V/R₂ = V·(1/R₁ + 1/R₂)
+        </p>
+        <p>
+          和單一電阻的 I = V/R<sub>總</sub> 對照，括號裡那一整塊就是 1/R<sub>總</sub>。
+          推導只用到除法分配，所以幾條支路都成立。
+          兩條支路時把倒數和整理回來，就得到常用的乘積除以和形式；
+          <strong>這個簡化形式只對兩顆成立</strong>，三顆以上請老實回去加倒數。
+        </p>
+        <p>
+          倒數相加帶來三個好用的結論。其一，<strong>n 顆同阻值並聯就是 R/n</strong>：
+          兩顆 330 Ω 並聯直接是 165 Ω，不必動筆。
+          其二，並聯<strong>不是取平均</strong>—— 220 與 330 的平均是 275 Ω，
+          而真值 132 Ω 不到它的一半。真要說像平均，像的是
+          <a href="/formulas/arithmetic-mean.html">平均值</a> 家族裡的調和平均
+          （兩顆同阻值時，R<sub>總</sub> 正好是調和平均的一半）。
+        </p>
+        <p>
+          其三，<strong>差距大的時候小的那顆說話</strong>。1 kΩ 並上 100 kΩ，
+          後者是前者的一百倍，結果是 990.10 Ω —— 只把 1 kΩ 拉低了 9.90 Ω，
+          相對變化 0.99%。所以電路裡掛一個高阻抗的量測點（示波器探棒、ADC 輸入）
+          幾乎不影響原電路，而這也是為什麼估算時可以放心忽略遠大於主路徑的並聯支路。
+        </p>
+
+        <h2>分流定則：為什麼分子是「另外那一顆」</h2>
+        <p>
+          已知總電流 I，想直接得到某一路的電流，兩顆並聯的公式是：
+          I₁ = I × R₂ ÷ (R₁ + R₂)。分子是 <strong>R₂</strong>，也就是另外那一條支路的阻值。
+        </p>
+        <p>
+          形式上它和串聯的分壓定則 V₁ = V × R₁ ÷ R<sub>總</sub> 長得像，但分子換人了，
+          原因就是上一節的反比：要讓阻值小的拿到多數電流，分子只能放對方的阻值。
+          代回實例驗證：90.91 × 330 ÷ 550 = 54.55 mA，與直接用 12 ÷ 220 算的結果一致。
+        </p>
+        <p>
+          實務上分流定則最常出現在電流量測。電流表不量大電流，
+          而是在主路徑上並一顆已知的低阻值「分流電阻」（shunt），
+          讓絕大部分電流走 shunt、只讓固定比例進入表頭，再換算回來。
+          整個設計依據就是這個比例式。
+        </p>
+
+        <h2>並聯的三個實務用途：湊阻值、分攤功率、擴充負載</h2>
+        <p>
+          第一個用途和 <a href="/formulas/resistors-in-series.html">串聯</a> 一樣是湊值，
+          但方向相反 —— 串聯往上加，並聯往下湊。需要 75 Ω 而 E12 系列只有 68 Ω 和 82 Ω 時，
+          兩顆 150 Ω 並聯剛好是 75 Ω。
+        </p>
+        <p>
+          第二個用途是分攤功率，這是並聯比串聯更明顯的優勢。
+          6 V 跨在 75 Ω 上，用 <a href="/formulas/electrical-power.html">P = V²/R</a> 算總耗散是
+          36 ÷ 75 = 0.48 W，單顆 1/4 W（0.25 W）電阻直接燒掉。
+          改成兩顆 150 Ω 並聯，每顆各承受 36 ÷ 150 = 0.24 W —— 落在額定內，
+          但也只用掉 96% 的額定，餘裕太薄；實務上會改用 1/2 W 的件，或並三顆分攤。
+          關鍵觀念是<strong>並聯讓功率按阻值反比分攤，而不是全壓在一顆上</strong>。
+        </p>
+        <p>
+          回頭看本文的 220 Ω 配 330 Ω 接 12 V，功率分配同樣值得檢查：
+          總耗散 144 ÷ 132 = 1.09 W，其中 220 Ω 那顆吃 144 ÷ 220 = 0.65 W、
+          330 Ω 那顆吃 144 ÷ 330 = 0.44 W，兩者相加正好回到 1.09 W。
+          0.65 W 已經是 1/4 W 額定的 2.62 倍 —— 這組數字在麵包板上會冒煙。
+          <strong>並聯的功率檢查必須逐顆做</strong>，因為阻值小的那顆同時承擔較大電流與較大功率，
+          總功率落在範圍內並不代表每顆都安全。
+        </p>
+        <p>
+          第三個用途其實不是「設計」，而是現實：家裡的插座全部是並聯。
+          所以每個電器都拿到同樣的市電電壓，拔掉一個也不影響其他 —— 這是並聯被選用的理由。
+          代價是總電流會疊加，下一節就是帳單。
+        </p>
+
+        <h2>家用迴路為什麼跳電？並聯把電流加起來</h2>
+        <p>
+          同一個 110 V 迴路上插 1,200 W 吹風機和 800 W 電熱水瓶，兩者並聯。
+          功率直接相加是 2000 W，迴路電流 2000 ÷ 110 = 18.18 A。
+          若這條迴路的無熔絲開關額定 15 A，電流已達額定的 1.21 倍，跳電是設計上該發生的事。
+        </p>
+        <p>
+          用電阻看同一件事更能說明並聯的本質。
+          吹風機的等效電阻是 110² ÷ 1200 = 10.08 Ω，電熱水瓶是 110² ÷ 800 = 15.125 Ω。
+          兩者並聯後的等效電阻是 6.05 Ω，比任一台都小。
+          <strong>迴路看到的電阻變小，電流就變大</strong> —— 這和第一節那個「總電阻一定下降」
+          的結論是同一回事，只是從麵包板搬到了配電箱。
+        </p>
+        <p>
+          順著這個邏輯，兩個常見現象也就有解釋了。多插一台電器永遠讓迴路總電阻下降、總電流上升，
+          所以延長線上「再多一個應該沒差」的直覺是錯的；
+          而跳電取決於<strong>同時使用</strong>的功率總和，不是電器數量，
+          這也是為什麼高瓦數電器要分迴路，而不是分插座。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把分壓定則的分子直接搬到分流上。</strong>
+            串聯算分壓時，第一顆電阻的分子是它自己的 R₁；
+            很多人照著寫並聯的分流，得到 I₁ = I × R₁ ÷ (R₁ + R₂)。
+            代入本文的例子：90.91 × 220 ÷ 550 = 36.36 mA。
+            這個數字看起來很合理，問題是它<strong>剛好是另一條支路的電流</strong> ——
+            正確答案是 54.55 mA，兩路被完整對調。
+            兩顆阻值接近時這種錯誤幾乎看不出來（誤差小），
+            一旦阻值差個十倍，算出來的電流就會錯一個量級。
+            記法只有一條：並聯是阻力，<strong>阻值小的拿多數電流</strong>，
+            所以分子必須放對方的阻值；算完先看一眼「小電阻是不是分到比較多」就能自我檢查。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 電阻並聯計算機。填入兩顆阻值得到並聯總電阻，再搭配歐姆定律回推總電流與各路分流。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 電阻並聯(2) #33</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=33" title="電阻並聯互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/resistors-in-series.html">電阻串聯 — 往上加阻值、分壓的那一面</a></li>
+          <li><a href="/formulas/ohms-law.html">歐姆定律 V = IR — 並聯推導的前提</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 逐顆檢查會不會燒掉</a></li>
+          <li><a href="/formulas/arithmetic-mean.html">平均值 — 並聯等效電阻與調和平均的關係</a></li>
+          <li><a href="/formulas/percentage.html">百分比 — 分流比例與過載倍數都是百分比</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：並聯等效電阻由克希荷夫電流定律（KCL）與歐姆定律推得，符號與單位依
+        IEC 60050 電工術語；E12 標準阻值系列依 IEC 60063 偏好數系列。
+        文中電阻額定功率 1/4 W 指自由空氣中的連續額定，密閉或高溫環境需降額（derating）使用。
+        家用電壓 110 V 與無熔絲開關額定 15 A 為台灣一般住宅分路的常見值，
+        實際須查該戶配電箱標示；電器等效電阻以純電阻負載計算，
+        吹風機馬達等含電感成分的負載另有功率因數需納入考量。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
