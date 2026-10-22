@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>機械功怎麼算？W = Fd 公式拆解（25 公斤抬上 1.5 公尺實例）· Bobo Labs</title>
+  <meta name="description" content="機械功怎麼算？W = Fd 只在力與位移同向時成立，一般式要乘 cos θ。本文用 25 公斤抬上 1.5 公尺算出 367.875 J，再拆解斜拉 30° 為什麼白費 13.40%、提著行李走為什麼作功是 0，以及電梯馬達要多大、深蹲 10 下到底消耗幾大卡。" />
+  <meta property="og:title" content="機械功怎麼算？W = Fd 公式拆解" />
+  <meta property="og:description" content="力乘位移只有同向才成立。用 25 公斤抬上 1.5 公尺實算 367.875 J，並拆解 cos θ 的折扣、負功、功率與人體效率。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/mechanical-work.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/mechanical-work.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "機械功怎麼算？W = Fd 公式拆解", "url": "https://labs.moneyai168.com/formulas/mechanical-work.html", "datePublished": "2026-10-21", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "機械功", "item": "https://labs.moneyai168.com/formulas/mechanical-work.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "F * d",
+    "cases": [
+{"expr":"m*g","input":{"m":25,"g":9.81},"expect":245.25,"tol":0.000000001,"text":"245.25"},
+{"input":{"F":245.25,"d":1.5},"expect":367.875,"tol":0.000000001,"text":"367.875"},
+{"expr":"F*d*n","input":{"F":245.25,"d":1.5,"n":100},"expect":36787.5,"tol":0.000000001,"text":"36,787.5"},
+{"expr":"F*d*n/kcal","input":{"F":245.25,"d":1.5,"n":100,"kcal":4184},"expect":8.792423518164435,"tol":0.000000001,"text":"8.79"},
+{"expr":"F*d*cos(radians(theta))","input":{"F":200,"d":10,"theta":0},"expect":2000.0,"tol":0.000000001,"text":"2,000"},
+{"expr":"F*d*cos(radians(theta))","input":{"F":200,"d":10,"theta":30},"expect":1732.0508075688774,"tol":0.000000001,"text":"1,732.05"},
+{"expr":"F*d - F*d*cos(radians(theta))","input":{"F":200,"d":10,"theta":30},"expect":267.9491924311226,"tol":0.000000001,"text":"267.95"},
+{"expr":"1 - cos(radians(theta))","input":{"theta":30},"expect":0.13397459621556129,"scale":100,"tol":0.000000001,"text":"13.40"},
+{"expr":"F*d*cos(radians(theta))","input":{"F":200,"d":10,"theta":90},"expect":0,"tol":0.000000001,"text":"0"},
+{"expr":"cos(radians(theta))","input":{"theta":30},"expect":0.8660254037844387,"tol":0.000000001,"text":"0.866"},
+{"expr":"F*d*cos(radians(theta))","input":{"F":200,"d":10,"theta":180},"expect":-2000.0,"tol":0.000000001,"text":"-2,000"},
+{"expr":"F*d/t","input":{"F":245.25,"d":1.5,"t":2},"expect":183.9375,"tol":0.000000001,"text":"183.94"},
+{"expr":"F*d/t","input":{"F":245.25,"d":1.5,"t":0.5},"expect":735.75,"tol":0.000000001,"text":"735.75"},
+{"expr":"m*g","input":{"m":600,"g":9.81},"expect":5886.0,"tol":0.000000001,"text":"5,886"},
+{"input":{"F":5886,"d":30},"expect":176580.0,"tol":0.000000001,"text":"176,580"},
+{"expr":"F*d/1000","input":{"F":5886,"d":30},"expect":176.58,"tol":0.000000001,"text":"176.58"},
+{"expr":"F*d/t","input":{"F":5886,"d":30,"t":20},"expect":8829.0,"tol":0.000000001,"text":"8,829"},
+{"expr":"F*d/t/1000","input":{"F":5886,"d":30,"t":20},"expect":8.829,"tol":0.000000001,"text":"8.83"},
+{"expr":"F*d/t/eff","input":{"F":5886,"d":30,"t":20,"eff":0.85},"expect":10387.058823529413,"tol":0.000000001,"text":"10,387.06"},
+{"expr":"F*d/t/eff/1000","input":{"F":5886,"d":30,"t":20,"eff":0.85},"expect":10.387058823529413,"tol":0.000000001,"text":"10.39"},
+{"expr":"F*d*cos(radians(theta))","input":{"F":245.25,"d":1.5,"theta":180},"expect":-367.875,"tol":0.000000001,"text":"-367.875"},
+{"expr":"mu*m*g","input":{"mu":0.4,"m":50,"g":9.81},"expect":196.2,"tol":0.000000001,"text":"196.2"},
+{"expr":"mu*m*g*d","input":{"mu":0.4,"m":50,"g":9.81,"d":8},"expect":1569.6,"tol":0.000000001,"text":"1,569.6"},
+{"expr":"-(mu*m*g*d)","input":{"mu":0.4,"m":50,"g":9.81,"d":8},"expect":-1569.6,"tol":0.000000001,"text":"-1,569.6"},
+{"expr":"m*g","input":{"m":80,"g":9.81},"expect":784.8,"tol":0.000000001,"text":"784.8"},
+{"input":{"F":784.8,"d":0.5},"expect":392.4,"tol":0.000000001,"text":"392.4"},
+{"expr":"F*d*n","input":{"F":784.8,"d":0.5,"n":10},"expect":3924.0,"tol":0.000000001,"text":"3,924"},
+{"expr":"F*d*n/kcal","input":{"F":784.8,"d":0.5,"n":10,"kcal":4184},"expect":0.9378585086042065,"tol":0.000000001,"text":"0.94"},
+{"expr":"F*d*n/eff","input":{"F":784.8,"d":0.5,"n":10,"eff":0.25},"expect":15696.0,"tol":0.000000001,"text":"15,696"},
+{"expr":"F*d*n/eff/kcal","input":{"F":784.8,"d":0.5,"n":10,"eff":0.25,"kcal":4184},"expect":3.751434034416826,"tol":0.000000001,"text":"3.75"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #37 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">機械功：出了力不算作功，位移方向才算</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-21</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        W = F d 看起來是最單純的一條乘法，但它藏了一個前提：力和位移必須<strong>同一個方向</strong>。
+        把 25 公斤的箱子抬上 1.5 公尺貨架，作功 367.875 J；
+        抱著同一個箱子在平地走一公里，作功是 0。
+        搬得滿身汗卻算不出功，不是公式壞了，是 cos θ 這一項在扣分。
+        這篇把折扣、負功、功率三件事各用一組真實數字算完。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">W = F d　　（力與位移同向）　　→　　一般式 W = F d cos θ</div>
+          <div class="formula-box-note">θ 是「力」與「位移」的夾角；同向 cos θ = 1、垂直 cos θ = 0、反向 cos θ = −1</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>W</td><td>機械功（Work），力沿位移方向傳遞的能量</td><td>Joule (J) = N·m</td><td>計算結果</td></tr>
+            <tr><td>F</td><td>施力大小。注意這是<strong>力</strong>，不是質量</td><td>Newton (N)</td><td>10 ～ 10,000</td></tr>
+            <tr><td>d</td><td>物體實際發生的位移，不是走過的路徑長</td><td>metre (m)</td><td>0.1 ～ 100</td></tr>
+            <tr><td>θ</td><td>力向量與位移向量的夾角</td><td>degree (°)</td><td>0 ～ 180</td></tr>
+            <tr><td>g</td><td>重力加速度，抬舉類題目用來把公斤換成牛頓</td><td>m/s²</td><td>9.81</td></tr>
+          </tbody>
+        </table>
+
+        <h2>25 公斤抬上 1.5 公尺要作多少功？實算一遍</h2>
+        <p>
+          倉儲最常見的動作：地上一箱 25 公斤的貨，抬到 1.5 公尺高的貨架上。
+          第一步不是乘，是換單位 —— 公斤是質量，公式要的是力。
+          等速抬起時施力剛好抵銷重力，所以 F = m g = 25 × 9.81 = 245.25 N。
+        </p>
+        <p>
+          力和位移都是垂直向上，夾角 0°，可以直接用 W = F d：
+          245.25 × 1.5 = 367.875 J。這就是這一下搬運傳給貨物的能量，
+          也等於貨物多出來的重力位能 —— 兩者是同一筆帳的兩種說法。
+        </p>
+        <p>
+          367.875 J 這個數字單獨看沒有感覺，換成食物熱量就有了。
+          1 大卡 = 4,184 J，搬 100 箱累積 36,787.5 J，折合 8.79 大卡。
+          整個下午搬一百箱貨，純機械功還不到半顆小蘋果。
+          這不是在貶低體力活，而是提醒：人體把食物能量轉成機械功的效率很低，
+          絕大部分熱量根本沒變成「功」，而是變成體熱散掉了 —— 這點最後一節再算。
+        </p>
+
+        <h2>出了力不一定有作功：夾角 θ 決定折扣</h2>
+        <p>
+          改成水平場景。用 200 N 的力推一個箱子走 10 公尺，力與位移同向，
+          W = 200 × 10 = 2,000 J。
+        </p>
+        <p>
+          但實務上很少有人能完全水平施力。改成用繩子拉，繩子與地面夾 30°，
+          拉力仍是 200 N、位移仍是 10 公尺：W = 200 × 10 × cos 30° = 1,732.05 J。
+          少了 267.95 J，等於<strong>白費 13.40% 的力氣</strong>。
+          那一部分力分到垂直方向去了，只是把箱子往上提（但箱子沒上升），對水平位移毫無貢獻。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>夾角 θ</th><th>cos θ</th><th>200 N 拉 10 m 的功</th><th>實際狀況</th></tr></thead>
+          <tbody>
+            <tr><td>0°</td><td>1</td><td>2,000 J</td><td>完全水平推</td></tr>
+            <tr><td>30°</td><td>0.866</td><td>1,732.05 J</td><td>斜拉繩索</td></tr>
+            <tr><td>90°</td><td>0</td><td>0 J</td><td>提著走、向心力</td></tr>
+            <tr><td>180°</td><td>−1</td><td>-2,000 J</td><td>反向阻力</td></tr>
+          </tbody>
+        </table>
+        <p>
+          90° 那一列是最反直覺的：提著 20 公斤的行李箱在平地走，手出的力垂直向上、位移水平向前，
+          夾角 90°，cos 90° = 0，整段路的機械功是 0 J。
+          手會痠是因為肌肉持續收縮在消耗代謝能量，但這筆能量沒有以「功」的形式傳給行李箱 ——
+          行李箱的動能和位能從頭到尾都沒變。
+        </p>
+        <p>
+          同一個道理解釋了為什麼<strong>等速圓周運動的向心力不作功</strong>：
+          向心力永遠指向圓心、速度永遠沿切線，兩者恆為 90°。
+          月球繞地球公轉幾十億年，地球對它的萬有引力一焦耳的功都沒作 ——
+          這也是軌道速率能長期維持不變的原因，可以對照
+          <a href="/formulas/universal-gravitation.html">萬有引力公式</a> 一起看。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>θ 取成斜面傾角</strong>。把箱子沿 30° 斜坡往上推 10 公尺，
+            很多人直接寫 W = F × 10 × cos 30°，結果錯了 —— 這時推力是沿著斜面的，
+            與位移同向，夾角是 0°，應該乘 1 不是乘 0.866。
+            θ 永遠是「力向量與位移向量的夾角」，和地形的傾斜角沒有關係。
+            第二個高頻錯誤是<strong>把公斤直接當成力</strong>：25 公斤不是 25 N，
+            要先乘 9.81 變成 245.25 N。只要忘了這一步，答案就直接差 9.81 倍。
+          </p>
+        </div>
+
+        <h2>功和功率差在哪？電梯馬達要多大由時間決定</h2>
+        <p>
+          功是能量，不含時間；功率才是「每秒傳多少能量」。
+          回到那箱 25 公斤的貨：用 2 秒抬上貨架，功率是 367.875 ÷ 2 = 183.94 W；
+          用力一甩只花 0.5 秒，同樣的 367.875 J 要在四分之一的時間內送出去，
+          功率就跳到 735.75 W。<strong>功一樣，功率差四倍</strong> ——
+          這就是為什麼爆發力傷人、而慢慢搬不會。
+        </p>
+        <p>
+          選馬達時這個差別直接變成錢。一台載重 600 公斤的電梯要上升 30 公尺：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>步驟</th><th>算式</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td>把載重換成力</td><td>600 × 9.81</td><td>5,886 N</td></tr>
+            <tr><td>算總功</td><td>5,886 × 30</td><td>176,580 J（176.58 kJ）</td></tr>
+            <tr><td>限定 20 秒走完</td><td>176,580 ÷ 20</td><td>8,829 W（8.83 kW）</td></tr>
+            <tr><td>馬達效率 85%</td><td>8,829 ÷ 0.85</td><td>10,387.06 W（10.39 kW）</td></tr>
+          </tbody>
+        </table>
+        <p>
+          總功 176,580 J 是物理下限，不管花 20 秒還是 20 分鐘都一樣。
+          真正決定馬達規格的是那個「20 秒」。把行程時間放寬一倍，所需功率就砍半，
+          馬達、變頻器、配線全都能降一級 —— 電梯設計的成本槓桿不在重量，在速度要求。
+          最後那一步的效率除法也別漏：10.39 kW 是馬達軸端的輸入需求，
+          不是 8.83 kW。按輸出功率去挑型號，電梯裝上去會爬不動。
+        </p>
+
+        <h2>負功：剎車、下樓、摩擦力都在扣分</h2>
+        <p>
+          cos θ 可以是負的，所以功可以是負值。負功的意思是「這個力在從系統裡抽走能量」。
+        </p>
+        <p>
+          把那箱貨從 1.5 公尺的架上搬下來放回地面：手的施力依然向上 245.25 N（撐住重量），
+          位移卻是向下 1.5 公尺，夾角 180°，W = -367.875 J。
+          手對箱子作了負功，意思是能量從箱子流回手 ——
+          所以下樓梯、放下重物時肌肉是在「吸收」能量（離心收縮），而不是輸出能量。
+        </p>
+        <p>
+          摩擦力是最常見的負功來源，而且一定是負的，因為動摩擦力永遠與運動方向相反。
+          在水平地面推一個 50 公斤的木箱，動摩擦係數 μ = 0.4：
+          摩擦力 f = 0.4 × 50 × 9.81 = 196.2 N。推 8 公尺，
+          摩擦力作功 -1,569.6 J。
+        </p>
+        <p>
+          反過來看，要維持等速（動能不變），施力就必須剛好抵銷摩擦力，
+          所以人要輸出 +1,569.6 J。這 1,569.6 J 全部變成地面與箱底的熱，沒有一絲存進動能裡。
+          這就是<strong>功能定理</strong>的精髓：合力作的總功等於動能變化。
+          等速時正負功相抵、合力作功為零、動能不變，完全自圓其說。想接著算動能的部分，
+          對照 <a href="/formulas/kinetic-energy.html">動能公式 ½mv²</a>；
+          想知道這裡的 196.2 N 從哪來，看 <a href="/formulas/newtons-second-law.html">牛頓第二運動定律</a>。
+        </p>
+
+        <h2>深蹲 80 公斤 10 下，機械功只有 0.94 大卡</h2>
+        <p>
+          健身房最適合驗證這條公式，因為每個變數都量得到。
+          槓鈴 80 公斤，F = 80 × 9.81 = 784.8 N；一下深蹲槓鈴上升約 0.5 公尺，
+          單次正功 784.8 × 0.5 = 392.4 J；做 10 下共 3,924 J。
+          換成熱量是 <strong>0.94 大卡</strong>。
+        </p>
+        <p>
+          這個數字小到讓人懷疑是不是算錯了，但它確實只是機械功。
+          人體把化學能轉成機械功的效率很低，運動生理學在腳踏車測功儀上量到的
+          機械效率大約 20～25%。取最樂觀的 25%，代謝端的消耗是
+          3,924 ÷ 0.25 = 15,696 J，也就是 3.75 大卡。
+        </p>
+        <p>
+          這才是重點：器材螢幕上的卡路里和公式算出的機械功相差四倍以上，
+          而兩個數字都沒有錯 —— 一個是輸出端、一個是輸入端。
+          另外 75% 的能量變成體熱，這也是為什麼運動會流汗。
+          想把每日總消耗接起來看，用
+          <a href="/formulas/tdee.html">TDEE 每日總能量消耗</a>；
+          想把這些倍數與百分比算清楚，用 <a href="/formulas/percentage.html">百分比公式</a>。
+        </p>
+        <p>
+          順帶一個校正：深蹲下放的那半程，槓鈴位移向下而你的施力向上，是負功。
+          所以一組 10 下的實際代謝成本比上面估的高 —— 離心收縮的代謝效率又和向心不同，
+          無法用同一個係數換算。公式能給的是機械功這個硬邊界，不是熱量帳單。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          輸入力、位移與夾角，看功怎麼隨 θ 掉下來。
+          把 θ 從 0° 推到 90°，會看到結果不是線性下降，而是先慢後快。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 機械功 #37</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=37" title="機械功互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv² — 合力作功的去處</a></li>
+          <li><a href="/formulas/newtons-second-law.html">牛頓第二運動定律 F = ma — 功公式裡的 F 從哪來</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 功率的電學版本，單位同樣是瓦特</a></li>
+          <li><a href="/formulas/tdee.html">TDEE 每日總消耗 — 機械功與代謝熱量的落差</a></li>
+          <li><a href="/formulas/percentage.html">百分比 — 效率與折扣都是百分比</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：功的定義 W = F·d cos θ 為力與位移的純量積（dot product），
+        單位焦耳（J = N·m）依 SI 基本單位定義；
+        功能定理（work-energy theorem）給出合力作功等於動能變化。
+        文中重力加速度取 g = 9.81 m/s²（標準值 9.80665 m/s²，取兩位小數為工程慣例）；
+        1 大卡 = 4,184 J 採熱化學卡路里定義。
+        電梯馬達效率 85% 為中小型曳引機的量級說明值，實際須查該型號銘牌；
+        人體機械效率 20～25% 來自腳踏車測功儀的運動生理學量測，
+        深蹲等自由重量動作含離心收縮，效率不可直接套用，文中僅作數量級對照。
+        槓鈴上升位移 0.5 公尺、倉儲箱 25 公斤等為說明用的典型值，非特定場域實測。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
