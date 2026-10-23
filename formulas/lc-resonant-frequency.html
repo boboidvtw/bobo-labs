@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LC 諧振頻率怎麼算？1/(2π√LC) 公式拆解（100µH 配 100pF 實例）· Bobo Labs</title>
+  <meta name="description" content="LC 諧振頻率怎麼算？f₀ = 1/(2π√LC)，100 µH 配 100 pF 得 1.59 MHz。本文算出完整數字鏈、說明電容加倍為什麼頻率只降 29.29% 而不是一半，並反解 AM 全波段要配多少電容、無線充電與金屬探測器的實際頻段，以及元件容差會把頻率吃掉多少。" />
+  <meta property="og:title" content="LC 諧振頻率怎麼算？1/(2π√LC) 公式拆解" />
+  <meta property="og:description" content="100 µH 配 100 pF 得 1.59 MHz。電容加倍頻率只降 29.29%、加四倍才減半。含 AM 全波段反解、無線充電頻段與容差影響。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/lc-resonant-frequency.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/lc-resonant-frequency.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "LC 諧振頻率怎麼算？1/(2π√LC) 公式拆解", "url": "https://labs.moneyai168.com/formulas/lc-resonant-frequency.html", "datePublished": "2026-10-22", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "LC 諧振頻率", "item": "https://labs.moneyai168.com/formulas/lc-resonant-frequency.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "1/(2*pi*sqrt(L*C))",
+    "cases": [
+{"input":{"L":0.0001,"C":1e-10},"expect":1591549.4309189534,"tol":1,"text":"1,591,549"},
+{"input":{"L":0.0001,"C":1e-10},"expect":1591549.4309189534,"scale":0.001,"tol":0.000001,"text":"1,591.55"},
+{"input":{"L":0.0001,"C":1e-10},"expect":1591549.4309189534,"scale":0.000001,"tol":0.000001,"text":"1.59"},
+{"expr":"1/sqrt(L*C)","input":{"L":0.0001,"C":1e-10},"expect":10000000.0,"tol":0.001,"text":"10,000,000"},
+{"expr":"sqrt(L*C)*1e9","input":{"L":0.0001,"C":1e-10},"expect":100.0,"tol":0.000001,"text":"100"},
+{"expr":"2*pi*sqrt(L*C)*1e9","input":{"L":0.0001,"C":1e-10},"expect":628.3185307179587,"tol":0.000001,"text":"628.32"},
+{"expr":"c*2*pi*sqrt(L*C)","input":{"L":0.0001,"C":1e-10,"c":299792458},"expect":188.36515673088533,"tol":0.000001,"text":"188"},
+{"input":{"L":0.0001,"C":2e-10},"expect":1125395.3951963827,"scale":0.001,"tol":0.000001,"text":"1,125.4"},
+{"expr":"sqrt(C1/C2)","input":{"C1":100,"C2":200},"expect":0.7071067811865476,"tol":0.000000001,"text":"0.7071"},
+{"expr":"1 - sqrt(C1/C2)","input":{"C1":100,"C2":200},"expect":0.2928932188134524,"scale":100,"tol":0.000000001,"text":"29.29"},
+{"input":{"L":0.0001,"C":4e-10},"expect":795774.7154594766,"scale":0.001,"tol":0.000001,"text":"795.8"},
+{"expr":"C/4","input":{"C":100},"expect":25.0,"tol":0.000000001,"text":"25"},
+{"expr":"1/((2*pi*f)**2*L)*1e12","input":{"f":1000000,"L":0.0001},"expect":253.30295910584448,"tol":0.000000001,"text":"253.30"},
+{"expr":"1/((2*pi*f)**2*C)*1e6","input":{"f":1000000,"C":1e-10},"expect":253.30295910584445,"tol":0.000000001,"text":"253.30"},
+{"expr":"1/((2*pi*f)**2*L)*1e12","input":{"f":530000,"L":0.00024},"expect":375.7312197487903,"tol":0.000000001,"text":"375.73"},
+{"expr":"1/((2*pi*f)**2*L)*1e12","input":{"f":1600000,"L":0.00024},"expect":41.227695166966875,"tol":0.000000001,"text":"41.23"},
+{"expr":"(f2/f1)**2","input":{"f1":530,"f2":1600},"expect":9.113563545745818,"tol":0.000000001,"text":"9.11"},
+{"input":{"L":0.000024,"C":6.8e-8},"expect":124583.36426302434,"scale":0.001,"tol":0.000001,"text":"124.58"},
+{"expr":"1/(2*pi*sqrt(L*C*1.05))","input":{"L":0.000024,"C":6.8e-8},"expect":121580.91427245914,"scale":0.001,"tol":0.000001,"text":"121.58"},
+{"expr":"1/(2*pi*sqrt(L*C)) - 1/(2*pi*sqrt(L*C*1.05))","input":{"L":0.000024,"C":6.8e-8},"expect":3002.4499905652045,"scale":0.001,"tol":0.000001,"text":"3.00"},
+{"input":{"L":0.01,"C":1e-7},"expect":5032.921210448703,"scale":0.001,"tol":0.000001,"text":"5.03"},
+{"expr":"sqrt(1+d)","input":{"d":0.05},"expect":1.02469507659596,"tol":0.000000001,"text":"1.0247"},
+{"expr":"1 - 1/sqrt(1+d)","input":{"d":0.05},"expect":0.024099927051466907,"scale":100,"tol":0.000000001,"text":"2.41"},
+{"expr":"1 - 1/sqrt((1+d)*(1+d))","input":{"d":0.05},"expect":0.047619047619047616,"scale":100,"tol":0.000000001,"text":"4.76"},
+{"input":{"L":0.00011,"C":1.05e-10},"expect":1480911.615538758,"scale":0.000001,"tol":0.000001,"text":"1.48"},
+{"expr":"1 - 1/sqrt(dl*dc)","input":{"dl":1.10,"dc":1.05},"expect":0.069515789601529265,"scale":100,"tol":0.000000001,"text":"6.95"},
+{"expr":"1/(2*pi*sqrt(L1*C1)) - 1/(2*pi*sqrt(L2*C2))","input":{"L1":0.0001,"C1":1e-10,"L2":0.00011,"C2":1.05e-10},"expect":110637.81538019539,"scale":0.001,"tol":0.000001,"text":"110.64"},
+{"expr":"(1/(2*pi*sqrt(L1*C1)) - 1/(2*pi*sqrt(L2*C2)))/ch","input":{"L1":0.0001,"C1":1e-10,"L2":0.00011,"C2":1.05e-10,"ch":9000},"expect":12.293090597799488,"tol":0.000000001,"text":"12.29"},
+{"input":{"L":0.0001,"C":2.5e-11},"expect":3183098.8618379068,"scale":0.001,"tol":0.000001,"text":"3,183.10"},
+{"expr":"f2/f1","input":{"f1":530,"f2":1600},"expect":3.018867924528302,"tol":0.000000001,"text":"3.02"},
+{"expr":"a+b","input":{"a":6,"b":12},"expect":18.0,"tol":0.000000001,"text":"18"},
+{"expr":"(a+b)/2","input":{"a":6,"b":12},"expect":9.0,"tol":0.000000001,"text":"9"},
+{"input":{"L":100,"C":100},"expect":0.0015915494309189535,"tol":0.000000000001,"text":"0.00159"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #61 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">LC 諧振頻率：電容加四倍，頻率才降一半</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-22</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一顆 100 µH 的電感配一顆 100 pF 的電容，接成迴路就會在
+        <strong>1.59 MHz</strong> 上自己震盪 —— 這個頻率落在 AM 廣播波段裡。
+        公式只有一行，卻有個反直覺的地方：電容加倍，頻率不是減半，而是只降 29.29%；
+        要讓頻率真的減半，電容得加到<strong>四倍</strong>。
+        根號把變化壓扁一半，這決定了可變電容要選多大，也決定了容差會吃掉多少頻率。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">f₀ = 1 / (2π√(LC))　　　ω₀ = 1 / √(LC)</div>
+          <div class="formula-box-note">L 必須用亨利（H）、C 必須用法拉（F），算出來的 f₀ 單位才是赫茲（Hz）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>L</td><td>電感量（inductance）</td><td>Henry (H)</td><td>1 nH ～ 10 mH</td></tr>
+            <tr><td>C</td><td>電容量（capacitance）</td><td>Farad (F)</td><td>1 pF ～ 1 µF</td></tr>
+            <tr><td>f₀</td><td>諧振頻率，LC 迴路能量來回擺盪的次數</td><td>Hertz (Hz)</td><td>計算結果</td></tr>
+            <tr><td>ω₀</td><td>角頻率，等於 2πf₀，少掉 2π 就是它</td><td>rad/s</td><td>= 1/√(LC)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>100 µH 配 100 pF，諧振落在哪裡？</h2>
+        <p>
+          先把單位換成公式要的樣子，這一步是整題最容易出錯的地方：
+          100 µH 是 10⁻⁴ H、100 pF 是 10⁻¹⁰ F。相乘得 LC = 10⁻¹⁴，
+          開根號後 √(LC) 剛好是 <strong>100</strong> 奈秒。
+        </p>
+        <p>
+          角頻率就是 √(LC) 的倒數：ω₀ = 10,000,000 rad/s。
+          再除以 2π 換成每秒圈數，才是工程上要報的頻率：
+          f₀ = 1,591,549 Hz，也就是 1,591.55 kHz ＝ 1.59 MHz；倒數回來週期 T = 628.32 ns。
+        </p>
+        <p>
+          1,591.55 kHz 落在台灣 AM 中波波段（約到 1,600 kHz）的高頻端，
+          換算波長是 188 公尺（用 <a href="/formulas/wave-speed.html">v = fλ</a> 一除就有）——
+          「中波」這個名字就是這麼來的，同樣一組零件也就是一台收音機的選台電路。
+        </p>
+        <p>
+          週期比頻率更直觀：電容放電 → 電流在電感建立磁場 → 磁場塌縮 → 反向把電容充電，
+          能量搬完一個來回就是一個週期。公式裡的 2π 就是這個「一圈」，負責把 rad/s 換成 Hz。
+        </p>
+
+        <h2>為什麼電容加倍只降 29.29%？根號把變化壓扁一半</h2>
+        <p>
+          把電容從 100 pF 換成 200 pF，L 不動。直覺說頻率減半，實算是
+          <strong>1,125.4 kHz</strong>，只掉 29.29%。
+        </p>
+        <p>
+          原因在 C 被關在根號裡 —— f₀ 與 √C 成反比，C 變 2 倍，頻率只變
+          1/√2 = 0.7071 倍。這是 <a href="/formulas/square-root.html">平方根</a>
+          在工程公式裡最常見的效果：輸入的倍率要先開根號才傳到輸出。
+          誤以為「C 加倍、頻率減半」的人會算出 795.8 kHz，比真值低了 29.29%。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>C（L = 100 µH 不變）</th><th>相對倍率</th><th>f₀</th></tr></thead>
+          <tbody>
+            <tr><td>25 pF</td><td>×0.25</td><td>3,183.10 kHz</td></tr>
+            <tr><td>100 pF</td><td>×1</td><td>1,591.55 kHz</td></tr>
+            <tr><td>200 pF</td><td>×2</td><td>1,125.4 kHz</td></tr>
+            <tr><td>400 pF</td><td>×4</td><td>795.8 kHz</td></tr>
+          </tbody>
+        </table>
+        <p>
+          看最後一列：C 加到四倍，頻率才真的是 795.8 kHz，正好是 1,591.55 kHz 的一半；
+          要把頻率翻倍，電容得降到 <strong>25</strong> pF。
+          <strong>「頻率的倍率」對應「電容倍率的平方」</strong>，下一節反解直接用這條。
+          L 在公式裡與 C 完全對稱（都在根號裡、都是一次方），所以電感難湊時就固定 L 去調 C。
+        </p>
+
+        <h2>反解：要落在指定頻率，電容該配多少？</h2>
+        <p>
+          實務上更常見的是反問 —— 頻率是規格給的，零件自己挑：
+          C = 1 ÷ ((2πf₀)² L)，或 L = 1 ÷ ((2πf₀)² C)。
+          注意 2πf₀ 要<strong>平方</strong>，這是把根號移到另一邊的代價。
+        </p>
+        <p>
+          要讓 100 µH 諧振在整數的 1,000 kHz，電容要配 <strong>253.30</strong> pF；
+          反過來手上只有 100 pF 的電容時，電感也正好要 253.30 µH ——
+          兩邊數字相同不是巧合：從 1,591.55 kHz 降到 1,000 kHz 所需的 LC 放大倍率是固定的，
+          分給 L 或分給 C 都一樣。
+        </p>
+        <p>
+          真正看得出威力的是整個波段。AM 收音機要從 530 kHz 轉到 1,600 kHz，
+          一般是固定電感、用可變電容掃全段。取 L = 240 µH：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>目標頻率</th><th>需要的 C（L = 240 µH）</th><th>波段位置</th></tr></thead>
+          <tbody>
+            <tr><td>530 kHz</td><td>375.73 pF</td><td>低頻端（轉到底）</td></tr>
+            <tr><td>1,600 kHz</td><td>41.23 pF</td><td>高頻端（轉到頂）</td></tr>
+          </tbody>
+        </table>
+        <p>
+          電容範圍要 <strong>9.11</strong> 倍，頻率卻只變 3.02 倍 ——
+          因為 (1,600 ÷ 530)² = 9.11，又是倍率平方那條規則。
+          這解釋了一個實物細節：老收音機裡那顆轉軸可變電容的規格常寫「40 ～ 400 pF」，
+          看似比需求寬鬆，但它得涵蓋 41.23 到 375.73 pF 整段，還要留餘裕給電路的寄生電容。
+          <strong>可變電容的規格是被「最大比最小」這個比值綁住的，不是被絕對值綁住。</strong>
+        </p>
+
+        <h2>兩個實際頻段：無線充電與金屬探測器</h2>
+        <p>
+          LC 諧振不只出現在收音機。手機無線充電（Qi）的送電線圈配上電容就是一個 LC 槽路，
+          WPC 規範把基本功率型的工作頻率訂在 110 ～ 205 kHz。
+          取 L = 24 µH 串一顆 68 nF，諧振落在 <strong>124.58</strong> kHz，正好在區間內。
+          送受兩端的諧振頻率必須對得上，差太多效率直接掉 —— 這行計算是設計起點，不是驗算。
+        </p>
+        <p>
+          容差的影響順手算一下：這顆 68 nF 若偏大 5%，諧振點掉到
+          <strong>121.58</strong> kHz，往下移 3.00 kHz。
+          單看還在規範窗內，但送受兩端若往相反方向偏，失配量是這個位移的兩倍 ——
+          所以槽路電容要挑容值穩定的 C0G／NP0 介質，而不是隨溫度與偏壓大幅變動的 X7R。
+        </p>
+        <p>
+          另一端的極低頻是同一條公式。VLF 金屬探測器的搜尋線圈是毫亨級，
+          取 L = 10 mH 配 C = 0.1 µF，諧振頻率 <strong>5.03</strong> kHz。
+          原理是金屬進入磁場後改變等效電感、讓諧振點偏移，
+          而 L 的變化同樣要過根號才傳到 f₀ —— 靈敏度比的就是能不能量到千分之幾的頻率變化。
+        </p>
+
+        <h2>元件容差會把頻率偏掉多少？</h2>
+        <p>
+          紙上算得再準，買到的電容標 ±5%、電感標 ±10%。
+          好消息是根號這次站在設計者這邊：誤差傳到頻率時同樣被開根號縮小。
+        </p>
+        <p>
+          電容偏大 5%（1.05 倍），√1.05 = <strong>1.0247</strong>，
+          頻率只下降 2.41%，不到容差本身的一半。
+          若電感與電容都偏大 5%，LC 變 1.05 的平方倍、根號抵掉平方，
+          頻率剛好降 4.76% —— 兩個 5% 的容差疊起來，才等於一個 5% 的頻率偏移。
+        </p>
+        <p>
+          最差情況算完整：L 偏大 10%、C 偏大 5%，以本文 100 µH + 100 pF 的標稱值，
+          實際頻率是 <strong>1.48</strong> MHz，比標稱的 1.59 MHz 低了 6.95%，絕對值 110.64 kHz。
+          聽起來不大，但 AM 的電台間隔是 9 kHz，等於偏掉 <strong>12.29</strong> 個頻道 ——
+          想聽的電台早就不在刻度上了。
+        </p>
+        <p>
+          這就是調諧電路一定留一顆微調電容（trimmer）的原因：
+          不是設計算錯，而是容差在頻率軸上的位移遠超過頻道寬度。
+          換成 <a href="/formulas/percentage.html">百分比</a> 的角度看更清楚 ——
+          同樣的百分比誤差，掛在倍率大的量上就是大的絕對量。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 µH 和 pF 直接代進公式。</strong>
+            這是 LC 計算第一名的錯誤，因為它不會報錯，只給出一個荒謬、但單位看起來很正常的數字：
+            把 100 µH 和 100 pF 當成 100 和 100 代入，得到 0.00159 Hz，比正確答案小了十億倍。
+            公式只認亨利和法拉 —— µ 是 10⁻⁶、p 是 10⁻¹²，µH 配 pF 合起來要退
+            18 個數量級，開根號後是 9 個，剛好是 Hz 到 GHz 的距離，
+            所以算錯的結果往往差在「頻率單位整組跳掉」。
+            快速自檢：µH 配 pF 必然落在 MHz 等級，mH 配 µF 必然落在 kHz 等級。
+            第二名的錯誤是<strong>忘了開根號</strong>，寫成 1/(2πLC) ——
+            量綱當場就不對，還會讓人以為電容加倍頻率減半，實際只降 29.29%。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的 LC 諧振頻率計算機。填入電感與電容得到諧振頻率，也可以反過來固定頻率回推零件值。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · LC 諧振頻率 #61</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <p style="margin: 0 0 12px; font-size: 0.95em;">
+          ∑ Calc Pro 提供這條公式的互動計算，可以直接切換 µH／mH 與 pF／nF／µF 的單位組合，
+          並即時看到容差帶來的頻率範圍。
+        </p>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=61" title="LC 諧振頻率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/square-root.html">平方根 — 根號為什麼把倍率壓扁一半</a></li>
+          <li><a href="/formulas/wave-speed.html">波速 v = fλ — 從諧振頻率換到波長</a></li>
+          <li><a href="/formulas/ohms-law.html">歐姆定律 V = IR — 槽路的阻抗起點</a></li>
+          <li><a href="/formulas/resistors-in-parallel.html">電阻並聯 — 槽路損耗由並聯等效電阻決定</a></li>
+          <li><a href="/formulas/percentage.html">百分比 — 容差與頻率偏移的換算</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：LC 諧振條件由感抗 X<sub>L</sub> = 2πfL 與容抗 X<sub>C</sub> = 1/(2πfC)
+        相等推得，符號與單位依 IEC 60050 電工術語與 SI 單位制；
+        無線充電頻率區間 110 ～ 205 kHz 依 WPC Qi 基本功率型（Baseline Power Profile）規範，
+        台灣 AM 中波波段與 9 kHz 頻道間隔依 ITU 第三區分配。
+        文中電感與電容值均為說明用的標準規格量級，非特定型號實測；
+        計算假設理想無損耗槽路，未納入線圈直流電阻、介質損耗與寄生電容，
+        實際電路的諧振點會略低於計算值。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
