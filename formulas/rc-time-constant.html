@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RC 時間常數怎麼算？τ = RC 公式拆解（10kΩ 配 100µF 實例）· Bobo Labs</title>
+  <meta name="description" content="RC 時間常數怎麼算？τ = R × C，10 kΩ 配 100 µF 得 1 秒。本文算出一個 τ 只充到 63.21%、五個 τ 才 99.33% 的完整數字鏈，說明 555 的 1.1RC 是哪來的、按鍵去彈跳要配多久，以及電解電容 ±20% 容差會把 τ 吃掉多少。" />
+  <meta property="og:title" content="RC 時間常數怎麼算？τ = RC 公式拆解" />
+  <meta property="og:description" content="10 kΩ 配 100 µF 得 1 秒。一個 τ 只充到 63.21%、五個才 99.33%。含 555 的 1.1RC 由來、去彈跳時間與 ±20% 容差影響。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/rc-time-constant.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/rc-time-constant.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "RC 時間常數怎麼算？τ = RC 公式拆解", "url": "https://labs.moneyai168.com/formulas/rc-time-constant.html", "datePublished": "2026-10-23", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "RC 時間常數", "item": "https://labs.moneyai168.com/formulas/rc-time-constant.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "R * C",
+    "cases": [
+{"input":{"R":10000,"C":0.0001},"expect":1.0,"tol":0.000000001,"text":"1"},
+{"expr":"R*C*1000","input":{"R":10000,"C":0.0001},"expect":1000.0,"tol":0.000000001,"text":"1,000"},
+{"expr":"1-exp(-1)","input":{"n":1},"expect":0.6321205588285577,"scale":100,"tol":0.000000001,"text":"63.21"},
+{"expr":"V*(1-exp(-t/(R*C)))","input":{"V":5,"t":1,"R":10000,"C":0.0001},"expect":3.1606027941427883,"tol":0.000000001,"text":"3.1606"},
+{"expr":"1-exp(-2)","input":{"n":2},"expect":0.8646647167633873,"scale":100,"tol":0.000000001,"text":"86.47"},
+{"expr":"1-exp(-3)","input":{"n":3},"expect":0.950212931632136,"scale":100,"tol":0.000000001,"text":"95.02"},
+{"expr":"1-exp(-4)","input":{"n":4},"expect":0.9816843611112658,"scale":100,"tol":0.000000001,"text":"98.17"},
+{"expr":"1-exp(-5)","input":{"n":5},"expect":0.9932620530009145,"scale":100,"tol":0.000000001,"text":"99.33"},
+{"expr":"V*(1-exp(-t/(R*C)))","input":{"V":5,"t":5,"R":10000,"C":0.0001},"expect":4.966310265004573,"tol":0.000000001,"text":"4.9663"},
+{"expr":"5*R*C","input":{"R":10000,"C":0.0001},"expect":5.0,"tol":0.000000001,"text":"5"},
+{"expr":"exp(-1)","input":{"n":1},"expect":0.36787944117144233,"scale":100,"tol":0.000000001,"text":"36.79"},
+{"expr":"V*exp(-t/(R*C))","input":{"V":5,"t":1,"R":10000,"C":0.0001},"expect":1.8393972058572117,"tol":0.000000001,"text":"1.8394"},
+{"expr":"ln(2)","input":{"n":2},"expect":0.6931471805599453,"tol":0.000000001,"text":"0.693"},
+{"expr":"ln(10)","input":{"n":10},"expect":2.302585092994046,"tol":0.000000001,"text":"2.3026"},
+{"expr":"ln(100)","input":{"n":100},"expect":4.605170185988092,"tol":0.000000001,"text":"4.605"},
+{"expr":"ln(5)","input":{"n":5},"expect":1.6094379124341003,"tol":0.000000001,"text":"1.6094"},
+{"expr":"t/ln(10)","input":{"t":2},"expect":0.8685889638065035,"tol":0.000000001,"text":"0.8686"},
+{"expr":"t/ln(10)/C","input":{"t":2,"C":0.00001},"expect":86858.89638065035,"tol":0.5,"text":"86,859"},
+{"expr":"t/ln(10)/C/1000","input":{"t":2,"C":0.00001},"expect":86.85889638065035,"tol":0.000000001,"text":"86.86"},
+{"expr":"ln(3)","input":{"n":3},"expect":1.0986122886681098,"tol":0.000000001,"text":"1.0986"},
+{"expr":"(k-ln(3))/ln(3)","input":{"k":1.1},"expect":0.001263149289521131,"scale":100,"tol":0.000000001,"text":"0.13"},
+{"expr":"(k-ln(3))*1000","input":{"k":1.1},"expect":1.3877113318903067,"tol":0.000000001,"text":"1.39"},
+{"expr":"R*C*1000","input":{"R":10000,"C":0.000001},"expect":10.0,"tol":0.000000001,"text":"10"},
+{"expr":"R*C*1000*ln(1/(1-th))","input":{"R":10000,"C":0.000001,"th":0.7},"expect":12.03972804325936,"tol":0.000000001,"text":"12.04"},
+{"expr":"R*C*(1+d)","input":{"R":10000,"C":0.0001,"d":0.2},"expect":1.2,"tol":0.000000001,"text":"1.2"},
+{"expr":"R*C*(1-d)","input":{"R":10000,"C":0.0001,"d":0.2},"expect":0.8,"tol":0.000000001,"text":"0.8"},
+{"expr":"((1+a)*(1+b)-1)","input":{"a":0.05,"b":0.2},"expect":0.26,"scale":100,"tol":0.000000001,"text":"26"},
+{"expr":"5*(1+a)*(1+b)","input":{"a":0.05,"b":0.2},"expect":6.3,"tol":0.000000001,"text":"6.3"},
+{"expr":"1/(2*pi*R*C)","input":{"R":10000,"C":0.0001},"expect":0.15915494309189532,"tol":0.000000001,"text":"0.159"},
+{"input":{"R":470000,"C":0.0000022},"expect":1.034,"tol":0.000000001,"text":"1.034"},
+{"input":{"R":470,"C":2.2},"expect":1034.0,"tol":0.000000001,"text":"1,034"},
+{"expr":"V*(1-exp(-t/(R*C)))","input":{"V":5,"t":2,"R":10000,"C":0.0001},"expect":4.323323583816936,"tol":0.000000001,"text":"4.3233"},
+{"expr":"V*(1-exp(-t/(R*C)))","input":{"V":5,"t":3,"R":10000,"C":0.0001},"expect":4.75106465816068,"tol":0.000000001,"text":"4.7511"},
+{"expr":"V*(1-exp(-t/(R*C)))","input":{"V":5,"t":4,"R":10000,"C":0.0001},"expect":4.908421805556329,"tol":0.000000001,"text":"4.9084"},
+{"expr":"1-exp(-7)","input":{"n":7},"expect":0.9990881180344455,"scale":100,"tol":0.000000001,"text":"99.91"},
+{"expr":"exp(-5)","input":{"n":5},"expect":0.006737946999085467,"scale":100,"tol":0.000000001,"text":"0.67"},
+{"expr":"ln(1/(1-th))","input":{"th":0.7},"expect":1.2039728043259361,"tol":0.000000001,"text":"1.204"},
+{"expr":"1-1/sqrt(1+d)","input":{"d":0.05},"expect":0.024099927051466907,"scale":100,"tol":0.000000001,"text":"2.41"},
+{"expr":"1/(2*pi*R*C)","input":{"R":10000,"C":0.000001},"expect":15.915494309189533,"tol":0.000000001,"text":"15.92"},
+{"expr":"R*C/60","input":{"R":470,"C":2.2},"expect":17.233333333333334,"tol":0.000000001,"text":"17.23"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #34 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">RC 時間常數：一個 τ 只充到 63.21%，五個才算充飽</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-23</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一顆 10 kΩ 的電阻串一顆 100 µF 的電容，接上 5 V，電容的電壓
+        <strong>1 秒</strong>後會停在 3.1606 V —— 不是 5 V，也不是一半，是 63.21%。
+        公式只有兩個字母相乘，難的地方在它算出來的不是「充飽要多久」，而是一把標在時間軸上的尺。
+        看懂它才看得懂 555 的 1.1RC 是哪來的、去彈跳該配多大的電容，
+        以及為什麼電解電容的 ±20% 容差會原封不動傳到時間上。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">τ = R × C　　　充電 V(t) = V₀(1 − e<sup>−t/τ</sup>)　　　放電 V(t) = V₀ e<sup>−t/τ</sup></div>
+          <div class="formula-box-note">R 必須用歐姆（Ω）、C 必須用法拉（F），算出來的 τ 單位才是秒（s）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>R</td><td>電阻值（resistance）</td><td>Ohm (Ω)</td><td>100 Ω ～ 10 MΩ</td></tr>
+            <tr><td>C</td><td>電容量（capacitance）</td><td>Farad (F)</td><td>1 pF ～ 4,700 µF</td></tr>
+            <tr><td>τ</td><td>時間常數，電壓走完剩餘差距 63.21% 所需的時間</td><td>秒 (s)</td><td>計算結果</td></tr>
+            <tr><td>V₀</td><td>電源電壓（充電）或起始電壓（放電）</td><td>Volt (V)</td><td>3.3 V、5 V、12 V</td></tr>
+          </tbody>
+        </table>
+
+        <h2>10 kΩ 配 100 µF，τ 到底是多久？</h2>
+        <p>
+          先把單位換成公式要的樣子：10 kΩ 是 10⁴ Ω、100 µF 是 10⁻⁴ F。
+          相乘得 τ = <strong>1</strong> 秒，也就是 1,000 毫秒。這組零件被選作主例，
+          正是因為中間值乾淨、好手算。
+        </p>
+        <p>
+          「歐姆乘法拉為什麼會變成秒」值得花三行拆開：1 F 的定義是 1 庫侖／伏特，
+          1 Ω 依 <a href="/formulas/ohms-law.html">歐姆定律</a> 是 1 伏特／安培，
+          而 1 A 就是 1 庫侖／秒。乘起來伏特和庫侖都被約掉，只剩下秒。
+          所以這個乘積不是湊出來的係數，它本來就是一段時間。
+        </p>
+        <p>
+          接上 5 V 電源，經過一個 τ，電容電壓是 5 × (1 − e⁻¹) = <strong>3.1606</strong> V，
+          佔電源的 63.21%。這個比例和 R、C 的數值完全無關 ——
+          不管配出 1 秒還是 1 微秒，一個 τ 永遠是 63.21%。
+          τ 的角色是把時間軸縮放，不是決定終點。
+        </p>
+
+        <h2>一個 τ 不是充飽：從 63.21% 到 99.33% 的五段</h2>
+        <p>
+          每過一個 τ，電容就把「還差多少才到電源電壓」這段差距走掉 63.21%，
+          剩下的 36.79% 留到下一個 τ 再走 63.21%。差距永遠除不盡，理論上永遠到不了 5 V。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>經過時間</th><th>充到電源的</th><th>5 V 電路的實際電壓</th></tr></thead>
+          <tbody>
+            <tr><td>1 τ</td><td>63.21%</td><td>3.1606 V</td></tr>
+            <tr><td>2 τ</td><td>86.47%</td><td>4.3233 V</td></tr>
+            <tr><td>3 τ</td><td>95.02%</td><td>4.7511 V</td></tr>
+            <tr><td>4 τ</td><td>98.17%</td><td>4.9084 V</td></tr>
+            <tr><td>5 τ</td><td>99.33%</td><td>4.9663 V</td></tr>
+          </tbody>
+        </table>
+        <p>
+          工程上的慣例是「五個 τ 就當充飽」，本例就是 <strong>5</strong> 秒後到
+          <strong>4.9663</strong> V。這不是物理定律，是 0.67% 的誤差小於多數電路的容差，
+          再等下去沒有意義。想要更嚴格就用 7 τ（99.91%），但零件本身的容差早就超過那個數量級。
+        </p>
+        <p>
+          放電是同一條曲線倒過來：經過一個 τ，電壓剩下 <strong>36.79</strong>%，
+          5 V 的電容掉到 <strong>1.8394</strong> V。
+          這條 e⁻ᵗ 的形狀和 <a href="/formulas/exponential-growth-decay.html">指數衰減</a>
+          完全相同，差別只在衰減常數被寫成 1/τ 而不是 k。
+        </p>
+        <p>
+          最容易被誤記的是「充到一半」：不是 0.5 τ，而是 ln2 = <strong>0.693</strong> τ。
+          充到 90% 要 ln10 = <strong>2.3026</strong> τ，充到 99% 要 ln100 = <strong>4.605</strong> τ。
+          半衰期比例尺和倍數比例尺在指數世界裡是同一套，差一個
+          <a href="/formulas/natural-logarithm.html">自然對數</a>。
+        </p>
+
+        <h2>反解：要幾秒到位，R 和 C 該配多少？</h2>
+        <p>
+          實務上規格給的是時間，零件自己挑。把充電式反解得到
+          t = τ × ln(1 ÷ (1 − k))，其中 k 是目標比例；再用 τ = RC 拆成零件值。
+        </p>
+        <p>
+          舉例：要讓電容在 <strong>2</strong> 秒內充到電源的 90%。
+          ln10 = 2.3026，所以 τ = 2 ÷ 2.3026 = <strong>0.8686</strong> 秒。
+          手上有 10 µF 的電容，電阻就要 R = 0.8686 ÷ 10⁻⁵ = <strong>86,859</strong> Ω，
+          也就是 <strong>86.86</strong> kΩ。實作時取 E24 系列的 91 kΩ（最接近）或 82 kΩ，
+          再回頭確認偏移是否吃得下。
+        </p>
+        <p>
+          放電方向同樣常用。5 V 的電容要掉到 1 V（多數 3.3 V 邏輯的低準位門檻之上一點），
+          需要 ln5 = <strong>1.6094</strong> τ。注意這裡用的是起始與目標的<strong>比值</strong>，
+          不是差值 —— 從 5 V 掉到 1 V 和從 10 V 掉到 2 V 花的時間一模一樣。
+        </p>
+        <p>
+          R 和 C 在公式裡地位對等，乘積相同就得到相同的 τ，選擇依據是其他限制：
+          電阻大到百萬歐姆等級時，MCU 腳位的漏電流會開始污染結果；
+          電容大則便宜地拉長時間，但電解電容的漏電流與容差又是另一個問題。
+        </p>
+
+        <h2>555 的「1.1RC」是哪來的？按鍵去彈跳又要多久？</h2>
+        <p>
+          翻開 555 計時器的資料手冊，單穩態模式的脈衝寬度寫成 T = 1.1 × R × C。
+          那個 1.1 不是經驗值，是上一節那條反解式算出來的：
+          555 的門檻接在 2/3 VCC，所以 T = τ × ln(1 ÷ (1 − 2/3)) = τ × ln3 = <strong>1.0986</strong> τ。
+        </p>
+        <p>
+          資料手冊把 1.0986 寫成 1.1，高估了 <strong>0.13</strong>%。
+          以 100 kΩ 配 10 µF（τ = 1 秒）來說，誤差是 <strong>1.39</strong> 毫秒 ——
+          遠小於電容本身的容差，所以手冊這樣寫完全合理。知道 1.1 等於 ln3 的好處是：
+          換成別的門檻電壓時，自己就推得出新的係數，不必再找一張表。
+        </p>
+        <p>
+          另一個天天在用的場景是機械按鍵去彈跳。按鍵接點閉合時會在 1 ～ 10 毫秒內
+          彈跳出好幾次通斷，MCU 會讀成連按。在腳位前加一組 RC 低通，
+          取 R = 10 kΩ、C = 1 µF，得到 τ = <strong>10</strong> 毫秒。
+        </p>
+        <p>
+          真正該算的不是 τ，是電壓越過邏輯門檻的時刻。門檻取 0.7 VDD，
+          需要 ln(1 ÷ 0.3) = 1.204 個 τ，也就是按下後 <strong>12.04</strong> 毫秒才會被判定為有效。
+          <strong>這 12.04 毫秒同時是去彈跳的保護窗，也是使用者摸得到的延遲。</strong>
+          彈跳期若長到 15 毫秒，這組 RC 就擋不住，得把 C 加大 —— 代價是延遲等比例拉長。
+        </p>
+
+        <h2>容差直接傳到 τ，沒有根號幫忙</h2>
+        <p>
+          <a href="/formulas/lc-resonant-frequency.html">LC 諧振頻率</a> 裡，
+          零件容差被根號壓扁一半（電容偏 5%，頻率只偏 2.41%）。RC 沒有這個待遇：
+          R 和 C 都是一次方，誤差 1 比 1 原封不動傳到時間上。
+        </p>
+        <p>
+          電解電容的標稱容差常是 ±20%，有些型號甚至標 −20%／+80%。
+          以主例 τ = 1 秒計算，光是電容一項就讓 τ 落在 <strong>0.8</strong> 到
+          <strong>1.2</strong> 秒之間。再加上電阻 ±5%，最差情況是
+          1.05 × 1.2 = 多出 <strong>26</strong>%，而「五個 τ 充飽」的時間從 5 秒變成
+          <strong>6.3</strong> 秒。
+        </p>
+        <p>
+          結論很直接：<strong>RC 適合做「大約多久」，不適合做計時基準。</strong>
+          需要準確時間就用石英振盪器，誤差單位是 ppm 而不是百分之幾十；
+          RC 的任務是去彈跳、上電重置、濾波這類差個幾成也不影響功能的工作。
+        </p>
+        <p>
+          同一組 R 和 C 換到頻域看是低通濾波器，截止頻率 f<sub>c</sub> = 1 ÷ (2πτ)。
+          去彈跳那組 τ = 10 毫秒對應 <strong>15.92</strong> Hz，
+          主例 τ = 1 秒對應 <strong>0.159</strong> Hz。
+          時域的「反應慢」和頻域的「只讓低頻通過」是同一件事的兩種說法，
+          這也是為什麼去彈跳電路順便就濾掉了接點的高頻雜訊。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 kΩ 和 µF 直接代進公式。</strong>
+            這是 RC 計算第一名的錯誤，而且它不會報錯，只給出一個差一千倍的數字。
+            470 kΩ 配 2.2 µF 的正確答案是 <strong>1.034</strong> 秒；
+            把 470 和 2.2 直接相乘得到 <strong>1,034</strong>，當成秒就是 <strong>17.23</strong> 分鐘。
+            記一條捷徑就不會錯：<strong>kΩ × µF 直接得到毫秒，MΩ × µF 直接得到秒</strong>
+            （10³ × 10⁻⁶ = 10⁻³，10⁶ × 10⁻⁶ = 10⁰）。
+            第二名的錯誤是<strong>把 τ 當成充飽時間</strong> ——
+            一個 τ 只到 63.21%，用它當延遲規格的電路，會在電壓還沒站穩時就被判定為就緒。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的 RC 時間常數計算機。填入電阻與電容得到 τ 與各段充放電電壓，也可以反過來固定時間回推零件值。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · RC 時間常數 #34</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <p style="margin: 0 0 12px; font-size: 0.95em;">
+          ∑ Calc Pro 提供這條公式的互動計算，可以直接切換 Ω／kΩ／MΩ 與 pF／nF／µF 的單位組合，
+          並即時看到 1 τ 到 5 τ 的充放電電壓與容差帶來的時間範圍。
+        </p>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=34" title="RC 時間常數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/natural-logarithm.html">自然對數 ln — 從目標比例反解需要幾個 τ</a></li>
+          <li><a href="/formulas/exponential-growth-decay.html">指數成長與衰減 — RC 放電曲線的通式</a></li>
+          <li><a href="/formulas/ohms-law.html">歐姆定律 V = IR — Ω×F 為什麼等於秒的起點</a></li>
+          <li><a href="/formulas/lc-resonant-frequency.html">LC 諧振頻率 — 容差被根號壓扁的對照組</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 充電電阻上燒掉多少功率</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：RC 一階電路的充放電解由克希荷夫電壓定律與電容特性
+        i = C·dV/dt 解微分方程得到，符號與單位依 IEC 60050 電工術語與 SI 單位制；
+        555 單穩態的 2/3 VCC 門檻依 NE555 一般資料手冊的內部分壓結構。
+        文中電阻與電容值均為說明用的標準規格量級，非特定型號實測；
+        邏輯門檻取 0.7 VDD 是 Schmitt 觸發器正向門檻的常見量級（實際依型號與 VCC 而異），
+        容差 ±20%（電解電容）／±5%（電阻）為一般商用件的常見等級，用於說明誤差傳遞。
+        計算假設理想電阻與理想電容，未納入電容的等效串聯電阻、漏電流與介質吸收，
+        實際電路的充電末段會比計算值更慢。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
