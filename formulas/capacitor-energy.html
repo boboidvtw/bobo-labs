@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>電容能量怎麼算？½CV² 公式拆解（4700µF 配 12V 實例）· Bobo Labs</title>
+  <meta name="description" content="電容能量怎麼算？E = ½CV²，4,700 µF 配 12 V 只存 0.3384 J。本文算出電壓的平方效應、充電時固定一半能量燒在電阻上且與電阻值無關，以及 hold-up 電容反解要 7,936.5 µF。" />
+  <meta property="og:title" content="電容能量怎麼算？½CV² 公式拆解" />
+  <meta property="og:description" content="4,700 µF 配 12 V 只存 0.3384 J。電壓是平方、電容是一次方；充電時一半能量固定燒掉，與電阻大小無關。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/capacitor-energy.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/capacitor-energy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "電容能量怎麼算？½CV² 公式拆解", "url": "https://labs.moneyai168.com/formulas/capacitor-energy.html", "datePublished": "2026-10-24", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "電容能量", "item": "https://labs.moneyai168.com/formulas/capacitor-energy.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "0.5 * C * V**2",
+    "cases": [
+{"input":{"C":0.0047,"V":12},"expect":0.3384,"tol":0.000000001,"text":"0.3384"},
+{"expr":"Vb*Ah*3600","input":{"Vb":1.5,"Ah":2},"expect":10800.0,"tol":0.000001,"text":"10,800"},
+{"expr":"Vb*Ah*3600/(0.5*C*V**2)","input":{"Vb":1.5,"Ah":2,"C":0.0047,"V":12},"expect":31914.893617021276,"tol":0.5,"text":"31,915"},
+{"expr":"C*V","input":{"C":0.0047,"V":12},"expect":0.0564,"tol":0.000000001,"text":"0.0564"},
+{"expr":"(C*V)**2/(2*C)","input":{"C":0.0047,"V":12},"expect":0.3384,"tol":0.000000001,"text":"0.3384"},
+{"expr":"C*V**2","input":{"C":0.0047,"V":12},"expect":0.6768,"tol":0.000000001,"text":"0.6768"},
+{"input":{"C":0.0047,"V":6},"expect":0.0846,"tol":0.000000001,"text":"0.0846"},
+{"input":{"C":0.0047,"V":24},"expect":1.3536,"tol":0.000000001,"text":"1.3536"},
+{"input":{"C":0.0047,"V":36},"expect":3.0456,"tol":0.000000001,"text":"3.0456"},
+{"input":{"C":0.0047,"V":48},"expect":5.4144,"tol":0.000000001,"text":"5.4144"},
+{"expr":"(V/Vr)**2","input":{"V":6,"Vr":12},"expect":0.25,"tol":0.000000001,"text":"0.25"},
+{"expr":"(V/Vr)**2","input":{"V":24,"Vr":12},"expect":4.0,"tol":0.000000001,"text":"4"},
+{"expr":"(V/Vr)**2","input":{"V":36,"Vr":12},"expect":9.0,"tol":0.000000001,"text":"9"},
+{"expr":"(V/Vr)**2","input":{"V":48,"Vr":12},"expect":16.0,"tol":0.000000001,"text":"16"},
+{"input":{"C":0.001,"V":12},"expect":0.072,"tol":0.000000001,"text":"0.072"},
+{"input":{"C":0.0022,"V":12},"expect":0.1584,"tol":0.000000001,"text":"0.1584"},
+{"input":{"C":0.01,"V":12},"expect":0.72,"tol":0.000000001,"text":"0.72"},
+{"expr":"(0.5*C2*V**2)/(0.5*C1*V**2)","input":{"C1":0.001,"C2":0.0047,"V":12},"expect":4.7,"tol":0.000000001,"text":"4.7"},
+{"expr":"(1+k)**2-1","input":{"k":0.1},"expect":0.21,"scale":100,"tol":0.000000001,"text":"21"},
+{"expr":"(1+k)-1","input":{"k":0.1},"expect":0.1,"scale":100,"tol":0.000000001,"text":"10"},
+{"expr":"(0.5*C*V**2)/(C*V**2)","input":{"C":0.0047,"V":12},"expect":0.5,"scale":100,"tol":0.000000001,"text":"50"},
+{"expr":"0.5*C*V**2/P*1000","input":{"C":0.0047,"V":12,"P":5},"expect":67.68,"tol":0.000000001,"text":"67.68"},
+{"expr":"0.5*C*(V1**2-V2**2)","input":{"C":0.0047,"V1":12,"V2":9},"expect":0.14805,"tol":0.000000001,"text":"0.14805"},
+{"expr":"(V1**2-V2**2)/V1**2","input":{"V1":12,"V2":9},"expect":0.4375,"scale":100,"tol":0.000000001,"text":"43.75"},
+{"expr":"0.5*C*(V1**2-V2**2)/P*1000","input":{"C":0.0047,"V1":12,"V2":9,"P":5},"expect":29.61,"tol":0.000000001,"text":"29.61"},
+{"expr":"2*P*t/(V1**2-V2**2)*1000000","input":{"P":5,"t":0.05,"V1":12,"V2":9},"expect":7936.507936507936,"tol":0.02,"text":"7,936.5"},
+{"expr":"0.5*C*(V1**2-V2**2)/P*1000","input":{"C":0.01,"V1":12,"V2":9,"P":5},"expect":63.0,"tol":0.000000001,"text":"63"},
+{"input":{"C":100,"V":2.7},"expect":364.5,"tol":0.000000001,"text":"364.5"},
+{"expr":"0.5*C*V**2/3600","input":{"C":100,"V":2.7},"expect":0.10125,"tol":0.000000001,"text":"0.10125"},
+{"expr":"Vb*Ah","input":{"Vb":3.7,"Ah":3},"expect":11.1,"tol":0.000000001,"text":"11.1"},
+{"expr":"Vb*Ah*3600","input":{"Vb":3.7,"Ah":3},"expect":39960.0,"tol":0.000001,"text":"39,960"},
+{"expr":"Vb*Ah*3600/(0.5*C*V**2)","input":{"Vb":3.7,"Ah":3,"C":100,"V":2.7},"expect":109.62962962962963,"tol":0.000000001,"text":"109.6"},
+{"expr":"0.5*C*(V1**2-V2**2)","input":{"C":100,"V1":2.7,"V2":2},"expect":164.5,"tol":0.000000001,"text":"164.5"},
+{"expr":"0.5*Cwrong*V**2","input":{"Cwrong":4700,"V":12},"expect":338400.0,"tol":0.000001,"text":"338,400"},
+{"expr":"Cwrong/C","input":{"Cwrong":4700,"C":0.0047},"expect":1000000.0,"tol":0.000001,"text":"1,000,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #35 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">電容能量怎麼算？½CV² 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-24</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一顆 4,700 µF 電解電容在 12 V 下只存 <strong>0.3384 焦耳</strong> ——
+        不到一顆 AA 鹼性電池的三萬分之一。但同一顆電容升到 24 V 就跳到 1.3536 J，
+        因為公式裡的 V 是平方、C 只是一次方。這篇把 E = ½CV² 算一遍：½ 從哪裡來、
+        為什麼充電時固定有一半能量燒掉且與電阻值無關，以及 hold-up 電容該選多少 µF。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">E = ½ C V<sup>2</sup></div>
+          <div class="formula-box-note">C 電容值（法拉 F）· V 端電壓（伏特 V）· E 儲存能量（焦耳 J）</div>
+          <div class="formula-box-eq">等價形式：E = Q<sup>2</sup>/(2C) = ½ Q V，Q = CV</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>C</td><td>電容值（Capacitance）</td><td>F（法拉）</td><td>0.0047（即 4,700 µF）</td></tr>
+            <tr><td>V</td><td>電容兩端的實際工作電壓</td><td>V（伏特）</td><td>12</td></tr>
+            <tr><td>Q</td><td>儲存電荷，Q = CV</td><td>C（庫侖）</td><td>0.0564</td></tr>
+            <tr><td>E</td><td>儲存的靜電能</td><td>J（焦耳）</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>4,700 µF 配 12 V 存多少能量？用真實數字算一遍</h2>
+        <p>
+          代公式之前先把單位換對，這是這條公式唯一真正會出錯的地方：
+          1 µF = 10<sup>-6</sup> F，所以 4,700 µF = 0.0047 F。
+        </p>
+        <p>
+          E = 0.5 × 0.0047 × 12<sup>2</sup> = 0.5 × 0.0047 × 144 = <strong>0.3384 J</strong>。
+        </p>
+        <p>
+          換個路徑驗一次：Q = CV = 0.0047 × 12 = 0.0564 庫侖，
+          代入 E = Q<sup>2</sup>/(2C) = 0.0564<sup>2</sup> / 0.0094，同樣得 0.3384 J。
+          兩式互為代數變形，算出不同答案就是單位換錯了。
+        </p>
+        <p>
+          0.3384 J 是多少？一顆 1.5 V、2,000 mAh 的 AA 鹼性電池帶
+          1.5 × 2 × 3600 = 10,800 J，是這顆電容的 <strong>31,915 倍</strong>。
+          這個比例說明電容的角色：它不是能量元件，是功率元件 ——
+          價值在毫秒內吐光或吸進能量，不在存得多。
+        </p>
+
+        <h2>為什麼公式裡有 ½？</h2>
+        <p>
+          直覺上「電荷 Q 乘電壓 V」就是能量，但那會得到 CV<sup>2</sup> = 0.6768 J，高估一倍。
+          原因是<strong>充電過程中電容的電壓不是固定的</strong>：Q 與 V 嚴格成正比（Q = CV），
+          電容從空充到滿，端電壓從 0 線性升到 V。推進去的每一庫侖面對的電壓都不同 ——
+          第一庫侖幾乎不費力，最後一庫侖要頂著全壓 V。
+        </p>
+        <p>
+          既然是線性的，平均電壓就是 V/2，所以 E = Q × (V/2) = ½CV<sup>2</sup>；
+          嚴格寫是積分 ∫<sub>0</sub><sup>Q</sup>(q/C) dq = Q<sup>2</sup>/(2C)，結果相同。
+        </p>
+        <p>
+          對照電池就看得出差別：鹼性電池放電時端電壓幾乎不變，能量是 QV 而不用除以 2 ——
+          上一節算 AA 電池用的就是這個式子。兩者差一個 ½，根源在電壓曲線的形狀不同。
+        </p>
+        <p>
+          這個 ½ 不是電學特有的。<a href="/formulas/kinetic-energy.html">動能 ½mv²</a>、
+          彈簧位能 ½kx²、電感儲能 ½LI² 形狀完全一樣：凡是「推進去的量與已累積的量成正比」
+          的儲能都會帶 ½。對照著看，C 扮演質量 m、V 扮演速度 v（以平方計）。
+        </p>
+
+        <h2>電壓是平方、電容是一次方：升壓比換大電容划算</h2>
+        <p>固定 C = 4,700 µF，只改工作電壓：</p>
+        <table class="formula-vars">
+          <thead><tr><th>工作電壓 V</th><th>儲能 E（J）</th><th>相對 12 V</th></tr></thead>
+          <tbody>
+            <tr><td>6 V</td><td>0.0846</td><td>0.25×</td></tr>
+            <tr><td>12 V</td><td>0.3384</td><td>1×</td></tr>
+            <tr><td>24 V</td><td>1.3536</td><td>4×</td></tr>
+            <tr><td>36 V</td><td>3.0456</td><td>9×</td></tr>
+            <tr><td>48 V</td><td>5.4144</td><td>16×</td></tr>
+          </tbody>
+        </table>
+        <p>固定 V = 12 V，只改電容值：</p>
+        <table class="formula-vars">
+          <thead><tr><th>電容值 C</th><th>儲能 E（J）</th></tr></thead>
+          <tbody>
+            <tr><td>1,000 µF</td><td>0.072</td></tr>
+            <tr><td>2,200 µF</td><td>0.1584</td></tr>
+            <tr><td>4,700 µF</td><td>0.3384</td></tr>
+            <tr><td>10,000 µF</td><td>0.72</td></tr>
+          </tbody>
+        </table>
+        <p>
+          兩張表放一起，取捨就清楚了。從 1,000 µF 換到 4,700 µF，體積與單價都往上跳，
+          能量也只有 <strong>4.7 倍</strong>；但電壓從 12 V 升到 24 V，
+          同一顆電容的儲能直接變 4 倍，代價只是改前級輸出電壓。
+        </p>
+        <p>
+          容差傳遞也分道揚鑣：工作電壓多 10%，能量多 <strong>21%</strong>（1.1<sup>2</sup> − 1）；
+          電容值多 10%，能量只多 <strong>10%</strong>。這是為什麼儲能電路（閃光燈、焊機、
+          電動車 DC-Link）一律往高壓走，不是靠堆容量。
+        </p>
+        <p>
+          限制來自耐壓。額定電壓是硬天花板，超過就是鼓包或炸裂，而耐壓本身隨規格跳價 ——
+          平方效應給的好處，有一部分會被耐壓的價格曲線吃回去。
+        </p>
+
+        <h2>充電時一半的能量燒在電阻上，而且與電阻值無關</h2>
+        <p>
+          用 12 V 電壓源經串聯電阻充空的 4,700 µF 電容，電源付出多少能量？
+          推出的電荷是 Q = CV = 0.0564 庫侖，電源端電壓從頭到尾固定 12 V，
+          做的功是 QV = CV<sup>2</sup> = <strong>0.6768 J</strong>。
+        </p>
+        <p>
+          但電容只收到 0.3384 J。差額 0.3384 J 全部在串聯電阻上變成熱 ——
+          充電效率固定是 <strong>50%</strong>。
+        </p>
+        <p>
+          最反直覺的是：<strong>這個 50% 跟電阻多大完全無關</strong>。
+          電阻小則電流大、充得快，瞬時 I<sup>2</sup>R 高但時間短；電阻大則反之，
+          兩者對時間的積分恰好相同。換成 1 Ω 或 1 MΩ 燒掉的焦耳數一模一樣，只有
+          <a href="/formulas/rc-time-constant.html">時間常數 τ = RC</a> 決定的快慢不同。
+        </p>
+        <p>
+          結論：用電阻限流充大電容，一半的能量注定當暖氣。要效率就得改用電感式 DC-DC，
+          讓能量先存進磁場再搬進電容；電阻預充只適合「一次性、能量小、要便宜」的場合。
+        </p>
+
+        <h2>可用能量只是一部分：hold-up 電容怎麼反解</h2>
+        <p>
+          把 0.3384 J 餵給 5 W 負載，理論上能撐 <strong>67.68 ms</strong>。
+          但這個數字拿不到，因為它假設電容能被榨到 0 V。
+        </p>
+        <p>
+          真實系統的下游是 DC-DC，有最低輸入電壓。假設 12 V 系統的 DC-DC 掉到 9 V 就停擺，
+          可用能量只有兩個狀態的差：
+          ½C(V<sub>1</sub><sup>2</sup> − V<sub>2</sub><sup>2</sup>)
+          = 0.5 × 0.0047 × (144 − 81) = <strong>0.14805 J</strong>。
+        </p>
+        <p>
+          佔總儲能只有 (144 − 81) / 144 = <strong>43.75%</strong>，
+          超過一半的能量永遠鎖在 9 V 以下拿不出來。5 W 下實際只撐
+          <strong>29.61 ms</strong>，不是 67.68 ms —— 這是 hold-up 時間估錯的頭號原因。
+        </p>
+        <p>
+          反過來用才是設計時的算法。需求「斷電後 5 W 要再撐 50 ms，DC-DC 最低輸入 9 V」，
+          解得 C = 2Pt / (V<sub>1</sub><sup>2</sup> − V<sub>2</sub><sup>2</sup>)
+          = (2 × 5 × 0.05) / 63 = <strong>7,936.5 µF</strong>。
+          沒有這個標準品，往上取 10,000 µF，實際能撐 <strong>63 ms</strong>。
+        </p>
+        <p>
+          尺度再拉一階：一顆 100 F、2.7 V 的超級電容存
+          0.5 × 100 × 2.7<sup>2</sup> = <strong>364.5 J</strong>，換成瓦時是
+          364.5 / 3600 = <strong>0.10125 Wh</strong>。對照 18650 鋰電池
+          （3.7 V × 3 Ah = <strong>11.1 Wh</strong> = 39,960 J），鋰電池是它的
+          <strong>109.6 倍</strong> —— 單看能量，超級電容毫無勝算。
+        </p>
+        <p>
+          但把它從 2.7 V 放到 2.0 V 只要一秒，吐出
+          0.5 × 100 × (7.29 − 4) = <strong>164.5 J</strong>，平均功率 164.5 W ——
+          這對 18650 是嚴重超載。電容贏在功率密度與循環壽命，不在能量密度。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0 0 10px;">
+            <strong>1. µF 沒換成 F</strong>：規格書寫 4,700 µF，直接把 4700 代進公式得
+            0.5 × 4700 × 144 = 338,400 J，和正解差 <strong>1,000,000 倍</strong>。
+            µ 是 10<sup>-6</sup>、n 是 10<sup>-9</sup>、p 是 10<sup>-12</sup>，只能老實換。
+          </p>
+          <p style="margin: 0 0 10px;">
+            <strong>2. 拿額定電壓當工作電壓</strong>：25 V 耐壓的電容跑在 12 V，
+            儲能就要用 12 算；額定電壓只是上限。
+          </p>
+          <p style="margin: 0;">
+            <strong>3. 漏掉 ½</strong>：少了 ½ 算出的是 CV<sup>2</sup> = 0.6768 J，系統性高估一倍，
+            估熱、估保險絲、估放電時間會一路錯下去。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的電容能量計算機。輸入手上電容的規格，看看它實際存得了多少。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 電容能量 #35</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <p style="margin: 0 0 12px; font-size: 0.95em;">
+          ∑ Calc Pro 提供這條公式的互動計算，可直接切換 pF／nF／µF／F，
+          並即時看到指定電壓區間的可用能量與 hold-up 時間。
+        </p>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=35" title="電容能量互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/rc-time-constant.html">RC 時間常數 τ = RC — 這些能量進出電容要花多久</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv² — 同一個 ½ 的另一個身分</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 把焦耳換算成實際可撐的秒數</a></li>
+          <li><a href="/formulas/lc-resonant-frequency.html">LC 諧振頻率 — 能量在電容與電感之間來回搬</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：E = ½CV² 由 E = ∫<sub>0</sub><sup>Q</sup>(q/C) dq 積分得到，
+        符號與單位依 SI 與 IEC 60050。
+        文中電容值、耐壓與工作電壓為說明用的標準規格量級，非特定型號實測；
+        AA 鹼性電池 1.5 V／2,000 mAh、18650 鋰電池 3.7 V／3,000 mAh、
+        超級電容 100 F／2.7 V 為一般標稱量級，DC-DC 最低輸入 9 V 為 12 V 系統常見設定，
+        各家型號皆有差異。計算假設理想電容，未納入 ESR、漏電流、介質吸收與容值老化。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
