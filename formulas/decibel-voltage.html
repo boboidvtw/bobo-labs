@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>分貝怎麼算？電壓比 20log 公式拆解（2 倍電壓＝6.02 dB 實例）· Bobo Labs</title>
+  <meta name="description" content="分貝怎麼算？電壓比用 dB = 20 log(V/V₀)，電壓翻倍是 6.02 dB 不是 3 dB。本文算出係數 20 從哪來、6 dB 其實只有 1.9953 倍，以及 dBV 與 dBu 參考點差 11.78 dB。" />
+  <meta property="og:title" content="分貝怎麼算？電壓比 20log 公式拆解" />
+  <meta property="og:description" content="電壓翻倍是 6.02 dB、功率翻倍才是 3.01 dB。係數 20 來自 P 正比於 V²，阻抗不同就不成立。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/decibel-voltage.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/decibel-voltage.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "分貝怎麼算？電壓比 20log 公式拆解", "url": "https://labs.moneyai168.com/formulas/decibel-voltage.html", "datePublished": "2026-10-25", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "分貝（電壓）", "item": "https://labs.moneyai168.com/formulas/decibel-voltage.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "20 * log10(V / V0)",
+    "cases": [
+{"input":{"V":2,"V0":1},"expect":6.020599913279624,"tol":0.000000001,"text":"6.02"},
+{"expr":"V**2/R*1000","input":{"V":1,"R":600},"expect":1.6666666666666667,"tol":0.000000001,"text":"1.6667"},
+{"expr":"V**2/R*1000","input":{"V":2,"R":600},"expect":6.666666666666667,"tol":0.000000001,"text":"6.6667"},
+{"expr":"10*log10(P/P0)","input":{"P":4,"P0":1},"expect":6.020599913279624,"tol":0.000000001,"text":"6.02"},
+{"expr":"10*log10(P/P0)","input":{"P":2,"P0":1},"expect":3.0102999566398120,"tol":0.000000001,"text":"3.01"},
+{"input":{"V":1,"V0":1},"expect":0.0,"tol":0.000000001,"text":"0"},
+{"expr":"20*log10(sqrt(n))","input":{"n":2},"expect":3.0102999566398120,"tol":0.000000001,"text":"3.01"},
+{"input":{"V":3,"V0":1},"expect":9.542425094393248,"tol":0.000000001,"text":"9.54"},
+{"input":{"V":4,"V0":1},"expect":12.041199826559248,"tol":0.000000001,"text":"12.04"},
+{"input":{"V":5,"V0":1},"expect":13.979400086720377,"tol":0.000000001,"text":"13.98"},
+{"input":{"V":10,"V0":1},"expect":20.0,"tol":0.000000001,"text":"20"},
+{"input":{"V":100,"V0":1},"expect":40.0,"tol":0.000000001,"text":"40"},
+{"input":{"V":1000,"V0":1},"expect":60.0,"tol":0.000000001,"text":"60"},
+{"expr":"10**(d/20)","input":{"d":1},"expect":1.1220184543019633,"tol":0.000000001,"text":"1.1220"},
+{"expr":"10**(d/20)-1","input":{"d":1},"expect":0.12201845430196327,"scale":100,"tol":0.000000001,"text":"12.20"},
+{"expr":"10**(d/20)","input":{"d":3},"expect":1.4125375446227544,"tol":0.000000001,"text":"1.4125"},
+{"expr":"10**(d/20)","input":{"d":6},"expect":1.9952623149688795,"tol":0.000000001,"text":"1.9953"},
+{"expr":"(r-10**(d/20))/r","input":{"d":6,"r":2},"expect":0.00236884251556025,"scale":100,"tol":0.000000001,"text":"0.24"},
+{"expr":"10**(d/20)","input":{"d":26},"expect":19.952623149688797,"tol":0.000000001,"text":"19.95"},
+{"expr":"10**((a+b)/20)","input":{"a":26,"b":-6},"expect":10.0,"tol":0.000000001,"text":"10"},
+{"expr":"R2/(R1+R2)","input":{"R1":9000,"R2":1000},"expect":0.1,"tol":0.000000001,"text":"0.1"},
+{"expr":"-20*log10(R2/(R1+R2))","input":{"R1":9000,"R2":1000},"expect":20.0,"tol":0.000000001,"text":"20"},
+{"expr":"-20*log10(R2/(R1+R2))","input":{"R1":1000,"R2":1000},"expect":6.020599913279624,"tol":0.000000001,"text":"6.02"},
+{"expr":"10**(d/20)","input":{"d":-40},"expect":0.01,"tol":0.000000001,"text":"0.01"},
+{"expr":"sqrt(P*R)","input":{"P":0.001,"R":600},"expect":0.7745966692414834,"tol":0.000000001,"text":"0.7746"},
+{"expr":"10**(d/20)","input":{"d":-10},"expect":0.31622776601683794,"tol":0.000000001,"text":"0.3162"},
+{"expr":"sqrt(P*R)*10**(d/20)","input":{"P":0.001,"R":600,"d":4},"expect":1.22765298798388,"tol":0.000000001,"text":"1.228"},
+{"expr":"20*log10(sqrt(P*R)*10**(a/20)/10**(b/20))","input":{"P":0.001,"R":600,"a":4,"b":-10},"expect":11.781512503836439,"tol":0.000000001,"text":"11.78"},
+{"expr":"sqrt(P*R)","input":{"P":0.001,"R":50},"expect":0.22360679774997896,"tol":0.000000001,"text":"0.2236"},
+{"expr":"Rb/Ra","input":{"Ra":8,"Rb":10000},"expect":1250.0,"tol":0.000001,"text":"1,250"},
+{"expr":"log10(n)","input":{"n":2},"expect":0.3010299956639812,"tol":0.000000001,"text":"0.30103"},
+{"expr":"sqrt(n)","input":{"n":2},"expect":1.4142135623730951,"tol":0.000000001,"text":"1.4142"},
+{"expr":"sqrt(n)","input":{"n":2},"expect":1.4142135623730951,"tol":0.000000001,"text":"1.41421"},
+{"expr":"d/20","input":{"d":1},"expect":0.05,"tol":0.000000001,"text":"0.05"},
+{"expr":"10**(d/20)","input":{"d":-6},"expect":0.5011872336272722,"tol":0.000000001,"text":"0.5012"},
+{"expr":"(1-(10**(d/20)/r)**n)","input":{"d":6,"r":2,"n":10},"expect":0.023437500000000444,"scale":100,"tol":0.000000001,"text":"2.34"},
+{"input":{"V":1,"V0":0.00001},"expect":100.0,"tol":0.000000001,"text":"100"},
+{"expr":"a-b","input":{"a":4,"b":-10},"expect":14.0,"tol":0.000000001,"text":"14"},
+{"expr":"(a-b)-20*log10(sqrt(P*R)*10**(a/20)/10**(b/20))","input":{"a":4,"b":-10,"P":0.001,"R":600},"expect":2.2184874961635614,"tol":0.000000001,"text":"2.22"},
+{"expr":"2*(-20*log10(R2/(R1+R2)))","input":{"R1":9000,"R2":1000},"expect":40.0,"tol":0.000000001,"text":"40"},
+{"expr":"10*log10(Rb/Ra)","input":{"Ra":8,"Rb":10000},"expect":30.969100130080562,"tol":0.000000001,"text":"30.97"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #36 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">分貝怎麼算？電壓比 20log 公式拆解</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-25</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        訊號電壓從 1 V 變成 2 V，增益是 <strong>6.02 dB</strong>，不是 3 dB。
+        同一條線上的功率從 1.6667 mW 變成 6.6667 mW，換算出來一樣是 6.02 dB——
+        兩個算式給同一個答案，不是巧合。這篇把 dB = 20 log(V/V₀) 算一遍：
+        係數為什麼是 20 不是 10、6 dB 為什麼其實只有 1.9953 倍、
+        以及 dBV 和 dBu 的參考點差在哪裡。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">dB = 20 log<sub>10</sub>(V / V<sub>0</sub>)</div>
+          <div class="formula-box-note">V 待測電壓 · V<sub>0</sub> 參考電壓 · 兩者單位必須相同，相除後無單位</div>
+          <div class="formula-box-eq">功率版本：dB = 10 log<sub>10</sub>(P / P<sub>0</sub>)　反推：V/V<sub>0</sub> = 10<sup>(dB/20)</sup></div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>V</td><td>待測點的電壓（RMS 值）</td><td>V（伏特）</td><td>2</td></tr>
+            <tr><td>V<sub>0</sub></td><td>參考電壓，比較的基準</td><td>V（伏特）</td><td>1</td></tr>
+            <tr><td>log<sub>10</sub></td><td>常用對數，底數 10</td><td>無</td><td>—</td></tr>
+            <tr><td>dB</td><td>分貝，比值取對數後的刻度</td><td>dB（無因次）</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>電壓從 1 V 到 2 V 是幾 dB？用真實數字算一遍</h2>
+        <p>
+          前級輸出 1 V、後級量到 2 V，比值 V/V<sub>0</sub> = 2。代進公式：
+          dB = 20 × log<sub>10</sub>(2) = 20 × 0.30103 = <strong>6.02 dB</strong>。
+        </p>
+        <p>
+          注意它不是整數 6，而是 6.02。整數 6 是口語上的四捨五入，串接多級時誤差會累積。
+        </p>
+        <p>
+          為什麼取對數？因為動態範圍太大。麥克風底噪 10 µV、削波點 1 V，比值十萬倍，
+          線性座標上底噪會被壓成貼著零的一條線；取對數後變成 100 dB，刻度就看得清楚。
+          對數也讓「串接」從乘法變加法，這是 dB 真正好用的地方。
+        </p>
+
+        <h2>係數為什麼是 20 不是 10？功率才是本尊</h2>
+        <p>
+          分貝原本定義在<strong>功率</strong>上：dB = 10 log<sub>10</sub>(P/P<sub>0</sub>)。
+          電壓版的 20 不是另一套規定，是從功率版推出來的。
+        </p>
+        <p>
+          在固定電阻 R 上 P = V<sup>2</sup>/R，代進功率版：<br>
+          dB = 10 log<sub>10</sub>(V<sup>2</sup>/V<sub>0</sub><sup>2</sup>)
+          = 10 × 2 × log<sub>10</sub>(V/V<sub>0</sub>) = 20 log<sub>10</sub>(V/V<sub>0</sub>)。<br>
+          對數把平方變成乘 2，10 就變成 20。前提是<strong>分子分母的 R 相同、可以約掉</strong>，
+          這正是最常見的錯誤來源。
+        </p>
+        <p>
+          用數字對一次。假設線路阻抗 600 Ω：1 V 時功率 P<sub>0</sub> = 1<sup>2</sup>/600 =
+          <strong>1.6667 mW</strong>；2 V 時 P = 2<sup>2</sup>/600 = <strong>6.6667 mW</strong>。
+          功率比是 4 倍，走功率版：10 × log<sub>10</sub>(4) = <strong>6.02 dB</strong>。
+          和電壓版算出的完全相同 —— 電壓翻倍時功率是四倍，兩條路徑在 dB 刻度上收斂到同一點。
+        </p>
+        <p>
+          這也解釋了常被混淆的另一個數字：<strong>功率</strong>翻倍只有
+          10 × log<sub>10</sub>(2) = <strong>3.01 dB</strong>；功率兩倍對應電壓 √2 倍，
+          20 × log<sub>10</sub>(√2) 算出來一樣。「3 dB」和「6 dB」不是兩派說法，
+          是兩個不同的物理量翻倍。
+        </p>
+
+        <h2>常見倍率對照：從 1 倍到 1000 倍</h2>
+        <p>
+          每一列都用同一條公式算出，參考電壓固定 1 V：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>電壓比 V/V<sub>0</sub></th><th>dB 值</th><th>常見場合</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>0</td><td>輸入等於輸出</td></tr>
+            <tr><td>√2（約 1.4142）</td><td>3.01</td><td>濾波器截止頻率</td></tr>
+            <tr><td>2</td><td>6.02</td><td>電壓翻倍</td></tr>
+            <tr><td>3</td><td>9.54</td><td>—</td></tr>
+            <tr><td>4</td><td>12.04</td><td>兩級翻倍串接</td></tr>
+            <tr><td>5</td><td>13.98</td><td>—</td></tr>
+            <tr><td>10</td><td>20</td><td>一個數量級</td></tr>
+            <tr><td>100</td><td>40</td><td>兩個數量級</td></tr>
+            <tr><td>1000</td><td>60</td><td>三個數量級</td></tr>
+          </tbody>
+        </table>
+        <p>
+          表裡有兩個結構值得注意。倍率每乘 10，dB 就加 20——20、40、60 是等差，
+          倍率卻是等比。4 倍的 12.04 剛好是 2 倍 6.02 的兩倍，因為 4 = 2 × 2，
+          取對數後變成相加；這性質來自常用對數本身，不是分貝的額外規定。
+        </p>
+
+        <h2>反過來：給你 dB 要怎麼回推倍率？</h2>
+        <p>
+          把公式倒過來解：V/V<sub>0</sub> = 10<sup>(dB/20)</sup>。資料表寫「增益 26 dB」，
+          這一步告訴你那是幾倍。
+        </p>
+        <p>
+          1 dB → 10<sup>0.05</sup> = <strong>1.1220</strong> 倍，電壓只增加
+          <strong>12.20</strong>%。1 dB 大約是人耳勉強能分辨的響度差。
+        </p>
+        <p>
+          3 dB → <strong>1.4125</strong> 倍。它不是 √2 = 1.41421，因為整數 3 不等於 3.01，
+          小數點後第三位就分家了。
+        </p>
+        <p>
+          6 dB → <strong>1.9953</strong> 倍。這是四捨五入的代價：把 6.02 寫成 6，
+          回推就拿不回整數 2，少了 <strong>0.24</strong>%；十級串接累積偏差
+          <strong>2.34</strong>%。
+        </p>
+        <p>
+          26 dB → <strong>19.95</strong> 倍。規格書的 26 dB 放大器，實際電壓增益接近 20 倍但不到。
+        </p>
+
+        <h2>串接怎麼算？dB 相加就是倍率相乘</h2>
+        <p>
+          放大器 +26 dB 接衰減器 −6 dB，總增益直接相加得 20 dB，回推
+          10<sup>(20/20)</sup> = <strong>10</strong> 倍。不必先換成 19.95 × 0.5012
+          再相乘，這正是 dB 存在的理由。
+        </p>
+        <p>
+          衰減也一樣。兩顆電阻做分壓，R<sub>1</sub> = 9 kΩ、R<sub>2</sub> = 1 kΩ，輸出比
+          R<sub>2</sub>/(R<sub>1</sub>+R<sub>2</sub>) = <strong>0.1</strong>，即衰減
+          <strong>20</strong> dB。兩級串接是衰減 40 dB，倍率 10<sup>(−40/20)</sup>
+          = <strong>0.01</strong>，正是兩次乘 0.1。
+        </p>
+        <p>
+          等值分壓（R<sub>1</sub> = R<sub>2</sub> = 1 kΩ）輸出剩一半，衰減
+          <strong>6.02</strong> dB。減半與加倍在 dB 刻度上只差正負號，
+          所以看到「−6 dB」可以直接反應成「大約一半」。
+        </p>
+        <p>
+          要留意：分壓電路串接時，後級輸入阻抗會改變前級的分壓比，實際總衰減未必等於
+          兩級各算一次再相加。dB 的加法只在各級不互相拉載的前提下成立。
+        </p>
+
+        <h2>dBV、dBu、dBm 差在哪？參考點不同答案就不同</h2>
+        <p>
+          dB 是比值，必須說相對於什麼。後面那個字母就是在指定 V<sub>0</sub>。
+        </p>
+        <ul>
+          <li><strong>dBV</strong>：V<sub>0</sub> = 1 V。消費級器材常見的 −10 dBV，
+            實際電壓是 10<sup>(−10/20)</sup> = <strong>0.3162</strong> V。</li>
+          <li><strong>dBu</strong>：V<sub>0</sub> = √(0.001 × 600) = <strong>0.7746</strong> V，
+            這個怪數字來自電話線的 600 Ω 阻抗與 1 mW 參考功率。專業器材標稱位準
+            +4 dBu，實際電壓 0.7746 × 10<sup>(4/20)</sup> = <strong>1.228</strong> V。</li>
+          <li><strong>dBm</strong>：參考的是功率 1 mW，不是電壓。在 50 Ω 系統裡，
+            0 dBm 對應 √(0.001 × 50) = <strong>0.2236</strong> V。</li>
+        </ul>
+        <p>
+          消費級接專業級設備時，帳面是 −10 和 +4，直覺會以為差 14 dB。實際算一次：
+          20 × log<sub>10</sub>(1.228 / 0.3162) = <strong>11.78</strong> dB，
+          帳面與實際差的這 <strong>2.22</strong> dB 來自兩者參考點不同。
+          混音時少了這段補償，增益結構會一路歪下去。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0 0 10px;">
+            <strong>1. 阻抗不同時仍用 20 log</strong>：係數 20 的前提是 R 可以約掉。
+            訊號源同樣輸出 1 V，接 10 kΩ 負載和接 8 Ω 喇叭，電壓比 1 倍、0 dB，
+            功率比卻是 <strong>1,250</strong> 倍，即 <strong>30.97</strong> dB。
+            阻抗不匹配時，「電壓沒變」不代表「訊號強度沒變」。
+          </p>
+          <p style="margin: 0 0 10px;">
+            <strong>2. 功率和電壓混用係數</strong>：量到功率卻套 20 log，答案會差一倍。
+            判準是看量到的物理量是否正比於能量：功率、能量用 10，電壓、電流、聲壓用 20。
+          </p>
+          <p style="margin: 0;">
+            <strong>3. 把 dB 當絕對單位</strong>：「這台機器有 5 dB」沒有資訊。
+            dB 一定要有參考點：寫成 dBV／dBu／dBm 這種帶後綴的形式，或說清楚相對於哪一點。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的分貝計算機。輸入兩個電壓，或輸入 dB 值回推倍率。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 分貝（電壓）#36</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <p style="margin: 0 0 12px; font-size: 0.95em;">
+          ∑ Calc Pro 提供這條公式的互動計算，可在電壓比與功率比之間切換係數，
+          並直接選 dBV／dBu／dBm 參考點換算成實際電壓。
+        </p>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=36" title="分貝（電壓）互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/common-logarithm.html">常用對數 log₁₀ — 分貝刻度背後的那個函數</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 功率版 10 log 的輸入來源</a></li>
+          <li><a href="/formulas/ohms-law.html">歐姆定律 V = IR — P = V²/R 的推導起點</a></li>
+          <li><a href="/formulas/resistors-in-series.html">電阻串聯 — 分壓衰減 20 dB 怎麼湊出來</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：分貝的功率定義 dB = 10 log<sub>10</sub>(P/P<sub>0</sub>) 與電壓形式
+        20 log<sub>10</sub>(V/V<sub>0</sub>) 依 IEC 60027-3 與 IEEE 標準用法；
+        dBu 參考電壓 0.7746 V 由 1 mW 於 600 Ω 推得，dBm 參考功率為 1 mW。
+        電壓一律指 RMS 值。文中阻抗與器材標稱位準為業界常見量級，非特定型號實測。
+        電壓版係數 20 僅在比較的兩點阻抗相同時成立。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
