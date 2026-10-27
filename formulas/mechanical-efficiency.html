@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>機械效率怎麼算？Pout/Pin 公式拆解（1500W 捲揚機 65.4% 實例）· Bobo Labs</title>
+  <meta name="description" content="機械效率怎麼算？η = Pout/Pin × 100%，1500 W 捲揚機提 50 kg 只輸出 981 W，效率 65.4%。本文算出四級傳動各自 90% 以上、串起來只剩 81.28% 的數字鏈，並說明效率一個百分點值多少電費。" />
+  <meta property="og:title" content="機械效率怎麼算？Pout/Pin 公式拆解" />
+  <meta property="og:description" content="1500 W 捲揚機提 50 kg 只輸出 981 W，效率 65.4%。四級傳動各自 90% 以上，串起來只剩 81.28%。含選型回推與電費試算" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/mechanical-efficiency.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/mechanical-efficiency.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "機械效率怎麼算？Pout/Pin 公式拆解", "url": "https://labs.moneyai168.com/formulas/mechanical-efficiency.html", "datePublished": "2026-10-26", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "機械效率", "item": "https://labs.moneyai168.com/formulas/mechanical-efficiency.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "Pout / Pin",
+    "cases": [
+{"expr":"m*g*v","input":{"m":50,"g":9.81,"v":2},"expect":981.0,"tol":0.000000001,"text":"981"},
+{"expr":"(m*g*v)/Pin","input":{"m":50,"g":9.81,"v":2,"Pin":1500},"expect":0.654,"scale":100,"tol":0.000000001,"text":"65.4"},
+{"expr":"Pin-m*g*v","input":{"m":50,"g":9.81,"v":2,"Pin":1500},"expect":519.0,"tol":0.000000001,"text":"519"},
+{"expr":"1-(m*g*v)/Pin","input":{"m":50,"g":9.81,"v":2,"Pin":1500},"expect":0.346,"scale":100,"tol":0.000000001,"text":"34.6"},
+{"expr":"P/(rcp*dT)","input":{"P":519,"rcp":1200,"dT":10},"expect":0.04325,"tol":0.000000001,"text":"0.04325"},
+{"expr":"P/(rcp*dT)*3600","input":{"P":519,"rcp":1200,"dT":10},"expect":155.7,"tol":0.000000001,"text":"155.7"},
+{"expr":"a*b*c*d","input":{"a":0.9,"b":0.95,"c":0.97,"d":0.98},"expect":0.812763,"scale":100,"tol":0.000000001,"text":"81.28"},
+{"expr":"(a+b+c+d)/4","input":{"a":0.9,"b":0.95,"c":0.97,"d":0.98},"expect":0.95,"scale":100,"tol":0.000000001,"text":"95"},
+{"expr":"(a+b+c+d)/4-a*b*c*d","input":{"a":0.9,"b":0.95,"c":0.97,"d":0.98},"expect":0.137237,"scale":100,"tol":0.000000001,"text":"13.72"},
+{"expr":"1-a*b*c*d","input":{"a":0.9,"b":0.95,"c":0.97,"d":0.98},"expect":0.187237,"scale":100,"tol":0.000000001,"text":"18.72"},
+{"expr":"a*1","input":{"a":0.9},"expect":0.9,"scale":100,"tol":0.000000001,"text":"90.00"},
+{"expr":"a*b","input":{"a":0.9,"b":0.95},"expect":0.855,"scale":100,"tol":0.000000001,"text":"85.50"},
+{"expr":"a*b*c","input":{"a":0.9,"b":0.95,"c":0.97},"expect":0.82935,"scale":100,"tol":0.000000001,"text":"82.94"},
+{"expr":"s**n","input":{"s":0.95,"n":10},"expect":0.5987369392383787,"scale":100,"tol":0.000000001,"text":"59.87"},
+{"expr":"(m*g*v)/Pin","input":{"m":50,"g":9.81,"v":2,"Pin":1500},"expect":0.654,"tol":0.000000001,"text":"0.654"},
+{"expr":"a*b*c*d","input":{"a":0.9,"b":0.95,"c":0.97,"d":0.98},"expect":0.812763,"tol":0.000000001,"text":"0.812763"},
+{"expr":"W/n","input":{"W":1000,"n":5},"expect":200.0,"tol":0.000000001,"text":"200"},
+{"expr":"W/F","input":{"W":1000,"F":240},"expect":4.166666666666667,"tol":0.000000001,"text":"4.1667"},
+{"expr":"(W/F)/n","input":{"W":1000,"F":240,"n":5},"expect":0.8333333333333334,"scale":100,"tol":0.000000001,"text":"83.33"},
+{"expr":"F*n*h","input":{"F":240,"n":5,"h":1},"expect":1200.0,"tol":0.000000001,"text":"1,200"},
+{"expr":"W*h","input":{"W":1000,"h":1},"expect":1000.0,"tol":0.000000001,"text":"1,000"},
+{"expr":"(W*h)/(F*n*h)","input":{"W":1000,"F":240,"n":5,"h":1},"expect":0.8333333333333334,"scale":100,"tol":0.000000001,"text":"83.33"},
+{"expr":"F*n*h-W*h","input":{"W":1000,"F":240,"n":5,"h":1},"expect":200.0,"tol":0.000000001,"text":"200"},
+{"expr":"P/eta","input":{"P":10,"eta":0.85},"expect":11.764705882352942,"tol":0.000000001,"text":"11.765"},
+{"expr":"P/eta","input":{"P":10,"eta":0.86},"expect":11.627906976744185,"tol":0.000000001,"text":"11.6279"},
+{"expr":"P/a-P/b","input":{"P":10,"a":0.85,"b":0.86},"expect":0.13679890560875663,"tol":0.000000001,"text":"0.1368"},
+{"expr":"1-a/b","input":{"a":0.85,"b":0.86},"expect":0.011627906976744207,"scale":100,"tol":0.000000001,"text":"1.16"},
+{"expr":"P/eta","input":{"P":7.5,"eta":0.897},"expect":8.361204013377927,"tol":0.000000001,"text":"8.3612"},
+{"expr":"P/eta","input":{"P":7.5,"eta":0.922},"expect":8.134490238611713,"tol":0.000000001,"text":"8.1345"},
+{"expr":"P/a-P/b","input":{"P":7.5,"a":0.897,"b":0.922},"expect":0.22671377476621402,"tol":0.000000001,"text":"0.2267"},
+{"expr":"b-a","input":{"a":0.897,"b":0.922},"expect":0.025,"scale":100,"tol":0.000000001,"text":"2.5"},
+{"expr":"(P/a-P/b)*h","input":{"P":7.5,"a":0.897,"b":0.922,"h":6000},"expect":1360.2826485972842,"tol":1,"text":"1,360"},
+{"expr":"(P/a-P/b)*h*price","input":{"P":7.5,"a":0.897,"b":0.922,"h":6000,"price":3.5},"expect":4760.989270090495,"tol":1,"text":"4,761"},
+{"expr":"P/eta","input":{"P":2,"eta":0.82},"expect":2.4390243902439024,"tol":0.000000001,"text":"2.439"},
+{"expr":"P/eta","input":{"P":2,"eta":0.922},"expect":2.1691973969631237,"tol":0.000000001,"text":"2.169"},
+{"expr":"P/a-P/b","input":{"P":2,"a":0.82,"b":0.922},"expect":0.26982699328077864,"tol":0.000000001,"text":"0.2698"},
+{"expr":"a*b*c*d*f","input":{"a":0.93,"b":0.95,"c":0.97,"d":0.95,"f":0.97},"expect":0.7897208924999999,"scale":100,"tol":0.000000001,"text":"78.97"},
+{"expr":"d-a*b*c*d*f","input":{"a":0.93,"b":0.95,"c":0.97,"d":0.95,"f":0.97},"expect":0.16027910750000007,"scale":100,"tol":0.000000001,"text":"16.03"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #38 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">機械效率：四級傳動各自 90% 以上，串起來只剩 81.28%</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-26</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一台標著 1,500 W 的捲揚機把 50 kg 的貨以每秒 2 公尺往上拉，真正做在貨物上的只有
+        <strong>981</strong> W —— 效率 <strong>65.4</strong>%，剩下的 <strong>519</strong> W 全變成熱。
+        公式只是一個除法，難的地方在分母放什麼、多級傳動怎麼合併，以及效率差一個百分點值多少電費。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">η = (P<sub>out</sub> / P<sub>in</sub>) × 100%　　　等價寫法 η = W<sub>out</sub> / W<sub>in</sub></div>
+          <div class="formula-box-note">分子分母必須是同一種物理量（都是功率或都是功），單位一致才能相除</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P<sub>out</sub></td><td>有用輸出功率（useful output）</td><td>瓦 (W)</td><td>981 W</td></tr>
+            <tr><td>P<sub>in</sub></td><td>輸入功率（input），含全部被消耗掉的部分</td><td>瓦 (W)</td><td>1,500 W</td></tr>
+            <tr><td>η</td><td>效率（eta），恆小於 1</td><td>無因次 / %</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>1,500 W 的捲揚機，效率到底是多少？</h2>
+        <p>
+          先把「有用輸出」定義清楚：這台機器的任務是把貨抬高，有用功率就是對抗重力做功的速率。
+          <a href="/formulas/mechanical-work.html">功</a> W = F·d 除以時間即 P = F·v，F 是重量 m·g。
+        </p>
+        <p>
+          代入 m = 50 kg、g = 9.81 m/s²、v = 2 m/s：P<sub>out</sub> = 50 × 9.81 × 2 =
+          <strong>981</strong> W。銘牌輸入是 1,500 W，所以 η = 981 ÷ 1500 = 0.654 = <strong>65.4</strong>%。
+        </p>
+        <p>
+          另外 <strong>34.6</strong>% 去哪了？答案是 <strong>519</strong> W 的損耗 ——
+          繞組銅損、鐵芯渦流與磁滯損、齒輪齧合摩擦、軸承阻力、鋼索彎折。各機制的佔比要實測才拆得開，
+          但總和不必測量：<strong>輸入減掉有用輸出就是損耗</strong>，這是能量守恆直接給的答案。
+        </p>
+        <p>
+          損耗等於發熱量，這有直接的工程後果。驅動單元若裝在機櫃裡，要把 519 W 排掉、櫃內外溫差維持 10 K，
+          需要的風量是 519 ÷ (1200 × 10) = <strong>0.04325</strong> m³/s，即
+          <strong>155.7</strong> m³/h（空氣體積熱容量取 1.2 kJ/(m³·K)）。效率同時決定散熱設計。
+        </p>
+
+        <h2>為什麼效率永遠小於 100%？</h2>
+        <p>
+          因為分子是分母的子集：分母是全部投入的能量，分子只是其中走到目標的那一份，比值不可能超過 1。
+          宣稱效率超過 100% 的裝置，問題一定在分母漏算了某個能量來源 —— 熱泵的 COP 常被誤讀成效率超過 100%，
+          但它的分母只放電力，沒放從低溫側搬來的熱，所以 COP 是搬運比，不是效率。
+        </p>
+        <p>
+          效率量級與機構型式高度相關，差距可超過一個數量級：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>裝置／機構</th><th>典型效率量級</th><th>主要損耗來源</th></tr></thead>
+          <tbody>
+            <tr><td>大型三相感應馬達（&gt;100 kW）</td><td>95–98%</td><td>銅損、鐵損、風阻</td></tr>
+            <tr><td>單級正齒輪箱</td><td>96–99%</td><td>齧合滑動摩擦、潤滑油攪拌</td></tr>
+            <tr><td>蝸輪蝸桿減速</td><td>50–90%</td><td>齒面是純滑動接觸</td></tr>
+            <tr><td>梯形螺桿</td><td>20–40%</td><td>純滑動，低效率換來自鎖特性</td></tr>
+          </tbody>
+        </table>
+        <p>
+          梯形螺桿那一列值得多看一眼：<strong>低效率有時候是刻意買來的</strong>。
+          效率低到一定程度，機構就無法被負載反向推動（自鎖），升降平台因此能斷電停在半空。
+          把效率當成唯一選型指標，會砍掉這類功能需求。
+        </p>
+
+        <h2>多級傳動要相乘，不是平均</h2>
+        <p>
+          真實的動力鏈很少只有一級。一台輸送帶可能這樣串：馬達 90% → 齒輪箱 95% →
+          皮帶 97% → 捲筒軸承 98%。每一級拿到的都是上一級的輸出，所以總效率是連乘：
+        </p>
+        <p>
+          0.90 × 0.95 × 0.97 × 0.98 = 0.812763 = <strong>81.28</strong>%。
+          四級都在 90% 以上，整條鏈卻只剩八成，損耗 <strong>18.72</strong>%。
+        </p>
+        <p>
+          逐級軌跡是 <strong>90.00</strong>% → <strong>85.50</strong>% →
+          <strong>82.94</strong>% → <strong>81.28</strong>%：每級扣掉的是前一級剩下的量，不是從 100% 裡扣。
+        </p>
+        <p>
+          級數多的時候後果很殘酷。每一級都做到 95% 這個不算差的水準，十級串下來是
+          0.95¹⁰ = <strong>59.87</strong>% —— 超過四成的能量在路上不見了。
+          這也是為什麼減速比很大的場合寧可用一級大減速比的行星齒輪，而不是疊三四級。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把各級效率取平均。</strong>上面那條鏈取算術平均是 (0.90 + 0.95 + 0.97 + 0.98) ÷ 4 = <strong>95</strong>%，
+            和正確答案 81.28% 差了 <strong>13.72</strong> 個百分點，選型會直接偏小一成以上，
+            機器裝好才發現帶不動。比值串接一律用乘法 —— 這和
+            <a href="/formulas/percentage.html">百分比</a> 的連續變化不能相加是同一條規則。
+          </p>
+        </div>
+
+        <h2>滑輪組：省力五倍，效率只有 83.33%</h2>
+        <p>
+          承載段數 n = 5 的滑輪組要提起 1,000 N 的重物。理想拉力是 1000 ÷ 5 = 200 N，
+          實測卻要 240 N 才動得起來。實際機械利益是 1000 ÷ 240 = <strong>4.1667</strong>，
+          理想機械利益是 5，所以 η = 4.1667 ÷ 5 = <strong>83.33</strong>%。
+        </p>
+        <p>
+          同一個答案也能從功的角度算，而且這條路徑獨立於上面那條。
+          重物升高 1 m，繩子必須被拉動 5 m（滑輪組的幾何約束）：
+        </p>
+        <ul>
+          <li>有用功 W<sub>out</sub> = 1000 N × 1 m = <strong>1,000</strong> J</li>
+          <li>輸入功 W<sub>in</sub> = 240 N × 5 m = <strong>1,200</strong> J</li>
+          <li>η = 1000 ÷ 1200 = <strong>83.33</strong>%，差額 <strong>200</strong> J 被摩擦與繩索彎折吃掉</li>
+        </ul>
+        <p>
+          兩條路徑收斂到同一個 83.33% 不是巧合：機械利益的定義裡已內含行程比，
+          「實際 MA ÷ 理想 MA」和「有用功 ÷ 輸入功」是同一個式子。手邊有測力計就用 MA 版，有行程就用功版。
+        </p>
+
+        <h2>反過來用：選型回推與電費試算</h2>
+        <p>
+          設計時真正常用的是移項後的 P<sub>in</sub> = P<sub>out</sub> ÷ η。需求端給「軸端要 10 kW」、
+          傳動鏈效率估 85%，馬達輸出至少要 10 ÷ 0.85 = <strong>11.765</strong> kW，選型取標準規格 15 kW。
+        </p>
+        <p>
+          效率在分母，所以邊際價值不是線性的。同樣 10 kW 的需求，效率從 85% 提到 86%，
+          輸入降到 <strong>11.6279</strong> kW，省下 <strong>0.1368</strong> kW，
+          相對降幅 <strong>1.16</strong>%。效率愈低，同樣一個百分點愈值錢。
+        </p>
+        <p>
+          換成錢更具體。一顆 7.5 kW 的馬達，IE2 效率約 89.7%、IE3 約 92.2%：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>項目</th><th>IE2（89.7%）</th><th>IE3（92.2%）</th></tr></thead>
+          <tbody>
+            <tr><td>輸入功率 P<sub>in</sub></td><td>8.3612 kW</td><td>8.1345 kW</td></tr>
+            <tr><td>功率差</td><td colspan="2">0.2267 kW</td></tr>
+            <tr><td>年耗電差（6,000 小時）</td><td colspan="2">1,360 kWh</td></tr>
+            <tr><td>年電費差（3.5 元/kWh）</td><td colspan="2">4,761 元</td></tr>
+          </tbody>
+        </table>
+        <p>
+          一顆馬達、<strong>2.5</strong> 個百分點的效率差，一年 <strong>4,761</strong> 元。
+          IE3 的價差通常在數千元量級，回收期以月計而不是年計 ——
+          這是能效法規把低等級馬達逐步淘汰的算術基礎。
+        </p>
+
+        <h2>帳面效率和實際效率差在哪？</h2>
+        <p>
+          規格書上的效率是<strong>額定工況</strong>的數字，兩個條件一變就不準：負載率與系統邊界。
+        </p>
+        <p>
+          先看負載率。同一顆 7.5 kW 的 IE3 馬達只帶 2 kW 負載時，效率會從 92.2% 掉到 82% 上下
+          （鐵損與風阻幾乎不隨負載減少，分母卻縮小了）。輸入功率因此是
+          2 ÷ 0.82 = <strong>2.439</strong> kW，而不是按額定效率算的
+          2 ÷ 0.922 = <strong>2.169</strong> kW，多耗 <strong>0.2698</strong> kW。
+          <strong>馬達選太大並不安全，它持續在收低效率的罰款。</strong>
+        </p>
+        <p>
+          再看系統邊界。電動車的馬達效率常標成 95%，但從插座算到輪子要把整條鏈串起來：
+          充電器 93% × 電池往返 95% × 逆變器 97% × 馬達 95% × 減速齒輪 97% = <strong>78.97</strong>%，
+          和單體馬達的 95% 差 <strong>16.03</strong> 個百分點。
+        </p>
+        <p>
+          兩個數字都沒說謊，它們量的是不同邊界。看到任何效率數字，第一個該問的不是「高不高」，
+          而是<strong>「分母從哪裡開始、分子到哪裡結束」</strong> ——
+          同一台機器換個邊界，95% 和 78.97% 都成立。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的機械效率計算機。填入輸入與輸出功率得到 η，也可固定輸出需求回推所需輸入。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 機械效率 #38</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <p style="margin: 0 0 12px; font-size: 0.95em;">
+          ∑ Calc Pro 提供這條公式的互動計算，可逐級輸入傳動鏈效率並即時看到連乘後的總效率，
+          也能把損耗換算成發熱量與所需風量。
+        </p>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=38" title="機械效率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/mechanical-work.html">功 W = F·d — 有用輸出功率的計算起點</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI — 輸入側的量測方式</a></li>
+          <li><a href="/formulas/percentage.html">百分比 — 為什麼比值串接要相乘不能相加</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 和串接效率同構、方向相反的指數</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：效率為無因次比值，依 ISO 80000 物理量與單位；馬達能效等級 IE2／IE3
+        依 IEC 60034-30-1 的分級與 4 極 7.5 kW 對應的效率區間；重力加速度取
+        g = 9.81 m/s²（工程常用值）。表中各機構的效率量級為機械設計手冊的一般範圍，
+        非特定型號實測，實際值隨尺寸、轉速、潤滑與負載率變化。
+        捲揚機主例假設等速上升、不計加速與貨物擺動；滑輪組假設繩索不可伸長、各動滑輪承載均勻。
+        風量計算取空氣體積熱容量 1.2 kJ/(m³·K)（約 20 °C、一大氣壓），
+        假設進風為環境溫度且櫃內充分混合，未計入輻射與傳導散熱。
+        電費以工業用電 3.5 元/kWh、年運轉 6,000 小時估算，實際費率依時間電價與契約容量而異；
+        數字為能耗試算，不構成採購建議。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
