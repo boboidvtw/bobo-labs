@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RC 截止頻率怎麼算？fc = 1/(2πRC) 公式拆解（10kΩ 配 100nF 實例）· Bobo Labs</title>
+  <meta name="description" content="RC 截止頻率怎麼算？fc = 1/(2πRC)，10 kΩ 配 100 nF 得 159.15 Hz。本文算出 fc 這點還有 70.71% 通過、十倍頻外才剩 9.9504%，並說明一階濾波器每十倍頻只掉 20 dB 與容差影響。" />
+  <meta property="og:title" content="RC 截止頻率怎麼算？fc = 1/(2πRC) 公式拆解" />
+  <meta property="og:description" content="10 kΩ 配 100 nF 得 159.15 Hz。fc 不是切斷點，這一點還有 70.71% 通過。含每十倍頻 20 dB 斜率、50 Hz 市電濾波選值與容差影響。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/rc-cutoff-frequency.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/rc-cutoff-frequency.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "RC 截止頻率怎麼算？fc = 1/(2πRC) 公式拆解", "url": "https://labs.moneyai168.com/formulas/rc-cutoff-frequency.html", "datePublished": "2026-10-27", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "RC 截止頻率", "item": "https://labs.moneyai168.com/formulas/rc-cutoff-frequency.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "1/(2*pi*R*C)",
+    "cases": [
+{"input":{"R":10000,"C":0.0000001},"expect":159.15494309189535,"tol":0.000000001,"text":"159.15"},
+{"expr":"R*C*1000","input":{"R":10000,"C":0.0000001},"expect":1.0,"tol":0.000000001,"text":"1"},
+{"expr":"2*pi","input":{"n":1},"expect":6.283185307179586,"tol":0.000000001,"text":"6.2832"},
+{"expr":"1/(R*C)","input":{"R":10000,"C":0.0000001},"expect":1000.0,"tol":0.000000001,"text":"1,000"},
+
+{"expr":"k/(2*pi*R*C)","input":{"R":10000,"C":0.0000001,"k":0.1},"expect":15.915494309189535,"tol":0.000000001,"text":"15.92"},
+{"expr":"1/sqrt(1+k**2)","input":{"k":0.1},"expect":0.9950371902099893,"scale":100,"tol":0.000000001,"text":"99.5037"},
+{"expr":"-20*log10(1/sqrt(1+k**2))","input":{"k":0.1},"expect":0.04321373782642602,"tol":0.000000001,"text":"0.0432"},
+{"expr":"degrees(atan(k))","input":{"k":0.1},"expect":5.710593137499643,"tol":0.000000001,"text":"5.71"},
+
+{"expr":"k/(2*pi*R*C)","input":{"R":10000,"C":0.0000001,"k":0.5},"expect":79.57747154594767,"tol":0.000000001,"text":"79.58"},
+{"expr":"1/sqrt(1+k**2)","input":{"k":0.5},"expect":0.8944271909999159,"scale":100,"tol":0.000000001,"text":"89.4427"},
+{"expr":"-20*log10(1/sqrt(1+k**2))","input":{"k":0.5},"expect":0.9691001300805644,"tol":0.000000001,"text":"0.9691"},
+{"expr":"degrees(atan(k))","input":{"k":0.5},"expect":26.56505117707799,"tol":0.000000001,"text":"26.57"},
+
+{"expr":"1/sqrt(1+k**2)","input":{"k":1},"expect":0.7071067811865475,"scale":100,"tol":0.000000001,"text":"70.7107"},
+{"expr":"-20*log10(1/sqrt(1+k**2))","input":{"k":1},"expect":3.0102999566398125,"tol":0.000000001,"text":"3.0103"},
+{"expr":"degrees(atan(k))","input":{"k":1},"expect":45.0,"tol":0.000000001,"text":"45"},
+
+{"expr":"k/(2*pi*R*C)","input":{"R":10000,"C":0.0000001,"k":2},"expect":318.3098861837907,"tol":0.000000001,"text":"318.31"},
+{"expr":"1/sqrt(1+k**2)","input":{"k":2},"expect":0.4472135954999579,"scale":100,"tol":0.000000001,"text":"44.7214"},
+{"expr":"-20*log10(1/sqrt(1+k**2))","input":{"k":2},"expect":6.989700043360187,"tol":0.000000001,"text":"6.9897"},
+{"expr":"degrees(atan(k))","input":{"k":2},"expect":63.43494882292201,"tol":0.000000001,"text":"63.43"},
+
+
+{"expr":"k/(2*pi*R*C)","input":{"R":10000,"C":0.0000001,"k":10},"expect":1591.5494309189535,"tol":0.000000001,"text":"1,591.55"},
+{"expr":"1/sqrt(1+k**2)","input":{"k":10},"expect":0.09950371902099892,"scale":100,"tol":0.000000001,"text":"9.9504"},
+{"expr":"-20*log10(1/sqrt(1+k**2))","input":{"k":10},"expect":20.043213737826427,"tol":0.000000001,"text":"20.0432"},
+{"expr":"degrees(atan(k))","input":{"k":10},"expect":84.28940686250036,"tol":0.000000001,"text":"84.29"},
+
+{"expr":"k/(2*pi*R*C)","input":{"R":10000,"C":0.0000001,"k":100},"expect":15915.494309189534,"tol":0.000000001,"text":"15,915.49"},
+{"expr":"1/sqrt(1+k**2)","input":{"k":100},"expect":0.009999500037496875,"scale":100,"tol":0.000000001,"text":"1.0000"},
+{"expr":"-20*log10(1/sqrt(1+k**2))","input":{"k":100},"expect":40.00043427276863,"tol":0.000000001,"text":"40.0004"},
+{"expr":"degrees(atan(k))","input":{"k":100},"expect":89.42706130231652,"tol":0.000000001,"text":"89.43"},
+
+{"expr":"20*log10(sqrt(1+b**2)/sqrt(1+a**2))","input":{"a":10,"b":100},"expect":19.957220534942202,"tol":0.000000001,"text":"19.9572"},
+
+{"expr":"1/(2*pi*R*C)","input":{"R":330000,"C":0.000001},"expect":0.48228770633907686,"tol":0.000000001,"text":"0.4823"},
+{"expr":"1/sqrt(1+(f*2*pi*R*C)**2)","input":{"R":330000,"C":0.000001,"f":50},"expect":0.009645305434847295,"scale":100,"tol":0.000000001,"text":"0.9645"},
+{"expr":"-20*log10(1/sqrt(1+(f*2*pi*R*C)**2))","input":{"R":330000,"C":0.000001,"f":50},"expect":40.31368030271719,"tol":0.000000001,"text":"40.31"},
+{"expr":"R*C","input":{"R":330000,"C":0.000001},"expect":0.33,"tol":0.000000001,"text":"0.33"},
+{"expr":"5*R*C","input":{"R":330000,"C":0.000001},"expect":1.65,"tol":0.000000001,"text":"1.65"},
+{"expr":"V/sqrt(1+(f*2*pi*R*C)**2)","input":{"R":330000,"C":0.000001,"f":50,"V":100},"expect":0.9645305434847295,"tol":0.000000001,"text":"0.965"},
+
+{"expr":"-20*log10((1/sqrt(1+k**2))**2)","input":{"k":1},"expect":6.020599913279624,"tol":0.000000001,"text":"6.0206"},
+{"expr":"sqrt(sqrt(2)-1)","input":{"n":2},"expect":0.6435942529055827,"tol":0.000000001,"text":"0.6436"},
+{"expr":"sqrt(sqrt(2)-1)/(2*pi*R*C)","input":{"R":10000,"C":0.0000001},"expect":102.43120669545891,"tol":0.000000001,"text":"102.43"},
+{"expr":"-20*log10((1/sqrt(1+k**2))**2)","input":{"k":10},"expect":40.086427475652854,"tol":0.000000001,"text":"40.0864"},
+
+{"expr":"1/(2*pi*R*tr*C*tc)","input":{"R":10000,"C":0.0000001,"tr":1.01,"tc":1.10},"expect":143.2537741601218,"tol":0.000000001,"text":"143.25"},
+{"expr":"1/(2*pi*R*tr*C*tc)","input":{"R":10000,"C":0.0000001,"tr":0.99,"tc":0.90},"expect":178.6250764218803,"tol":0.000000001,"text":"178.63"},
+{"expr":"(1-1/(tr*tc))*100","input":{"tr":1.01,"tc":1.10},"expect":9.990999099910013,"tol":0.000000001,"text":"9.99"},
+{"expr":"(1/(tr*tc)-1)*100","input":{"tr":0.99,"tc":0.90},"expect":12.2334455667789,"tol":0.000000001,"text":"12.23"},
+{"expr":"(1-1/sqrt(tc))*100","input":{"tc":1.10},"expect":4.6537410754407755,"tol":0.000000001,"text":"4.65"},
+
+{"expr":"1/(2*pi*f*C)","input":{"f":20000,"C":0.000000001},"expect":7957.7471545947665,"tol":0.000000001,"text":"7,957.75"},
+{"expr":"1/(2*pi*R*C)","input":{"R":8200,"C":0.000000001},"expect":19409.13940145065,"tol":0.000000001,"text":"19,409.14"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 工程 · #62 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">RC 截止頻率：fc 不是切斷點，那裡還有 70.71% 通過</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-27</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        10 kΩ 配 100 nF 的低通濾波器，截止頻率是 159.15 Hz。
+        「截止」容易讓人以為超過就被擋掉，但在 fc 這一點訊號<strong>還有 70.71% 通過</strong>，
+        要到十倍頻外的 1,591.55 Hz 才剩 9.9504%。
+        本文算出每個數字：衰減曲線、相位落後、串級後的 −3 dB 位移與容差範圍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">f<sub>c</sub> = 1 / (2πRC)　　　|H(f)| = 1 / √(1 + (f/f<sub>c</sub>)²)　　　φ = −arctan(f/f<sub>c</sub>)</div>
+          <div class="formula-box-note">R 必須用歐姆（Ω）、C 必須用法拉（F），算出來的 f<sub>c</sub> 單位才是赫茲（Hz）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>R</td><td>串聯電阻</td><td>Ω（歐姆）</td><td>10,000（10 kΩ）</td></tr>
+            <tr><td>C</td><td>對地電容</td><td>F（法拉）</td><td>0.0000001（100 nF）</td></tr>
+            <tr><td>f<sub>c</sub></td><td>截止頻率，又稱 −3 dB 點、轉角頻率</td><td>Hz（赫茲）</td><td>計算結果</td></tr>
+            <tr><td>|H(f)|</td><td>振幅比（輸出 ÷ 輸入）</td><td>倍率</td><td>f = f<sub>c</sub> 時為 0.707107</td></tr>
+            <tr><td>φ</td><td>輸出相對輸入的相位落後</td><td>度（°）</td><td>f = f<sub>c</sub> 時 45</td></tr>
+          </tbody>
+        </table>
+
+        <h2>10 kΩ 配 100 nF，截止頻率落在哪？</h2>
+        <p>
+          代進去：f<sub>c</sub> = 1 / (2π × 10,000 Ω × 0.0000001 F) = <strong>159.15 Hz</strong>。
+          單位要先換算到 Ω 與 F，100 nF 是 0.0000001 F，不是 100。
+          分母的 RC 等於 0.001，就是這顆濾波器的時間常數 τ，也就是 1 毫秒——
+          <a href="/formulas/rc-time-constant.html">RC 時間常數</a>那篇算的是同一組零件的時域行為。
+        </p>
+        <p>
+          兩者的換算只差一個常數：f<sub>c</sub> = 1/(2πτ)。
+          時域問「充到 63% 要多久」、頻域問「多高的頻率開始被壓下去」，是同一顆 RC 的一體兩面：
+          τ 愈大反應愈慢，能通過的最高頻率就愈低。
+          把電阻與電容對調就變成高通濾波器，f<sub>c</sub> 仍是 1/(2πRC)——光看公式不能斷定低通或高通，要看拓樸。
+        </p>
+
+        <h2>「截止」不是切斷：fc 這一點還有 70.71% 通過</h2>
+        <p>
+          f<sub>c</sub> 的定義是<strong>振幅掉到輸入的 1/√2 的頻率</strong>，即 70.7107%，衰減 3.0103 dB——
+          業界口語的「−3 dB 點」精確值是 3.0103，不是整數 3。
+          選 1/√2 是因為功率正比於電壓平方：振幅剩 1/√2 時功率剛好剩一半，
+          f<sub>c</sub> 的物理意義就是<strong>半功率點</strong>。
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>f / f<sub>c</sub></th><th>頻率（Hz）</th><th>通過比例</th><th>衰減（dB）</th><th>相位落後</th></tr></thead>
+          <tbody>
+            <tr><td>0.1</td><td>15.92</td><td>99.5037%</td><td>0.0432</td><td>5.71°</td></tr>
+            <tr><td>0.5</td><td>79.58</td><td>89.4427%</td><td>0.9691</td><td>26.57°</td></tr>
+            <tr><td>1</td><td>159.15</td><td>70.7107%</td><td>3.0103</td><td>45°</td></tr>
+            <tr><td>2</td><td>318.31</td><td>44.7214%</td><td>6.9897</td><td>63.43°</td></tr>
+            <tr><td>10</td><td>1,591.55</td><td>9.9504%</td><td>20.0432</td><td>84.29°</td></tr>
+            <tr><td>100</td><td>15,915.49</td><td>1.0000%</td><td>40.0004</td><td>89.43°</td></tr>
+          </tbody>
+        </table>
+        <p>
+          兩件常被忽略的事。<strong>通帶內不是完全不動</strong>：f<sub>c</sub> 的一半處已掉 0.9691 dB、只剩 89.4427%，
+          要幾乎不受影響得退到 f<sub>c</sub> 的十分之一，那裡還有 99.5037%。
+          <strong>相位比振幅更早偏掉</strong>：十分之一處已落後 5.71°，做控制迴路時這會先吃掉相位裕度。
+        </p>
+
+        <h2>每十倍頻只掉 20 dB：一階濾波器有多鈍</h2>
+        <p>
+          從 f<sub>c</sub> 的 10 倍（衰減 20.0432 dB）走到 100 倍（衰減 40.0004 dB），中間差 19.9572 dB。
+          這是一階 RC 的漸近斜率：<strong>每十倍頻 20 dB</strong>，每八度音程 6 dB。
+          斜率只在遠離 f<sub>c</sub> 處才接近，f<sub>c</sub> 附近是平滑轉彎、不是折線。
+        </p>
+        <p>
+          20 dB/decade 聽起來不少，用起來很鈍：想把干擾壓到百分之一（衰減 40.0004 dB），
+          干擾頻率得在 f<sub>c</sub> 的一百倍以外。訊號與干擾只差 10 倍頻時，一階 RC 最多給你 20.0432 dB，
+          還是把 f<sub>c</sub> 壓在訊號上緣換來的。這就是改用二階濾波器的理由。
+        </p>
+
+        <h2>反解：要壓掉 50 Hz 市電雜訊，R 和 C 怎麼配？</h2>
+        <p>
+          場景：慢速感測器（溫度、壓力、電池電壓）的輸出被 50 Hz 市電干擾，要壓到原來的 1% 左右。
+          反解需要 f / f<sub>c</sub> ≈ 100，f<sub>c</sub> 要落在 0.5 Hz 附近。
+          選標準件 R = 330 kΩ、C = 1 µF，得 f<sub>c</sub> = 0.4823 Hz。
+        </p>
+        <p>
+          驗算 50 Hz 的實際衰減：|H| = 1/√(1 + (50/0.4823)²) = 0.9645%，即 40.31 dB，
+          原本 100 mV 的市電漣波被壓到 0.965 mV，達成目標。
+        </p>
+        <p>
+          代價寫在時域：τ = R × C = 0.33 秒，要等 5τ = 1.65 秒輸出才算穩定。
+          <strong>這是一階濾波器的硬取捨</strong>——衰減量與反應速度由同一個 f<sub>c</sub> 決定，
+          想多壓 20 dB 就得把 f<sub>c</sub> 再降十倍、反應慢十倍。
+          感測器若每秒要讀十次，就得改走二階濾波器或數位陷波，而不是繼續加大電容。
+        </p>
+        <p>
+          另一個方向：音訊前端要在 20 kHz 設抗混疊濾波，挑 C = 1 nF，
+          反解 R = 1/(2π × 20,000 × 0.000000001) = 7,957.75 Ω；E24 沒有這個值，
+          最近的 8.2 kΩ 讓實際 f<sub>c</sub> 變成 19,409.14 Hz。
+          <strong>選值一定要回代驗算</strong>——零件只有離散規格，理想值幾乎不會剛好存在。
+        </p>
+
+        <h2>串兩級不等於陡兩倍：−3 dB 點會往下搬</h2>
+        <p>
+          把兩級相同的 RC（各 10 kΩ 配 100 nF、中間用運算放大器隔開）串起來，振幅響應變成單級的平方。
+          在 159.15 Hz 這一點，振幅從 70.7107% 變成一半，衰減 6.0206 dB——<strong>那裡已經不是 −3 dB 點</strong>。
+        </p>
+        <p>
+          新的 −3 dB 點往低頻搬：解 (1 + x²)⁻¹ = 1/√2 得 x = √(√2 − 1) = 0.6436，
+          整體 f<sub>c</sub> = 159.15 × 0.6436 = 102.43 Hz。
+          換到的是遠端斜率翻倍——十倍頻處從衰減 20.0432 dB 變成 40.0864 dB。
+        </p>
+        <p>
+          串級同時做兩件事：<strong>遠端變陡、轉角往內縮</strong>。設計要以最終的 102.43 Hz 回推，
+          不是拿單級的 159.15 Hz 當整體截止頻率。兩級之間若沒有緩衝器，第二級會對第一級形成負載，
+          實際 f<sub>c</sub> 還會再低一些。
+        </p>
+
+        <h2>容差直接傳到 fc，沒有根號可以幫忙</h2>
+        <p>
+          f<sub>c</sub> 與 R、C 成單純反比，兩者的誤差<strong>直接相乘</strong>傳遞。取電阻 ±1%、積層陶瓷電容 ±10%：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>情境</th><th>R</th><th>C</th><th>f<sub>c</sub>（Hz）</th><th>相對標稱</th></tr></thead>
+          <tbody>
+            <tr><td>標稱值</td><td>10 kΩ</td><td>100 nF</td><td>159.15</td><td>—</td></tr>
+            <tr><td>兩者都偏大</td><td>+1%</td><td>+10%</td><td>143.25</td><td>低 9.99%</td></tr>
+            <tr><td>兩者都偏小</td><td>−1%</td><td>−10%</td><td>178.63</td><td>高 12.23%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          標稱 159.15 Hz 的濾波器實際可能落在 143.25 到 178.63 Hz，寬度超過三成。
+          兩側還不對稱：倒數關係讓偏小側的 12.23% 大於偏大側的 9.99%，容差愈大愈明顯。
+        </p>
+        <p>
+          對照 <a href="/formulas/lc-resonant-frequency.html">LC 諧振頻率</a>：電容在根號裡，
+          同樣 +10% 的誤差只讓頻率偏 4.65%，被開根號壓掉將近一半。RC 沒有這個緩衝，
+          <strong>要 f<sub>c</sub> 準就得把錢花在電容上</strong>——電阻升到 ±0.1% 只省一個百分點。
+          陶瓷電容還會隨直流偏壓與溫度漂移，X7R 在額定電壓下掉三到五成並不罕見，比 ±10% 更傷。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 2π 掉了</strong>。寫成 f<sub>c</sub> = 1/(RC) 會得到 1,000 Hz，
+            正確答案是 159.15 Hz，<strong>整整差了 6.2832 倍</strong>。
+            根源是混淆角頻率與頻率：1/(RC) 算出來的是角頻率 ω<sub>c</sub>，單位 rad/s，要再除以 2π 才是 Hz。
+            判斷方法很簡單——算出漂亮的整數就先懷疑 2π 掉了，帶 2π 的結果幾乎不可能是整數。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 的 RC 截止頻率計算機。填入電阻與電容得到 f<sub>c</sub> 與各頻率衰減量，也可固定目標頻率回推零件值。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · RC 截止頻率 #62</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <p style="margin: 0 0 12px; font-size: 0.95em;">
+          ∑ Calc Pro 提供這條公式的互動計算，可切換 Ω／kΩ／MΩ 與 pF／nF／µF 的單位組合，
+          並即時看到任意頻率的衰減量與相位落後。
+        </p>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=62" title="RC 截止頻率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/rc-time-constant.html">RC 時間常數 τ = RC — 同一顆濾波器的時域面貌</a></li>
+          <li><a href="/formulas/lc-resonant-frequency.html">LC 諧振頻率 — 容差被根號壓掉一半的對照組</a></li>
+          <li><a href="/formulas/decibel-voltage.html">電壓分貝 — 70.71% 為何等於 3 dB</a></li>
+          <li><a href="/formulas/common-logarithm.html">常用對數 log — dB 與十倍頻斜率的工具</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+        定義出處：一階 RC 低通的轉移函數由電容阻抗 Z<sub>C</sub> = 1/(j2πfC) 與電阻分壓得到，
+        f<sub>c</sub> 取振幅降至 1/√2（半功率）的頻率，符號與單位依 IEC 60050 與 SI 單位制，
+        分貝採電壓比 20·log₁₀ 的慣例。文中零件值為說明用的標準規格量級，非特定型號實測；
+        容差 ±1%（金屬皮膜電阻）／±10%（積層陶瓷電容）為商用件常見等級，X7R 偏壓漂移量級取自電容廠
+        特性曲線。串級一節假設兩級間有理想緩衝（增益 1、輸出阻抗 0）。
+        計算假設理想零件、訊號源阻抗 0、負載阻抗無限大，未納入寄生電感電容與運放頻寬；
+        實際電路在遠高於 f<sub>c</sub> 的頻段衰減會因寄生效應止步，不會一路維持 20 dB/decade。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
