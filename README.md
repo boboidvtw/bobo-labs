@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-10-29**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/voltage-divider.html`（#105 · 工程 · Pro，分壓定則 Vout = Vin × R₂/(R₁+R₂) —— 12 V 電池接 3.3 V ADC，取 R₂ = 10 kΩ 反推 R₁ = 26,363.64 Ω，捨入方向決定安全：E24 27 kΩ 得 3.2432 V、E96 26.1 kΩ 得 3.3241 V 已超限；照標稱設計的 27 kΩ/10 kΩ 遇充電 14.4 V 送出 3.8919 V，改以 15 V 上限設計選 36 kΩ，12/14.4/15 V 對應 2.6087/3.1304/3.2609 V；分壓器常駐 0.2609 mA、一年漏 2,285.22 mAh，放大十倍降到 228.52 mAh 但戴維寧電阻升到 78,260.87 Ω；100 kΩ 負載讓輸出低 7.26%、1 MΩ 只低 0.78%；±1% 最壞情況 2.5681–2.6498 V，15 V 遇最壞組合 3.3122 V 剛好越線；常見錯誤是分子放成 R₁、得到 9.3913 V）。
+  Formula 卡片 #105 由 placeholder 轉為連結；Tier 與文章一致（Pro），分類計數與註腳不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 36 case）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-29.
 - **2026-10-28**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/rc-cutoff-frequency.html`（#62 · 工程 · Pro，RC 截止頻率 fc = 1/(2πRC) —— 10 kΩ 配 100 nF 得 fc = 159.15 Hz，「截止」不是切斷：fc 處仍有 70.7107% 通過、衰減 3.0103 dB（半功率點），十倍頻處剩 9.9504%；一階 RC 每十倍頻只掉 20 dB，壓 50 Hz 市電到 1% 需 fc ≈ 0.48 Hz、代價是 5τ = 1.65 秒的反應時間；兩級串接遠端斜率翻倍但 −3 dB 點下移到 102.43 Hz；±1% 電阻與 ±10% 電容讓 fc 落在 143.25–178.63 Hz，RC 不像 LC 有根號壓縮誤差；常見錯誤是掉了 2π，把角頻率 1,000 rad/s 當成赫茲）。
   Formula 卡片 #62 由 placeholder 轉為連結；Tier 與文章一致（Pro），分類計數與註腳不動。
