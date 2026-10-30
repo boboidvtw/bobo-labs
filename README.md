@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-10-30**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/moles.html`（#51 · 科學 · Free，莫耳數 n = m/M —— 500 mL 水 27.75 mol、約 1.6714×10²⁵ 個分子；6 g 食鹽 0.1027 mol；4 g 氫氣燃燒需 31.74 g 氧、生成 35.74 g 水；常見錯誤是氧氣誤用 O 原子量，差 2 倍）、
+  `2026-10-28-web-fps-one-frame-late.html`（AI 評測題 002 網頁 FPS：開火讀到上一幀相機朝向、三元運算缺括號、受擊閃白後自發光歸零等四個 bug）。
+  Writing 區依時間倒序插入；Formula #51 卡片由 placeholder 轉為連結（Tier 一致、分類計數不變）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 24 cases）自動上線；`2026-10-28-starry-night-3d-shader.html` 通過 QA 但超出每次 2 篇上限，留待下次。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-10-30.
+
 - **2026-10-29**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/voltage-divider.html`（#105 · 工程 · Pro，分壓定則 Vout = Vin × R₂/(R₁+R₂) —— 12 V 電池接 3.3 V ADC，取 R₂ = 10 kΩ 反推 R₁ = 26,363.64 Ω，捨入方向決定安全：E24 27 kΩ 得 3.2432 V、E96 26.1 kΩ 得 3.3241 V 已超限；照標稱設計的 27 kΩ/10 kΩ 遇充電 14.4 V 送出 3.8919 V，改以 15 V 上限設計選 36 kΩ，12/14.4/15 V 對應 2.6087/3.1304/3.2609 V；分壓器常駐 0.2609 mA、一年漏 2,285.22 mAh，放大十倍降到 228.52 mAh 但戴維寧電阻升到 78,260.87 Ω；100 kΩ 負載讓輸出低 7.26%、1 MΩ 只低 0.78%；±1% 最壞情況 2.5681–2.6498 V，15 V 遇最壞組合 3.3122 V 剛好越線；常見錯誤是分子放成 R₁、得到 9.3913 V）。
   Formula 卡片 #105 由 placeholder 轉為連結；Tier 與文章一致（Pro），分類計數與註腳不動。
