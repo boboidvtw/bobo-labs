@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>莫耳數怎麼算？n = m/M 公式拆解（500 mL 水有幾莫耳實例）· Bobo Labs</title>
+  <meta name="description" content="莫耳數怎麼算？n = m ÷ M，質量除以莫耳質量。本文用一瓶 500 mL 水、一茶匙食鹽、葡萄糖與氫氣燃燒的實例，示範莫耳質量怎麼查、莫耳數怎麼換成分子數，以及化學計量為什麼一定要先換成莫耳。" />
+  <meta property="og:title" content="莫耳數怎麼算？n = m/M 公式拆解" />
+  <meta property="og:description" content="500 mL 水是 27.75 莫耳、約 1.6714×10²⁵ 個分子。從莫耳質量查表到化學計量，一次講清莫耳數公式。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/moles.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/moles.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "莫耳數怎麼算？n = m/M 公式拆解", "url": "https://labs.moneyai168.com/formulas/moles.html", "datePublished": "2026-10-29", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "莫耳數", "item": "https://labs.moneyai168.com/formulas/moles.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "m / M",
+    "cases": [
+{"expr":"2*H + O","input":{"H":1.008,"O":15.999},"expect":18.015,"tol":0.000001,"text":"18.015"},
+{"input":{"m":18,"M":18.015},"expect":0.9991673605328892,"tol":0.000000001,"text":"0.99917"},
+{"input":{"m":500,"M":18.015},"expect":27.75464890369137,"tol":0.000000001,"text":"27.75"},
+{"expr":"m / M * NA / 1e25","input":{"m":500,"M":18.015,"NA":6.02214076e23},"expect":1.6714240244240908,"tol":0.000000001,"text":"1.6714"},
+{"input":{"m":500,"M":18},"expect":27.77777777777778,"tol":0.000000001,"text":"27.778"},
+{"expr":"(m/a - m/b) / (m/b)","input":{"m":500,"a":18,"b":18.015},"expect":0.000833333333333,"tol":0.000000001,"scale":100,"text":"0.08"},
+{"expr":"Na + Cl","input":{"Na":22.990,"Cl":35.45},"expect":58.44,"tol":0.000001,"text":"58.44"},
+{"input":{"m":5.844,"M":58.44},"expect":0.1,"tol":0.000000001,"text":"0.1000"},
+{"input":{"m":6,"M":58.44},"expect":0.10266940451745381,"tol":0.000000001,"text":"0.1027"},
+{"expr":"m / M * NA / 1e22","input":{"m":6,"M":58.44,"NA":6.02214076e23},"expect":6.182896057494867,"tol":0.000000001,"text":"6.1829"},
+{"expr":"6*C + 12*H + 6*O","input":{"C":12.011,"H":1.008,"O":15.999},"expect":180.156,"tol":0.000001,"text":"180.156"},
+{"input":{"m":45,"M":180.156},"expect":0.24978352094851128,"tol":0.000000001,"text":"0.2498"},
+{"expr":"C + 2*O","input":{"C":12.011,"O":15.999},"expect":44.009,"tol":0.000001,"text":"44.009"},
+{"input":{"m":1000,"M":44.009},"expect":22.722624917630483,"tol":0.000000001,"text":"22.72"},
+{"input":{"m":1,"M":44.009},"expect":0.022722624917630483,"tol":0.000000001,"text":"0.02272"},
+{"expr":"2*H","input":{"H":1.008},"expect":2.016,"tol":0.000001,"text":"2.016"},
+{"input":{"m":4,"M":2.016},"expect":1.9841269841269842,"tol":0.000000001,"text":"1.9841"},
+{"expr":"m / a / 2","input":{"m":4,"a":2.016},"expect":0.9920634920634921,"tol":0.000000001,"text":"0.9921"},
+{"expr":"m / a / 2 * b","input":{"m":4,"a":2.016,"b":31.998},"expect":31.74404761904762,"tol":0.000000001,"text":"31.74"},
+{"expr":"m / a * b","input":{"m":4,"a":2.016,"b":18.015},"expect":35.74404761904762,"tol":0.000000001,"text":"35.74"},
+{"expr":"2*O","input":{"O":15.999},"expect":31.998,"tol":0.000001,"text":"31.998"},
+{"input":{"m":32,"M":31.998},"expect":1.000062503906494,"tol":0.000000001,"text":"1.0001"},
+{"input":{"m":32,"M":15.999},"expect":2.000125007812988,"tol":0.000000001,"text":"2.0001"},
+{"expr":"1 / NA * 1e24","input":{"NA":6.02214076e23},"expect":1.6605390671738466,"tol":0.000000001,"text":"1.6605"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #51 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">莫耳數怎麼算？n = m/M 公式拆解（500 mL 水實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-29</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一瓶 500 mL 的礦泉水裝了 27.75 莫耳的水，換成分子數大約是 1.6714 × 10²⁵ 個——比可觀測宇宙裡估計的恆星數量還多。
+        莫耳（mol）就是化學用來數這種天文數字的「打」：一打是 12 個，一莫耳是 6.02214076 × 10²³ 個。
+        莫耳數公式只有一行 n = m / M，但它是後面莫耳濃度、稀釋、理想氣體、化學計量全部計算的入口。
+        本文用水、食鹽、葡萄糖和氫氣燃燒四個實例，把查表、換算、比例三個步驟各算一遍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">n = m / M</div>
+          <div class="formula-box-note">n 為物質的量（mol）· m 為質量（g）· M 為莫耳質量（g/mol）· 分子數 N = n × N<sub>A</sub></div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>n</td><td>莫耳數（物質的量）</td><td>mol</td><td>實驗室 0.001–10 mol</td></tr>
+            <tr><td>m</td><td>樣品質量</td><td>g</td><td>毫克到公斤級</td></tr>
+            <tr><td>M</td><td>莫耳質量，等於化學式中各原子量的總和</td><td>g/mol</td><td>水 18.015、食鹽 58.44</td></tr>
+            <tr><td>N<sub>A</sub></td><td>亞佛加厥常數（2019 年起為定義值）</td><td>mol⁻¹</td><td>6.02214076 × 10²³</td></tr>
+          </tbody>
+        </table>
+
+        <h2>莫耳質量 M 怎麼查？把化學式的原子量加起來</h2>
+        <p>
+          M 不用背，從週期表的標準原子量相加即可。IUPAC 公布的常用值：H = 1.008、C = 12.011、N = 14.007、
+          O = 15.999、Na = 22.990、Cl = 35.45。化學式下標是幾，該原子就加幾次：
+        </p>
+        <ul>
+          <li>水 H₂O：2 × 1.008 + 15.999 = <strong>18.015</strong> g/mol</li>
+          <li>食鹽 NaCl：22.990 + 35.45 = <strong>58.44</strong> g/mol</li>
+          <li>葡萄糖 C₆H₁₂O₆：6 × 12.011 + 12 × 1.008 + 6 × 15.999 = <strong>180.156</strong> g/mol</li>
+          <li>二氧化碳 CO₂：12.011 + 2 × 15.999 = <strong>44.009</strong> g/mol</li>
+          <li>氫氣 H₂：2 × 1.008 = <strong>2.016</strong> g/mol；氧氣 O₂：2 × 15.999 = <strong>31.998</strong> g/mol</li>
+        </ul>
+        <p>
+          為什麼原子量的數字可以直接當成 g/mol？因為莫耳最初就是定義成「12 g 的碳-12 所含的原子數」，
+          讓 1 個原子的質量（以道耳頓 Da 計）和 1 莫耳的質量（以公克計）在數值上相同。
+          1 Da 換成公克是 1 / N<sub>A</sub> ≈ 1.6605 × 10⁻²⁴ g，乘上 N<sub>A</sub> 剛好回到 1 g。
+          2019 年 SI 改制後 N<sub>A</sub> 變成精確定義值，這個對應只剩 10⁻¹⁰ 量級的差距，一般計算完全可以忽略。
+        </p>
+
+        <h2>用真實數字算一遍：一瓶水、一茶匙鹽</h2>
+        <p>
+          <strong>例 1：18 g 的水是幾莫耳？</strong>
+          n = 18 ÷ 18.015 = 0.99917 mol。很多課本直接說「18 g 水就是 1 莫耳」，那是把 M 取整成 18 的結果。
+        </p>
+        <p>
+          <strong>例 2：一瓶 500 mL 礦泉水。</strong>
+          室溫下水的密度接近 1 g/mL，500 mL 約 500 g。n = 500 ÷ 18.015 = 27.75 mol。
+          乘上亞佛加厥常數：27.75 × 6.02214076 × 10²³ ≈ 1.6714 × 10²⁵ 個水分子。
+          若用取整的 M = 18 計算，得 27.778 mol，偏高約 0.08%——日常估算沒差，但實驗報告要用查表值。
+        </p>
+        <p>
+          <strong>例 3：一茶匙食鹽（約 6 g）。</strong>
+          n = 6 ÷ 58.44 = 0.1027 mol，含 6.1829 × 10²² 個 NaCl 單元。
+          反過來看，實驗室要配 0.1 莫耳的食鹽，就秤 5.844 g：5.844 ÷ 58.44 = 0.1000 mol。
+          這個「乘回去求質量」的方向（m = n × M）是配製溶液最常用的形式。
+        </p>
+        <p>
+          <strong>例 4：45 g 葡萄糖。</strong>
+          n = 45 ÷ 180.156 = 0.2498 mol。同樣 45 g，葡萄糖的莫耳數只有水的十分之一左右，
+          因為每個葡萄糖分子重了 10 倍。<strong>質量相同不代表粒子數相同</strong>，這是莫耳存在的理由。
+        </p>
+        <p>
+          <strong>例 5：1 kg 二氧化碳。</strong>
+          n = 1000 ÷ 44.009 = 22.72 mol。注意單位：公式裡的 m 是公克，1 kg 要先換成 1000 g，
+          否則會算出 0.02272 這種差 1000 倍的結果。
+        </p>
+
+        <h2>為什麼化學反應一定要先換成莫耳？氫氣燃燒實測</h2>
+        <p>
+          化學方程式的係數是<strong>粒子數比</strong>，不是質量比。以 2H₂ + O₂ → 2H₂O 為例，
+          係數 2 : 1 : 2 代表每 2 個氫分子消耗 1 個氧分子、生成 2 個水分子。
+          要從質量算質量，標準流程是「質量 → 莫耳 → 依係數換比例 → 莫耳 → 質量」。
+        </p>
+        <p>
+          假設手上有 4 g 氫氣：
+        </p>
+        <ol>
+          <li>換成莫耳：n(H₂) = 4 ÷ 2.016 = 1.9841 mol</li>
+          <li>需要的氧氣：係數比 2 : 1，n(O₂) = 1.9841 ÷ 2 = 0.9921 mol，質量 0.9921 × 31.998 = 31.74 g</li>
+          <li>生成的水：係數比 2 : 2，n(H₂O) = 1.9841 mol，質量 1.9841 × 18.015 = 35.74 g</li>
+        </ol>
+        <p>
+          驗算：4 g 氫加 31.74 g 氧，總質量正好等於生成的 35.74 g 水，符合質量守恆。
+          如果直接拿質量比 2 : 1 去算，會得出「4 g 氫配 2 g 氧」這種錯誤答案——實際需要的氧是它的 15 倍以上。
+        </p>
+
+        <h2>莫耳數接下來會用在哪裡？</h2>
+        <p>
+          n 是化學計算的共同貨幣，後續幾條公式都以它為輸入：
+          莫耳濃度 C = n / V（0.1027 mol 食鹽溶成 1 L 就是約 0.1 M 的食鹽水）、
+          稀釋方程 C₁V₁ = C₂V₂（稀釋前後溶質的莫耳數不變）、
+          理想氣體 PV = nRT（22.72 mol 的 CO₂ 在室溫常壓下體積約五百多公升）。
+          pH 值裡的 [H⁺] 也是莫耳濃度，單位 mol/L，算 pH 前通常要先用 n = m / M 把加入的酸換成莫耳。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：雙原子分子只算一個原子</div>
+          <p style="margin: 0;">
+            氧氣、氫氣、氮氣、氯氣在常溫下都以雙原子分子 O₂、H₂、N₂、Cl₂ 存在。
+            32 g 氧氣若誤用 O 的原子量 15.999 計算，會得 32 ÷ 15.999 = 2.0001 mol，
+            正確應該用 O₂ 的 31.998：32 ÷ 31.998 = 1.0001 mol——整整差 2 倍。
+            這個錯誤會一路傳到化學計量，讓配料比例全部錯位。檢查方法：先寫出物質的化學式，再數下標。
+            題目寫「氧原子」才用 15.999，寫「氧氣」一律用 O₂。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 莫耳數計算機。輸入質量（g）與莫耳質量（g/mol），例如 500 與 18.015，即可重現本文的 500 mL 水實例。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 莫耳數 #51</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=51" title="莫耳數互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/ph-value.html">pH 值 = −log[H⁺]：為什麼 pH 差 1 等於酸度差 10 倍</a></li>
+          <li><a href="/formulas/common-logarithm.html">常用對數 log₁₀：科學記號與數量級的換算工具</a></li>
+          <li><a href="/formulas/percentage.html">百分比公式：誤差與比例怎麼算</a></li>
+          <li>進階：莫耳濃度 C = n/V — 即將推出</li>
+          <li>進階：稀釋方程 C₁V₁ = C₂V₂ — 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          原子量取自 IUPAC 標準原子量（常用簡化值：H 1.008、C 12.011、N 14.007、O 15.999、Na 22.990、Cl 35.45）；
+          亞佛加厥常數 6.02214076 × 10²³ mol⁻¹ 為 2019 年 SI 定義值（BIPM SI Brochure 第 9 版）。
+          水密度以 1 g/mL 近似，一茶匙食鹽以 6 g 估計。本文為數學與化學計算說明，數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

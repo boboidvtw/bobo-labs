@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>子彈晚了一幀 — 一句話做出網頁 FPS 之後找到的四個 bug · Bobo Labs</title>
+  <meta name="description" content="題目只有「幫我做一個網頁版的 FPS 射擊遊戲」，交出一個 1,330 行的 three.js 單檔波次生存遊戲。真正花時間的不是功能，而是射擊晚一幀、運算子優先順序、受擊閃白歸零這類小錯。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-10-28-web-fps-one-frame-late.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-10-28</p>
+      <h1 class="article-title">子彈晚了一幀 — 一句話做出網頁 FPS 之後找到的四個 bug</h1>
+      <p class="article-lede">
+        題目只有一句：「幫我做一個網頁版的 FPS 射擊遊戲」。
+        交出的是《Neon Siege 霓虹圍城》：約 1,330 行的 three.js 單檔，三把槍、三種敵人、波次生存。
+        功能清單寫得很快，真正花時間的是四個小錯，其中最難察覺的一個，是子彈永遠朝上一幀的方向飛。
+      </p>
+
+      <div class="article-body">
+        <h2>題目與交付範圍</h2>
+        <p>
+          這是我的 AI 模型評測題庫第 002 題，同樣是單輪作答。題目原文逐字記在 prompt.md，
+          並附上評分面向，之後其他模型拿同一句話來比。這次由 Opus 5.5 作答，
+          產出一個 HTML、NOTES 與 5 張截圖。
+        </p>
+        <p>
+          內容：手槍、全自動步槍、散彈槍三把槍，各有開鏡、後座力、擴散與換彈；
+          敵人有哨兵、自爆無人機、重裝機甲三種；另有雷達、命中標記、受擊方向弧、
+          Web Audio 即時合成的音效，以及用 localStorage 存的最高分。
+        </p>
+
+        <h2>敵人怎麼找路：每 0.25 秒一張流場</h2>
+        <p>
+          敵人一多，每隻各跑一次 A* 會很貴。改用 BFS 流場：把地圖切成 1 公尺的格子，
+          從玩家所在格往外做一次廣度優先搜尋，每格記下「往哪個鄰格走會更接近玩家」。
+          所有敵人共用這張表，每隻只要查自己腳下那一格。
+        </p>
+        <p>
+          流場每 0.25 秒重算一次，而不是每幀重算。玩家一秒移動的距離只有幾格，
+          四分之一秒的延遲在畫面上看不出來，卻省掉大部分計算。
+          開火前再用射線檢查視線，被牆擋住就不射；敵人射出的光球子彈速度設成可以閃開。
+        </p>
+
+        <h2>槍為什麼不會穿牆</h2>
+        <p>
+          第一人稱遊戲的老問題：人貼著牆站，手上的槍模型會插進牆裡。
+          做法是把槍放在獨立的 gunScene，主場景畫完後先 clearDepth 清掉深度緩衝，
+          再把槍疊畫上去。槍永遠畫在最上層，不會跟牆比深度。
+        </p>
+
+        <h2>第一個 bug：子彈晚了一幀</h2>
+        <p>
+          測試時發現：快速甩鏡頭後立刻開火，子彈會偏向剛才的方向。
+          原因在主迴圈的順序：原本先跑 update（開火包含在裡面），之後才依滑鼠位移更新相機旋轉。
+          所以開火讀到的永遠是上一幀的相機朝向。
+        </p>
+        <p>
+          改成 updatePlayer → updateCamera → updateWeapon，先轉頭再開槍。
+          慢慢瞄的時候看不出差別，只有「轉身就射」才會偏。
+          <strong>同一幀裡誰先誰後，就決定了誰讀到的是舊資料。</strong>
+        </p>
+
+        <h2>第二個 bug：一個少了括號的三元運算</h2>
+        <p>
+          受擊方向弧（告訴玩家子彈從哪邊來的紅色弧形）角度一直不對。
+          問題出在一行形如 a + b === 0 ? x : y 的程式碼。
+          JavaScript 的優先順序是加法先於比較、比較先於三元，所以它一定被解析成
+          ((a + b) === 0) ? x : y。只要原本想要的分組不是這個，算出來的角度就整個不同，
+          而且程式完全不會報錯。補上明確的括號後，方向弧才指對。
+        </p>
+        <p>
+          這類錯不會報錯，也不會讓遊戲掛掉，只會讓箭頭指錯邊。
+          混用算術、比較和三元運算時，一律加括號，不要靠記優先順序表。
+        </p>
+
+        <h2>第三、四個 bug：看得見才算數</h2>
+        <p>
+          槍頂部原本有一條發光條，正對鏡頭時看起來像一大片青色板子擋住視線。
+          改成放在槍身兩側，並讓槍口略朝畫面中央。
+        </p>
+        <p>
+          在暗色霓虹場景裡，敵人暗到幾乎看不見。給護甲加上該敵人強調色的自發光，強度 0.14。
+          但這又引出另一個錯：受擊時閃白，閃完把自發光設回黑色，敵人中一槍就變暗。
+          修法是閃完恢復成 0.14 的基準值，而不是歸零。
+          <strong>暫時效果結束時要回到「原本的值」，不是回到「預設值」。</strong>
+        </p>
+
+        <h2>驗證到哪裡、沒驗證到哪裡</h2>
+        <p>
+          在內建瀏覽器 1280×760 實測，console 無錯誤，約 60 fps。
+          用 dispatchEvent 模擬滑鼠鍵盤：手槍 10 發中 9 清掉第 1 波（450 分）、步槍 5 發全中、
+          第 3 波三種敵人都會生成、陣亡結算正確。
+        </p>
+        <p>
+          沒驗證的也照列：自動化拿不到 pointer lock，暫停與繼續的流程沒有實測；
+          音效聽感、Safari 與 Firefox、第 4 波之後的平衡都還沒測。
+          另外內建瀏覽器開 file:// 是靜態快照，改檔後要重新 navigate 才看得到新版本；
+          沒重新載入就驗證，看到的其實是舊檔。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>主迴圈順序就是資料依賴</strong>：開火要在相機更新之後，否則讀到的是上一幀的朝向。</p>
+          <p><strong>共用一張流場勝過每隻敵人各自尋路</strong>：1 公尺格 BFS、每 0.25 秒重算，所有敵人查表即可。</p>
+          <p><strong>混用運算子一律加括號</strong>：優先順序錯不會報錯，只會讓結果安靜地錯。</p>
+          <p><strong>暫時效果要回到基準值</strong>：受擊閃白結束後恢復成 0.14 的自發光，而不是歸零。</p>
+          <p><strong>未驗證的項目寫出來</strong>：pointer lock、音效、跨瀏覽器沒測就標未驗證，下一輪才知道從哪裡補。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-10-28 · AI 模型評測題 002（網頁版 FPS）· Opus 5.5 單輪作答 · 單檔約 1,330 行 · 3 槍 3 敵 · 約 60 fps
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
