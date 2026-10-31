@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>把梵谷的旋渦寫進 shader — 單檔 3D 星夜小鎮的三個取巧 · Bobo Labs</title>
+  <meta name="description" content="一個 830 行、不用任何外部圖檔的 three.js 單檔，把《星夜》做成可以走進去的 3D 小鎮。旋渦靠方向旋轉加正弦條紋、點星星不做 raycast、柏樹用重新縮放半徑的 TubeGeometry。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-10-28-starry-night-3d-shader.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-10-28</p>
+      <h1 class="article-title">把梵谷的旋渦寫進 shader — 單檔 3D 星夜小鎮的三個取巧</h1>
+      <p class="article-lede">
+        題目只有一句：「用前端技術把梵谷的星夜寫成一個可以探索互動的 3D 城鎮」。
+        交出去的是一個約 830 行的 HTML，只靠 three.js r128，沒有任何外部圖檔。
+        天空的旋渦、可以點的星星、火焰狀的柏樹，各自用了一個比「照常規做」便宜很多的取巧。
+      </p>
+
+      <div class="article-body">
+        <h2>這是什麼題目</h2>
+        <p>
+          這是我自己的 AI 模型評測題庫的第 001 題，規則是單輪作答：模型拿到一句話的題目，
+          一次交出成品，不能來回修。這次用 Opus 5.5 作答，產出放進題庫的結果目錄，
+          附 NOTES 與 3 張截圖，之後其他模型用同一題比較。
+        </p>
+        <p>
+          限制條件很硬：單一 HTML 檔、函式庫只從 cdnjs 載 three.js r128、不能帶圖片素材。
+          也就是說，《星夜》最有辨識度的那片捲動天空，全部要用程式算出來。
+        </p>
+
+        <h2>旋渦怎麼畫：不畫線，而是把方向扭一下</h2>
+        <p>
+          天空是一顆 SphereGeometry，材質設 BackSide 讓鏡頭在球裡面看得到內壁，
+          上面掛一個自寫的 ShaderMaterial。直覺做法是在貼圖上畫螺旋線，但沒有貼圖可用。
+        </p>
+        <p>
+          改成這樣：對天空上每個方向向量，繞旋渦中心做 Rodrigues 旋轉，
+          旋轉強度隨「這個方向離旋渦中心的角距」做高斯衰減——越靠近中心扭得越多。
+          扭完之後取 sin(q.y × k + fbm) 當條紋，k 控制筆觸密度，fbm 加一點雜訊讓線條不要太工整。
+        </p>
+        <p>
+          結果是條紋本來是水平的，經過扭轉後在旋渦中心附近被捲成螺旋，
+          離開中心又慢慢恢復成水平流動——這正是畫裡天空的樣子。
+          <strong>螺旋不是畫出來的，是把座標系扭曲之後自然長出來的。</strong>
+        </p>
+        <p>
+          雜訊用 3D value noise，直接拿方向向量的 xyz 當輸入。
+          如果用經緯度當 2D 座標，經度 0 與 360 度交界會出現一條接縫；3D 輸入就沒有這個邊界。
+          星星與月亮也在同一個 shader 裡算，角距用 sqrt(2(1 − dot)) 近似，不需要反三角函數。
+        </p>
+
+        <h2>點擊星星：為什麼不用 raycast</h2>
+        <p>
+          互動需求是點天上的星星會有反應。three.js 的標準做法是 Raycaster 對天空球做相交測試，
+          但星星根本不是幾何體，它們只存在 shader 裡，raycast 打到球面也不知道是哪顆星。
+        </p>
+        <p>
+          做法改成純向量運算：把滑鼠位置轉成一條射線方向，跟每顆星的方向做 dot，
+          dot 夠接近 1 就算點中。幾顆星就是幾次內積，成本可以忽略。
+        </p>
+        <p>
+          麻煩在遮擋：星星被山擋住時不該點得到。地形有約 18 萬個三角面，
+          對它 raycast 一次很貴。改成沿射線往前步進，每一步用 heightAt(x, z) 查地形高度，
+          射線一旦低於地面就判定被擋住。heightAt 就是生成地形用的同一個高度函式，
+          所以結果與畫面一致，又不必碰任何三角面。
+        </p>
+
+        <h2>柏樹：一條管子，逐圈改半徑</h2>
+        <p>
+          畫裡那棵像黑色火焰的柏樹，用 TubeGeometry 沿一條彎曲路徑生成。
+          TubeGeometry 預設整條管子半徑一致，看起來像水管。
+          生成之後依每個頂點所在的 ring index 重新縮放它離中心線的距離，
+          底部粗、往上收尖，就成了錐形的火焰舌。
+        </p>
+
+        <h2>交卷前踩到的三個坑</h2>
+        <p>
+          第一，內建瀏覽器開不了 file:// 路徑，要用 launch.json 起一個 python3 -m http.server 來測，
+          而且預設 port 已被別的服務佔用，得換一個。
+        </p>
+        <p>
+          第二，發布成線上版時平台會自動補上 charset，看起來一切正常；
+          但本機直接開的版本如果沒寫 &lt;meta charset&gt;，中文介面會變亂碼。
+          兩個環境行為不同，只測一邊會漏掉。
+        </p>
+        <p>
+          第三，測試用的瀏覽器沒有音訊裝置，AudioContext 一建立就報錯。
+          這不是程式問題，但也代表音效完全沒有被驗證過，NOTES 裡照實寫「未驗證」。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>扭曲座標比畫圖形便宜</strong>：旋渦不必描線，對方向向量做隨距離衰減的旋轉，再套一個簡單條紋，螺旋就自己出現。</p>
+          <p><strong>球面雜訊用 3D 輸入</strong>：拿方向向量當 noise 座標，就沒有經緯度的接縫問題。</p>
+          <p><strong>不是幾何體的東西就別 raycast</strong>：shader 裡的星星用方向內積判定點擊；遮擋用高度函式沿射線步進，避開 18 萬面的相交測試。</p>
+          <p><strong>本機與線上要各測一次</strong>：平台自動補的 charset 會蓋住本機才有的亂碼問題。</p>
+          <p><strong>驗不到的就寫未驗證</strong>：測試環境沒有音訊裝置，音效就列為未驗證，不寫成「正常」。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-10-28 · AI 模型評測題 001（梵谷星夜 3D 小鎮）· Opus 5.5 單輪作答 · 單檔約 830 行 · three.js r128 · 0 張外部圖檔
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
