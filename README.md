@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-10-31**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `2026-10-28-starry-night-3d-shader.html`（把梵谷星夜做成 830 行 three.js 單檔 3D 小鎮——旋渦靠方向旋轉加正弦條紋、點星星用方向內積不做 raycast、柏樹用逐圈縮放半徑的 TubeGeometry）。
+  Writing 區依時間倒序插入（同日文章之前）。`formulas/molarity.html` 因正文中間值算式 0.1027 ÷ 0.5 = 0.2053（應為 0.2054）被 QA #5 擋下，留 `_pending/` 待重寫。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-10-31.
+
 - **2026-10-30**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/moles.html`（#51 · 科學 · Free，莫耳數 n = m/M —— 500 mL 水 27.75 mol、約 1.6714×10²⁵ 個分子；6 g 食鹽 0.1027 mol；4 g 氫氣燃燒需 31.74 g 氧、生成 35.74 g 水；常見錯誤是氧氣誤用 O 原子量，差 2 倍）、
   `2026-10-28-web-fps-one-frame-late.html`（AI 評測題 002 網頁 FPS：開火讀到上一幀相機朝向、三元運算缺括號、受擊閃白後自發光歸零等四個 bug）。
