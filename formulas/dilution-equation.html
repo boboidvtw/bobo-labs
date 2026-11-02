@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>稀釋公式怎麼算？C₁V₁ = C₂V₂ 拆解（濃鹽酸 12 M 配 0.1 M 實例）· Bobo Labs</title>
+  <meta name="description" content="稀釋公式怎麼算？C₁V₁ = C₂V₂，稀釋前後溶質量不變。本文用濃鹽酸配 0.1 M、75% 酒精、漂白水 1:100、序列稀釋與兩杯溶液混合的實例，示範要取多少原液、加多少水，以及「加入」與「加到」差在哪。" />
+  <meta property="og:title" content="稀釋公式怎麼算？C₁V₁ = C₂V₂ 拆解" />
+  <meta property="og:description" content="12.08 M 濃鹽酸配 1 L 的 0.1 M，只要取 8.28 mL。從實驗室配試劑到在家稀釋漂白水、酒精，一次講清稀釋方程。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/dilution-equation.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/dilution-equation.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "稀釋公式怎麼算？C₁V₁ = C₂V₂ 拆解", "url": "https://labs.moneyai168.com/formulas/dilution-equation.html", "datePublished": "2026-10-31", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "稀釋方程", "item": "https://labs.moneyai168.com/formulas/dilution-equation.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "C1 * V1 / V2",
+    "cases": [
+{"input":{"C1":1,"V1":10,"V2":250},"expect":0.04,"tol":0.000000001,"text":"0.04"},
+{"expr":"V2 / V1","input":{"V1":10,"V2":250},"expect":25,"tol":0.000000001,"text":"25"},
+{"expr":"C2 * V2 / C1 * 1000","input":{"C1":12.08,"C2":0.1,"V2":1},"expect":8.27814569536424,"tol":0.000001,"text":"8.28"},
+{"expr":"1000 - C2 * V2 / C1 * 1000","input":{"C1":12.08,"C2":0.1,"V2":1},"expect":991.7218543046357,"tol":0.000001,"text":"991.7"},
+{"expr":"C2 * V2 / C1 * 1000","input":{"C1":12,"C2":0.1,"V2":1},"expect":8.333333333333334,"tol":0.000001,"text":"8.33"},
+{"expr":"C2 * V2 / C1","input":{"C1":95,"C2":75,"V2":100},"expect":78.94736842105263,"tol":0.000001,"text":"78.9"},
+{"expr":"V2 - C2 * V2 / C1","input":{"C1":95,"C2":75,"V2":100},"expect":21.05263157894737,"tol":0.000001,"text":"21.1"},
+{"expr":"p * 10000","input":{"p":5},"expect":50000,"tol":0.000001,"text":"50,000"},
+{"input":{"C1":50000,"V1":100,"V2":10100},"expect":495.0495049504951,"tol":0.000001,"text":"495.0"},
+{"input":{"C1":50000,"V1":100,"V2":10000},"expect":500,"tol":0.000001,"text":"500"},
+{"expr":"C1 * (V1 / V2) ** k","input":{"C1":1,"V1":1,"V2":10,"k":3},"expect":0.001,"tol":0.000000001,"text":"0.001"},
+{"expr":"(Ca * Va + Cb * Vb) / (Va + Vb)","input":{"Ca":0.5,"Va":100,"Cb":0.1,"Vb":300},"expect":0.2,"tol":0.000000001,"text":"0.2"},
+{"input":{"C1":1,"V1":10,"V2":260},"expect":0.038461538461538464,"tol":0.000001,"text":"0.0385"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #54 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">稀釋公式怎麼算？C₁V₁ = C₂V₂ 拆解（濃鹽酸配 0.1 M 實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-31</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        實驗室要 1 L 的 0.1 M 鹽酸，試劑櫃裡只有約 12 M 的濃鹽酸；家裡要消毒，手上是 5% 的漂白水和 95% 的酒精。
+        三件事是同一個問題：原液要取多少、要加水到多少。稀釋方程 C₁V₁ = C₂V₂ 只有一行，
+        背後的道理是「加水不會增加溶質」。本文用濃鹽酸、75% 酒精、漂白水、序列稀釋與兩杯溶液混合五個實例，
+        把這條公式正算、反算各走一遍，並點出最常讓結果偏掉的「加入」與「加到」。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">C₂ = C₁ × V₁ / V₂</div>
+          <div class="formula-box-note">C₁ 為原液濃度 · V₁ 為取用的原液體積 · C₂ 為稀釋後濃度 · V₂ 為稀釋後溶液的總體積 · 源自 C₁V₁ = C₂V₂（溶質量守恆）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>C₁</td><td>原液（stock）濃度</td><td>M、%、ppm 皆可</td><td>濃鹽酸約 12 M；漂白水 5%</td></tr>
+            <tr><td>V₁</td><td>取用的原液體積</td><td>mL 或 L</td><td>1–100 mL</td></tr>
+            <tr><td>C₂</td><td>稀釋後濃度，單位與 C₁ 相同</td><td>同 C₁</td><td>0.01–1 M</td></tr>
+            <tr><td>V₂</td><td>稀釋後溶液的<strong>總</strong>體積（不是加水量）</td><td>與 V₁ 相同</td><td>100 mL–10 L</td></tr>
+          </tbody>
+        </table>
+
+        <h2>稀釋方程從哪裡來？加水不會增加溶質</h2>
+        <p>
+          莫耳濃度的定義是 C = n / V，移項得 n = C × V：濃度乘體積就是溶質的量。
+          稀釋只加溶劑，不加也不拿走溶質，所以稀釋前後的 n 相同，C₁ × V₁ = C₂ × V₂。
+          把要求的那一項留在一邊，就是表中的 C₂ = C₁V₁ / V₂，或反過來 V₁ = C₂V₂ / C₁。
+        </p>
+        <p>
+          這條式子有一個方便的性質：<strong>單位只要兩邊一致即可</strong>。C 可以是 mol/L、百分比或 ppm，
+          V 可以是 mL 或 L，因為兩邊的單位會互相抵銷。這點和直接用 C = n / V 不同——
+          算莫耳濃度時 V 必須換成公升，用稀釋方程時 mL 對 mL 就能直接代入。
+        </p>
+        <p>
+          V₂ / V₁ 稱為稀釋倍數（dilution factor）。取 10 mL 原液加到 250 mL，稀釋倍數是 250 ÷ 10 = 25 倍，
+          濃度也就降為原本的 1/25。
+        </p>
+
+        <h2>用真實數字算一遍：從 1 M 原液到濃鹽酸</h2>
+        <p>
+          <strong>例 1：正算。取 10 mL 的 1 M 食鹽水，加水到 250 mL。</strong>
+          C₂ = 1 × 10 ÷ 250 = 0.04 M。V₁ 與 V₂ 都用 mL，直接代入，不必先換成公升。
+        </p>
+        <p>
+          <strong>例 2：反算。用濃鹽酸配 1 L 的 0.1 M 鹽酸。</strong>
+          市售 37%、密度 1.19 g/mL 的濃鹽酸，換算約為 12.08 M（推導見莫耳濃度那一篇）。
+          要求的是原液體積，移項成 V₁ = C₂V₂ / C₁：
+        </p>
+        <ol>
+          <li>V₁ = 0.1 × 1 ÷ 12.08 L，換成毫升約 8.28 mL</li>
+          <li>需要的水量約為 1000 − 8.28 = 991.7 mL，但實務上不量水，而是加到刻度</li>
+          <li>操作：定量瓶先放大半瓶水，再緩慢加入 8.28 mL 濃鹽酸，搖勻冷卻後加水到 1 L 刻度</li>
+        </ol>
+        <p>
+          課本常把濃鹽酸寫成「12 M」，用 12 代入會得到 8.33 mL，和 8.28 mL 差約 0.06 mL。
+          對一般練習無妨；要配標準溶液時，最後仍要用標定（titration）確認實際濃度，因為濃鹽酸會揮發，開瓶久了濃度會下降。
+        </p>
+        <p>
+          第 3 步「先水後酸」有安全理由：濃酸稀釋會放熱，把少量酸加入大量水中，熱量被大量的水吸收；
+          反過來把水倒進濃酸，局部可能沸騰噴濺。
+        </p>
+
+        <h2>在家也用得到：75% 酒精與漂白水 1:100</h2>
+        <p>
+          <strong>例 3：95% 酒精配 100 mL 的 75% 酒精。</strong>
+          稀釋方程不限於 mol/L，百分比濃度一樣適用。V₁ = 75 × 100 ÷ 95 ≈ 78.9 mL。
+          所以是取 78.9 mL 的 95% 酒精，再加水到總體積 100 mL；直接算的加水量約 21.1 mL，
+          但酒精和水混合後體積會略為收縮，照「21.1 mL 水」倒進去，總量會不到 100 mL，濃度略偏高。
+          這正是「加到總體積」比「加多少水」準確的原因。
+        </p>
+        <p>
+          <strong>例 4：5% 漂白水稀釋 100 倍。</strong>
+          1% 等於 10,000 ppm，所以 5% 漂白水約為 50,000 ppm（次氯酸鈉）。
+          防疫宣導常見的做法是「100 mL 漂白水加入 10 公升清水」。這裡的 10 公升是加入的水，
+          溶液總體積是 10,100 mL，代入得 C₂ = 50,000 × 100 ÷ 10,100 ≈ 495.0 ppm。
+          若改成「100 mL 漂白水加水到 10 公升」，V₂ = 10,000 mL，C₂ 剛好是 500 ppm。
+          兩者差 1%，對消毒用途影響不大，但它說明了 V₂ 的定義在不同說法下會悄悄改變結果。
+        </p>
+
+        <h2>序列稀釋與兩杯溶液混合怎麼算？</h2>
+        <p>
+          <strong>例 5：序列稀釋（serial dilution）。</strong>
+          要得到很低的濃度時，一次稀釋得取極少量的原液，量測誤差很大。
+          實驗室的做法是分次稀釋：每次取 1 mL 加到 10 mL，稀釋 10 倍，重複 k 次，C = C₁ × (V₁/V₂)^k。
+          從 1 M 開始稀釋 3 次，C = 1 × (1/10)³ = 0.001 M，也就是 1 mM。
+          每一步都只是一次 C₁V₁ = C₂V₂，濃度呈指數下降，原理與<a href="/formulas/exponential-growth-decay.html">指數成長與衰減</a>相同。
+        </p>
+        <p>
+          <strong>延伸：兩杯不同濃度的溶液混合。</strong>
+          同樣用「溶質量相加」的思路：總溶質 = C_a V_a + C_b V_b，總體積 = V_a + V_b。
+          100 mL 的 0.5 M 與 300 mL 的 0.1 M 混合，C = (0.5 × 100 + 0.1 × 300) ÷ 400 = 0.2 M。
+          稀釋其實是這條式子的特例——加入的那一杯是濃度為 0 的純水。
+          注意混合後的濃度一定落在兩杯之間，算出範圍外的數字就是哪裡代錯了。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：把「加了多少水」當成 V₂</div>
+          <p style="margin: 0;">
+            V₂ 是稀釋後的總體積，等於原液加上水。例 1 若把「加水到 250 mL」做成「10 mL 原液再加 250 mL 水」，
+            總體積變成 260 mL，濃度是 1 × 10 ÷ 260 ≈ 0.0385 M，而不是 0.04 M，偏低約 4%。
+            稀釋倍數越小（原液佔比越高），這個誤差越大。檢查方法：題目或配方寫「加到」「定容至」時，那個數字才是 V₂；
+            寫「加入」「加」時，要把原液體積加回去。第二個常見錯誤是 C₁、C₂ 單位不一致，例如 C₁ 用 %、C₂ 用 ppm，
+            代入前先統一（1% = 10,000 ppm）。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 稀釋方程計算機。輸入原液濃度 C₁、取用體積 V₁ 與稀釋後總體積 V₂，例如 1、10、250，即可重現本文例 1 的 0.04 M。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 稀釋方程 #54</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=54" title="稀釋方程互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/moles.html">莫耳數 n = m/M：500 mL 水有幾莫耳</a></li>
+          <li><a href="/formulas/ph-value.html">pH 值 = −log[H⁺]：0.1 M 鹽酸的 pH 怎麼算</a></li>
+          <li><a href="/formulas/percentage.html">百分比公式：濃度百分比與比例怎麼算</a></li>
+          <li><a href="/formulas/exponential-growth-decay.html">指數成長與衰減：序列稀釋為什麼是指數下降</a></li>
+          <li><a href="/formulas/molarity.html">莫耳濃度 C = n/V：生理食鹽水是幾 M</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          稀釋方程依溶質量守恆 n = C × V 推導，與 IUPAC Gold Book「amount concentration」定義一致。
+          濃鹽酸以 37% w/w、密度 1.19 g/mL 估算為 12.08 M；家用漂白水以次氯酸鈉 5% 估算，實際濃度依產品標示與存放時間而異；
+          「100 mL 漂白水加入 10 公升清水」為國內防疫宣導常見說法，本文僅用來示範總體積的定義。
+          酒精與水混合的體積收縮為定性說明。本文為數學與化學計算說明，不構成安全或醫療指引；操作濃酸請依實驗室安全規範。
+          數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>莫耳濃度怎麼算？C = n/V 公式拆解（生理食鹽水 0.154 M 實例）· Bobo Labs</title>
+  <meta name="description" content="莫耳濃度怎麼算？C = n ÷ V，溶質莫耳數除以溶液體積。本文用生理食鹽水、配製 250 mL 溶液、血糖 mg/dL 換 mmol/L、鹽酸 pH 與濃鹽酸 12 M 的實例，示範 mol/L 怎麼算、怎麼反推秤重與避開單位錯誤。" />
+  <meta property="og:title" content="莫耳濃度怎麼算？C = n/V 公式拆解" />
+  <meta property="og:description" content="0.9% 生理食鹽水是 0.1540 mol/L，血糖 100 mg/dL 等於 5.551 mmol/L。從配溶液到看懂檢驗報告，一次講清莫耳濃度公式。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/molarity.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/molarity.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "莫耳濃度怎麼算？C = n/V 公式拆解", "url": "https://labs.moneyai168.com/formulas/molarity.html", "datePublished": "2026-10-30", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "莫耳濃度", "item": "https://labs.moneyai168.com/formulas/molarity.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "n / V",
+    "cases": [
+{"expr":"m / M / V","input":{"m":6,"M":58.44,"V":1},"expect":0.10266940451745381,"tol":0.000000001,"text":"0.1027"},
+{"expr":"m / M / V","input":{"m":6,"M":58.44,"V":0.5},"expect":0.20533880903490762,"tol":0.000000001,"text":"0.2053"},
+{"expr":"m / M / V","input":{"m":9,"M":58.44,"V":1},"expect":0.1540041067761807,"tol":0.000000001,"text":"0.1540"},
+{"expr":"m / M / V * 1000","input":{"m":9,"M":58.44,"V":1},"expect":154.0041067761807,"tol":0.000001,"text":"154.0"},
+{"expr":"m / M / V","input":{"m":50,"M":180.156,"V":1},"expect":0.27753724539177156,"tol":0.000000001,"text":"0.2775"},
+{"expr":"C * V","input":{"C":0.5,"V":0.25},"expect":0.125,"tol":0.000000001,"text":"0.125"},
+{"expr":"C * V * M","input":{"C":0.5,"V":0.25,"M":58.44},"expect":7.305,"tol":0.000001,"text":"7.305"},
+{"input":{"n":0.125,"V":250},"expect":0.0005,"tol":0.000000001,"text":"0.0005"},
+{"expr":"x * 10 / M","input":{"x":100,"M":180.156},"expect":5.550744909966918,"tol":0.000000001,"text":"5.551"},
+{"expr":"x * 10 / M","input":{"x":126,"M":180.156},"expect":6.993938586558316,"tol":0.000000001,"text":"6.994"},
+{"expr":"M / 10","input":{"M":180.156},"expect":18.0156,"tol":0.000001,"text":"18.016"},
+{"expr":"H + Cl","input":{"H":1.008,"Cl":35.45},"expect":36.458,"tol":0.000001,"text":"36.458"},
+{"expr":"m / M / V","input":{"m":0.3646,"M":36.458,"V":1},"expect":0.010000548576444127,"tol":0.000000001,"text":"0.01000"},
+{"expr":"-log10(m / M / V)","input":{"m":0.3646,"M":36.458,"V":1},"expect":1.9999761762811918,"tol":0.000000001,"text":"2.000"},
+{"expr":"1000 * d * w","input":{"d":1.19,"w":0.37},"expect":440.3,"tol":0.000001,"text":"440.3"},
+{"expr":"1000 * d * w / M","input":{"d":1.19,"w":0.37,"M":36.458},"expect":12.076910417466674,"tol":0.000000001,"text":"12.08"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #52 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">莫耳濃度怎麼算？C = n/V 公式拆解（生理食鹽水實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-10-30</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        醫院點滴架上的 0.9% 生理食鹽水，換成化學的說法是 0.1540 mol/L；健檢報告上 100 mg/dL 的空腹血糖，
+        在國外的報告會寫成 5.551 mmol/L。兩個數字講的都是同一件事：每公升液體裡溶了多少莫耳的東西。
+        莫耳濃度（molarity）公式只有一行 C = n / V，但它決定了溶液怎麼配、檢驗數字怎麼換、pH 怎麼算。
+        本文接續<a href="/formulas/moles.html">莫耳數 n = m/M</a> 那一篇，用食鹽水、葡萄糖、血糖與鹽酸五個實例把它算一遍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">C = n / V</div>
+          <div class="formula-box-note">C 為莫耳濃度（mol/L，記作 M）· n 為溶質莫耳數（mol）· V 為溶液總體積（L）· 常與 n = m / M 合併成 C = m / (M × V)</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>C</td><td>莫耳濃度（體積莫耳濃度）</td><td>mol/L（M）</td><td>實驗室 0.001–1 M；濃鹽酸約 12 M</td></tr>
+            <tr><td>n</td><td>溶質的莫耳數</td><td>mol</td><td>0.001–1 mol</td></tr>
+            <tr><td>V</td><td>溶液的總體積（不是溶劑體積）</td><td>L</td><td>0.01–1 L</td></tr>
+            <tr><td>m、M</td><td>溶質質量與莫耳質量，用來先求 n</td><td>g、g/mol</td><td>食鹽 M = 58.44</td></tr>
+          </tbody>
+        </table>
+
+        <h2>莫耳濃度 C 是什麼？為什麼不用公克每公升</h2>
+        <p>
+          濃度有很多種寫法：g/L、質量百分比、ppm、mol/L。化學偏好 mol/L，理由和莫耳數一樣——
+          反應是按粒子數進行的。1 L 裡溶 58.44 g 食鹽和 1 L 裡溶 180.156 g 葡萄糖，質量差 3 倍多，
+          但兩杯溶液都是 1 M，裝的溶質粒子數相同。拿 mol/L 比較，才看得出兩種溶液誰的「顆數」多。
+        </p>
+        <p>
+          單位記號：1 mol/L 寫作 1 M，讀作「1 莫耳濃度」；醫學與生化常用千分之一的 mmol/L（mM），
+          1 M = 1000 mM。公式本身不分大小，只要 V 用公升，算出來就是 mol/L。
+        </p>
+        <p>
+          最常用的是把莫耳數那一步合併進來：C = m / (M × V)。手上通常只有秤出來的質量和量筒的體積，
+          這條合併式一次就能從「秤幾克、加到多少毫升」走到濃度。
+        </p>
+
+        <h2>用真實數字算一遍：食鹽水、生理食鹽水、葡萄糖點滴</h2>
+        <p>
+          <strong>例 1：一茶匙食鹽（約 6 g）溶成 1 L。</strong>
+          先求莫耳數 n = 6 ÷ 58.44，再除以 1 L，C = 0.1027 M。
+          同一茶匙鹽只溶成 500 mL（0.5 L），C = 6 ÷ 58.44 ÷ 0.5 = 0.2053 M——溶質沒變，體積減半，濃度加倍。
+          這是 C = n / V 最直接的性質：濃度和體積成反比。
+        </p>
+        <p>
+          <strong>例 2：0.9% 生理食鹽水。</strong>
+          醫用的 0.9% 是質量對體積的百分比（w/v），意思是每 100 mL 含 0.9 g NaCl，也就是每公升 9 g。
+          C = 9 ÷ 58.44 ÷ 1 = 0.1540 M，等於 154.0 mmol/L。
+          NaCl 溶解後解離成 Na⁺ 與 Cl⁻ 各一，所以點滴標籤上常寫「Na⁺ 154 mmol/L、Cl⁻ 154 mmol/L」，
+          數字正是從這條公式來的。
+        </p>
+        <p>
+          <strong>例 3：5% 葡萄糖點滴（D5W）。</strong>
+          每公升 50 g 葡萄糖，M = 180.156 g/mol，C = 50 ÷ 180.156 = 0.2775 M。
+          質量百分比比生理食鹽水高 5 倍多，莫耳濃度卻不到 2 倍，因為葡萄糖分子比 NaCl 重了約 3 倍。
+        </p>
+
+        <h2>反過來用：要配 250 mL、0.5 M 的食鹽水，該秤幾克？</h2>
+        <p>
+          實驗室裡更常見的是反向問題：目標濃度和體積已知，要求秤多少溶質。把公式移項成 n = C × V，再乘 M：
+        </p>
+        <ol>
+          <li>需要的莫耳數：n = 0.5 mol/L × 0.25 L = 0.125 mol</li>
+          <li>換成質量：m = 0.125 × 58.44 = 7.305 g</li>
+          <li>操作：秤 7.305 g NaCl 放進 250 mL 定量瓶，先加水溶解，再加水到刻度線，搖勻</li>
+        </ol>
+        <p>
+          第 3 步的順序有理由。V 指的是<strong>溶液的總體積</strong>，不是加了多少水。
+          固體溶進水裡會佔掉一點體積，「秤 7.305 g 再倒 250 mL 水」得到的溶液會略多於 250 mL，濃度就略低於 0.5 M。
+          定量瓶的做法是讓最後的總體積剛好落在刻度上，這樣 V 才是真的 0.25 L。
+        </p>
+
+        <h2>健檢報告的血糖：mg/dL 怎麼換成 mmol/L？</h2>
+        <p>
+          台灣和美國的血糖報告用 mg/dL，歐洲、英國與許多國際文獻用 mmol/L。兩者的換算就是莫耳濃度公式：
+          1 dL = 0.1 L，所以 x mg/dL 等於每公升 10x mg，再除以葡萄糖的 M = 180.156 g/mol 就得到 mmol/L。
+        </p>
+        <ul>
+          <li>空腹血糖 100 mg/dL：100 × 10 ÷ 180.156 = <strong>5.551</strong> mmol/L</li>
+          <li>空腹血糖 126 mg/dL（常見的糖尿病診斷切點）：126 × 10 ÷ 180.156 = <strong>6.994</strong> mmol/L，國際指引寫成 7.0 mmol/L</li>
+        </ul>
+        <p>
+          合併起來，換算係數是 180.156 ÷ 10 ≈ 18.016：mg/dL 除以 18 約等於 mmol/L。
+          這個「除以 18」的經驗法則只適用於葡萄糖；膽固醇、三酸甘油酯的分子量不同，係數也不同，不能套用。
+          本段只示範單位換算，數值的臨床意義請以醫師判讀為準。
+        </p>
+
+        <h2>莫耳濃度和 pH、濃鹽酸的關係</h2>
+        <p>
+          <strong>鹽酸的 pH。</strong>
+          HCl 的莫耳質量為 1.008 + 35.45 = 36.458 g/mol。把 0.3646 g HCl 溶成 1 L，
+          C = 0.3646 ÷ 36.458 ÷ 1 = 0.01000 M。HCl 是強酸、幾乎完全解離，[H⁺] 就等於 0.01000 mol/L，
+          代入 <a href="/formulas/ph-value.html">pH = −log[H⁺]</a> 得 pH = 2.000。pH 公式裡的方括號，指的正是莫耳濃度。
+        </p>
+        <p>
+          <strong>市售濃鹽酸是幾 M？</strong>
+          試劑瓶標示 37%（質量百分比）、密度約 1.19 g/mL。取 1 L 來算：溶液重 1000 × 1.19 g，
+          其中 HCl 佔 37%，即 1000 × 1.19 × 0.37 = 440.3 g。C = 440.3 ÷ 36.458 ÷ 1 = 12.08 M。
+          這就是課本上「濃鹽酸約 12 M」的來源。要從 12 M 變成實驗用的 0.1 M，靠的是下一條稀釋方程 C₁V₁ = C₂V₂。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：體積用 mL 直接代入</div>
+          <p style="margin: 0;">
+            C = n / V 的 V 單位是公升。前面配溶液的例子，0.125 mol 溶成 250 mL，正確是 0.125 ÷ 0.25 = 0.5 M；
+            若把 250 直接代進去，得 0.125 ÷ 250 = 0.0005，小了 1000 倍。反向秤重時犯同樣的錯，會秤出差 1000 倍的量。
+            檢查方法：代入前先把 mL 除以 1000；或者把單位一起寫進算式，mol ÷ mL 得到的是 mol/mL，不是 mol/L。
+            第二個常見錯誤是把「溶劑體積」當成 V——V 一律是溶解完成後的溶液總體積。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 莫耳濃度計算機。輸入溶質莫耳數（mol）與溶液體積（L），例如 0.125 與 0.25，即可重現本文的 0.5 M 食鹽水例子。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 莫耳濃度 #52</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=52" title="莫耳濃度互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/moles.html">莫耳數 n = m/M：500 mL 水有幾莫耳</a></li>
+          <li><a href="/formulas/ph-value.html">pH 值 = −log[H⁺]：為什麼 pH 差 1 等於酸度差 10 倍</a></li>
+          <li><a href="/formulas/percentage.html">百分比公式：質量百分比與比例怎麼算</a></li>
+          <li><a href="/formulas/dilution-equation.html">稀釋方程 C₁V₁ = C₂V₂：濃鹽酸怎麼配成 0.1 M</a></li>
+          <li>進階：密度 ρ = m/V — 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          原子量取自 IUPAC 標準原子量常用簡化值（H 1.008、C 12.011、O 15.999、Na 22.990、Cl 35.45）；
+          莫耳濃度定義依 IUPAC Gold Book「amount concentration」（mol/L）。生理食鹽水 0.9% 以 w/v（每 100 mL 含 0.9 g）計；
+          濃鹽酸以 37% w/w、密度 1.19 g/mL 估算；一茶匙食鹽以 6 g 估計。血糖換算僅為單位示範，不構成醫療建議。
+          本文為數學與化學計算說明，數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
