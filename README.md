@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-02**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/molarity.html`（#52 · 科學 · Free，C = n/V：0.9% 生理食鹽水 = 0.1540 M、血糖 mg/dL 換 mmol/L、37% 濃鹽酸 ≈ 12.08 M）、
+  `formulas/dilution-equation.html`（#54 · 科學 · Free，C₁V₁ = C₂V₂：濃鹽酸配 0.1 M、75% 酒精、漂白水 1:100、序列稀釋，「加入」與「加到」的差別）。
+  Formula 卡片由 placeholder 轉為連結（#54 expr 依文章改為 C₂ = C₁ × V₁ / V₂），Tier 一致、分類計數不動；兩篇延伸閱讀互相連結。
+  molarity 已修正 10/31 被擋的中間值算式。通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-02.
 - **2026-10-31**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `2026-10-28-starry-night-3d-shader.html`（把梵谷星夜做成 830 行 three.js 單檔 3D 小鎮——旋渦靠方向旋轉加正弦條紋、點星星用方向內積不做 raycast、柏樹用逐圈縮放半徑的 TubeGeometry）。
   Writing 區依時間倒序插入（同日文章之前）。`formulas/molarity.html` 因正文中間值算式 0.1027 ÷ 0.5 = 0.2053（應為 0.2054）被 QA #5 擋下，留 `_pending/` 待重寫。
