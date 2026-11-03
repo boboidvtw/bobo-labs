@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>看不見的面板不會長出回覆 — Nomad AI Studio 圓桌接力截斷修復 · Bobo Labs</title>
+  <meta name="description" content="六個 AI 平台輪流接力回答，傳到 Gemini 時連原始問題都不見了。根因是隱藏的 WebContentsView 裡 requestAnimationFrame 一次都沒跑，回覆根本沒寫進 DOM。修完後真實六平台 2 輪實測 12/12。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-01-roundtable-relay-hidden-view.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-01</p>
+      <h1 class="article-title">看不見的面板不會長出回覆 — Nomad AI Studio 圓桌接力截斷修復</h1>
+      <p class="article-lede">
+        Nomad AI Studio 的「圓桌」會讓六個 AI 平台輪流接力回答同一個問題。回報的症狀是：上一棒的文字被砍掉，
+        傳到 Gemini 時，它連使用者原本問什麼都不知道。表面上像字數截斷，追下去才發現，
+        有些回覆根本沒被寫進頁面，因為那個面板在背景裡一次都沒有重繪。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼回覆會「不存在」？</h2>
+        <p>
+          每個平台跑在一個 Electron 的 WebContentsView 裡，沒輪到的平台是隱藏的。
+          在隱藏狀態下，頁面的 visibilityState 是 hidden，requestAnimationFrame 的呼叫次數是 0。
+          Grok（用 streamdown 渲染）和 Gemini 都靠 animation frame 把串流文字寫進 DOM，
+          frame 不跑，擷取程式去讀 DOM 時就只拿到半截或空白。
+        </p>
+        <p>
+          我原本以為設定 backgroundThrottling: false 就夠了，實測不行：它只讓計時器不被節流，
+          不會讓隱藏的頁面開始重繪。
+        </p>
+
+        <h2>怎麼讓發言的平台可見，又不擋住使用者？</h2>
+        <p>
+          修法是輪到誰發言，就讓誰的 view 可見。但這樣會蓋住使用者正在看的畫面，
+          所以接著再用 addChildView 把使用者的 view 和 Dashboard 加回去。
+          addChildView 對已經存在的 view 會把它移到最上層，剛好可以拿來調整堆疊順序：
+          發言者在下面照常渲染，使用者看到的畫面維持不變。
+        </p>
+        <p>
+          交棒內容也一起修：交棒範本現在固定帶【使用者原始問題】和上一棒的完整回覆，
+          不再只傳一段可能被截掉的摘要。
+        </p>
+
+        <h2>怎麼判斷一棒已經講完？</h2>
+        <p>
+          結算邏輯有兩個容易誤判的地方。第一，頁面上還留著上一輪的舊回覆，如果它和 previousText 相同，
+          就不能當成新回覆的基準，也不能拿來結算。第二，Claude 的 [data-is-streaming="true"] 屬性在思考和執行工具時也會出現，
+          所以把它當成「確定還在講」的訊號，而不是用文字長度去猜。
+        </p>
+        <p>
+          注入問題那一側，Copilot 和 Perplexity 用的 Lexical 編輯器會改動少量字元，全等比對會一直失敗。
+          改成寬鬆確認：長度差不超過 max(4, 1%)，而且前 20 字相同，就算注入成功。
+        </p>
+
+        <h2>為什麼每個頁面呼叫都要包逾時？</h2>
+        <p>
+          executeJavaScript 遇到還沒載入完的頁面，會等到 did-stop-loading 才執行。
+          如果這時頁面剛好在導航，promise 可能永遠不會回傳，整個接力就卡住。
+          所以所有對頁面的呼叫都包一層 withPageTimeout，逾時就發出 turn-failed，讓這一棒明確失敗，而不是無聲地停住。
+        </p>
+
+        <h2>驗證到哪裡，還沒驗證什麼？</h2>
+        <p>
+          用真實六個平台跑 2 輪：送出 12/12、暗號 12/12、引用上一棒 11/11（第一棒沒有上一棒可引用）、
+          「已交棒」結尾 12/12，擷取到的字數和頁面上的一致。兩個 PR（#50、#51）CI 四項全綠，打包版也確認過包內關鍵檔案和 main 相同。
+        </p>
+        <p>
+          我也更正了一個先前的數字：之前回報「ChatGPT 全文 14022 字」，很可能是擷取到隱藏節點，不可靠，現在改成只選可見節點。
+          還沒驗證的包括畫面閃爍、3000 字以上的長提示、視窗最小化時的渲染，以及 main.js 的堆疊邏輯目前沒有單元測試。
+          另外還有一個已知未修的小問題：工作區存檔的最後一棒會重複一筆，不影響接力本身。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>不節流不等於會渲染</strong>：backgroundThrottling: false 只管計時器，隱藏頁面的 requestAnimationFrame 仍然是 0 次。</p>
+          <p><strong>擷取不到時先看資料有沒有產生</strong>：「文字被截斷」的根因是回覆從沒寫進 DOM，不是擷取程式切錯。</p>
+          <p><strong>跨行程呼叫一律加逾時</strong>：頁面導航中的 executeJavaScript 可能永不回傳，逾時加上明確的失敗事件比卡住好查。</p>
+          <p><strong>富文字編輯器用寬鬆比對</strong>：Lexical 會改字元，用長度差加前綴確認注入，比全等比對穩。</p>
+          <p><strong>可疑的數字要主動更正</strong>：14022 字來自隱藏節點，留著會誤導之後的判斷。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-01 · Nomad AI Studio（nomad-ai-workspace）· PR #50、#51 · 六平台 2 輪實測 12/12 · CI 四項全綠
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

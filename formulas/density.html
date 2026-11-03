@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>密度怎麼算？ρ = m/V 公式拆解（阿基米德皇冠 1 kg 實例）· Bobo Labs</title>
+  <meta name="description" content="密度怎麼算？ρ = m ÷ V，質量除以體積。本文用阿基米德皇冠、冰山浮出水面比例、一杯油與蜂蜜的重量、鋼板與房間空氣重量等實例，示範 g/cm³ 與 kg/m³ 怎麼換算、怎麼反推質量與體積。" />
+  <meta property="og:title" content="密度怎麼算？ρ = m/V 公式拆解" />
+  <meta property="og:description" content="1 kg 純金只有 51.76 cm³，一間 60 m³ 房間的空氣重 72.24 kg。從驗金到冰山一角，一次講清密度公式與單位換算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/density.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/density.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "密度怎麼算？ρ = m/V 公式拆解", "url": "https://labs.moneyai168.com/formulas/density.html", "datePublished": "2026-11-02", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "密度", "item": "https://labs.moneyai168.com/formulas/density.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "m / V",
+    "cases": [
+{"input":{"m":1000,"V":60},"expect":16.666666666666668,"tol":0.000001,"text":"16.67"},
+{"expr":"m / d","input":{"m":1000,"d":19.32},"expect":51.75983436853002,"tol":0.000001,"text":"51.76"},
+{"expr":"V - m / d","input":{"V":60,"m":1000,"d":19.32},"expect":8.240165631469978,"tol":0.000001,"text":"8.24"},
+{"expr":"a / b","input":{"a":0.917,"b":1.000},"expect":0.917,"tol":0.000001,"scale":100,"text":"91.7"},
+{"expr":"a / b","input":{"a":0.917,"b":1.025},"expect":0.8946341463414635,"tol":0.000001,"scale":100,"text":"89.5"},
+{"expr":"1 - a / b","input":{"a":0.917,"b":1.025},"expect":0.10536585365853646,"tol":0.000001,"scale":100,"text":"10.5"},
+{"expr":"d * V","input":{"d":0.91,"V":240},"expect":218.4,"tol":0.000001,"text":"218.4"},
+{"expr":"d * V","input":{"d":1.42,"V":240},"expect":340.8,"tol":0.000001,"text":"340.8"},
+{"expr":"d * V","input":{"d":0.789,"V":240},"expect":189.36,"tol":0.000001,"text":"189.4"},
+{"expr":"d * V","input":{"d":1.19,"V":1000},"expect":1190,"tol":0.000001,"text":"1,190"},
+{"expr":"d * 1000","input":{"d":7.85},"expect":7850,"tol":0.000001,"text":"7,850"},
+{"expr":"a * b * c","input":{"a":2,"b":1,"c":0.01},"expect":0.02,"tol":0.000001,"text":"0.02"},
+{"expr":"d * 1000","input":{"d":2.70},"expect":2700,"tol":0.000001,"text":"2700"},
+{"expr":"d * a * b * c","input":{"d":7850,"a":2,"b":1,"c":0.01},"expect":157,"tol":0.000001,"text":"157"},
+{"expr":"d * a * b * c","input":{"d":1.204,"a":4,"b":5,"c":3},"expect":72.24,"tol":0.000001,"text":"72.24"},
+{"expr":"4 / 3 * pi * r ** 3","input":{"r":1},"expect":4.1887902047863905,"tol":0.000001,"text":"4.189"},
+{"expr":"d * 4 / 3 * pi * r ** 3","input":{"d":19.32,"r":1},"expect":80.92742675647307,"tol":0.000001,"text":"80.93"},
+{"expr":"d * V","input":{"d":2.70,"V":0.001},"expect":0.0027,"tol":0.0000001,"text":"0.0027"},
+{"expr":"d * 1000 * V","input":{"d":2.70,"V":0.001},"expect":2.7,"tol":0.000001,"text":"2.70"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #55 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">密度怎麼算？ρ = m/V 公式拆解（阿基米德皇冠實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-02</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        兩千多年前，阿基米德要判斷國王的皇冠是不是純金，不能熔掉、不能切開，最後靠的是一條比例：
+        同樣重的東西，體積越小就越「密」。這個比例就是密度（density），公式只有 ρ = m / V。
+        它能驗金、能解釋冰山為什麼只露出一角、能告訴你一杯蜂蜜比一杯油重多少，
+        也是<a href="/formulas/molarity.html">莫耳濃度</a>那篇換算濃鹽酸時用到的關鍵數字。
+        本文用皇冠、冰山、廚房量杯、鋼板與房間空氣五個實例把它算一遍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">ρ = m / V</div>
+          <div class="formula-box-note">ρ（rho）為密度 · m 為質量 · V 為體積 · 常用單位 g/cm³（= g/mL）或 kg/m³，1 g/cm³ = 1000 kg/m³ · 移項可得 m = ρV、V = m / ρ</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>ρ</td><td>密度：每單位體積的質量</td><td>g/cm³、kg/m³</td><td>水約 1.000 g/cm³；金 19.32；空氣約 0.0012</td></tr>
+            <tr><td>m</td><td>物體的質量</td><td>g、kg</td><td>秤上讀到的數字</td></tr>
+            <tr><td>V</td><td>物體佔的體積</td><td>cm³（mL）、m³</td><td>規則形狀用幾何公式；不規則形狀用排水法</td></tr>
+          </tbody>
+        </table>
+
+        <h2>密度 ρ 是什麼？為什麼同樣 1 公斤體積差很多</h2>
+        <p>
+          質量告訴你「有多重」，體積告訴你「佔多大」，密度把兩者合在一起：每 1 cm³ 裡塞了幾公克。
+          水在 4°C 時約 1.000 g/cm³，室溫 25°C 約 0.997 g/cm³，所以 1 mL 水差不多就是 1 g，
+          這也是公制單位當初設計的巧合來源。鋁約 2.70 g/cm³、鐵約 7.87 g/cm³、金 19.32 g/cm³，
+          同樣 1 kg，金塊的體積只有鋁塊的七分之一左右。
+        </p>
+        <p>
+          密度是物質本身的性質，不隨你取多少而改變：一小粒金和一整根金條，密度都是 19.32 g/cm³。
+          這讓它能拿來「辨認材料」——量出密度，再和表格比對，就知道手上的東西大概是什麼。
+          唯一要注意的是溫度與壓力：液體和氣體受熱膨脹，體積變大、密度變小，所以精確的數值都會附上溫度條件。
+        </p>
+
+        <h2>用真實數字算一遍：阿基米德的皇冠是純金嗎？</h2>
+        <p>
+          假設皇冠秤起來 1000 g，放進裝滿水的容器，溢出 60 mL 的水，代表皇冠體積是 60 cm³（1 mL = 1 cm³）。
+        </p>
+        <ol>
+          <li>皇冠的密度：ρ = 1000 ÷ 60 = 16.67 g/cm³</li>
+          <li>如果是純金，1000 g 應該只有 V = m / ρ = 1000 ÷ 19.32 = 51.76 cm³</li>
+          <li>實際體積多出 60 − 51.76 = 8.24 cm³，代表裡面摻了密度較低的金屬（例如銀，約 10.49 g/cm³）</li>
+        </ol>
+        <p>
+          這個方法的漂亮之處在於完全不破壞物體：秤重得到 m，排水得到 V，兩個數字一除就有答案。
+          今天銀樓與當鋪用的比重測試（hydrostatic weighing）仍是同一個原理，只是改用天平在水中秤重來推算體積。
+        </p>
+
+        <h2>冰山為什麼只露出一角？密度比決定浮沉</h2>
+        <p>
+          物體浮在液體上時，沉在水下的體積比例，剛好等於「物體密度 ÷ 液體密度」。
+          冰的密度約 0.917 g/cm³，比水輕，所以會浮起來。
+        </p>
+        <ul>
+          <li>冰塊浮在淡水（1.000 g/cm³）：0.917 ÷ 1.000，水下佔 <strong>91.7</strong>%</li>
+          <li>冰山浮在海水（約 1.025 g/cm³）：0.917 ÷ 1.025，水下佔 <strong>89.5</strong>%，露出水面約 <strong>10.5</strong>%</li>
+        </ul>
+        <p>
+          「冰山一角」大約是一成，就是這樣算出來的。同一個比例也解釋了為什麼在海水裡比在游泳池容易浮起來：
+          海水密度較高，人體需要沉下去的比例就少一點。
+        </p>
+
+        <h2>反過來用：一杯油、一杯蜂蜜各重幾克？</h2>
+        <p>
+          已知密度和體積，把公式移項成 m = ρ × V，就能把食譜上的「杯」換成「克」。以一杯 240 mL 計算：
+        </p>
+        <ul>
+          <li>橄欖油（約 0.91 g/mL）：0.91 × 240 = <strong>218.4</strong> g</li>
+          <li>蜂蜜（約 1.42 g/mL）：1.42 × 240 = <strong>340.8</strong> g</li>
+          <li>純酒精（約 0.789 g/mL）：0.789 × 240 = <strong>189.4</strong> g</li>
+        </ul>
+        <p>
+          同樣一杯，蜂蜜比油重了一半以上。這也是烘焙食譜偏好用克而不用杯的原因：體積相同，重量卻依材料差很多。
+          實驗室也一樣：<a href="/formulas/molarity.html">莫耳濃度</a>那篇提到 37% 濃鹽酸密度約 1.19 g/mL，
+          1 L 濃鹽酸就重 1.19 × 1000 = 1,190 g，接著才能算出其中 HCl 的質量與 12 M 的濃度。
+        </p>
+
+        <h2>g/cm³ 和 kg/m³ 怎麼換？鋼板與一整間房的空氣</h2>
+        <p>
+          工程上常用 kg/m³。1 m³ = 1,000,000 cm³、1 kg = 1000 g，兩者一抵消，1 g/cm³ = 1000 kg/m³。
+          結構鋼常取 7.85 g/cm³，也就是 7,850 kg/m³。
+        </p>
+        <p>
+          <strong>鋼板：</strong>一片 2 m × 1 m、厚 1 cm（0.01 m）的鋼板，體積用<a href="/formulas/cuboid-volume.html">長方體體積</a>
+          算出 0.02 m³，質量 m = 7850 × 2 × 1 × 0.01 = 157 kg，需要兩三個人才搬得動。
+        </p>
+        <p>
+          <strong>房間裡的空氣：</strong>20°C、一大氣壓下，空氣密度約 1.204 kg/m³。一間 4 m × 5 m、高 3 m 的房間，
+          空氣質量 = 1.204 × 4 × 5 × 3 = 72.24 kg，和一個成年人差不多重。空氣看不見，但它一點也不「沒有重量」。
+        </p>
+        <p>
+          <strong>規則形狀的物體：</strong>先用幾何公式求 V，再乘 ρ。一顆半徑 1 cm 的金球，
+          <a href="/formulas/sphere-volume.html">球體積</a> V = 4/3 × π × 1³ = 4.189 cm³，質量 = 19.32 × 4.189 ≈ 80.93 g。
+          一顆彈珠大小的金球就超過 80 公克，這是金子「拿在手上特別沉」的原因。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：g/cm³ 和 m³ 混在一起算</div>
+          <p style="margin: 0;">
+            鋁的密度 2.70 g/cm³，要算一塊 0.001 m³（10 cm 見方）鋁塊的質量。若直接 2.70 × 0.001，
+            得 0.0027，單位既不是 g 也不是 kg，數字小了 1000 倍以上。正確做法是先統一單位：
+            2.70 g/cm³ = 2700 kg/m³，再乘 0.001 m³，得 2.70 kg。
+            檢查方法：把單位一起寫進算式，(g/cm³) × m³ 消不掉，就代表單位還沒換好。
+            第二個常見錯誤是用「容器容量」當 V：裝在 1 L 瓶子裡的東西若沒裝滿，V 就不是 1 L。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 密度計算機。輸入質量與體積，例如 1000 與 60，即可重現本文皇冠例子的 16.67 g/cm³。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 密度 #55</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=55" title="密度互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/molarity.html">莫耳濃度 C = n/V：濃鹽酸為什麼是 12 M</a></li>
+          <li><a href="/formulas/moles.html">莫耳數 n = m/M：500 mL 水有幾莫耳</a></li>
+          <li><a href="/formulas/cuboid-volume.html">長方體體積：長 × 寬 × 高</a></li>
+          <li><a href="/formulas/sphere-volume.html">球體積 4/3πr³：半徑加倍體積變 8 倍</a></li>
+          <li>進階：浮力（阿基米德）ρgV — 即將推出</li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          密度定義依 IUPAC Gold Book「mass density」（ρ = m/V）。材料密度取常用參考值：水 4°C 1.000、25°C 0.997；
+          冰 0.917；海水約 1.025；金 19.32；銀 10.49；鐵 7.87；結構鋼 7.85；鋁 2.70（g/cm³）；
+          橄欖油 0.91、蜂蜜 1.42、乙醇 0.789（g/mL，室溫）；空氣 1.204 kg/m³（20°C、1 atm），
+          實際數值依溫度、成分略有差異。皇冠 1000 g、排水 60 mL 為示範用假設數字；一杯以 240 mL 計。
+          本文為數學與物理計算說明，數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
