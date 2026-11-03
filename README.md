@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-03**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/density.html`（#55 · 科學 · Free，ρ = m/V：皇冠 1000 g ÷ 60 cm³ = 16.67 g/cm³、冰山水下 89.5%、房間空氣 72.24 kg）、
+  `2026-11-01-roundtable-relay-hidden-view.html`（隱藏 WebContentsView 的 requestAnimationFrame 0 次導致圓桌接力回覆未寫入 DOM，修復後六平台 2 輪 12/12）。
+  Writing 區依時間倒序插入；Formula 卡片 #55 由 placeholder 轉為連結，Tier 一致、分類計數不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-03.
 - **2026-11-02**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/molarity.html`（#52 · 科學 · Free，C = n/V：0.9% 生理食鹽水 = 0.1540 M、血糖 mg/dL 換 mmol/L、37% 濃鹽酸 ≈ 12.08 M）、
   `formulas/dilution-equation.html`（#54 · 科學 · Free，C₁V₁ = C₂V₂：濃鹽酸配 0.1 M、75% 酒精、漂白水 1:100、序列稀釋，「加入」與「加到」的差別）。
