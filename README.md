@@ -20,6 +20,13 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-04**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/percent-yield.html`（#56 · 科學 · Pro，產率 = 實際 ÷ 理論 × 100%：阿斯匹靈 2.00 g 水楊酸理論 2.609 g、實得 2.10 g 產率 80.50%，限量試劑誤判、多步驟 0.9¹⁰ = 34.87%）、
+  `2026-11-02-pgrep-katex-jsdom-gaps.html`（Nomad AI Studio PR #56～#59 收尾：macOS pgrep 預設排除自己、從未顯示的 view 不渲染、KaTeX 改讀原始 TeX、jsdom 缺 insertText）。
+  Writing 區依時間倒序插入；Formula 卡片 #56 由 placeholder 轉為連結，Tier 一致、分類計數不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-04.
+
 - **2026-11-03**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/density.html`（#55 · 科學 · Free，ρ = m/V：皇冠 1000 g ÷ 60 cm³ = 16.67 g/cm³、冰山水下 89.5%、房間空氣 72.24 kg）、
   `2026-11-01-roundtable-relay-hidden-view.html`（隱藏 WebContentsView 的 requestAnimationFrame 0 次導致圓桌接力回覆未寫入 DOM，修復後六平台 2 輪 12/12）。
