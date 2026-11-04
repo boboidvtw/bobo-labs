@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>測試環境沒有的 API，就是測試抓不到的 bug — Nomad AI Studio 四支 PR 收尾 · Bobo Labs</title>
+  <meta name="description" content="macOS pgrep 預設排除自己、從沒顯示過的面板不畫字、KaTeX 公式被讀成兩份、jsdom 缺 insertText 讓測試漏 bug。四支 PR 收尾，4,307 個 vitest 測試通過，閃爍以 96 幀對照驗證。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-02-pgrep-katex-jsdom-gaps.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-02</p>
+      <h1 class="article-title">測試環境沒有的 API，就是測試抓不到的 bug — Nomad AI Studio 四支 PR 收尾</h1>
+      <p class="article-lede">
+        圓桌接力修好之後，清單上還有 P0、P2、P3 三批待辦。這一天用四支 PR（#56～#59）收掉：實機修正、拆大檔、卡片與冷啟動、公式擷取。
+        真正花時間的不是寫修法，而是搞清楚四件事為什麼「看起來對」：程式查不到自己、從沒顯示過的面板不畫字、公式被讀成兩份亂碼，
+        以及單元測試全綠卻漏掉一個注入 bug。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼程式用 pgrep 永遠查不到自己？</h2>
+        <p>
+          服務狀態檢查用 pgrep 比對指令列。在 macOS 上，pgrep 預設會排除呼叫者本身和它所有的祖先行程，要加 -a 才會包含。
+          所以程式在自己的行程裡查自己，結果一定是「沒在跑」。
+        </p>
+        <p>
+          但我沒有把 -a 全面打開。在 kill 路徑上，排除祖先是一道安全機制：比對條件寫得太寬時，至少不會把自己或父行程砍掉。
+          最後只在狀態檢查加 includeSelf 選項，kill 路徑維持預設。
+          另一個細節是 pgrep 用 POSIX regex，<strong>.</strong> 會匹配換行；JS 的正規式預設不會，測試要加 s 旗標才模擬得一致。
+        </p>
+
+        <h2>從沒顯示過的面板，為什麼一個字都不畫？</h2>
+        <p>
+          上一篇的結論是隱藏的 WebContentsView 裡 requestAnimationFrame 是 0 次。這次再往下確認：在 backgroundThrottling: false 下，
+          view 只要顯示過一次，之後隱藏也會持續渲染；問題只出在<strong>從未顯示過</strong>的 view。
+          Gemini 在這種面板裡會完成回覆，卻不把內容畫出來。
+        </p>
+        <p>
+          修法是 render hold：等回覆期間，讓那個 view 在使用者畫面的後方保持可見。Electron 的 view 操作在同一個 main-process task 內一次 commit，
+          而 addChildView 會把既有 view 移到最上層，所以先重排堆疊、再顯示被保持的 view，任何中間狀態都不會蓋到使用者畫面。
+          這段邏輯從 main.js 拆成 render-holds.js 與 view-stacking.js，堆疊順序改由 planViewStacking 算出，終於能寫單元測試。
+        </p>
+
+        <h2>公式為什麼會被讀成兩份亂碼？</h2>
+        <p>
+          KaTeX 每個公式畫兩次：一份 MathML 給輔助技術，一份 HTML 給眼睛看。用 innerText 擷取時兩份都會進來，得到重複又破碎的字串。
+          Perplexity 的 Lexical 編輯器又會吃掉部分符號，把這段文字接力給下一棒時，差異超過 1% 的容忍範圍，就被判成注入失敗。
+        </p>
+        <p>
+          解法是不讀畫出來的結果，改讀原始 TeX：Gemini 的公式節點帶有 data-math 屬性，其他平台的 KaTeX 留有 annotation 節點。
+          讀到的是一份乾淨的 TeX，接力時也不會因為符號被改而誤判。
+        </p>
+
+        <h2>測試全綠，為什麼還漏掉注入 bug？</h2>
+        <p>
+          輸入框裡留著上一輪的殘留文字時，新提示應該取代它，實際上卻接在殘留文字後面。單元測試沒抓到，原因是 jsdom 沒有實作
+          execCommand('insertText')，測試一路走 fallback 分支，真正在瀏覽器裡跑的那條路徑從沒被測過。
+        </p>
+        <p>
+          修法是在測試裡用 selection 語意模擬 insertText：先看目前選取範圍，再決定是取代還是插入。
+          這和瀏覽器的實際行為一致，殘留文字的 bug 才會在測試裡重現。修完之後注入流程加上 busyBefore 檢查，並改成等輸入框就緒才送出。
+        </p>
+
+        <h2>閃爍要怎麼驗，而不是用看的？</h2>
+        <p>
+          render hold 會在使用者畫面後方切換 view，最怕的是換發言者的瞬間畫面閃一下。肉眼看幾次不算數，所以改成螢幕錄影，
+          逐幀算差異，再把 96 幀排成對照圖目視確認：換發言者時，使用者畫面沒有變化。
+        </p>
+        <p>
+          其他實機項目也在打包版上跑過：長提示送到四個平台（Gemini 逐字比對）、隱藏面板的 Bot、三人接力、Docker 重試兩種情境。
+          四支 PR 的 CI 都是 4/4 綠，desktop 244、core 200、vitest 4,307 個測試通過，回歸清單補了 9 條。
+          還沒修的有四項：同文字的舊回覆會被誤收、Grok 容量頁沒判成 blocked、Bot 路徑冷啟動不等輸入框，以及一個服務缺少預設頻道設定。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>先查工具的預設排除規則</strong>：macOS pgrep 預設不含呼叫者與祖先，自己查自己永遠是空的。</p>
+          <p><strong>安全機制只在需要的地方關掉</strong>：狀態檢查才加 -a，kill 路徑保留排除祖先的保護。</p>
+          <p><strong>擷取資料讀來源，不讀畫面</strong>：KaTeX 畫兩份，讀 data-math 或 annotation 拿到的 TeX 才是唯一一份。</p>
+          <p><strong>測試環境缺的 API 要補上語意</strong>：jsdom 沒有 insertText，測試走 fallback，真正的路徑等於沒測。</p>
+          <p><strong>視覺問題用逐幀差異驗</strong>：錄影加 96 幀對照圖，比看幾次「好像沒閃」可靠。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-02 · Nomad AI Studio（nomad-ai-workspace）· PR #56～#59 · CI 每支 4/4 綠 · desktop 244、core 200、vitest 4,307 測試通過 · 閃爍驗證 96 幀
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
