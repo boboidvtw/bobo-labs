@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-05**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/ideal-gas-pressure.html`（#50 · 科學 · Pro，P = nRT/V：0.5 mol 氮氣 10 L 鋼瓶 25 °C 為 123,941 Pa、100 °C 升到 155,118 Pa，表壓與絕對壓力、攝氏與公升的常見單位錯誤）、
+  `2026-11-03-aistudio-split-dropzone.html`（Nomad AI Studio aistudio.ts 4145 行拆成 7 個模組，實測揪出 capture 階段 stopPropagation 與 t() 回傳 key 兩個舊 bug）。
+  Writing 區依時間倒序插入；Formula 卡片 #50 由 placeholder 轉為連結，Tier 一致、分類計數不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-05.
 - **2026-11-04**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/percent-yield.html`（#56 · 科學 · Pro，產率 = 實際 ÷ 理論 × 100%：阿斯匹靈 2.00 g 水楊酸理論 2.609 g、實得 2.10 g 產率 80.50%，限量試劑誤判、多步驟 0.9¹⁰ = 34.87%）、
   `2026-11-02-pgrep-katex-jsdom-gaps.html`（Nomad AI Studio PR #56～#59 收尾：macOS pgrep 預設排除自己、從未顯示的 view 不渲染、KaTeX 改讀原始 TeX、jsdom 缺 insertText）。
