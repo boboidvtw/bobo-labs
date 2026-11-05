@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>理想氣體壓力怎麼算？PV = nRT 公式拆解（10 L 氮氣實例）· Bobo Labs</title>
+  <meta name="description" content="理想氣體壓力怎麼算？P = nRT/V。本文用 10 L 密閉容器裝 0.5 mol 氮氣、加熱到 100 °C、夏天胎壓上升三組實例，示範 R 的單位怎麼配、溫度為什麼一定要用 K，以及表壓與絕對壓力的差別。" />
+  <meta property="og:title" content="理想氣體壓力怎麼算？PV = nRT 公式拆解" />
+  <meta property="og:description" content="0.5 mol 氮氣關在 10 L 容器、25 °C 時壓力 123,941 Pa，加熱到 100 °C 升到 155,118 Pa。從單位換算、溫度換 K 到胎壓表壓，一次講清理想氣體壓力公式。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/ideal-gas-pressure.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/ideal-gas-pressure.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "理想氣體壓力怎麼算？PV = nRT 公式拆解", "url": "https://labs.moneyai168.com/formulas/ideal-gas-pressure.html", "datePublished": "2026-11-04", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "理想氣體（壓力）", "item": "https://labs.moneyai168.com/formulas/ideal-gas-pressure.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "n * R * T / V",
+    "cases": [
+{"input":{"n":0.5,"R":8.314,"T":298.15,"V":0.010},"expect":123940.955,"tol":1,"text":"123,941"},
+{"input":{"n":0.5,"R":8.314,"T":373.15,"V":0.010},"expect":155118.455,"tol":1,"text":"155,118"},
+{"expr":"n * R * T / V / 1000","input":{"n":1,"R":8.314,"T":273.15,"V":0.0224},"expect":101.38254910714286,"tol":0.000001,"text":"101.38"},
+{"expr":"n * M","input":{"n":0.5,"M":28.014},"expect":14.007,"tol":0.000001,"text":"14.01"},
+{"expr":"t + 273.15","input":{"t":25},"expect":298.15,"tol":0.000001,"text":"298.15"},
+{"expr":"t + 273.15","input":{"t":100},"expect":373.15,"tol":0.000001,"text":"373.15"},
+{"expr":"n * R * T / V / 101325","input":{"n":0.5,"R":8.314,"T":298.15,"V":0.010},"expect":1.2232021218850233,"tol":0.000001,"text":"1.223"},
+{"expr":"n * R * T / V / 100000","input":{"n":0.5,"R":8.314,"T":298.15,"V":0.010},"expect":1.23940955,"tol":0.000001,"text":"1.239"},
+{"expr":"n * R * T / V","input":{"n":0.5,"R":0.08206,"T":298.15,"V":10},"expect":1.22330945,"tol":0.000001,"text":"1.223"},
+{"expr":"(n * R * b / V - n * R * a / V) / 1000","input":{"n":0.5,"R":8.314,"a":298.15,"b":373.15,"V":0.010},"expect":31.1775,"tol":0.000001,"text":"31.18"},
+{"expr":"(b / a - 1) * 100","input":{"a":298.15,"b":373.15},"expect":25.155123260103977,"tol":0.000001,"text":"25.16"},
+{"expr":"n * R * T / P * 1000","input":{"n":1,"R":8.314,"T":298.15,"P":101325},"expect":24.464042437700467,"tol":0.000001,"text":"24.46"},
+{"expr":"n * R * T / P","input":{"n":1,"R":8.314,"T":298.15,"P":101325},"expect":0.024464042437700463,"tol":0.000001,"text":"0.02446"},
+{"expr":"(n * R * T / V - P) / P * 100","input":{"n":1,"R":8.314,"T":273.15,"V":0.0224,"P":101325},"expect":0.05679655281801635,"tol":0.000001,"text":"0.06"},
+{"expr":"g + 101.325","input":{"g":220},"expect":321.325,"tol":0.000001,"text":"321.325"},
+{"expr":"(g + 101.325) * b / a","input":{"g":220,"a":293.15,"b":323.15},"expect":354.2083361760191,"tol":0.000001,"text":"354.2"},
+{"expr":"(g + 101.325) * b / a - 101.325","input":{"g":220,"a":293.15,"b":323.15},"expect":252.8833361760191,"tol":0.000001,"text":"252.9"},
+{"expr":"(g + 101.325) * b / a - 101.325 - g","input":{"g":220,"a":293.15,"b":323.15},"expect":32.8833361760191,"tol":0.000001,"text":"32.9"},
+{"expr":"g * b / a","input":{"g":220,"a":293.15,"b":323.15},"expect":242.51407129455913,"tol":0.000001,"text":"242.5"},
+{"expr":"n * R * T / V / 1000","input":{"n":0.5,"R":8.314,"T":25,"V":0.010},"expect":10.3925,"tol":0.000001,"text":"10.39"},
+{"expr":"a / b","input":{"a":298.15,"b":25},"expect":11.926,"tol":0.000001,"text":"11.93"},
+{"expr":"n * R * T / V","input":{"n":0.5,"R":8.314,"T":298.15,"V":10},"expect":123.940955,"tol":0.000001,"text":"123.9"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #50 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">理想氣體壓力怎麼算？PV = nRT 公式拆解（氮氣實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-04</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        把 0.5 mol 氮氣關進 10 L 的密閉鋼瓶，室溫 25 °C 時瓶內壓力是 123,941 Pa；
+        泡進 100 °C 熱水，壓力升到 155,118 Pa。兩個數字都來自理想氣體方程式 PV = nRT 移項成的 P = nRT/V。公式只有乘除，會算錯的是單位：R 配哪組單位、溫度換 K、體積換 m³。本文用三組實例算一遍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P = n R T / V</div>
+          <div class="formula-box-note">P 為氣體絕對壓力（Pa）· n 為氣體莫耳數（mol）· R 為氣體常數 8.314 J/(mol·K) · T 為絕對溫度（K）· V 為容器體積（m³）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>氣體對容器壁的絕對壓力</td><td>Pa（N/m²）</td><td>海平面大氣 101,325 Pa = 1 atm</td></tr>
+            <tr><td>n</td><td>氣體莫耳數（質量 ÷ 莫耳質量）</td><td>mol</td><td>實驗室 0.01–10 mol</td></tr>
+            <tr><td>R</td><td>理想氣體常數</td><td>J/(mol·K)</td><td>8.314（或 0.08206 L·atm/(mol·K)）</td></tr>
+            <tr><td>T</td><td>絕對溫度 = 攝氏溫度 + 273.15</td><td>K</td><td>室溫約 293–298 K</td></tr>
+            <tr><td>V</td><td>容器容積</td><td>m³（1 L = 0.001 m³）</td><td>實驗容器 0.001–0.05 m³</td></tr>
+          </tbody>
+        </table>
+
+        <h2>R 要用哪個值？先決定單位組合</h2>
+        <p>
+          R 的數值隨單位而變，常用兩組：
+        </p>
+        <ul>
+          <li><strong>SI 單位：</strong>R = 8.314 J/(mol·K)，搭配 V 用 m³、P 得到 Pa。</li>
+          <li><strong>化學課常用：</strong>R = 0.08206 L·atm/(mol·K)，搭配 V 用 L、P 直接得到 atm。</li>
+        </ul>
+        <p>
+          兩組不混用，結果一致。用標準狀態驗證：1 mol 氣體、0 °C（273.15 K）、22.4 L（0.0224 m³），
+          P = 1 × 8.314 × 273.15 ÷ 0.0224 ÷ 1000 = 101.38 kPa，和 1 atm 的 101.325 kPa 相差不到 0.06%，
+          差異來自 22.4 L 是四捨五入後的莫耳體積。反過來在 25 °C、1 atm 下，1 mol 氣體的體積是
+          8.314 × 298.15 ÷ 101325 = 0.02446 m³，也就是 24.46 L。
+        </p>
+
+        <h2>用真實數字算一遍：10 L 容器裡的 0.5 mol 氮氣</h2>
+        <p>
+          <strong>條件：</strong>0.5 mol 氮氣（N₂ 莫耳質量 28.014 g/mol，相當於 14.01 g），
+          關在 10 L 的密閉容器裡，溫度 25 °C。
+        </p>
+        <ol>
+          <li>溫度換成 K：25 + 273.15 = 298.15 K</li>
+          <li>體積換成 m³：10 L = 0.010 m³</li>
+          <li>代入公式：P = 0.5 × 8.314 × 298.15 ÷ 0.010 = <strong>123,941</strong> Pa</li>
+        </ol>
+        <p>
+          換算單位：123,941 ÷ 101,325 = 1.223 atm；÷ 100,000 = 1.239 bar。
+          改用 L·atm 那組 R 直接算：0.5 × 0.08206 × 298.15 ÷ 10 = 1.223 atm，兩條路得到同一個答案。
+          只知質量時，先用<a href="/formulas/moles.html">莫耳數 n = m/M</a> 換成 mol 再代入。
+        </p>
+
+        <h2>加熱到 100 °C，壓力會變多少？</h2>
+        <p>
+          容器是剛性的，n 和 V 都不變，壓力只跟絕對溫度成正比。100 °C = 373.15 K，
+          P = 0.5 × 8.314 × 373.15 ÷ 0.010 = <strong>155,118</strong> Pa，比 25 °C 時多了 31.18 kPa。
+        </p>
+        <p>
+          增加的比例是 373.15 ÷ 298.15 − 1 = 25.16%。攝氏數字變成 4 倍，壓力只增加約四分之一——分子平均動能跟絕對溫度成正比，0 °C 不是熱運動的起點。
+          噴霧罐標示「勿置於 50 °C 以上」即是此理。
+        </p>
+
+        <h2>夏天胎壓會升多少？表壓與絕對壓力不能混用</h2>
+        <p>
+          胎壓計顯示的是<strong>表壓</strong>（gauge pressure），也就是比外面大氣多出來的部分；
+          PV = nRT 裡的 P 必須是<strong>絕對壓力</strong>。假設早上 20 °C 量到表壓 220 kPa（約 32 psi），
+          中午輪胎晒到 50 °C，輪胎體積視為不變：
+        </p>
+        <ol>
+          <li>表壓換絕對壓力：220 + 101.325 = 321.325 kPa</li>
+          <li>依絕對溫度等比例放大：321.325 × 323.15 ÷ 293.15 = 354.2 kPa（絕對）</li>
+          <li>換回表壓：354.2 − 101.325 ≈ 252.9 kPa，胎壓計多了 32.9 kPa</li>
+        </ol>
+        <p>
+          若直接拿表壓乘溫度比，220 × 323.15 ÷ 293.15 = 242.5 kPa，會把升幅低估三成以上。 車廠建議冷胎時量胎壓，正是為了避開這段偏移。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：溫度直接代攝氏、體積直接代公升</div>
+          <p style="margin: 0;">
+            同一個 10 L、0.5 mol、25 °C 的例子，若把 T 直接代 25，會算出 0.5 × 8.314 × 25 ÷ 0.010 = 10.39 kPa，
+            比正確值小了 298.15 ÷ 25 = 11.93 倍。
+            另一個常見錯誤是 R 用 8.314、體積卻代 10（公升），算出 0.5 × 8.314 × 298.15 ÷ 10 = 123.9 Pa，整整小了 1000 倍。
+            檢查方法：算完先和 1 atm ≈ 101 kPa 比數量級，常溫、幾公升、零點幾莫耳的氣體應落在同一量級。
+          </p>
+        </div>
+
+        <h2>什麼時候理想氣體公式會不準？</h2>
+        <p>
+          理想氣體假設分子本身不占體積、分子間沒有吸引力。常溫、1 atm 附近的空氣、氮氣、氧氣，
+          這兩個假設的誤差通常在 1% 以內，一般估算夠用。壓力升到數十 bar 以上（例如 200 bar 的潛水氣瓶），
+          或溫度接近氣體的液化點（例如鋼瓶裡的二氧化碳），分子體積與吸引力不能再忽略，
+          需要改用凡得瓦方程式或壓縮因子 Z 修正。越高壓、越低溫，偏差越大。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供理想氣體（壓力）#50 的互動計算——輸入 n、T、V，立即得到壓力。
+          例如輸入 n = 0.5、T = 298.15、V = 0.010，即可重現本文 123,941 Pa 的氮氣例子；T 改成 373.15 即得 100 °C 的結果。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 理想氣體（壓力） #50</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=50" title="理想氣體壓力互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/moles.html">莫耳數 n = m/M：由氣體質量求 n</a></li>
+          <li><a href="/formulas/density.html">密度 ρ = m/V：氣體密度也能由 PV = nRT 推得</a></li>
+          <li><a href="/formulas/molarity.html">莫耳濃度 C = n/V：溶液版的 n/V</a></li>
+          <li><a href="/formulas/percent-yield.html">化學產率：產生氣體的反應怎麼算理論產量</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          理想氣體方程式 PV = nRT 依 IUPAC Gold Book「ideal gas」定義；氣體常數 R 取 CODATA 2018 值 8.314462618 J/(mol·K) 的常用四位簡化值 8.314，
+          L·atm 單位取 0.08206；1 atm = 101,325 Pa、1 bar = 100,000 Pa、0 °C = 273.15 K 為定義值。
+          N₂ 莫耳質量 28.014 g/mol 依 IUPAC 標準原子量 N 14.007。胎壓與氮氣容器條件為示範數字，胎壓例子假設輪胎體積不變。本文為數學與物理化學計算說明，數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

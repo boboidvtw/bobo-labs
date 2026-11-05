@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>拆檔拆出兩個舊 bug — 4145 行的 aistudio.ts 切成 7 個模組之後 · Bobo Labs</title>
+  <meta name="description" content="把 4145 行的 aistudio.ts 拆成 7 個有測試的模組、縮到 2627 行；拆完到真實頁面實測，反而抓到兩個早就存在的拖放區 bug：capture 階段的 stopPropagation，和永遠不會生效的翻譯 fallback。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-03-aistudio-split-dropzone.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-03</p>
+      <h1 class="article-title">拆檔拆出兩個舊 bug — 4145 行的 aistudio.ts 切成 7 個模組之後</h1>
+      <p class="article-lede">
+        aistudio.ts 長到 4145 行，是 Nomad AI Studio 擴充功能裡最大的單檔。這天把它拆成 7 個模組、主檔剩 2627 行。
+        拆檔本身沒出事，出事的是拆完之後的實測：到真正的 AI Studio 頁面拖一次檔案，拖放區沒反應。
+        追下去是兩個拆檔之前就存在的 bug，單元測試一直沒抓到。
+      </p>
+
+      <div class="article-body">
+        <h2>拆檔照什麼規則切？</h2>
+        <p>
+          repo 裡已經有一個現成範本：FolderSidebarRuntime。它的做法是每個模組只吃一個 options 介面（一組 callback），
+          不直接依賴 manager 物件。這次新增的 7 個模組全照這個規則：PromptLinks、LibraryMultiSelect、LibraryDropZone、SidebarWidth、
+          Transfer、Styles、Utils，另外配 6 個測試檔。
+        </p>
+        <p>
+          不是每段程式都適合搬。雲端上傳、同步、匯入、整批取代資料這 4 條流程，需要「切換帳號時中止」的保護，保護狀態在 manager 身上，
+          所以留在原處。硬搬出去只會把狀態變成一堆要互相傳遞的參數。
+        </p>
+        <p>
+          另一個限制來自既有測試：它們用 as unknown as 直接摸 private 成員。為了不改測試，manager 保留了
+          libraryDropZoneInjected 欄位，以及 4 個轉呼叫新模組的 wrapper。拆檔的目標是行為不變，不是順便重寫測試。
+        </p>
+
+        <h2>拖放區為什麼收不到 dragstart？</h2>
+        <p>
+          /library 頁的每一列有自己的 dragstart handler，掛在 capture 階段，而且呼叫了 stopPropagation()。
+          拖放區的 listener 掛在 document，走的是 bubble 階段。事件在 capture 往下走時就被攔住，永遠不會冒泡回 document。
+        </p>
+        <p>
+          修法只有一個參數：document.addEventListener('dragstart', fn, true)。DOM 事件先從 window 往下走 capture，
+          document 比列元素更外層，所以 document 的 capture listener 會比列元素的 handler 先執行，stopPropagation 擋不到它。
+        </p>
+
+        <h2>為什麼 fallback 字串從來沒出現過？</h2>
+        <p>
+          第二個 bug 是翻譯缺漏。程式寫的是 t('x') || '預設文字'，看起來有保底。但這套 t() 找不到翻譯時
+          回傳的是 key 本身，不是空字串。key 是非空字串，|| 永遠不會走到右邊，畫面上就直接露出 key。
+        </p>
+        <p>
+          修法分兩步：補上缺的 3 個 key 到 10 種語系，再加一支測試 aistudioLocaleKeys.test.ts，
+          掃過所有 aistudio*.ts 裡的 t('…')，逐一比對 10 個語系檔。之後誰新增文字忘了補翻譯，CI 會先擋。
+        </p>
+
+        <h2>單元測試為什麼都沒抓到？</h2>
+        <p>
+          兩個 bug 都卡在「真實環境的行為」。事件傳遞順序要有真的列元素 handler 跟它競爭才會出問題；
+          翻譯 fallback 要看實際的 t() 回傳值。mock 掉其中一邊，測試就會綠。
+        </p>
+        <p>
+          實測的做法是借用桌面版 Studio：它的 Electron session 本來就載入擴充功能，並且已經登入 Google。
+          複製一份 profile 到暫存目錄，用需環境變數開啟的除錯介面把頁面導到 AI Studio，再直接派送 DragEvent、MouseEvent。測完把複本刪掉。
+        </p>
+        <p>
+          中間還卡了兩次。原生 confirm() 對話框會凍住 renderer，沒有輔助使用權限時 System Events 也點不到它；
+          改開 remote debugging port，用 CDP 的 Page.handleJavaScriptDialog 按下確定。
+          測批次刪除時不想碰真資料，就注入一列假資料（附自己的假選單和確認鈕），只選它來刪；刪除成功會觸發重新載入，所以事件記在 sessionStorage 裡，重載後再讀。
+        </p>
+
+        <h2>拆檔過程本身踩了哪些坑？</h2>
+        <p>
+          用 Python 依行號切片搬程式時，有幾段切點剛好落在註解開頭，留下孤立的 /**。編譯器報錯的位置離切點很遠，
+          之後每個切片的頭尾都先人工看一次。
+        </p>
+        <p>
+          另一個是 jsdom 的限制：多行、含 transition 的 cssText 解析不了，style.opacity 讀回來是空字串。
+          所以單元測試不斷言 opacity 是 '0'，這部分交給實測。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>拆檔要照既有範本切</strong>：repo 已經有 options 介面的模式，照它做，新模組不用重新談邊界。</p>
+          <p><strong>帶狀態保護的流程留在原處</strong>：需要帳號切換保護的 4 條流程硬搬出去，只會把狀態變成到處傳的參數。</p>
+          <p><strong>document 層的監聽要考慮 capture</strong>：只要底下有人在 capture 階段 stopPropagation，bubble listener 就收不到。</p>
+          <p><strong>先確認 fallback 會不會觸發</strong>：t() 缺翻譯時回傳 key，|| 保底永遠不生效；改用測試掃描整份語系。</p>
+          <p><strong>重構後一定要上真頁面</strong>：這次兩個 bug 都是拆檔前就存在、mock 抓不到，實測才現形。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-03 · Nomad AI Studio · aistudio.ts 4145 → 2627 行 · 7 個新模組 + 6 個測試檔 · 修 2 個拖放區舊 bug · 10 語系 key 檢查
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
