@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-06**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/bohr-model-energy.html`（#57 · 科學 · Pro，Eₙ = −13.6 eV/n²：n = 3 → 2 放出 1.89 eV、656.4 nm 的 Hα 紅光，巴耳末系四條可見譜線、游離能 13.6 eV 與忘了平方的常見錯誤）、
+  `2026-11-04-super-calculator-audit.html`（重開封存的萬能計算機：IRR 被二分法下限釘在 -45.96%、日期字串時區錯、StrictMode 重複歷史，修到 137 個測試全綠）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數同步。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-06.
 - **2026-11-05**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/ideal-gas-pressure.html`（#50 · 科學 · Pro，P = nRT/V：0.5 mol 氮氣 10 L 鋼瓶 25 °C 為 123,941 Pa、100 °C 升到 155,118 Pa，表壓與絕對壓力、攝氏與公升的常見單位錯誤）、
   `2026-11-03-aistudio-split-dropzone.html`（Nomad AI Studio aistudio.ts 4145 行拆成 7 個模組，實測揪出 capture 階段 stopPropagation 與 t() 回傳 key 兩個舊 bug）。
