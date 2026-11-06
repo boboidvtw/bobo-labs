@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IRR 永遠停在 -45.96%：重開一個封存的計算機 repo，從建置失敗修到 137 個測試全綠 · Bobo Labs</title>
+  <meta name="description" content="萬能計算機（React 19 + Vite 7 PWA）封存前連 build 都過不了。一次全面健檢修掉 IRR 被搜尋區間鎖死、匯率 Invalid Date、台灣早上 8 點前日期少一天、StrictMode 歷史重複、全站 :global 樣式從未生效等問題。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-04-super-calculator-audit.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-04</p>
+      <h1 class="article-title">IRR 永遠停在 -45.96%：重開一個封存的計算機 repo，從建置失敗修到 137 個測試全綠</h1>
+      <p class="article-lede">
+        萬能計算機是一個 React 19 + Vite 7 的多工具 PWA，10 月 10 日被我封存。
+        重開之後才發現它連 build 都過不了，CI 一次都沒跑過。
+        這天把 P0 到 P2 的問題一次修完：保險 IRR 被搜尋區間鎖死、匯率顯示 Invalid Date、
+        台灣早上 8 點前日期少一天，還有一整批從沒生效過的 CSS。
+      </p>
+
+      <div class="article-body">
+        <h2>建置為什麼一直是壞的？</h2>
+        <p>
+          tsconfig 開了 verbatimModuleSyntax，型別必須用 import type 匯入；
+          又開了 noUnusedLocals，未使用的變數直接報錯。兩條規則加起來讓 tsc -b 失敗，
+          而 repo 沒有 CI 會把這件事攤出來。修完之後又撞到第二層：放在 src/ 裡的測試檔
+          沒有 Node 型別，同樣會讓 tsc -b 失敗。解法是拆出獨立的 tsconfig.test.json，
+          由主 tsconfig.json 以 references 引用，app 和測試各自用正確的型別環境。
+        </p>
+
+        <h2>為什麼 IRR 的答案剛好都是 -45.96%？</h2>
+        <p>
+          保險 IRR 用二分法解，月利率的搜尋下限寫死在 -5%。換算成年利率，
+          0.95 的 12 次方減 1 等於 -45.96%，所以任何虧損超過這個幅度的保單，
+          答案都被釘在區間邊界上，看起來像一個「算出來的數字」。
+        </p>
+        <p>
+          新的解法把月利率區間放寬到 -99.9% 到 +100%。區間一放寬就有溢位風險：
+          1200 個月的保單用大幅負利率折現，分母會趨近 0。所以 r ≥ 0 時算現值、
+          r &lt; 0 時改算終值，兩者正負號相同，二分法的判斷不受影響，也不會溢位。
+          修正後同一張保單算出 -68.10%，再用一份獨立寫的 Python 求解器交叉驗算，結果一致。
+        </p>
+
+        <h2>匯率與日期：兩個「字串當數字」的錯</h2>
+        <p>
+          匯率頁顯示 Invalid Date。原本串的 API 回傳的 date 是「YYYY-MM-DD」字串，
+          程式卻把它乘以 1000 當成 Unix 秒數。改用不需要金鑰的 open.er-api.com v6，
+          讀它的 time_last_update_unix 欄位。
+        </p>
+        <p>
+          日期計算則有兩個方向相反的時區錯。用 new Date 解析「YYYY-MM-DD」得到的是 UTC 午夜，
+          在 UTC 以西的地區會變成前一天；toISOString 輸出的是 UTC 日期，
+          在台灣（UTC+8）早上 8 點前會拿到昨天。改成用年、月、日分開組 Date，
+          天數差用 Date.UTC 相減，順便避開夏令時間那一小時。測試在執行時設定 process.env.TZ，
+          Node 會即時採用，所以可以在同一份測試裡模擬不同時區。
+        </p>
+
+        <h2>StrictMode 下歷史紀錄為什麼重複？</h2>
+        <p>
+          計算機在 setState 的 updater 裡呼叫 setHistory。React StrictMode 開發模式會把 updater
+          執行兩次，用來抓有副作用的 updater，結果每次計算都存了兩筆歷史。
+          改成純 reducer，歷史紀錄直接放在同一份 state 裡，updater 不再有副作用。
+        </p>
+
+        <h2>一整批從沒生效過的樣式</h2>
+        <p>
+          每個頁面都用 .layout :global(.displayArea) 覆寫版面，但 CalculatorLayout 只輸出
+          CSS Modules 雜湊過的 class 名稱，全域的 displayArea 根本不存在，這些規則一條都沒命中過。
+          修法是在元件上同時輸出穩定的全域 class 名稱。另外全站沒有設定 box-sizing: border-box，
+          padding 會把寬度撐出容器，一併補上。
+        </p>
+        <p>
+          i18n 也是半成品：8 種語系有 6 種是空的。改成每個語系一個檔案，
+          型別宣告 Translation = typeof zhTw，任何語系少一個 key 或多一個 key 都會變成編譯錯誤。
+          語言偵測順序裡的 queryString 大小寫寫錯（正確是 querystring），等於這個來源從沒被讀過；
+          另外用 convertDetectedLanguage 把 en、zh-HK 這類代碼對應到實際有的語系。
+        </p>
+
+        <h2>驗證時差點被騙的兩次</h2>
+        <p>
+          第一次：在 preview 裡看 PWA build，畫面怎麼改都是舊的。原因是 Service Worker
+          還在供應上一版的快取，必須先 unregister、清掉 caches，截圖才反映真正的 build。
+        </p>
+        <p>
+          第二次：用瀏覽器自動化工具輸入文字，鍵盤快捷鍵看起來全部失效。
+          實際上那個 type 動作不會觸發 keydown，改用真正的 KeyboardEvent 派送，處理器都正常。
+          如果相信了第一個結果，就會去「修」一段沒壞的程式。
+        </p>
+        <p>
+          最後的驗證數字：lint 0 錯誤、137/137 測試通過、覆蓋率 97.97% statements、
+          95.81% branches，build 成功，GitHub CI 第一次跑就全綠，
+          13 個頁面在 375×812 的 build preview 裡逐頁檢查過。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>答案剛好等於邊界值時，先懷疑搜尋區間</strong>：-45.96% 正是 0.95¹² − 1，數字整齊得可疑，代表求解器撞牆而不是收斂。</p>
+          <p><strong>數值方法要有獨立的對照</strong>：用另一種語言、另一份實作重算一次，才能確認 -68.10% 是答案而不是新的 bug。</p>
+          <p><strong>日期字串不要直接丟給 new Date</strong>：「YYYY-MM-DD」會被當成 UTC，toISOString 也是 UTC；在 UTC+8 早上 8 點前一定出錯。</p>
+          <p><strong>讓型別系統替 i18n 把關</strong>：Translation = typeof 主語系，缺 key 就編譯失敗，比人工比對 8 份檔案可靠。</p>
+          <p><strong>驗證工具本身也會說謊</strong>：Service Worker 快取與不送 keydown 的模擬輸入，都會讓正確的程式看起來壞掉，先確認觀察方法再修。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-04 · 萬能計算機（React 19 + Vite 7 PWA）· 137/137 測試 · 覆蓋率 97.97% / 95.81% · 13 頁 375×812 實測
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

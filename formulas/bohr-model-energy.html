@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>氫原子能階怎麼算？波耳模型 E = −13.6/n² 公式拆解（656 nm 紅光實例）· Bobo Labs</title>
+  <meta name="description" content="氫原子能階怎麼算？波耳模型 Eₙ = −13.6 eV/n²。本文用 n = 3 跳到 n = 2 放出 656 nm 紅光、巴耳末系四條可見光譜線、游離能三組實例，示範能階差怎麼換成光子波長，以及負號與 n² 最常算錯的地方。" />
+  <meta property="og:title" content="氫原子能階怎麼算？波耳模型 E = −13.6/n² 公式拆解" />
+  <meta property="og:description" content="氫原子電子從 n = 3 掉到 n = 2，能量差 1.89 eV，放出波長 656.4 nm 的紅光。從能階、躍遷到游離能，一次講清波耳模型。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/bohr-model-energy.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/bohr-model-energy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "氫原子能階怎麼算？波耳模型 E = −13.6/n² 公式拆解", "url": "https://labs.moneyai168.com/formulas/bohr-model-energy.html", "datePublished": "2026-11-05", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "波耳模型能量", "item": "https://labs.moneyai168.com/formulas/bohr-model-energy.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "-13.6 / n ** 2",
+    "cases": [
+{"input":{"n":1},"expect":-13.6,"scale":-1,"text":"13.6"},
+{"input":{"n":2},"expect":-3.4,"scale":-1,"text":"3.4"},
+{"input":{"n":3},"expect":-1.5111111111111111,"scale":-1,"text":"1.51"},
+{"input":{"n":4},"expect":-0.85,"scale":-1,"text":"0.85"},
+{"input":{"n":5},"expect":-0.544,"scale":-1,"text":"0.544"},
+{"input":{"n":6},"expect":-0.37777777777777777,"scale":-1,"text":"0.378"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2)","input":{"a":2,"b":3},"expect":1.8888888888888888,"text":"1.89"},
+{"expr":"hc / (13.6 * (1 / a ** 2 - 1 / b ** 2))","input":{"hc":1239.84,"a":2,"b":3},"expect":656.3858823529412,"text":"656.4"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2) * q * 10 ** 19","input":{"a":2,"b":3,"q":1.602176634e-19},"expect":3.026333642,"text":"3.026"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2) / h / 10 ** 14","input":{"a":2,"b":3,"h":4.135667696e-15},"expect":4.56731301384735,"text":"4.567"},
+{"expr":"c / (l * 10 ** -9) / 10 ** 14","input":{"c":2.998e8,"l":656.3858823529412},"expect":4.567435224616796,"text":"4.567"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2)","input":{"a":2,"b":4},"expect":2.55,"text":"2.55"},
+{"expr":"hc / (13.6 * (1 / a ** 2 - 1 / b ** 2))","input":{"hc":1239.84,"a":2,"b":4},"expect":486.21176470588233,"text":"486.2"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2)","input":{"a":2,"b":5},"expect":2.856,"text":"2.856"},
+{"expr":"hc / (13.6 * (1 / a ** 2 - 1 / b ** 2))","input":{"hc":1239.84,"a":2,"b":5},"expect":434.11764705882354,"text":"434.1"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2)","input":{"a":2,"b":6},"expect":3.022222222222222,"text":"3.022"},
+{"expr":"hc / (13.6 * (1 / a ** 2 - 1 / b ** 2))","input":{"hc":1239.84,"a":2,"b":6},"expect":410.24117647058824,"text":"410.2"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2)","input":{"a":1,"b":2},"expect":10.2,"text":"10.2"},
+{"expr":"hc / (13.6 * (1 / a ** 2 - 1 / b ** 2))","input":{"hc":1239.84,"a":1,"b":2},"expect":121.55294117647058,"text":"121.6"},
+{"expr":"hc / (13.6 / n ** 2)","input":{"hc":1239.84,"n":1},"expect":91.16470588235293,"text":"91.2"},
+{"expr":"hc / (13.6 / n ** 2)","input":{"hc":1239.84,"n":2},"expect":364.65882352941173,"text":"364.7"},
+{"expr":"13.6 * Z ** 2 / n ** 2","input":{"Z":2,"n":1},"expect":54.4,"text":"54.4"},
+{"expr":"13.6 / n","input":{"n":3},"expect":4.533333333333333,"text":"4.53"},
+{"expr":"13.6 * (1 / a - 1 / b)","input":{"a":2,"b":3},"expect":2.2666666666666666,"text":"2.27"},
+{"expr":"hc / (13.6 * (1 / a - 1 / b))","input":{"hc":1239.84,"a":2,"b":3},"expect":546.9882352941175,"text":"547.0"},
+{"expr":"hc / (13.6 / n ** 2)","input":{"hc":1239.84,"n":3},"expect":820.4823529411764,"text":"820.5"},
+{"expr":"13.6 * (1 / a ** 2 - 1 / b ** 2)","input":{"a":5,"b":6},"expect":0.16622222222222222,"text":"0.17"},
+{"expr":"(a - b) / b * 100","input":{"a":13.6,"b":13.598},"expect":0.014708045300771373,"text":"0.015"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #57 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">氫原子能階怎麼算？波耳模型 E = −13.6/n² 公式拆解（紅光實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-05</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        氫原子的電子從第 3 能階掉到第 2 能階，會放出一顆能量 1.89 eV 的光子，波長 656.4 nm，是可見紅光。
+        數字來自波耳模型 Eₙ = −13.6 eV / n²。公式只有一個除法，會算錯的是負號、n 的平方，以及能階和能階差的分別。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">Eₙ = −13.6 eV / n²</div>
+          <div class="formula-box-note">Eₙ 為氫原子第 n 能階的電子能量（eV）· 13.6 eV 為氫原子基態束縛能（Rydberg 能量）· n 為主量子數（1, 2, 3, …）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>Eₙ</td><td>第 n 能階的電子總能量</td><td>eV（1 eV = 1.602×10⁻¹⁹ J）</td><td>基態 −13.6 eV，n = 2 為 −3.4 eV</td></tr>
+            <tr><td>n</td><td>主量子數，只能取正整數</td><td>無因次</td><td>1（基態）、2、3…；可見光譜線涉及 n = 2–6</td></tr>
+            <tr><td>13.6</td><td>Rydberg 能量，氫原子基態的束縛能</td><td>eV</td><td>常用 13.6</td></tr>
+            <tr><td>hc</td><td>普朗克常數 × 光速，用來把 eV 換成波長</td><td>eV·nm</td><td>1239.84</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼能量是負的？先看各能階的數字</h2>
+        <p>
+          波耳模型把「電子離核無窮遠、靜止」定為 0 eV。被原子核吸住的電子要外加能量才拉得走，所以束縛態都低於 0。代入 n = 1 到 6：
+        </p>
+        <ul>
+          <li>n = 1：−13.6 ÷ 1 = −13.6 eV（基態）</li>
+          <li>n = 2：−13.6 ÷ 4 = −3.4 eV</li>
+          <li>n = 3：−13.6 ÷ 9 ≈ −1.51 eV</li>
+          <li>n = 4：−13.6 ÷ 16 = −0.85 eV</li>
+          <li>n = 5：−13.6 ÷ 25 = −0.544 eV</li>
+          <li>n = 6：−13.6 ÷ 36 ≈ −0.378 eV</li>
+        </ul>
+        <p>
+          n 越大，能量越接近 0，相鄰能階的間距也越小：n = 1 到 2 差 10.2 eV，n = 5 到 6 只差約 0.17 eV。
+          能階越往上越密集，最後在 0 eV 匯成連續區，電子脫離原子，也就是游離。
+        </p>
+
+        <h2>用真實數字算一遍：n = 3 掉到 n = 2 放出什麼光？</h2>
+        <p>
+          <strong>條件：</strong>氫原子電子從 n = 3 躍遷到 n = 2，求光子能量與波長：
+        </p>
+        <ol>
+          <li>能階差：ΔE = E₃ − E₂ = 13.6 × (1/2² − 1/3²) = 13.6 × (1/4 − 1/9) = <strong>1.89</strong> eV</li>
+          <li>換成焦耳：ΔE × 1.602×10⁻¹⁹ J/eV ≈ 3.026 × 10⁻¹⁹ J</li>
+          <li>換成波長：λ = hc / ΔE = 1239.84 ÷ (13.6 × 5/36) ≈ <strong>656.4</strong> nm</li>
+          <li>換成頻率：f = ΔE / h = ΔE ÷ (4.1357×10⁻¹⁵ eV·s) ≈ 4.567 × 10¹⁴ Hz</li>
+        </ol>
+        <p>
+          656.4 nm 是可見紅光，天文學稱為 Hα 線。
+          用<a href="/formulas/wave-speed.html">波速公式 v = fλ</a> 交叉檢查：2.998×10⁸ m/s ÷ 656.4 nm 同樣得到約 4.567 × 10¹⁴ Hz。
+        </p>
+
+        <h2>巴耳末系：氫原子的四條可見光譜線</h2>
+        <p>
+          掉回 n = 2 的躍遷合稱巴耳末系（Balmer series），其中四條是可見光：
+        </p>
+        <ul>
+          <li>n = 3 → 2：ΔE = 1.89 eV，λ ≈ 656.4 nm（紅）</li>
+          <li>n = 4 → 2：ΔE = 13.6 × (1/4 − 1/16) = 2.55 eV，λ = 1239.84 ÷ 2.55 ≈ 486.2 nm（藍綠）</li>
+          <li>n = 5 → 2：ΔE = 13.6 × (1/4 − 1/25) = 2.856 eV，λ ≈ 434.1 nm（藍紫）</li>
+          <li>n = 6 → 2：ΔE = 13.6 × (1/4 − 1/36) ≈ 3.022 eV，λ ≈ 410.2 nm（紫）</li>
+        </ul>
+        <p>
+          起點越高，波長越短、間隔越擠，最後收斂到 n = 2 游離的極限：
+          1239.84 ÷ 3.4 ≈ 364.7 nm，已進入紫外線。掉回 n = 1 的萊曼系能量更大，
+          最弱的 n = 2 → 1 就有 10.2 eV，λ ≈ 121.6 nm，全在紫外線。
+        </p>
+
+        <h2>游離能與類氫離子：13.6 eV 從哪裡用到？</h2>
+        <p>
+          把基態電子整個拉走，需要從 −13.6 eV 補到 0，也就是 13.6 eV，這就是氫原子的游離能。
+          能做到這件事的光子波長上限是 1239.84 ÷ 13.6 ≈ 91.2 nm，比這更長的光無論多強都游離不了基態氫。
+        </p>
+        <p>
+          只有一個電子的離子（He⁺、Li²⁺）也能套用，但原子核電荷變成 Z 倍，公式改為 Eₙ = −13.6 Z² / n² eV。
+          He⁺ 的 Z = 2，基態能量是 −13.6 × 4 = −54.4 eV。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：忘了平方、拿單一能階算波長</div>
+          <p style="margin: 0;">
+            第一種錯誤是把 n² 寫成 n：n = 3 會算出 −13.6 ÷ 3 = −4.53 eV，正確值是 −1.51 eV；
+            同樣錯法下 3 → 2 的能階差變成 13.6 × (1/2 − 1/3) = 2.27 eV，波長 547.0 nm，紅光被算成綠光。
+            第二種錯誤是直接拿 E₃ 的 1.51 eV 換波長，得到 1239.84 ÷ (13.6/9) ≈ 820.5 nm 的紅外線——
+            那是「從 n = 3 游離」所需的光，不是躍遷放出的光。光子能量永遠是兩個能階的差，取絕對值計算。
+          </p>
+        </div>
+
+        <h2>波耳模型什麼時候不準？</h2>
+        <p>
+          13.6 eV 假設原子核質量無限大；考慮質子質量修正後，氫的實測游離能是 13.598 eV，相差約 0.015%。
+          模型的邊界有三個：只適用單電子系統；解釋不了譜線在高解析度下分裂（精細結構）；算不出譜線亮度比。
+          做光譜辨識與能階估算，波耳公式已經夠用。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供波耳模型能量 #57 的互動計算——輸入主量子數 n，立即得到該能階的能量。
+          輸入 n = 3 與 n = 2 再相減，即可重現本文 1.89 eV 的 Hα 能階差。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 波耳模型能量 #57</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=57" title="波耳模型能量互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/wave-speed.html">波速 v = fλ：光子頻率與波長怎麼互換</a></li>
+          <li><a href="/formulas/emc2.html">質能等價 E = mc²：原子尺度的另一條能量公式</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv²</a></li>
+          <li><a href="/formulas/square.html">平方 x²：n² 讓能階間距越往上越密</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          氫原子能階 Eₙ = −13.6 eV/n² 依波耳 1913 年原子模型；Rydberg 能量精確值 13.605693 eV、元電荷 1.602176634×10⁻¹⁹ C、
+          普朗克常數 4.135667696×10⁻¹⁵ eV·s 取自 CODATA 2018，hc 取 1239.84 eV·nm；
+          氫原子實測游離能 13.598 eV 依 NIST Atomic Spectra Database。文中波長為以 13.6 eV 計算的理論值。本文為數學與物理計算說明，數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
