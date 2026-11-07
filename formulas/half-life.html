@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>半衰期公式怎麼算？剩餘量 N₀·(½)^(t/T) 拆解（碘-131、碳-14 實例）· Bobo Labs</title>
+  <meta name="description" content="半衰期剩餘量怎麼算？N = N₀·(½)^(t/T)。本文用碘-131 治療劑量 3,700 MBq 算 7 天、14 天、30 天後剩多少，再用碳-14 定年反解樣本年代，並說明半衰期與衰變常數 λ 的換算，以及把指數當線性的常見錯誤。" />
+  <meta property="og:title" content="半衰期公式怎麼算？剩餘量 N₀·(½)^(t/T) 拆解" />
+  <meta property="og:description" content="每過一個半衰期剩一半：碘-131 劑量 30 天後剩多少、碳-14 剩 25% 代表幾年，一次講清半衰期公式與反解。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/half-life.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/half-life.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "半衰期公式怎麼算？剩餘量 N₀·(½)^(t/T) 拆解", "url": "https://labs.moneyai168.com/formulas/half-life.html", "datePublished": "2026-11-06", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "半衰期剩餘量", "item": "https://labs.moneyai168.com/formulas/half-life.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "N0 * 0.5 ** (t / T)",
+    "cases": [
+    {"input": {"N0": 1, "t": 1, "T": 1}, "expect": 0.5, "tol": 0.0001, "scale": 100, "text": "50"},
+    {"input": {"N0": 1, "t": 2, "T": 1}, "expect": 0.25, "tol": 0.0001, "scale": 100, "text": "25"},
+    {"input": {"N0": 1, "t": 3, "T": 1}, "expect": 0.125, "tol": 0.0001, "scale": 100, "text": "12.5"},
+    {"input": {"N0": 1, "t": 4, "T": 1}, "expect": 0.0625, "tol": 0.00001, "scale": 100, "text": "6.25"},
+    {"expr": "2 ** n", "input": {"n": 10}, "expect": 1024, "tol": 0.0001, "text": "1,024"},
+    {"input": {"N0": 1, "t": 10, "T": 1}, "expect": 0.0009765625, "tol": 0.000001, "scale": 100, "text": "0.098"},
+    {"input": {"N0": 3700, "t": 7, "T": 8.02}, "expect": 2020.4929472260262, "tol": 0.001, "text": "2,020"},
+    {"input": {"N0": 3700, "t": 8.02, "T": 8.02}, "expect": 1850.0, "tol": 0.001, "text": "1,850"},
+    {"input": {"N0": 3700, "t": 14, "T": 8.02}, "expect": 1103.3491215648958, "tol": 0.001, "text": "1,103"},
+    {"input": {"N0": 3700, "t": 30, "T": 8.02}, "expect": 276.7925258040736, "tol": 0.001, "text": "277"},
+    {"input": {"N0": 3700, "t": 80.2, "T": 8.02}, "expect": 3.61328125, "tol": 0.0001, "text": "3.6"},
+    {"expr": "ln(100) / ln(2)", "input": {"x": 1}, "expect": 6.643856189774724, "tol": 0.0000001, "text": "6.644"},
+    {"expr": "T * ln(100) / ln(2)", "input": {"T": 8.02}, "expect": 53.2837266419933, "tol": 0.0001, "text": "53.3"},
+    {"expr": "T * ln(N0 / N) / ln(2)", "input": {"T": 5730, "N0": 1, "N": 0.25}, "expect": 11460.0, "tol": 0.001, "text": "11,460"},
+    {"expr": "T * ln(N0 / N) / ln(2)", "input": {"T": 5730, "N0": 1, "N": 0.6}, "expect": 4222.812854572362, "tol": 0.001, "text": "4,223"},
+    {"expr": "T * ln(N0 / N) / ln(2)", "input": {"T": 5568, "N0": 1, "N": 0.6}, "expect": 4103.424428317436, "tol": 0.001, "text": "4,103"},
+    {"expr": "(T1 - T2) * ln(1 / f) / ln(2)", "input": {"T1": 5730, "T2": 5568, "f": 0.6}, "expect": 119.38842625492634, "tol": 0.001, "text": "119"},
+    {"input": {"N0": 1, "t": 10000, "T": 5730}, "expect": 0.2982924364237143, "tol": 0.000001, "scale": 100, "text": "29.8"},
+    {"expr": "ln(2) / T * 10000", "input": {"T": 5730}, "expect": 1.2096809433855938, "tol": 0.000001, "text": "1.21"},
+    {"expr": "T / ln(2)", "input": {"T": 5730}, "expect": 8266.64258429376, "tol": 0.001, "text": "8,267"},
+    {"expr": "ln(2) / T", "input": {"T": 8.02}, "expect": 0.08642732924687598, "tol": 0.0000001, "text": "0.0864"},
+    {"expr": "ln(2)", "input": {"x": 1}, "expect": 0.6931471805599453, "tol": 0.0000001, "text": "0.693"},
+    {"input": {"N0": 1, "t": 40, "T": 30.08}, "expect": 0.3978269083172705, "tol": 0.000001, "scale": 100, "text": "39.8"},
+    {"input": {"N0": 1, "t": 100, "T": 30.08}, "expect": 0.09982409618652932, "tol": 0.000001, "scale": 100, "text": "9.98"},
+    {"expr": "N0 * 0.5 ** (T / t)", "input": {"N0": 3700, "T": 8.02, "t": 30}, "expect": 3074.159324212503, "tol": 0.001, "text": "3,074"},
+    {"expr": "a / b", "input": {"a": 3074.159324212503, "b": 276.7925258040736}, "expect": 11.106390590588616, "tol": 0.0001, "text": "11"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #106 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">半衰期公式怎麼算？剩餘量 N₀·(½)^(t/T) 拆解（碘-131 實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-06</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        碘-131 的半衰期是 8.02 天。病人服下 3,700 MBq 的治療劑量，30 天後體外測得的物理衰變剩約 277 MBq，不是「快沒了」也不是「還剩一半」。
+        數字來自 N = N₀·(½)^(t/T)。公式只有一個次方，會算錯的是把指數當線性，以及把 t/T 寫反。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">N = N₀ · (½)^(t / T)</div>
+          <div class="formula-box-note">N 為經過時間 t 後的剩餘量 · N₀ 為初始量 · t 為經過時間 · T 為半衰期（t 與 T 必須同單位）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>N₀</td><td>初始量：原子數、質量或放射活度</td><td>個、g、Bq、MBq</td><td>碘-131 治療劑量 3,700 MBq</td></tr>
+            <tr><td>N</td><td>經過 t 之後的剩餘量</td><td>與 N₀ 相同</td><td>—</td></tr>
+            <tr><td>t</td><td>經過時間</td><td>秒、天、年（與 T 一致）</td><td>7 天、30 天、10,000 年</td></tr>
+            <tr><td>T</td><td>半衰期：剩餘量減為一半所需時間</td><td>與 t 相同</td><td>碘-131 8.02 天、銫-137 30.08 年、碳-14 5,730 年</td></tr>
+          </tbody>
+        </table>
+
+        <h2>每過一個半衰期剩一半：先看比例表</h2>
+        <p>
+          t/T 是「經過了幾個半衰期」。它是整數時，剩餘比例直接是 ½ 的次方：
+        </p>
+        <ul>
+          <li>1 個半衰期：(½)¹ = 50%</li>
+          <li>2 個半衰期：(½)² = 25%</li>
+          <li>3 個半衰期：(½)³ = 12.5%</li>
+          <li>4 個半衰期：(½)⁴ = 6.25%</li>
+          <li>10 個半衰期：(½)¹⁰ = 1/1,024 ≈ 0.098%</li>
+        </ul>
+        <p>
+          「10 個半衰期剩不到千分之一」常被當成衰減殆盡的經驗門檻。t/T 不是整數也一樣代入，次方可以是小數。
+        </p>
+
+        <h2>用真實數字算一遍：碘-131 劑量 30 天後剩多少？</h2>
+        <p>
+          <strong>條件：</strong>N₀ = 3,700 MBq，T = 8.02 天，只看物理衰變：
+        </p>
+        <ol>
+          <li>7 天：3,700 × (½)^(7/8.02) ≈ <strong>2,020</strong> MBq</li>
+          <li>8.02 天（剛好 1 個半衰期）：3,700 × ½ = 1,850 MBq</li>
+          <li>14 天：3,700 × (½)^(14/8.02) ≈ 1,103 MBq</li>
+          <li>30 天：3,700 × (½)^(30/8.02) ≈ <strong>277</strong> MBq</li>
+          <li>80.2 天（10 個半衰期）：3,700 ÷ 1,024 ≈ 3.6 MBq</li>
+        </ol>
+        <p>
+          反過來問「要多久才降到 1%」：(½)^(t/T) = 0.01，t = T × ln(100) / ln 2 = 8.02 × 6.644 ≈ 53.3 天。
+          臨床上還有身體代謝排出，體內殘留下降得比純物理衰變更快。
+        </p>
+
+        <h2>碳-14 定年：從剩餘比例反解年代</h2>
+        <p>
+          考古樣本的已知量是「剩餘比例」N/N₀，要求的是 t。把公式取對數整理：
+          t = T × ln(N₀/N) / ln 2。碳-14 的半衰期 T = 5,730 年：
+        </p>
+        <ul>
+          <li>樣本碳-14 剩 25%：t = 5,730 × ln 4 / ln 2 = 2 個半衰期 = 11,460 年</li>
+          <li>樣本剩 60%：t = 5,730 × ln(1/0.6) / ln 2 ≈ 4,223 年</li>
+          <li>順向驗算：10,000 年後剩 (½)^(10000/5730) ≈ 29.8%</li>
+        </ul>
+        <p>
+          T 取哪個值會影響結果。實驗室慣例以 Libby 半衰期 5,568 年報告「常規碳年齡」，同一個 60% 樣本會算成約 4,103 年，少 119 年；讀定年數字前先確認用的是哪個 T。
+        </p>
+
+        <h2>半衰期與衰變常數 λ：怎麼換成 e 的形式？</h2>
+        <p>
+          物理課本常寫成 N = N₀·e^(−λt)。兩種寫法等價，換算只靠 ln 2 ≈ 0.693：
+          λ = ln 2 / T。碳-14 的 λ = 0.693 ÷ 5,730 ≈ 1.21 × 10⁻⁴ 每年；碘-131 的 λ ≈ 0.0864 每天。
+        </p>
+        <p>
+          另一個常見量是平均壽命 τ = 1/λ = T / ln 2，碳-14 約 8,267 年。
+          更一般的成長與衰減寫法，見<a href="/formulas/exponential-growth-decay.html">指數成長與衰減 A·e^(kt)</a>。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：當成線性、把 t/T 寫反</div>
+          <p style="margin: 0;">
+            第一種錯誤是線性推論：「8 天剩一半，16 天就全沒了」。實際上 16 天是 2 個半衰期，還剩 25%；
+            指數衰減理論上永遠不會到 0，只會越來越接近。
+            第二種錯誤是把次方寫成 T/t：碘-131 的 30 天會算出 3,700 × (½)^(8.02/30) ≈ 3,074 MBq，
+            比正確的 277 MBq 多了約 11 倍。檢查法很簡單：時間越久，次方 t/T 應該越大、剩餘量越少。
+          </p>
+        </div>
+
+        <h2>半衰期公式什麼時候不準？</h2>
+        <p>
+          公式描述的是大量原子的統計平均：個別原子何時衰變無法預測，但整體比例非常穩定；樣本只剩幾十個原子時，實際計數會明顯偏離公式。
+        </p>
+        <p>
+          長尺度的環境問題也要靠它估算。銫-137 半衰期 30.08 年，1986 年車諾比事故釋出的量到 2026 年經過 40 年，
+          仍剩 (½)^(40/30.08) ≈ 39.8%；100 年後約 9.98%。土壤遷移與沖刷不在公式內。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供半衰期剩餘量 #106 的互動計算——輸入初始量 N₀、經過時間 t 與半衰期 T，立即得到剩餘量。
+          輸入 3,700、30、8.02 即可重現本文的 277 MBq。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 半衰期剩餘量 #106</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=106" title="半衰期剩餘量互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/exponential-growth-decay.html">指數成長與衰減 A·e^(kt)：半衰期的 e 底數寫法</a></li>
+          <li><a href="/formulas/natural-logarithm.html">自然對數 ln x：反解年代時用到的 ln 2</a></li>
+          <li><a href="/formulas/exponential-function.html">指數函數：次方是小數時怎麼算</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則：倍增時間，半衰期的反方向</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          半衰期剩餘量 N = N₀·(½)^(t/T) 與衰變常數 λ = ln 2 / T 依放射性衰變的一階動力學定義；
+          碘-131 半衰期 8.02 天、銫-137 半衰期 30.08 年取自 NNDC（美國國家核數據中心）NuDat；
+          碳-14 半衰期 5,730 ± 40 年（Godwin, 1962），常規碳年齡沿用 Libby 半衰期 5,568 年（Stuiver &amp; Polach, 1977）。
+          文中劑量僅計算物理衰變，非臨床建議；數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

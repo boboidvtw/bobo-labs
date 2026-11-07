@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>點擊回報失敗、其實成功了：讓本機 27B 模型透過 Accessibility Tree 操作 Mac 桌面 · Bobo Labs</title>
+  <meta name="description" content="用 LM Studio 的本機模型驅動 vercel-labs/agent-desktop，Finder 4 步、TextEdit 5 步皆通過，再整合進 Nomad AI Studio。真正花時間的不是模型，而是「不確定的成功」、被精簡掉的欄位，和 macOS 的權限歸屬。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-05-agent-desktop-local-llm.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-05</p>
+      <h1 class="article-title">點擊回報失敗、其實成功了：讓本機 27B 模型透過 Accessibility Tree 操作 Mac 桌面</h1>
+      <p class="article-lede">
+        vercel-labs/agent-desktop 本身不含模型，只把 macOS 的 Accessibility Tree 轉成 JSON 和可點的 ref。
+        我接上 LM Studio 的本機 27B 模型，Finder 任務 4 步 89 秒、TextEdit 中英混合輸入 5 步 51.5 秒都通過，
+        之後整合進 Nomad AI Studio（PR #78）。卡關的地方幾乎都不在模型，而在工具回報、資料精簡和權限歸屬。
+      </p>
+
+      <div class="article-body">
+        <h2>agent-desktop 做了什麼、沒做什麼</h2>
+        <p>
+          agent-desktop 是 Rust 寫的 CLI，Apache-2.0 授權，評估時約 15.4k stars。它讀作業系統的 Accessibility Tree，
+          把畫面上的元素輸出成 JSON，每個元素帶一個形如「@快照編號:e16」的 ref，模型只要回「點 ref」或「在 ref 輸入文字」。
+          它另外提供 MCP stdio server。換句話說，它是眼睛和手，大腦要自己接。
+        </p>
+        <p>
+          我用 npm 全域安裝 1.2.0 版，確認發布者是 Vercel 的 release bot，再寫一個 Python 原型當驅動層：
+          取 snapshot、丟給本機模型、解析模型回的動作、執行、再取 snapshot。每個任務結束後用 AppleScript 讀回實際狀態，
+          不只相信模型自己說「完成了」。
+        </p>
+
+        <h2>工具說「可能失敗」時，該怎麼回給模型？</h2>
+        <p>
+          最花時間的一個坑：macOS 上的點擊經常回傳 ACTION_FAILED，附註 outcome is uncertain，但畫面其實已經變了。
+          原樣把錯誤回給模型，它會認定沒點到、重點一次，結果把剛打開的東西又關掉，或點到旁邊的元素。
+        </p>
+        <p>
+          修法是在驅動層改寫回報：遇到這類不確定結果，回給模型 ok 為 unknown，再加一句「先重新 snapshot 驗證，再決定下一步」。
+          模型不再盲目重試，而是先看一眼。這件事跟模型大小無關，是工具把「不確定」誤標成「失敗」。
+        </p>
+        <p>
+          同類問題還有兩個。本機模型常漏掉 ref 開頭的 @，驅動層直接補上，不讓一個字元浪費一整步。
+          TextEdit 的文字區用 click 會回 POLICY_DENIED，但直接用 type 從 stdin 輸入就成功；
+          Electron 的 textarea 反過來，type 失敗、set-value 成功。同一個「輸入文字」意圖，要依元素種類選不同動作。
+        </p>
+
+        <h2>精簡過的樹少了什麼？</h2>
+        <p>
+          為了省 token，我先用互動元素精簡版的 snapshot，結果 Finder 任務一直找不到檔案。原因是 Finder 清單項目的檔名不在名稱欄位，
+          而在 value 欄位，精簡樹把它丟掉了。模型看到一排沒有名字的列，只能亂猜。改回完整 snapshot、保留 value 之後才正常。
+        </p>
+        <p>
+          token 預算另外處理：對話歷史只保留最新一份 snapshot，舊的丟掉。全部留著的話，幾步之內就撐爆 65k context。
+          舊畫面對下一步決策幾乎沒有價值，最新狀態才是模型需要的。
+        </p>
+
+        <h2>為什麼 dev 版能跑、打包版卻 PERM_DENIED？</h2>
+        <p>
+          整合進 Studio 時，我新增了驅動、IO、IPC 三個模組、一個面板和對應測試，再重建 App。打包版第一次跑就回 PERM_DENIED。
+          dev 版之所以能跑，是因為它從已經取得輔助使用授權的終端機啟動，macOS 的 TCC 看的是 responsible process，授權其實算在終端機頭上。
+          打包版是獨立 App，要另外授權。授權後，打包版 Finder 任務 3 步 92 秒通過。
+        </p>
+        <p>
+          還有一個觀察：ad-hoc 簽章只涵蓋 Electron 執行檔，不含 app.asar，所以重建後 CDHash 不變。
+          我當時推測授權可以沿用到之後的重建，但這點當天還沒驗證，只記成推測。
+        </p>
+
+        <h2>測完要清什麼？</h2>
+        <p>
+          桌面代理看得到的東西比想像中多。snapshot 會包含當下桌面上所有視窗的內容，包括其他 App 裡的私人標題；
+          LM Studio 的 server log 則會記下完整 prompt，也就是整份 snapshot。測完後我清掉 agent-desktop 的本機資料夾，
+          把 server log 的測試段落裁掉（剩 41 行），停掉 server，原型程式移到封存資料夾。
+        </p>
+        <p>
+          順帶一個 shell 小坑：在 zsh 裡寫「"$S:e16"」，冒號後的 e 會被當成取副檔名的修飾子，ref 就被吃掉一截。要寫成「${S}」加大括號。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>不確定不等於失敗</strong>：工具回報「可能失敗」時，改成 unknown 並要求先驗證，比讓模型重試安全。</p>
+          <p><strong>精簡資料前先確認關鍵欄位在哪</strong>：Finder 的檔名在 value，不在名稱；省 token 省到資訊消失就沒意義。</p>
+          <p><strong>歷史只留最新狀態</strong>：GUI 代理的舊 snapshot 價值很低，留著只會撐爆 context。</p>
+          <p><strong>dev 能跑不代表打包能跑</strong>：macOS 權限算在啟動它的程序上，打包版要單獨測、單獨授權。</p>
+          <p><strong>桌面代理的 log 也是個資</strong>：snapshot 與完整 prompt 都會落地，測完要清。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-05 · Nomad AI Studio × agent-desktop 1.2.0 · 本機 27B 模型 · Finder 4 步 89s／TextEdit 5 步 51.5s／打包版 3 步 92s · PR #78
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
