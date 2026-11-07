@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-07**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/half-life.html`（#106 · 科學 · Pro，N = N₀·(½)^(t/T)：碘-131 3,700 MBq 30 天後剩約 277 MBq、碳-14 定年反解 t = T·ln(N₀/N)/ln 2、λ = ln 2/T 換算，與線性推論、t/T 寫反的常見錯誤）、
+  `2026-11-05-agent-desktop-local-llm.html`（本機 27B 模型經 agent-desktop 操作 Mac 桌面：ACTION_FAILED 改回 unknown 先驗證、精簡樹丟掉 Finder value 欄位、打包版 PERM_DENIED 源於 TCC responsible process）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數同步。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-07.
 - **2026-11-06**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/bohr-model-energy.html`（#57 · 科學 · Pro，Eₙ = −13.6 eV/n²：n = 3 → 2 放出 1.89 eV、656.4 nm 的 Hα 紅光，巴耳末系四條可見譜線、游離能 13.6 eV 與忘了平方的常見錯誤）、
   `2026-11-04-super-calculator-audit.html`（重開封存的萬能計算機：IRR 被二分法下限釘在 -45.96%、日期字串時區錯、StrictMode 重複歷史，修到 137 個測試全綠）。
