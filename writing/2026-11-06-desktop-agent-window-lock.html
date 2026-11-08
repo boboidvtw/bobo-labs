@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>「輸入不符」其實已經寫進去了：Desktop Agent 鎖定視窗與三段式輸入 fallback · Bobo Labs</title>
+  <meta name="description" content="Nomad AI Studio 的 Desktop Agent 第二輪：整個 run 鎖定同一個視窗、type 回報不符時先讀回再決定，加上房間刪除 API 的 409 守門，以及一個寫死日期、過了那天就壞掉的測試。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-06-desktop-agent-window-lock.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-06</p>
+      <h1 class="article-title">「輸入不符」其實已經寫進去了：Desktop Agent 鎖定視窗與三段式輸入 fallback</h1>
+      <p class="article-lede">
+        前一天把本機 27B 模型接上 agent-desktop、整合進 Nomad AI Studio。這一天合了 3 個 PR（#81、#82、#83），CI 全綠，
+        重點在 #83：讓代理整個 run 只操作同一個視窗，並在 type 回報「不符」時先讀回現值，而不是直接重打。
+        另外兩個 PR 一個加了刪除房間的 API，一個順手修掉一個過了 11 月 5 日就會失敗的測試。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼要把視窗鎖死在同一個 id？</h2>
+        <p>
+          桌面上同時開著好幾個視窗時，每一步重新挑視窗，代理可能這一步在 Safari、下一步跑去 Finder。
+          #83 新增 windowTitle 設定：run 開始時依標題找到視窗，之後整個 run 固定用同一個 window id。
+          找不到就直接回 desktop_error 結束，不讓模型在錯的視窗裡繼續猜；如果視窗中途被關掉，再依標題重選一次。
+        </p>
+        <p>
+          測試時就碰到這種情況：Finder 測試視窗在測試開始前自己消失了。沒有鎖定機制的話，代理會在別的視窗裡找檔案，
+          最後回報的「失敗」跟任務本身無關。後來我的做法是測前立刻重開目標視窗。
+        </p>
+
+        <h2>type 回報不符時，為什麼不能直接重打？</h2>
+        <p>
+          agent-desktop 的嚴格模式會在動作後比對結果，常回「does not match the requested change」。
+          實測這個 post-action mismatch 很多是誤報：文字其實已經寫進欄位了。驅動層如果照字面重試，同一段文字就會出現兩次。
+        </p>
+        <p>
+          #83 把處理改成三段：先用 get 讀回欄位現值，確認文字是否已經落地；沒有的話改用 set-value，把「現值加上要輸入的文字」從 stdin 寫進去；
+          最後一段 type --headed 走實體鍵盤輸入，只在使用者勾選 headed 時才啟用，因為它會真的搶走前景焦點。
+        </p>
+        <p>
+          三段的順序來自 Safari 的實測：單行 input 可以用 set-value，但 textarea 寫 AXValue 不會生效，只能靠 headed 實體輸入。
+          同樣是「輸入文字」，元素種類不同，能用的路就不同；前一天的 TextEdit 與 Electron 也是同一類問題。
+        </p>
+
+        <h2>工具層通了，模型還沒收尾</h2>
+        <p>
+          Safari 表單的端到端測試，本機 27B 模型送出後會再輸入一次，而且不會主動結束任務。
+          我先確認問題不在工具層：click 和 type 都正常，送出後的確認文字也出現了。所以這是模型判斷「何時算完成」的問題，
+          這一輪沒有硬修，留到之後處理。
+        </p>
+        <p>
+          同一個 PR 也評估了 agent-desktop 自帶的 MCP 模式，共 67 個工具，包含啟動 App、關閉 App、按鍵。
+          這些能力超出目前「在指定視窗內點擊與輸入」的範圍，關 App 這類動作風險也高一階，所以寫成 out-of-scope 文件，記下不做的理由和何時可以重新考慮。
+        </p>
+
+        <h2>刪除房間：忙碌中回 409</h2>
+        <p>
+          #82 補上多 bot 房間的刪除：管理器加 remove()，API 加 DELETE 端點，前端面板加刪除鈕，刪除後用 SSE 推一個 room:removed 事件讓其他畫面同步。
+          房間還在執行或正在被驅動時，API 回 409 而不是硬刪，避免把跑到一半的對話從底下抽走。
+        </p>
+
+        <h2>一個過了日期就壞掉的測試</h2>
+        <p>
+          #81 原本只是把服務清單的介面連結改成由設定提供，取代卡片上寫死的連結；只提供 API、沒有網頁介面的服務，連結直接拿掉。
+          跑 CI 時，排程月曆的測試卻失敗了：測資寫死 2026-11-05，這天一過，「planned」項目就被當成過去的排程濾掉。
+          改成相對於現在的日期後恢復正常。這個測試在 11 月 5 日以前一直是綠的，它本身就藏著一個到期日。
+        </p>
+        <p>
+          另外兩個 shell 小坑：zsh 預設沒有 timeout 指令；grep 的 --include=*.js 不加引號，zsh 會先展開萬用字元，找不到檔案就直接報 nomatch。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>一個 run 一個視窗</strong>：開頭鎖定 window id，找不到就停，比讓代理在錯的視窗裡猜安全。</p>
+          <p><strong>不符先讀回</strong>：工具說動作結果不符時先 get 現值，重打只會讓文字重複。</p>
+          <p><strong>侵入性高的 fallback 放最後、要使用者開</strong>：實體鍵盤輸入會搶焦點，只在勾選後才用。</p>
+          <p><strong>先排除工具層，再怪模型</strong>：確認 click、type 都正常之後，剩下的才是模型的收尾判斷。</p>
+          <p><strong>測試別寫死日期</strong>：寫死的日期就是到期日，改成相對現在。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-06 · Nomad AI Studio · PR #81／#82／#83（CI 全綠）· agent-desktop MCP 67 工具評估後列為 out-of-scope · 本機 27B 模型
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

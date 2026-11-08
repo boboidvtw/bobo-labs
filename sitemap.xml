@@ -93,6 +93,7 @@
   <url><loc>https://labs.moneyai168.com/formulas/vector-magnitude.html</loc><lastmod>2026-10-17</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/voltage-divider.html</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/wave-speed.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
+  <url><loc>https://labs.moneyai168.com/formulas/wavelength-from-frequency.html</loc><lastmod>2026-11-08</lastmod><priority>0.8</priority></url>
 
   <!-- Writing (dev journal) -->
   <url><loc>https://labs.moneyai168.com/writing/2026-05-14-nomad-recon-sprint-d.html</loc><lastmod>2026-05-14</lastmod><priority>0.5</priority></url>
@@ -192,6 +193,7 @@
   <url><loc>https://labs.moneyai168.com/writing/2026-11-03-aistudio-split-dropzone.html</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-04-super-calculator-audit.html</loc><lastmod>2026-11-04</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-05-agent-desktop-local-llm.html</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority></url>
+  <url><loc>https://labs.moneyai168.com/writing/2026-11-06-desktop-agent-window-lock.html</loc><lastmod>2026-11-06</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/antigravity-stack.html</loc><lastmod>2026-05-18</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/skills-governance.html</loc><lastmod>2026-05-18</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/supercalc-arch.html</loc><lastmod>2026-05-18</lastmod><priority>0.5</priority></url>

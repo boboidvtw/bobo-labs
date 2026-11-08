@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>光波長怎麼算？λ = c / f 頻率換波長公式（FM 98.1 MHz、5G、雷射實例）· Bobo Labs</title>
+  <meta name="description" content="電磁波波長怎麼算？λ = c / f，光速除以頻率。本文用 FM 98.1 MHz、微波爐 2.45 GHz、5G 3.5 與 28 GHz 實算波長，再從雷射 nm 反推頻率，並說明天線為何取 λ/4 與 MHz、GHz 混用的千倍錯誤。" />
+  <meta property="og:title" content="光波長怎麼算？λ = c / f 頻率換波長公式" />
+  <meta property="og:description" content="光速除以頻率就是波長：FM 電台 3.06 公尺、5G 毫米波 10.7 毫米，一次講清頻率換波長與反算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/wavelength-from-frequency.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/wavelength-from-frequency.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "光波長怎麼算？λ = c / f 頻率換波長公式", "url": "https://labs.moneyai168.com/formulas/wavelength-from-frequency.html", "datePublished": "2026-11-07", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "光波長(由頻率)", "item": "https://labs.moneyai168.com/formulas/wavelength-from-frequency.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "c / f",
+    "cases": [
+    {"input": {"c": 299792458, "f": 98100000}, "expect": 3.055988358817533, "tol": 0.000001, "text": "3.06"},
+    {"input": {"c": 299792458, "f": 1000000}, "expect": 299.792458, "tol": 0.000001, "text": "299.8"},
+    {"input": {"c": 299792458, "f": 2450000000}, "expect": 0.12236426857142856, "tol": 0.0000001, "scale": 100, "text": "12.24"},
+    {"input": {"c": 299792458, "f": 3500000000}, "expect": 0.085654988, "tol": 0.0000001, "scale": 100, "text": "8.57"},
+    {"input": {"c": 299792458, "f": 1575420000}, "expect": 0.1902936727983649, "tol": 0.0000001, "scale": 100, "text": "19.03"},
+    {"input": {"c": 299792458, "f": 28000000000}, "expect": 0.0107068735, "tol": 0.0000001, "scale": 1000, "text": "10.7"},
+    {"expr": "f2 / f1", "input": {"f1": 98100000, "f2": 28000000000}, "expect": 285.4230377166157, "tol": 0.0001, "text": "285"},
+    {"expr": "c / f / 4", "input": {"c": 299792458, "f": 98100000}, "expect": 0.7639970897043833, "tol": 0.000001, "scale": 100, "text": "76.4"},
+    {"expr": "c / f / 4", "input": {"c": 299792458, "f": 1000000}, "expect": 74.9481145, "tol": 0.000001, "text": "74.9"},
+    {"expr": "c / f / 4", "input": {"c": 299792458, "f": 1575420000}, "expect": 0.04757341819959122, "tol": 0.0000001, "scale": 100, "text": "4.76"},
+    {"expr": "c / L", "input": {"c": 299792458, "L": 0.0000006328}, "expect": 473755464601264.2, "tol": 1000, "scale": 1e-12, "text": "473.8"},
+    {"expr": "c / L", "input": {"c": 299792458, "L": 0.000000532}, "expect": 563519657894736.8, "tol": 1000, "scale": 1e-12, "text": "563.5"},
+    {"expr": "c / L", "input": {"c": 299792458, "L": 0.00000155}, "expect": 193414489032258.06, "tol": 1000, "scale": 1e-12, "text": "193.4"},
+    {"expr": "L / n", "input": {"L": 1550, "n": 1.468}, "expect": 1055.858310626703, "tol": 0.0001, "text": "1,056"},
+    {"expr": "c / n", "input": {"c": 299792458, "n": 1.468}, "expect": 204218295.64032698, "tol": 1, "scale": 1e-8, "text": "2.04"},
+    {"expr": "(c / f1) / (c / f2)", "input": {"c": 299792458, "f1": 98100000, "f2": 98100000000}, "expect": 1000, "tol": 0.0001, "text": "1,000"},
+    {"expr": "c / f", "input": {"c": 299792458, "f": 98100000000}, "expect": 0.003055988358817533, "tol": 0.000000001, "scale": 1000, "text": "3.06"},
+    {"expr": "a / c - 1", "input": {"a": 300000000, "c": 299792458}, "expect": 0.0006922855944562212, "tol": 0.0000001, "scale": 100, "text": "0.07"},
+    {"expr": "(a / f - c / f) * 1000", "input": {"a": 300000000, "c": 299792458, "f": 2450000000}, "expect": 0.08471102040816247, "tol": 0.000001, "text": "0.085"},
+    {"expr": "L1 / L2 - 1", "input": {"L1": 632.8, "L2": 532}, "expect": 0.18947368421052624, "tol": 0.000001, "scale": 100, "text": "19"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 科學 · #107 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">光波長怎麼算？λ = c / f 頻率換波長（FM、5G、雷射實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-07</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        收音機轉到 FM 98.1 MHz，空中傳來的電磁波每一個波峰相隔約 3.06 公尺；手機連上 5G 毫米波 28 GHz，波長只剩 10.7 毫米。
+        兩個數字都來自同一條式子 λ = c / f：光速除以頻率。公式只有一個除號，真正會算錯的是頻率單位的 10 的次方。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">λ = c / f</div>
+          <div class="formula-box-note">λ 為波長（m）· c 為真空中光速 299,792,458 m/s · f 為頻率（Hz，必須先換成 Hz 再代入）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>λ</td><td>波長：相鄰兩個波峰的距離</td><td>m（常換成 cm、mm、nm）</td><td>FM 電台約 3 m、可見光 400–700 nm</td></tr>
+            <tr><td>c</td><td>真空中光速，SI 定義的精確值</td><td>m/s</td><td>299,792,458（常近似為 3 × 10⁸）</td></tr>
+            <tr><td>f</td><td>頻率：每秒振動次數</td><td>Hz</td><td>FM 88–108 MHz、Wi-Fi 2.4 / 5 GHz、紅光約 4.7 × 10¹⁴ Hz</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼光速除以頻率就是波長？</h2>
+        <p>
+          電磁波每秒振動 f 次，每振動一次往前推進一個波長 λ，所以每秒前進的距離是 f × λ，這個距離就是光速 c。
+          c = fλ 移項就得到 λ = c / f。它是<a href="/formulas/wave-speed.html">波速公式 v = fλ</a> 把 v 換成光速的特例：
+          聲波要看介質裡的聲速，電磁波在真空中一律用同一個 c。
+        </p>
+        <p>
+          1983 年起，「公尺」由光速定義，c 因此是精確值 299,792,458 m/s，沒有量測誤差。
+          頻率越高、波長越短，兩者成反比：頻率變 10 倍，波長變成十分之一。
+        </p>
+        <p>
+          代入前先把頻率換成 Hz：kHz 乘 10³、MHz 乘 10⁶、GHz 乘 10⁹、THz 乘 10¹²。
+          算出來的 λ 單位是公尺，再依大小換成公分（×100）、毫米（×1,000）或奈米（×10⁹）。
+        </p>
+
+        <h2>用真實數字算一遍：從 FM 電台到 5G 毫米波</h2>
+        <p>
+          <strong>條件：</strong>c = 299,792,458 m/s，各頻段代入 λ = c / f：
+        </p>
+        <ol>
+          <li>FM 98.1 MHz：299,792,458 ÷ 98,100,000 ≈ <strong>3.06</strong> m</li>
+          <li>AM 1,000 kHz（1 MHz）：299,792,458 ÷ 1,000,000 ≈ 299.8 m，比一座足球場還長</li>
+          <li>GPS L1 訊號 1,575.42 MHz：≈ 19.03 cm</li>
+          <li>微波爐 2.45 GHz：≈ 12.24 cm</li>
+          <li>台灣 5G 主力頻段 n78 的 3.5 GHz：≈ 8.57 cm</li>
+          <li>5G 毫米波 28 GHz：≈ <strong>10.7</strong> mm</li>
+        </ol>
+        <p>
+          28 GHz 的頻率是 98.1 MHz 的約 285 倍，波長就短為約 285 分之一。
+          波長越短，越容易被牆面、樹葉甚至手掌擋住，這是毫米波基地台要布得很密的物理原因。
+        </p>
+
+        <h2>天線長度為什麼取四分之一波長？</h2>
+        <p>
+          最常見的單極天線（monopole）長度取 λ/4，在這個長度上電流與電壓分布剛好形成共振，收發效率最好。
+          所以波長直接決定天線的尺寸：
+        </p>
+        <ul>
+          <li>FM 98.1 MHz：3.06 m ÷ 4 ≈ 76.4 cm，接近車用伸縮天線拉到底的長度</li>
+          <li>AM 1 MHz：299.8 m ÷ 4 ≈ 74.9 m，所以 AM 電台的發射塔要蓋幾十公尺高</li>
+          <li>GPS L1：19.03 cm ÷ 4 ≈ 4.76 cm，能塞進手機機身</li>
+        </ul>
+        <p>
+          頻率決定波長、波長決定天線尺寸：手機能做小，前提是它用的是 GHz 等級的頻段。
+          電路端要產生特定頻率，常用 LC 振盪電路，見<a href="/formulas/lc-resonant-frequency.html">LC 共振頻率</a>。
+        </p>
+
+        <h2>反過來算：雷射波長換成頻率</h2>
+        <p>
+          光學領域習慣報波長（nm），電信與物理計算常需要頻率。同一條式子移項成 f = c / λ，記得先把 nm 換成公尺（×10⁻⁹）：
+        </p>
+        <ul>
+          <li>氦氖紅光雷射 632.8 nm：f = 299,792,458 ÷ (632.8 × 10⁻⁹) ≈ 473.8 THz</li>
+          <li>綠光雷射筆 532 nm：≈ 563.5 THz</li>
+          <li>光纖通訊 C 頻段 1,550 nm：≈ 193.4 THz</li>
+        </ul>
+        <p>
+          綠光頻率比紅光高約 19%，每顆光子的能量也跟著高同樣比例，光子能量與頻率的正比關係是普朗克公式 E = hf 的內容。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：MHz 與 GHz 混用，差 1,000 倍</div>
+          <p style="margin: 0;">
+            最常見的錯誤是頻率沒換成 Hz，或把 MHz 誤當 GHz。FM 98.1 MHz 若代入 98.1 × 10⁹ Hz，會算出 3.06 mm，
+            比正確的 3.06 m 小了 1,000 倍；數字長得一樣，只差單位，最不容易被發現。
+            檢查法是看量級：MHz 對應公尺級、GHz 對應公分級、THz 對應微米到奈米級。
+            相反地，把 c 近似成 3 × 10⁸ 幾乎不影響結果：相對誤差只有 0.07%，微波爐的 12.24 cm 只差約 0.085 mm。
+          </p>
+        </div>
+
+        <h2>不在真空裡呢？光纖中的波長會變短</h2>
+        <p>
+          λ = c / f 的 c 是真空光速。光進入折射率 n 的介質後，速度變成 c / n，頻率維持不變，波長跟著縮成 λ / n。
+          光纖玻璃的折射率約 1.468，光速降為約 2.04 × 10⁸ m/s；1,550 nm 的訊號在纖芯裡的實際波長約 1,056 nm。
+        </p>
+        <p>
+          規格書上寫的「1,550 nm」一律指真空波長，元件製造與干涉計算才需要介質中的波長。
+          空氣折射率約 1.0003，對無線電頻段的影響小到可以忽略，所以前面的電台與 5G 實例直接用真空光速。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供光波長(由頻率) #107 的互動計算——輸入頻率 f，立即得到真空中的波長 λ。
+          輸入 98,100,000 Hz 即可重現本文 FM 電台的 3.06 m。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 光波長(由頻率) #107</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=107" title="光波長(由頻率)互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/wave-speed.html">波速 v = fλ：聲波與電磁波共用的母公式</a></li>
+          <li><a href="/formulas/lc-resonant-frequency.html">LC 共振頻率：電路怎麼產生特定頻率</a></li>
+          <li><a href="/formulas/emc2.html">質能等價 E = mc²：另一條以光速為核心的公式</a></li>
+          <li><a href="/formulas/rc-cutoff-frequency.html">RC 截止頻率：頻率在電路中的另一種角色</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          λ = c / f 依電磁波傳播關係 c = fλ 定義；真空光速 c = 299,792,458 m/s 為 SI 定義值（1983 年第 17 屆國際度量衡大會）；
+          GPS L1 載波 1,575.42 MHz 取自 GPS 介面規格 IS-GPS-200；微波爐 2.45 GHz 為 ISM 頻段標準頻率；
+          n78 頻段範圍 3.3–3.8 GHz 依 3GPP TS 38.101；氦氖雷射 632.8 nm 為其標準譜線；光纖折射率 1.468 為常見單模光纖纖芯的典型值。
+          數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
