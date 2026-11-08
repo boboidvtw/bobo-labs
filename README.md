@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-08**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/wavelength-from-frequency.html`（#107 · 科學 · Pro，λ = c / f：FM 98.1 MHz ≈ 3.06 m、5G 毫米波 28 GHz ≈ 10.7 mm、λ/4 天線長度、雷射波長反算頻率、光纖中波長縮為 λ/n，與 MHz/GHz 混用差 1,000 倍的常見錯誤）、
+  `2026-11-06-desktop-agent-window-lock.html`（Desktop Agent 一個 run 鎖定同一個 window id、type 回報不符先 get 讀回再走 set-value／headed 三段 fallback、寫死日期的測試藏著到期日）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數同步。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-08.
 - **2026-11-07**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/half-life.html`（#106 · 科學 · Pro，N = N₀·(½)^(t/T)：碘-131 3,700 MBq 30 天後剩約 277 MBq、碳-14 定年反解 t = T·ln(N₀/N)/ln 2、λ = ln 2/T 換算，與線性推論、t/T 寫反的常見錯誤）、
   `2026-11-05-agent-desktop-local-llm.html`（本機 27B 模型經 agent-desktop 操作 Mac 桌面：ACTION_FAILED 改回 unknown 先驗證、精簡樹丟掉 Finder value 欄位、打包版 PERM_DENIED 源於 TCC responsible process）。
