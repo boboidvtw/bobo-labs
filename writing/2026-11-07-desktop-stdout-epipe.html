@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>關掉終端機，App 就跳錯：一個沒人接的 EPIPE · Bobo Labs</title>
+  <meta name="description" content="從終端機啟動桌面 App、再把終端機關掉，主程序跳出 write EPIPE 錯誤對話框。根因是 stdout 背後的 pipe 斷了、stream 的 error 事件沒有 listener；順手記下同一天的 GitHub fork／star 盤點與 Dashboard 新分頁。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-07-desktop-stdout-epipe.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-07</p>
+      <h1 class="article-title">關掉終端機，App 就跳錯：一個沒人接的 EPIPE</h1>
+      <p class="article-lede">
+        從終端機啟動 Studio，用完把終端機關掉，畫面跳出「A JavaScript error occurred in the main process」，
+        內容只有一行 write EPIPE。App 本身沒做錯什麼，錯在一個沒人接的 error 事件。
+        這篇記下根因、修法和怎麼用子程序把它重現成測試，也順帶記同一天做的 GitHub 盤點。
+      </p>
+
+      <div class="article-body">
+        <h2>錯誤長什麼樣子？</h2>
+        <p>
+          重現步驟只有兩步：在終端機下指令啟動桌面版 Studio，然後關掉那個終端機視窗。
+          App 繼續跑，但下一次主程序寫 log 時，Electron 就跳出錯誤對話框，訊息是 write EPIPE。
+          用 Dock 或 Finder 開的情況完全不會出現，所以平常很難注意到。
+        </p>
+
+        <h2>根因：pipe 斷了，error 事件沒有 listener</h2>
+        <p>
+          從終端機啟動時，process.stdout 和 process.stderr 不是檔案，而是接到終端機的 pipe。
+          終端機關掉後 pipe 的另一端消失，下一次寫入就失敗，Node 在 stream 上發出 'error' 事件，錯誤碼是 EPIPE。
+        </p>
+        <p>
+          Node 的規則是：EventEmitter 發出 'error' 而沒有任何 listener，就把它當成 uncaught exception 丟出來。
+          Electron 的主程序對 uncaught exception 的預設行為就是跳那個對話框。
+          所以問題不在「寫入失敗」，而在「寫入失敗這件事沒有人處理」。
+        </p>
+
+        <h2>修法：只守 stream，不吞所有錯誤</h2>
+        <p>
+          主程序原本就有一個 teeConsole，把 console 輸出同時寫到終端機與 log 檔。
+          我在它上面加一個 streams 選項，由 main.js 傳入 stdout 與 stderr 兩條 stream；
+          內部的 guardStreams 幫每條 stream 掛上 'error' listener。
+        </p>
+        <p>
+          listener 只處理兩種錯誤碼：EPIPE 和 ERR_STREAM_DESTROYED。遇到這兩種，就把該 stream 標記為斷線，
+          之後的輸出只寫 log 檔，不再碰終端機。其他錯誤照樣往外丟。
+          這樣做的理由是：pipe 斷了是可預期的正常情況，但磁碟滿、權限錯這類錯誤仍然應該被看見。
+        </p>
+
+        <h2>怎麼把「關掉終端機」寫成測試？</h2>
+        <p>
+          TDD 新增 3 個測試，先寫、確認失敗，再改 teeConsole。其中最關鍵的一個不 mock stream，而是開一個子程序跑真正的輸出邏輯：
+          父程序等子程序寫出第一筆後，主動關掉它的 stdout，再讓子程序繼續寫。
+        </p>
+        <p>
+          這等於把「使用者關掉終端機」換成一個可以在 CI 重跑的步驟。mock 出來的 EPIPE 只能證明 listener 有掛上，
+          真的關掉 pipe 才能證明 Node 實際發出的錯誤碼和修法對得上。
+        </p>
+        <p>
+          誠實說明：打包版本我沒有實際測「從終端機啟動再關掉」，新版是用 open 指令開的。
+          修正有效的證據是那個子程序測試，不是手動驗證。
+        </p>
+
+        <h2>同一天的另一半：GitHub 盤點</h2>
+        <p>
+          這個 bug 是在做另一件事時遇到的。那天我用 gh CLI 盤點自己帳號的 29 個 fork 與 367 個 star：
+          fork 用 compare API 看 ahead／behind，star 用帶時間戳的 Accept header 取得加星日期。
+        </p>
+        <p>
+          29 個 fork 分成三群：仍在用的 7 個、只改過在地化的 6 個、已過時或雜訊的 11 個；
+          另外 5 個完全沒有自己 commit 的空 fork 直接刪掉，刪之前先記下上游與還原方式。
+          star 裡有幾個值得留意的項目，例如疑似灌星或授權條款有疑慮的 repo，但沒有發現機密外洩。
+        </p>
+        <p>
+          盤點結果做成 Dashboard 的新分頁「GitHub 盤點」：一份 HTML 面板加一份 JSON 快照，在組 Dashboard 時內嵌進去。
+          內嵌 JSON 進 HTML 時，把 &lt; 轉成 Unicode escape，避免資料裡的字串提早結束 script 標籤；
+          5 個測試裡有一個專門確認惡意字串只會顯示成文字。
+        </p>
+
+        <h2>CI 的格式檢查為什麼本機過、遠端不過？</h2>
+        <p>
+          這個 PR 第一次推上去，CI 的 oxfmt format:check 失敗，但我在本機檢查是過的。
+          原因是我本機帶著明確檔案路徑跑 oxfmt，它把那些檔案誤判為被排除、直接跳過，等於什麼都沒檢查。
+          改用和 CI 相同的整個 repo 指令 npm run format:check，才看到同樣的錯誤，補一個格式修正 commit 就過了。
+        </p>
+        <p>
+          最後重新打包兩次，程式簽章的 CDHash 沒有變，所以 macOS 的輔助使用權限不必重新授權；
+          兩個已合併的遠端分支也一併刪除。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>沒人接的 error 事件就是 crash</strong>：Node 的 EventEmitter 發出 'error' 卻沒有 listener 時會變成 uncaught exception，stdout／stderr 也不例外。</p>
+          <p><strong>只吞可預期的錯誤碼</strong>：EPIPE 和 ERR_STREAM_DESTROYED 代表 pipe 斷了，可以降級成只寫 log；其他錯誤仍要往外丟。</p>
+          <p><strong>環境型 bug 用子程序重現</strong>：「關掉終端機」可以換成「父程序關掉子程序的 stdout」，變成 CI 能重跑的測試。</p>
+          <p><strong>本機檢查要跟 CI 用同一條指令</strong>：帶路徑跑格式檢查可能因排除規則而什麼都沒查，看起來通過其實是空轉。</p>
+          <p><strong>刪 fork 前先記還原方式</strong>：上游位置與重建指令先寫下來，刪除才是可逆的。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-07 · nomad-ai-workspace（Studio 桌面版）· PR #86、#87 · 3 個 EPIPE 測試 + 5 個面板測試 · 29 fork／367 star 盤點、刪除 5 個空 fork
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
