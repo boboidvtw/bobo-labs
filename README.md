@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-09**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/ideal-gas-volume.html`（#108 · 科學 · Pro，V = nRT/P：1 mol 在 STP 22.41 L／SATP 24.79 L、100 g 乾冰昇華成 54.66 L 放大 853 倍、洋芋片袋上山膨脹到 1.552 L、R 配 atm 與溫度代攝氏的常見錯誤、高壓氣瓶的理想氣體極限）、
+  `2026-11-07-desktop-stdout-epipe.html`（關掉終端機後 stdout pipe 斷線、'error' 事件無 listener 變 uncaught exception；只守 EPIPE／ERR_STREAM_DESTROYED、用子程序關 stdout 重現成測試、本機格式檢查要跟 CI 同一條指令）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數同步。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-09.
 - **2026-11-08**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/wavelength-from-frequency.html`（#107 · 科學 · Pro，λ = c / f：FM 98.1 MHz ≈ 3.06 m、5G 毫米波 28 GHz ≈ 10.7 mm、λ/4 天線長度、雷射波長反算頻率、光纖中波長縮為 λ/n，與 MHz/GHz 混用差 1,000 倍的常見錯誤）、
   `2026-11-06-desktop-agent-window-lock.html`（Desktop Agent 一個 run 鎖定同一個 window id、type 回報不符先 get 讀回再走 set-value／headed 三段 fallback、寫死日期的測試藏著到期日）。
