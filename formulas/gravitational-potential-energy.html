@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>重力位能怎麼算？U = mgh 公式拆解（爬 10 層樓 17.66 kJ 實例）· Bobo Labs</title>
+  <meta name="description" content="重力位能怎麼算？U = mgh。本文用爬樓梯消耗的熱量、1 噸水抬高 100 公尺能存多少電、5 公尺落地速度三組實例，示範質量、g、高度怎麼代，以及為什麼只看垂直高度差。" />
+  <meta property="og:title" content="重力位能怎麼算？U = mgh 公式拆解" />
+  <meta property="og:description" content="60 kg 的人爬 10 層樓增加 17,658 J 位能，只相當於 4.22 kcal。用爬樓梯、抽蓄水力、自由落體講清 U = mgh。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/gravitational-potential-energy.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/gravitational-potential-energy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "重力位能怎麼算？U = mgh 公式拆解", "url": "https://labs.moneyai168.com/formulas/gravitational-potential-energy.html", "datePublished": "2026-11-09", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "重力位能", "item": "https://labs.moneyai168.com/formulas/gravitational-potential-energy.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "m * g * h",
+    "cases": [
+{"input":{"m":60,"g":9.81,"h":30},"expect":17658,"tol":1,"text":"17,658"},
+{"input":{"m":60,"g":9.81,"h":30},"expect":17658,"tol":1,"text":"17.66","scale":0.001},
+{"expr":"m * g * h / 4184","input":{"m":60,"g":9.81,"h":30},"expect":4.2203632887,"tol":0.000001,"text":"4.22"},
+{"expr":"m * g * h / 4184 / k","input":{"m":60,"g":9.81,"h":30,"k":0.25},"expect":16.8814531548,"tol":0.000001,"text":"16.88"},
+{"expr":"n * h","input":{"n":10,"h":3},"expect":30,"tol":0.000001,"text":"30"},
+{"input":{"m":1000,"g":9.81,"h":100},"expect":981000,"tol":1,"text":"981,000"},
+{"expr":"m * g * h / 3600000","input":{"m":1000,"g":9.81,"h":100},"expect":0.2725,"tol":0.000001,"text":"0.2725"},
+{"expr":"E / (m * g)","input":{"E":3600000,"m":1000,"g":9.81},"expect":366.9724770642,"tol":1,"text":"367"},
+{"expr":"sqrt(2 * g * h)","input":{"g":9.81,"h":5},"expect":9.9045444115,"tol":0.000001,"text":"9.90"},
+{"expr":"2 * g * h","input":{"g":9.81,"h":5},"expect":98.1,"tol":0.000001,"text":"98.1"},
+{"expr":"sqrt(2 * g * h) * 3.6","input":{"g":9.81,"h":5},"expect":35.6563598815,"tol":0.000001,"text":"35.66"},
+{"input":{"m":60,"g":9.81,"h":5},"expect":2943,"tol":1,"text":"2,943"},
+{"expr":"sqrt(2 * g * h) * 3.6","input":{"g":9.81,"h":1.8},"expect":21.393815929,"tol":0.000001,"text":"21.4"},
+{"expr":"sqrt(2 * g * h)","input":{"g":9.81,"h":1.8},"expect":5.942726647,"tol":0.000001,"text":"5.94"},
+{"input":{"m":0.5,"g":9.81,"h":2},"expect":9.81,"tol":0.000001,"text":"9.81"},
+{"input":{"m":500,"g":9.81,"h":2},"expect":9810,"tol":1,"text":"9,810"},
+{"input":{"m":0.5,"g":9.81,"h":200},"expect":981,"tol":1,"text":"981"},
+{"input":{"m":20,"g":9.81,"h":1.2},"expect":235.44,"tol":0.000001,"text":"235.4"},
+{"input":{"m":20,"g":9.81,"h":6},"expect":1177.2,"tol":0.000001,"text":"1,177"},
+{"expr":"a / b","input":{"a":6,"b":1.2},"expect":5,"tol":0.000001,"text":"5"},
+{"input":{"m":1,"g":9.81,"h":400000},"expect":3924000,"tol":1,"text":"3.924","scale":0.000001},
+{"expr":"m * g * h * R / (R + h)","input":{"m":1,"g":9.81,"h":400000,"R":6371000},"expect":3692187.859991139,"tol":1,"text":"3.692","scale":0.000001},
+{"expr":"(R + h) / R - 1","input":{"h":400,"R":6371},"expect":0.0627844922,"tol":0.0000001,"text":"6.28","scale":100},
+{"expr":"(R / (R + h)) ** 2 * g","input":{"h":400,"R":6371,"g":9.81},"expect":8.6851753271,"tol":0.000001,"text":"8.69"},
+{"input":{"m":60,"g":9.81,"h":3},"expect":1765.8,"tol":1,"text":"1.8","scale":0.001},
+{"expr":"1 / k","input":{"k":0.25},"expect":4,"tol":0.000001,"text":"4"},
+{"expr":"a / b","input":{"a":500,"b":0.5},"expect":1000,"tol":0.000001,"text":"1,000"},
+{"expr":"a / b","input":{"a":200,"b":2},"expect":100,"tol":0.000001,"text":"100"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #72 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">重力位能怎麼算？U = mgh 公式拆解（爬樓梯實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-09</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        60 kg 的人從 1 樓爬到 11 樓，大約升高 30 公尺，身上增加的重力位能是 17,658 J。
+        換成食物熱量只有 4.22 kcal，不到一顆方糖。
+        這個數字來自 U = mgh：質量乘重力加速度再乘高度。容易算錯的是單位和「高度」的定義。本文用四組實例算一遍。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">U = m g h</div>
+          <div class="formula-box-note">U 為重力位能（焦耳 J）· m 為質量（kg）· g 為重力加速度（m/s²，地表約 9.81）· h 為相對參考面的垂直高度（m）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>U</td><td>重力位能（相對參考面）</td><td>J（= kg·m²/s²）</td><td>爬一層樓約 1.8 kJ</td></tr>
+            <tr><td>m</td><td>物體質量</td><td>kg（不是 g）</td><td>成人 50–80 kg</td></tr>
+            <tr><td>g</td><td>重力加速度</td><td>m/s²</td><td>9.81（標準值 9.80665）</td></tr>
+            <tr><td>h</td><td>距參考面的垂直高度，不是路徑長</td><td>m（不是 cm）</td><td>一層樓約 3 m</td></tr>
+          </tbody>
+        </table>
+
+        <h2>mgh 從哪裡來？把物體等速抬高要做的功</h2>
+        <p>
+          物體受到的重力是 mg。
+          用剛好等於 mg 的力把它等速往上抬 h 公尺，依<a href="/formulas/mechanical-work.html">功 W = Fd</a>，作的功是 mg × h。
+          速度沒變，這份功存成「位置的能量」，就是重力位能。
+          放手後重力會把同樣 mgh 的能量還回來，轉成<a href="/formulas/kinetic-energy.html">動能 ½mv²</a>。
+        </p>
+        <p>
+          兩個推論：第一，位能只跟起點和終點的垂直高度差有關，走樓梯、坐電梯、沿斜坡推上去，增加的位能都一樣。
+          第二，h 的零點可以自己選（地面、桌面、海平面都行），真正有物理意義的是兩點之間的位能差 ΔU = mg × Δh。
+        </p>
+
+        <h2>用真實數字算一遍：爬 10 層樓燒掉多少熱量？</h2>
+        <p>
+          <strong>條件：</strong>體重 60 kg，從 1 樓爬到 11 樓，共 10 層、每層 3 m，總高度 10 × 3 = 30 m。
+        </p>
+        <ol>
+          <li>代入公式：U = 60 × 9.81 × 30 = 17,658 J，約 17.66 kJ</li>
+          <li>換成大卡：1 kcal = 4,184 J，17,658 ÷ 4,184 = <strong>4.22</strong> kcal</li>
+          <li>考慮人體效率：肌肉把化學能轉成機械功的效率約 25%，實際消耗約 4.22 ÷ 0.25 = 16.88 kcal</li>
+        </ol>
+        <p>
+          結論是位能本身很小，爬樓梯會累，主要是身體的轉換效率低，大部分能量變成熱散掉。
+          效率怎麼定義，可以參考<a href="/formulas/mechanical-efficiency.html">機械效率 η = 輸出功 ÷ 輸入功</a>。
+          25% 是概略值，會隨爬升速度與體能變動。
+        </p>
+
+        <h2>1 噸水抬高 100 公尺能存多少電？抽蓄水力的數學</h2>
+        <p>
+          抽蓄電廠在用電離峰時把水抽到上池，尖峰時再放水發電，等於把電能存成重力位能。
+          1 m³ 的水質量 1,000 kg，抬高 100 m：
+        </p>
+        <ul>
+          <li>U = 1,000 × 9.81 × 100 = 981,000 J</li>
+          <li>1 kWh = 3,600,000 J，換算 981,000 ÷ 3,600,000 = <strong>0.2725</strong> kWh</li>
+        </ul>
+        <p>
+          反過來問：存 1 kWh（一度電）要把 1 噸水抬多高？h = 3,600,000 ÷ (1,000 × 9.81) = 367 m。
+          所以抽蓄電廠多蓋在上下池落差數百公尺的山區。
+          以上是理想值，抽水和發電都有損耗，實際回收更少。
+        </p>
+
+        <h2>位能變動能：5 公尺掉下來有多快？</h2>
+        <p>
+          忽略空氣阻力時，落下的位能全部轉成動能：mgh = ½mv²。兩邊的 m 消掉，得到 v = √(2gh)，
+          所以落地速度跟質量無關。從 5 m 高落下：
+        </p>
+        <ol>
+          <li>2gh = 2 × 9.81 × 5 = 98.1</li>
+          <li>v = √98.1 = <strong>9.90</strong> m/s，即 35.66 km/h</li>
+          <li>60 kg 的人：落下前位能 60 × 9.81 × 5 = 2,943 J，落地動能 ½ × 60 × 9.90² 也是 2,943 J</li>
+        </ol>
+        <p>
+          工安常把 1.8 m 當作墜落防護的門檻，從這個高度落下的速度 √(2 × 9.81 × 1.8) = 5.94 m/s，等於時速 21.4 km/h 撞地。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：質量代公克、高度代公分、拿斜坡長度當 h</div>
+          <p style="margin: 0;">
+            500 g 的書放在 2 m 高的書架上，正確算法是 U = 0.5 × 9.81 × 2 = 9.81 J。
+            把質量直接代 500，會得到 9,810 J，大了 1,000 倍；高度代成 200（公分），會得到 981 J，大了 100 倍。
+            公式要求 SI 單位：kg、m/s²、m，算出來才是焦耳。
+            另一個錯誤是把路徑長度當高度：20 kg 的行李沿 6 m 長、垂直升高 1.2 m 的斜坡推上去，
+            位能增加 20 × 9.81 × 1.2 = 235.4 J；若用 6 m 計算會得到 1,177 J，多算了 6 ÷ 1.2 = 5 倍。
+            斜坡只讓你省力，位能只看垂直高度。
+          </p>
+        </div>
+
+        <h2>mgh 的適用範圍：太空站高度要改用萬有引力</h2>
+        <p>
+          U = mgh 假設 g 在整段高度內不變，地表附近幾公里內誤差很小。
+          高度拉到國際太空站附近的 400 km，g 已經降到 9.81 × (6,371 ÷ 6,771)² = 8.69 m/s²，需要改用
+          <a href="/formulas/universal-gravitation.html">萬有引力</a>導出的位能 −GMm/r。
+        </p>
+        <p>
+          以 1 kg 物體從地表（地球半徑 R = 6,371 km）升到 400 km 為例：mgh 估計 9.81 × 400,000 = 3.924 MJ；
+          用萬有引力精確計算 ΔU = mgh × R ÷ (R + h) = 3.692 MJ。
+          mgh 高估了 (R + h) ÷ R − 1 = h ÷ R，也就是 6.28%。
+          判斷原則：h 遠小於地球半徑時用 mgh，h 達到幾百公里以上就要換公式。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的重力位能計算機，輸入 m、g、h 立即得到位能。
+          例如輸入 m = 60、g = 9.81、h = 30，即可重現本文爬 10 層樓的 17,658 J。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 重力位能 #72</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=72" title="重力位能互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv²：位能落下後變成的另一半能量</a></li>
+          <li><a href="/formulas/mechanical-work.html">功 W = Fd：mgh 就是抬高物體所作的功</a></li>
+          <li><a href="/formulas/universal-gravitation.html">萬有引力 F = Gm₁m₂/r²：高空時取代 mgh 的通用公式</a></li>
+          <li><a href="/formulas/mechanical-efficiency.html">機械效率 η：為什麼爬樓梯實際消耗是位能的 4 倍</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          重力位能 U = mgh 為近地表均勻重力場下的普通物理教科書標準定義（如 Halliday《Fundamentals of Physics》）；
+          標準重力加速度 g<sub>n</sub> = 9.80665 m/s² 為 CGPM 定義值，本文取工程常用值 9.81。
+          1 kcal = 4,184 J 為熱化學大卡；1 kWh = 3,600,000 J 為定義值；地球平均半徑 6,371 km 依 IUGG 平均半徑。
+          人體效率 25%、每層樓 3 m、斜坡與行李條件為示範數字。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

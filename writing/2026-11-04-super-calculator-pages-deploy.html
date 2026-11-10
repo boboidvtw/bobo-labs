@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>主站的 Service Worker 會清掉子路徑 App 的快取：把萬能計算機部署到 GitHub Pages 的一個下午 · Bobo Labs</title>
+  <meta name="description" content="把萬能計算機部署成 GitHub Pages 專案頁面後，主站 scope 為 / 的 Service Worker 在 activate 時刪掉所有非自己的快取。順手整理 overrides 清 audit、gh pr merge --auto 需要 required check、被跳過的 job 回報 Success 等坑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-04-super-calculator-pages-deploy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-04</p>
+      <h1 class="article-title">主站的 Service Worker 會清掉子路徑 App 的快取：把萬能計算機部署到 GitHub Pages 的一個下午</h1>
+      <p class="article-lede">
+        上午把萬能計算機的 bug 修完，下午讓它真正上線。部署本身只是 CI 多一個 job，
+        麻煩的是部署之後：同一個網域底下，主站的 Service Worker 每次更新都會刪掉子路徑 App 的快取。
+        這天開了 6 個 PR，版本推到 1.2.0，也把 GitHub auto-merge 的幾個隱藏前提踩了一遍。
+      </p>
+
+      <div class="article-body">
+        <h2>部署放在哪裡、怎麼觸發？</h2>
+        <p>
+          我選擇用專案頁面（使用者網域底下的 /super-calculator/），不把 dist 搬進主站 repo，
+          兩個專案各自建置、各自部署。Vite 設定 base: './'，路由用 HashRouter，
+          所以子路徑不需要改任何程式。
+        </p>
+        <p>
+          deploy job 直接寫在原本的 ci.yml，用 needs: verify 綁住測試：只有 main 分支、
+          而且 verify 綠燈才上傳 artifact 並部署。權限只在 job 層級開 pages 與 id-token 寫入，
+          concurrency 群組設為 pages、不取消進行中的部署，避免半途中斷。
+        </p>
+
+        <h2>為什麼主站的 Service Worker 會清掉別人的快取？</h2>
+        <p>
+          主站的 Service Worker scope 是 /，在 activate 階段會刪掉所有名稱不等於目前 CACHE_NAME 的快取，
+          這是很常見的「清舊版快取」寫法。問題是同一個 origin 底下的快取是共用的，
+          子路徑 App 的 Workbox 快取名稱不同，也會被當成舊版一起刪掉，PWA 的離線能力等於每次被歸零。
+        </p>
+        <p>
+          修法有兩層：刪除條件改成只刪自己前綴開頭的快取，另外用一份排除路徑清單，
+          讓主站的 Service Worker 跳過 /super-calculator/ 這個路徑前綴。主站 SW 升到 v3.11.3 後，
+          線上實測兩邊的快取可以共存。
+        </p>
+
+        <h2>21 個 audit 警告怎麼清到 0 個 moderate？</h2>
+        <p>
+          先把 ESLint 從 9 升到 10、vite-plugin-pwa 從 1 升到 2，警告還剩 21 個。
+          根因是間接依賴：minimatch 低於 11.0.1、glob 落在 9 到 14.0.1 之間。
+          在 package.json 用 overrides 把它們鎖到修正版之後，剩下 0 個 moderate、4 個 low；
+          剩下的 deepmerge 4.3.1 已經是最新版，要等上游修。
+        </p>
+        <p>
+          overrides 是強制替換，要確認沒有弄壞東西。filelist 與 jake 用的是 minimatch 5 的 API，
+          但它們只出現在 ejs 的 CLI 路徑，建置流程不會走到。最後比對 PWA 產物：
+          precache 一樣是 46 個 entries，Workbox hash 也跟升級前一致。
+        </p>
+
+        <h2>auto-merge 的三個隱藏前提</h2>
+        <p>
+          第一，gh pr merge --auto 在沒有 required status check 的 repo 會直接回
+          「Pull request is in clean status」，不會排隊等 CI。要先設定分支保護，
+          把 verify 列為必要檢查。
+        </p>
+        <p>
+          第二，必要檢查要選 verify 而不是 deploy。deploy 在 PR 上會被 if 條件跳過，
+          而被跳過的 job 回報的是 Success，設成必要檢查不會擋住任何 PR，也就沒有把關效果。
+        </p>
+        <p>
+          第三，--auto 搭配 --delete-branch 不會刪遠端分支，因為合併是 GitHub 端執行的，
+          要在 repo 設定裡開 delete_branch_on_merge。
+        </p>
+
+        <h2>一個設定把連續 push 的部署取消掉</h2>
+        <p>
+          ci.yml 最上層的 concurrency 設了 cancel-in-progress: true。PR 上這很合理，
+          但在 main 上連續 push 兩次時，第二次會把第一次整個 run 取消，連同正在跑的 deploy。
+          第 6 個 PR 把取消條件限縮成只在 pull_request 事件時生效，README、ARCHITECTURE、CHANGELOG 同步更正。
+        </p>
+
+        <h2>文件與 Release 的兩個小坑</h2>
+        <p>
+          補了詳細 README、CONTRIBUTING.md、docs/ARCHITECTURE.md 與 CHANGELOG 1.2.0。
+          檢查標題錨點時發現 GitHub 的 /markdown API 不會產生錨點 id，
+          只能在 blob 頁面的 DOM 上檢查；3 份文件共 84 個錨點全部有效。
+        </p>
+        <p>
+          建立 v1.2.0 Release 時，--target 給短 SHA 會回 422，要給完整 SHA。
+          建立時又遇到 502，但 Release 其實已經建好了；重試前先列一次 Release 清單，才不會建出重複的版本。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>同源的快取是共用的</strong>：scope 為 / 的 Service Worker 清快取時只能刪自己前綴的，否則會連子路徑 App 一起清。</p>
+          <p><strong>overrides 之後要比對產物</strong>：audit 歸零不代表沒弄壞，precache 數量與 hash 一致才算數。</p>
+          <p><strong>被跳過的 job 等於通過</strong>：必要檢查要選一定會跑的 job，否則分支保護只是形式。</p>
+          <p><strong>cancel-in-progress 要分事件</strong>：PR 可以取消舊的 run，main 上取消會連部署一起砍掉。</p>
+          <p><strong>5xx 不代表沒成功</strong>：建立類 API 回 502 後，先查狀態再重試，避免重複建立。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-04 · 萬能計算機 v1.2.0 · 6 個 PR · audit 21 → 0 moderate / 4 low · 84 個文件錨點驗證
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
