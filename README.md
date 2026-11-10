@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-10**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/gravitational-potential-energy.html`（#72 · 物理 · Free，U = mgh：60 kg 爬 10 層樓 17,658 J 只有 4.22 kcal、1 噸水抬高 100 m 存 0.2725 kWh、5 m 落下 9.90 m/s、質量代公克與斜坡長當 h 的常見錯誤、400 km 高空 mgh 高估 6.28%）、
+  `2026-11-04-super-calculator-pages-deploy.html`（萬能計算機部署到 GitHub Pages 子路徑；主站 scope 為 / 的 Service Worker 清掉子路徑 App 快取、overrides 清 audit 後比對 precache 產物、auto-merge 三個隱藏前提、cancel-in-progress 要分事件）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（Tier 一致、分類計數不變）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-10.
 - **2026-11-09**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/ideal-gas-volume.html`（#108 · 科學 · Pro，V = nRT/P：1 mol 在 STP 22.41 L／SATP 24.79 L、100 g 乾冰昇華成 54.66 L 放大 853 倍、洋芋片袋上山膨脹到 1.552 L、R 配 atm 與溫度代攝氏的常見錯誤、高壓氣瓶的理想氣體極限）、
   `2026-11-07-desktop-stdout-epipe.html`（關掉終端機後 stdout pipe 斷線、'error' 事件無 listener 變 uncaught exception；只守 EPIPE／ERR_STREAM_DESTROYED、用子程序關 stdout 重現成測試、本機格式檢查要跟 CI 同一條指令）。
