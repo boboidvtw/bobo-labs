@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-11**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/momentum.html`（#73 · 物理 · Free，p = mv：1.5 噸汽車時速 60 公里與 15 噸卡車時速 6 公里同為 25,000 kg·m/s、動能差 10 倍、氣囊把停止時間拉長 10 倍力縮小 10 倍、追撞後時速 36 公里損失 40% 動能、方向與 km/h 的常見錯誤）、
+  `2026-11-09-dashboard-neural-tab.html`（PolyForm Noncommercial 與 GPL-3.0 不相容，改用 Canvas 2D 原生 JS 自寫神經網絡圖面板；一卡多服務拆節點、休眠狀態改用空心環、JSDOM 跨 realm 陣列比對）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（Tier 一致、分類計數不變）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-11.
 - **2026-11-10**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/gravitational-potential-energy.html`（#72 · 物理 · Free，U = mgh：60 kg 爬 10 層樓 17,658 J 只有 4.22 kcal、1 噸水抬高 100 m 存 0.2725 kWh、5 m 落下 9.90 m/s、質量代公克與斜坡長當 h 的常見錯誤、400 km 高空 mgh 高估 6.28%）、
   `2026-11-04-super-calculator-pages-deploy.html`（萬能計算機部署到 GitHub Pages 子路徑；主站 scope 為 / 的 Service Worker 清掉子路徑 App 快取、overrides 清 audit 後比對 precache 產物、auto-merge 三個隱藏前提、cancel-in-progress 要分事件）。
