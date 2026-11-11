@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>想用的開源專案不能併：授權衝突後自己畫一張神經網絡圖 · Bobo Labs</title>
+  <meta name="description" content="評估一個 271 stars 的神經網絡風格 Dashboard，發現它的禁商用授權和 GPL-3.0 不相容，改用 Canvas 2D 與原生 JS 自寫 Studio 的「神經網絡」分頁；記下一對多的服務卡片、淺色主題配色與 JSDOM 跨 realm 陣列的坑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-09-dashboard-neural-tab.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-09</p>
+      <h1 class="article-title">想用的開源專案不能併：授權衝突後自己畫一張神經網絡圖</h1>
+      <p class="article-lede">
+        看到一個很好看的神經網絡風格 Dashboard，想直接拿來用，讀完 LICENSE 就知道不行：
+        它禁止商用，Studio 是 GPL-3.0，兩者不相容。最後用 Canvas 2D 和原生 JS 自己畫一張，
+        接上真實的服務、Agent 和任務資料。這篇記下授權判斷、實作結構，以及實測時才冒出來的三個問題。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼不能直接把那個專案併進來？</h2>
+        <p>
+          起點是 GitHub 上一個 271 stars 的 Dashboard 專案：React 19 加 Vite 7，畫面是發光的球體和水母，
+          用來展示創作作品之間的關聯。我想把類似的視覺放進 Nomad Studio 的 Dashboard，第一步是讀它的 LICENSE。
+        </p>
+        <p>
+          它用的是 PolyForm Noncommercial 1.0.0，明文禁止商業使用。Studio 和 Dashboard 套件是 GPL-3.0，
+          而 GPL-3.0 不允許在散布時額外加上「不得商用」這類限制。兩份授權疊在一起，結果是任何一行程式碼都不能搬。
+        </p>
+        <p>
+          授權之外，資料模型也對不上：它的節點是作品和筆記，Studio 要畫的是服務、Agent 和任務。
+          就算授權允許，改造成本也不低。所以我的決定是自己寫一個原創版本，只借「用網絡圖看系統」這個想法。
+          另外，它那些光球和水母其實是 AI 生成的 mp4 影片，不是即時算出來的圖形，這點讀原始碼前從截圖看不出來。
+        </p>
+
+        <h2>自寫版怎麼組起來？</h2>
+        <p>
+          新增一個 neural-panel.html，只用 Canvas 2D 和原生 JS，沒有引入任何新依賴。
+          它沿用既有面板的模式：HTML 裡放一個 marker 註解，組 Dashboard 時由 composeDashboard() 把面板內嵌進去，
+          分類切換用 filterCategory('neural')，對外只暴露 show、buildGraph、activate、back 四個函式。
+        </p>
+        <p>
+          圖分三層：中心是 Nomad Studio 核心節點，外面一圈是模組 hub（服務分類、Agent 名冊、近期任務），
+          最外層是各個節點。任務會用虛線連到負責的 Agent，脈衝沿著連線流動，看得出誰在忙。
+        </p>
+        <p>
+          互動也是三層：點 hub 會把它的節點排成一個環、其他 hub 收到右側；點節點打開右欄詳情；按 Esc 一層一層退回。
+          資料來自 Studio 本機的服務、名冊、任務三個查詢，面板可見時每 5 秒輪詢一次，切走就停。
+        </p>
+
+        <h2>拿真的 Studio 一跑，發現了什麼？</h2>
+        <p>
+          第一個問題是服務卡片和服務不是一對一。Hermes 一張卡底下有 CLI、Web、Gateway 三個服務，
+          CLI 卡底下有 Claude 和 Codex 兩個。如果照卡片畫節點，三個服務的狀態會被壓成一個點。
+          我讓 service-panel.html 把原本的卡片對照表匯出成 window.NomadServiceCards，神經網絡依它拆成每個服務一個節點。
+        </p>
+        <p>
+          第二個問題是 Studio 自己也出現在服務清單裡。把它畫成葉節點等於自己連自己，所以改成併進中心的核心節點。
+        </p>
+        <p>
+          第三個問題是配色。淺色主題下，ready 用的綠色 700 和 stopped 用的灰色，在小圓點上幾乎分不出來。
+          與其再調色票，我改用形狀區分：stopped、offline、unknown 這類休眠狀態一律畫成空心環，實心代表在跑。
+          形狀差異不依賴色彩，色弱的人也看得出來。
+        </p>
+
+        <h2>測試踩到的兩個 JavaScript 細節</h2>
+        <p>
+          新增 6 個 JSDOM 測試。其中一個比對 buildGraph 回傳的陣列時，deepStrictEqual 一直失敗，內容明明一樣。
+          原因是那個陣列在 JSDOM 的 window 裡建立，它的 Array 和測試程式的 Array 是不同 realm 的建構子，
+          嚴格比對連原型都會檢查。先用 JSON.parse(JSON.stringify(...)) 轉成測試這邊的普通陣列就過了。
+        </p>
+        <p>
+          另一個是 ALL_ITEMS 這個常數定義在後面的 script 標籤裡。面板函式是在執行時才去讀它，
+          而頂層 const 宣告會放進所有 classic script 共用的全域 lexical scope，所以用 typeof ALL_ITEMS !== 'undefined' 判斷就能安全取用，不必調整載入順序。
+        </p>
+        <p>
+          最後的驗證數字：desktop 測試 341/341、vitest 4412 passed，build、typecheck、oxlint、oxfmt 全過；
+          PR #89 的 CI 4 個 job 全綠後合併。還有一個沒處理的現象要老實記下：從原始碼啟動 Studio 時，
+          服務清單會把 nomad-studio 回報成 stopped，我推測它檢查的是安裝版的程序，這次沒有去改。
+        </p>
+        <p>
+          開發時有一件省時間的事：Studio 的 bridge 每次請求都重新讀 Dashboard HTML，所以改面板不用重啟 App，重新整理頁面就看得到。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>先讀 LICENSE 再讀程式碼</strong>：禁商用授權和 GPL-3.0 不相容，結論出來之前花在研究實作的時間都可能白費。</p>
+          <p><strong>借想法，不借程式碼</strong>：授權擋住的是程式碼，「用網絡圖看系統」這個概念可以自己重新實作。</p>
+          <p><strong>先確認資料是一對一還是一對多</strong>：一張卡對多個服務，照卡片畫節點會把三個狀態壓成一個點。</p>
+          <p><strong>狀態用形狀區分，不只用顏色</strong>：空心環對實心點，淺色主題和色弱情境都分得出來。</p>
+          <p><strong>JSDOM 的陣列不是你的陣列</strong>：跨 realm 物件做嚴格比對前，先序列化成本地值。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-09 · nomad-ai-workspace（Studio Dashboard）· PR #89 · 6 個 JSDOM 測試 · desktop 341/341、vitest 4412 passed · 無新增依賴
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
