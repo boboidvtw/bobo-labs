@@ -16,6 +16,7 @@
   <!-- Formula Articles (revenue content) -->
   <url><loc>https://labs.moneyai168.com/formulas/arithmetic-mean.html</loc><lastmod>2026-10-07</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/arithmetic-series-sum.html</loc><lastmod>2026-10-04</lastmod><priority>0.8</priority></url>
+  <url><loc>https://labs.moneyai168.com/formulas/average-speed.html</loc><lastmod>2026-11-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/bmi.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/bmr.html</loc><lastmod>2026-08-10</lastmod><priority>0.8</priority></url>
   <url><loc>https://labs.moneyai168.com/formulas/body-fat-deurenberg.html</loc><lastmod>2026-08-14</lastmod><priority>0.8</priority></url>
@@ -194,6 +195,7 @@
   <url><loc>https://labs.moneyai168.com/writing/2026-11-01-roundtable-relay-hidden-view.html</loc><lastmod>2026-11-01</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-02-pgrep-katex-jsdom-gaps.html</loc><lastmod>2026-11-02</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-03-aistudio-split-dropzone.html</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
+  <url><loc>https://labs.moneyai168.com/writing/2026-11-03-electron45-mermaid12.html</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-04-super-calculator-audit.html</loc><lastmod>2026-11-04</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-04-super-calculator-pages-deploy.html</loc><lastmod>2026-11-04</lastmod><priority>0.5</priority></url>
   <url><loc>https://labs.moneyai168.com/writing/2026-11-05-agent-desktop-local-llm.html</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority></url>

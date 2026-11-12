@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>平均速度怎麼算？均速公式 v = d/t 拆解（360 公里開車實例）· Bobo Labs</title>
+  <meta name="description" content="平均速度怎麼算？總距離除以總時間，不是把各段速度相加平均。本文用 360 公里開車、去回程 60 與 40 公里、區間測速、馬拉松配速四組實例，示範均速怎麼算、單位怎麼換，以及最常算錯的地方。" />
+  <meta property="og:title" content="平均速度怎麼算？均速公式 v = d/t 拆解" />
+  <meta property="og:description" content="去程時速 60、回程時速 40，平均是 48 不是 50。均速一律用總距離除以總時間。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/average-speed.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/average-speed.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "平均速度怎麼算？均速公式 v = d/t 拆解", "url": "https://labs.moneyai168.com/formulas/average-speed.html", "datePublished": "2026-11-11", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "均速", "item": "https://labs.moneyai168.com/formulas/average-speed.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "d / t",
+    "cases": [
+{"input":{"d":400,"t":100},"expect":4,"tol":0.000001,"text":"4"},
+{"input":{"d":360,"t":4.5},"expect":80,"tol":0.000001,"text":"80"},
+{"expr":"d / t / 3.6","input":{"d":360,"t":4.5},"expect":22.2222222222,"tol":0.000001,"text":"22.22"},
+{"expr":"a + b","input":{"a":4.5,"b":0.5},"expect":5,"tol":0.000001,"text":"5"},
+{"input":{"d":360,"t":5},"expect":72,"tol":0.000001,"text":"72"},
+{"expr":"(a - b) / a","input":{"a":80,"b":72},"expect":0.1,"tol":0.0000001,"text":"10","scale":100},
+{"expr":"d / v * 3600","input":{"d":10,"v":90},"expect":400,"tol":0.000001,"text":"400"},
+{"expr":"d / v * 3600 % 60","input":{"d":10,"v":90},"expect":40,"tol":0.000001,"text":"40"},
+{"expr":"d / (t / 60)","input":{"d":10,"t":6},"expect":100,"tol":0.000001,"text":"100"},
+{"expr":"d / v * 3600","input":{"d":5,"v":120},"expect":150,"tol":0.000001,"text":"150"},
+{"expr":"a - b","input":{"a":400,"b":150},"expect":250,"tol":0.000001,"text":"250"},
+{"expr":"d / (t / 3600)","input":{"d":5,"t":250},"expect":72,"tol":0.000001,"text":"72"},
+{"input":{"d":42.195,"t":4},"expect":10.54875,"tol":0.000001,"text":"10.55"},
+{"expr":"t / d","input":{"t":240,"d":42.195},"expect":5.6878777106,"tol":0.000001,"text":"5.69"},
+{"expr":"(t / d - 5) * 60","input":{"t":240,"d":42.195},"expect":41.2726626378,"tol":0.000001,"text":"41"},
+{"input":{"d":42.195,"t":3},"expect":14.065,"tol":0.000001,"text":"14.1"},
+{"expr":"(t / d - 4) * 60","input":{"t":180,"d":42.195},"expect":15.9544969789,"tol":0.000001,"text":"16"},
+{"expr":"60 / p","input":{"p":5},"expect":12,"tol":0.000001,"text":"12"},
+{"input":{"d":120,"t":2},"expect":60,"tol":0.000001,"text":"60"},
+{"expr":"d / v","input":{"d":120,"v":40},"expect":3,"tol":0.000001,"text":"3"},
+{"expr":"(d + d) / (d / a + d / b)","input":{"d":120,"a":60,"b":40},"expect":48,"tol":0.000001,"text":"48"},
+{"expr":"2 / (1 / a + 1 / b)","input":{"a":60,"b":40},"expect":48,"tol":0.000001,"text":"48"},
+{"expr":"(a + b) / 2","input":{"a":60,"b":40},"expect":50,"tol":0.000001,"text":"50"},
+{"expr":"((a + b) / 2 - 2 / (1 / a + 1 / b)) / (2 / (1 / a + 1 / b))","input":{"a":60,"b":40},"expect":0.0416666667,"tol":0.0000001,"text":"4.17","scale":100},
+{"expr":"d / v * 60","input":{"d":1,"v":30},"expect":2,"tol":0.000001,"text":"2"},
+{"expr":"d / v * 60","input":{"d":2,"v":60},"expect":2,"tol":0.000001,"text":"2"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #74 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">平均速度怎麼算？均速公式 v = d/t 拆解（開車與跑步實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-11</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        開車 360 公里花了 4.5 小時，均速是 80 km/h；中途休息 30 分鐘，均速就掉到 72 km/h。
+        均速只有一條規則：總距離除以總時間，停下來的時間也算在內。
+        本文用長途開車、區間測速、馬拉松配速三組實例算一遍，最後拆解「去程 60、回程 40，平均為什麼是 48」。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">v̄ = d ÷ t</div>
+          <div class="formula-box-note">v̄ 為平均速率（km/h 或 m/s）· d 為總路程（km 或 m）· t 為總耗時（h 或 s，含停留時間）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>v̄</td><td>平均速率，整段路程的「等效定速」</td><td>km/h、m/s（1 m/s = 3.6 km/h）</td><td>步行約 5 km/h</td></tr>
+            <tr><td>d</td><td>實際走過的總路程，不是起終點直線距離</td><td>km、m</td><td>全程馬拉松 42.195 km</td></tr>
+            <tr><td>t</td><td>從出發到抵達的總時間，休息、塞車都算</td><td>h、s（分鐘要先換算）</td><td>國道長途 4～5 小時</td></tr>
+          </tbody>
+        </table>
+
+        <h2>均速公式從哪裡來？速率和速度差在哪</h2>
+        <p>
+          均速的定義是「如果全程用同一個速度跑，要多快才能在同樣時間跑完同樣距離」。
+          所以它只看兩個總量：總路程 d 與總時間 t，中間怎麼加速、減速、停車都不影響公式，只影響 t。
+          把式子移項得到 d = v̄ × t 與 t = d ÷ v̄，三個量知道任兩個就能求第三個。
+        </p>
+        <p>
+          物理課會再區分兩個詞。<strong>平均速率</strong>是路程 ÷ 時間，只有大小；
+          <strong>平均速度</strong>是位移 ÷ 時間，有方向。在 400 m 跑道跑一圈花 100 秒，
+          平均速率 400 ÷ 100 = 4 m/s，但起點等於終點、位移為 0，平均速度是 0。
+          日常說的「均速」、導航與測速照相用的都是平均速率，本文以下也以它為準。
+        </p>
+
+        <h2>用真實數字算一遍：360 公里長途開車</h2>
+        <p>
+          <strong>條件（示範數字）：</strong>從北部開到南部，里程表顯示 360 公里，不休息全程開了 4 小時 30 分鐘。
+        </p>
+        <ol>
+          <li>時間換成小時：4 小時 30 分 = 4.5 小時</li>
+          <li>均速：v̄ = 360 ÷ 4.5 = <strong>80</strong> km/h</li>
+          <li>換成公制單位：80 ÷ 3.6 ≈ 22.22 m/s</li>
+        </ol>
+        <p>
+          同一趟改成中途進服務區休息 30 分鐘，路程不變、總時間變成 4.5 + 0.5 = 5 小時，
+          均速 360 ÷ 5 = 72 km/h，比不休息少了 10%。
+          行車時速表從頭到尾可能一模一樣，均速卻不同，因為分母 t 從出發那一刻算到抵達那一刻。
+          導航 App 預估的抵達時間，就是用路段均速反推 t = d ÷ v̄。
+        </p>
+
+        <h2>區間測速怎麼抓？均速比瞬間速度難躲</h2>
+        <p>
+          區間測速在入口與出口各拍一次車牌，用兩點的時間差算均速，和經過鏡頭那一瞬間開多快無關。
+          以下以 10 公里、速限 90 km/h 的區間為例（示範數字，實際路段長度與速限依各地公告）：
+        </p>
+        <ol>
+          <li>最短合法時間：t = 10 ÷ 90 小時 = 400 秒，也就是 6 分 40 秒</li>
+          <li>若只花 6 分鐘通過，均速 10 ÷ (6 ÷ 60) = 100 km/h，超速</li>
+          <li>前 5 公里開 120 km/h，用掉 5 ÷ 120 小時 = 150 秒</li>
+          <li>剩下 5 公里必須至少花 400 − 150 = 250 秒，換算均速不能超過 5 ÷ (250 ÷ 3600) = 72 km/h</li>
+        </ol>
+        <p>
+          前段超速省下的時間，後段要用低於速限的速度「還回去」。看到出口鏡頭才踩煞車沒有用，均速早已由前面的時間決定。
+        </p>
+
+        <h2>跑步配速怎麼換算？配速就是均速的倒數</h2>
+        <p>
+          跑者習慣用「配速」（pace）：每公里花幾分鐘，計算方式是 t ÷ d，正好是均速的倒數。
+          全程馬拉松 42.195 公里：
+        </p>
+        <ul>
+          <li>4 小時完賽：均速 42.195 ÷ 4 ≈ 10.55 km/h；配速 240 分 ÷ 42.195 ≈ 5.69 分/公里，約每公里 5 分 41 秒</li>
+          <li>3 小時完賽（俗稱破 3）：均速 42.195 ÷ 3 ≈ 14.1 km/h；配速約每公里 4 分 16 秒</li>
+          <li>反向換算：配速 5 分/公里，均速 60 ÷ 5 = 12 km/h</li>
+        </ul>
+        <p>
+          注意 5.69 分不是 5 分 69 秒。小數部分要乘 60 才是秒數：0.69 × 60 約 41 秒。
+          運動手錶顯示的「平均配速」同樣是總時間 ÷ 總距離，紅燈停下來的時間如果沒有自動暫停，也會被算進去。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：把兩段速度直接相加除以 2</div>
+          <p style="margin: 0;">
+            去程 120 公里開 60 km/h，回程同一段路開 40 km/h，直覺會說平均 (60 + 40) ÷ 2 = 50 km/h。
+            實際上去程花 120 ÷ 60 = 2 小時、回程花 120 ÷ 40 = 3 小時，
+            總路程 240 公里 ÷ 總時間 5 小時 = 48 km/h。
+            慢的那段花的時間比較長，在平均裡占的權重也比較大，所以結果一定低於算術平均；
+            這個值就是調和平均 2 ÷ (1/60 + 1/40) = 48。直接平均高估了 4.17%。
+            極端例子：1 公里上坡以 30 km/h 爬完，用了 2 分鐘；想讓 2 公里來回均速達到 60 km/h，
+            全程只能花 2 ÷ 60 小時 = 2 分鐘，但上坡已經用完，下坡開再快都辦不到。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的均速計算機。輸入 d = 360、t = 4.5，即可重現本文長途開車的 80 km/h。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 均速 #74</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=74" title="均速互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/arithmetic-mean.html">算術平均數：為什麼速率不能直接平均，要改用調和平均</a></li>
+          <li><a href="/formulas/momentum.html">動量 p = mv：km/h 先除以 3.6 換成 m/s 再代入</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv²：同一台車，速度加倍動能變 4 倍</a></li>
+          <li><a href="/formulas/wave-speed.html">波速 v = fλ：聲音與光的「速度」怎麼量</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          平均速率 = 總路程 ÷ 總時間、平均速度 = 位移 ÷ 時間為普通物理教科書標準定義（如 Halliday《Fundamentals of Physics》第 2 章）；
+          1 m/s = 3.6 km/h 為定義換算；全程馬拉松距離 42.195 公里依世界田徑（World Athletics）規則。
+          開車里程與時間、區間測速路段長度與速限、上坡速度為示範數字，實際區間測速規定以各地主管機關公告為準。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

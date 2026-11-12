@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>升 Electron 45 與 mermaid 12：兩個大版號，各藏一個預設值陷阱 · Bobo Labs</title>
+  <meta name="description" content="Nomad AI Studio 一天升兩個大版號：Electron 40 → 45.2.1 讓未簽章 app 的 macOS 通知全數失敗，改用 Dock 彈跳；mermaid 12 把預設外觀換成 neo、排版換成 ELK，明確設回 classic 與 dagre。production audit 從 12 項降到 6 項。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-03-electron45-mermaid12.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-03</p>
+      <h1 class="article-title">升 Electron 45 與 mermaid 12：兩個大版號，各藏一個預設值陷阱</h1>
+      <p class="article-lede">
+        同一天把 Nomad AI Studio 的 Electron 從 40 升到 45.2.1、mermaid 從 11 升到 12。
+        兩次升級都能編譯、測試也全綠，真正的變化藏在預設值裡：一個讓通知默默失敗，一個讓流程圖換了長相。
+        結果是 production audit 從 12 項降到 6 項。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼 Electron 45 的通知全部失敗？</h2>
+        <p>
+          Electron 42 起，macOS 通知改走 Apple 的 UNNotification 框架。這套框架要求 app 有簽章；
+          Nomad 的桌面版沒有簽章，所以每一則通知都回 failed（UNErrorDomain 錯誤碼 1）。不會 crash，也不會跳警告，只是通知不見了。
+        </p>
+        <p>
+          macOS 簽章早就記在 out-of-scope 文件裡、刻意不做。所以改的是降級路徑：通知回 failed 時呼叫
+          app.dock.bounce('informational')，讓 Dock 圖示跳一下；HUD 徽章照原本方式顯示。這次也把這件事補進 out-of-scope 文件。
+        </p>
+
+        <h2>版本號為什麼不能寫 ^45.2.1？</h2>
+        <p>
+          electron-builder 要求 electron 的版本是固定值，寫 ^45.2.1 會直接被拒絕打包，必須寫成 45.2.1。
+          打包工具要知道確切下載哪一版的 Electron binary，範圍版本對它沒有意義。
+        </p>
+        <p>
+          另一個坑在 monorepo：npm 會把 electron hoist 到 root 的 node_modules，
+          packages/desktop/node_modules/.bin/electron 不一定存在。root 的 desktop 腳本改成
+          npm --prefix packages/desktop start，讓 npm 自己解析路徑。
+        </p>
+
+        <h2>mermaid 12 改了哪些預設？</h2>
+        <p>
+          mermaid 12 的預設外觀從 classic 換成 neo，排版引擎從 dagre 換成 ELK，流程圖的偵測 ID 也從 flowchart 變成 flowchart-v2。
+          什麼都不設，升級後所有使用者畫出來的圖都會換一個樣子。
+        </p>
+        <p>
+          這次在 initMermaid 明確寫上 look: 'classic' 與 layout: 'dagre'，維持舊外觀。
+          ELK 沒用到，但它變成一個 1.4 MB 的延遲載入 chunk，只有真的需要時才下載，不影響首屏。
+        </p>
+        <p>
+          升級時才發現 repo 裡有三份 mermaid：root 的版本給 Chrome、Edge、Safari 與桌面版用，這次升到 12.2.0；
+          Firefox 用 vite 別名指到 9.2.2 的 legacy 版本；另一個子套件鎖在 10.9.8。後兩份還有未解的 audit 項目，列入下一輪。
+          同批也把 DOMPurify 升到 3.4.17。
+        </p>
+
+        <h2>怎麼確認升級沒壞東西？</h2>
+        <p>
+          每支 PR 都做端到端實測，不只看單元測試：
+        </p>
+        <p>
+          通知與接力那支，用 Gemini 開頭、跨五個平台的接力流程跑完共 155 秒，並確認未簽章通知確實回 failed。
+          前一支已合併的 PR 也重新打包驗證：被吞掉的提問重播 20.4 秒後判定 dropped，正常提問 15.6 秒收下。
+        </p>
+        <p>
+          mermaid 那支，vitest 4342 個測試、子套件 1440 個測試通過，三種瀏覽器 build 通過；再請 Gemini 畫一張流程圖，
+          確認輸出 1 個 flowchart-v2 SVG、4 個節點 3 條邊，中文標籤正常。
+          還沒做的是 mermaid 11 與 12 的畫面並排比對，這點照實記下。
+        </p>
+
+        <h2>還有哪些小坑？</h2>
+        <p>
+          README.en.md 其實是指向 README_EN.md 的 symlink。對它跑 sed -i 會中斷整批替換。
+          gh pr merge --match-head-commit 只接受 40 字元的完整 SHA，短 SHA 會被拒。
+          macOS 沒有 timeout 指令；zsh 的 echo 會展開 \n，把 JSON 弄壞給 jq，改成 curl 直接 pipe 給 jq。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>大版號升級先讀預設值變更</strong>：編譯和測試全綠，不代表外觀與行為沒變；mermaid 12 換了外觀與排版引擎。</p>
+          <p><strong>平台框架換了，未簽章 app 要準備降級路徑</strong>：通知失敗不會報錯，要主動檢查回傳狀態再換別的提示方式。</p>
+          <p><strong>打包工具要固定版本</strong>：electron-builder 不接受範圍版本，monorepo 也別寫死子套件的 .bin 路徑。</p>
+          <p><strong>先數清 repo 裡有幾份同一個套件</strong>：三份 mermaid 只升了一份，audit 數字才降一半。</p>
+          <p><strong>沒做的驗證要寫出來</strong>：並排比對還沒做，記在日誌裡，比假裝全部驗過有用。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-03 · Nomad AI Studio · Electron 40 → 45.2.1 · mermaid 12.2.0 + DOMPurify 3.4.17 · vitest 4342 + 1440 通過 · production audit 12 → 6
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
