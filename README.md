@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-12**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/average-speed.html`（#74 · 物理 · Free，v̄ = d/t：360 公里 4.5 小時均速 80 km/h、休息 30 分鐘掉到 72 km/h、區間測速前段超速後段要還時間、馬拉松配速是均速倒數、去程 60 回程 40 平均是 48 不是 50）、
+  `2026-11-03-electron45-mermaid12.html`（Electron 40 → 45.2.1 讓未簽章 app 的 macOS 通知全數 failed、降級為 Dock 彈跳；mermaid 12 預設改 neo＋ELK、明確設回 classic＋dagre；audit 12 → 6）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（Tier 一致、分類計數不變）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-12.
 - **2026-11-11**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/momentum.html`（#73 · 物理 · Free，p = mv：1.5 噸汽車時速 60 公里與 15 噸卡車時速 6 公里同為 25,000 kg·m/s、動能差 10 倍、氣囊把停止時間拉長 10 倍力縮小 10 倍、追撞後時速 36 公里損失 40% 動能、方向與 km/h 的常見錯誤）、
   `2026-11-09-dashboard-neural-tab.html`（PolyForm Noncommercial 與 GPL-3.0 不相容，改用 Canvas 2D 原生 JS 自寫神經網絡圖面板；一卡多服務拆節點、休眠狀態改用空心環、JSDOM 跨 realm 陣列比對）。
