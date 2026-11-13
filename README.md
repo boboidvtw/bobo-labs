@@ -20,6 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-13**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/free-fall-height.html`（#75 · 物理 · Free，h = ½gt²：1/2/3 秒落下 4.9/19.6/44.1 m、逐秒 1:3:5、10 公尺跳台 1.43 秒入水 14 m/s、丟石頭測井深扣聲音時間 18.55 m、高度加倍時間只變 √2 倍）、
+  `2026-10-31-slem-aprime-default.html`（本地 coding agent 評測換預設 A′：子行程繼承 addopts 疊成 -qq 讓測試數歸零、A′ +13.7 分但耗時 1.57 倍、題目 60 重跑 7/10、判準先 commit 踩線不改門檻）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（Tier 一致、分類計數不變）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-13.
 - **2026-11-12**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/average-speed.html`（#74 · 物理 · Free，v̄ = d/t：360 公里 4.5 小時均速 80 km/h、休息 30 分鐘掉到 72 km/h、區間測速前段超速後段要還時間、馬拉松配速是均速倒數、去程 60 回程 40 平均是 48 不是 50）、
   `2026-11-03-electron45-mermaid12.html`（Electron 40 → 45.2.1 讓未簽章 app 的 macOS 通知全數 failed、降級為 Dock 彈跳；mermaid 12 預設改 neo＋ELK、明確設回 classic＋dagre；audit 12 → 6）。
