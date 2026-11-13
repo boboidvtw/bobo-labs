@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>兩個 -q 讓測試數歸零 — 本地 coding agent 評測換預設的一天 · Bobo Labs</title>
+  <meta name="description" content="把本地 coding agent 的預設設定換成 A′ 之前，先抓到一個判分 bug：隱藏檢查多帶一個 -q，--collect-only 什麼都不印，測試數被算成 0。再用 10 次重跑確認 7/10 的通過率是常態，不是環境飄移。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-10-31-slem-aprime-default.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-10-31</p>
+      <h1 class="article-title">兩個 -q 讓測試數歸零 — 本地 coding agent 評測換預設的一天</h1>
+      <p class="article-lede">
+        這天要決定本地 coding agent 的預設設定要不要換成 A′。數字本身很漂亮：A′ 比原本的 A 高 13.7 分。
+        但在拍板之前，一題的判分程式先被抓出把測試數算成 0，另一題 10 次重跑只過 7 次。
+        這篇記錄我怎麼處理這兩件事，以及為什麼判準踩線時我選擇不改判準。
+      </p>
+
+      <div class="article-body">
+        <h2>A′ 是什麼，數字長怎樣？</h2>
+        <p>
+          A′ 的組合是 Aider 加上 editor-whole 編輯模式，再把範例放進 system message（examples_as_sys_msg）。
+          跑 3 輪之後，A′ 相對 A 的分差是 +13.7，信賴區間 +7.3 到 +19.7，下界離 0 很遠。
+        </p>
+        <p>
+          代價是耗時：A′ 平均花 A 的 1.57 倍時間，超過我事先寫好的 1.5 倍上限。
+          照判準，超過上限的方案只記錄、不主動提議。最後是我在判準之外另外選了 P2 方案，把預設改成 A′，
+          這個決定和判準結果分開記錄，之後回頭看才知道哪一部分是規則、哪一部分是人為判斷。
+        </p>
+
+        <h2>為什麼測試數會變成 0？</h2>
+        <p>
+          題目 12 要求 agent 為一個 stack 寫測試，隱藏檢查會用 pytest --collect-only 數 agent 寫了幾個測試。
+          問題出在隱藏檢查是子行程，它會讀到 repo 設定檔裡的 addopts，那裡已經有一個 -q；
+          檢查程式自己又加一個 -q，合起來變成 -qq。-qq 模式下 --collect-only 不再印出帶 :: 的測試 ID，
+          檢查程式找不到任何一行，就判定「0 個測試」。
+        </p>
+        <p>
+          修法是在子行程加 -o addopts=，把 repo 設定清空。修正後四組分數是 A 74.7、C 84.3、D 85.3、A′ 88.3，
+          排名和修正前一樣，A′ 仍然第一。
+        </p>
+        <p>
+          比較麻煩的是回歸測試。我第一次用 pytest 的 tmp_path 重現，怎麼跑都正常，
+          因為 tmp_path 在 repo 外面，讀不到那份 addopts。最後測試改成在 evals/runs/ 底下建目錄，
+          才真正重現出 0 這個數字。
+        </p>
+
+        <h2>7/10 是運氣不好，還是環境變了？</h2>
+        <p>
+          題目 60 是訂單稅額計算。我把它單獨重跑 10 次，通過 7 次、失敗 3 次，剛好踩在事前登錄的「失敗 ≥ 3 要查」門檻上。
+        </p>
+        <p>
+          我先排除環境飄移：比對推論伺服器的 log，prompt 都是 1705 tokens，訊息結構、取樣參數、GGUF 檔、
+          模型載入 log 全部相同。唯一比不出來的是 LM Studio 的 per-model 預設設定，它在前一天 17:49 被改過，
+          舊值沒有備份。
+        </p>
+        <p>
+          再看失敗內容：3 次失敗沒有一次是「只改 tax.py」這種單純寫錯，其中 2 次來自題目文件對 discount_pct
+          是百分比還是小數講得不夠清楚。我沒有修題目，因為一改就和之前所有輪次不可比。
+          最後我決定維持 A′，題目 60 的通過率看成約 70–80%。
+        </p>
+
+        <h2>為什麼判準踩線時不改判準？</h2>
+        <p>
+          判準在跑之前就 commit 進 repo。結果出來踩線時，我能做的只有兩件事：查證數字是不是真的，以及把查證結果交給做決定的人。
+          如果看到結果才調門檻，1.5 倍可以變 1.6 倍，≥ 3 可以變 ≥ 4，評測就失去意義。
+        </p>
+        <p>
+          同一天也更正了一個舊推測：先前交接表寫「題目 51、85 佔了超出耗時的大部分」，
+          這次把耗時按題拆開算，發現不成立。推測寫進交接表之前沒標「推測」，是這次要補的洞。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>判分程式也是程式</strong>：子行程會繼承 repo 的 pytest 設定，兩個 -q 疊起來就讓計數歸零，判分 bug 會直接扭曲排名。</p>
+          <p><strong>回歸測試要在原本的位置重現</strong>：tmp_path 讀不到 repo 的 addopts，搬到 evals/runs/ 底下才重現得出來。</p>
+          <p><strong>判準先 commit 再跑</strong>：結果踩線時只查證、交給人決定，不回頭改門檻。</p>
+          <p><strong>每個環境變數都要有快照</strong>：這次唯一比不出來的就是沒備份的 LM Studio 預設設定，之後評測前先存檔。</p>
+          <p><strong>推測要標成推測</strong>：交接表裡沒標記的推測，拆開算之後就被推翻了。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-10-31 · 本地 coding agent 評測（SLEM） · A′ − A +13.7 [+7.3, +19.7] · 耗時 1.57 倍 · 題目 60 重跑 7/10 · 5 個 commit
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

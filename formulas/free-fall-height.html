@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>自由落體公式怎麼算？落下高度 h = ½gt² 拆解（10 公尺跳台實例）· Bobo Labs</title>
+  <meta name="description" content="自由落體高度怎麼算？h = ½gt²，掉落時間加倍、高度變 4 倍。本文用 1 到 3 秒落下距離、10 公尺跳台、手機從 1.5 公尺掉落、丟石頭測井深四組實例，示範高度、時間與落地速度怎麼互相換算，以及最常算錯的地方。" />
+  <meta property="og:title" content="自由落體公式怎麼算？落下高度 h = ½gt² 拆解" />
+  <meta property="og:description" content="掉落 1 秒落下 4.9 公尺，3 秒就是 44.1 公尺。高度跟時間的平方成正比，不是跟時間成正比。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/free-fall-height.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/free-fall-height.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "自由落體公式怎麼算？落下高度 h = ½gt² 拆解", "url": "https://labs.moneyai168.com/formulas/free-fall-height.html", "datePublished": "2026-11-12", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "自由落體高度", "item": "https://labs.moneyai168.com/formulas/free-fall-height.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "0.5 * g * t ** 2",
+    "cases": [
+{"input":{"g":9.8,"t":1},"expect":4.9,"tol":0.000001,"text":"4.9"},
+{"input":{"g":9.8,"t":2},"expect":19.6,"tol":0.000001,"text":"19.6"},
+{"input":{"g":9.8,"t":3},"expect":44.1,"tol":0.000001,"text":"44.1"},
+{"expr":"0.5 * g * (b ** 2 - a ** 2)","input":{"g":9.8,"a":1,"b":2},"expect":14.7,"tol":0.000001,"text":"14.7"},
+{"expr":"0.5 * g * (b ** 2 - a ** 2)","input":{"g":9.8,"a":2,"b":3},"expect":24.5,"tol":0.000001,"text":"24.5"},
+{"expr":"(0.5 * g * b ** 2) / (0.5 * g * a ** 2)","input":{"g":9.8,"a":1,"b":2},"expect":4,"tol":0.000001,"text":"4"},
+{"expr":"(0.5 * g * b ** 2) / (0.5 * g * a ** 2)","input":{"g":9.8,"a":1,"b":3},"expect":9,"tol":0.000001,"text":"9"},
+{"expr":"sqrt(2 * h / g)","input":{"h":10,"g":9.8},"expect":1.4285714286,"tol":0.000001,"text":"1.43"},
+{"expr":"2 * h / g","input":{"h":10,"g":9.8},"expect":2.0408163265,"tol":0.000001,"text":"2.04"},
+{"expr":"sqrt(2 * g * h)","input":{"h":10,"g":9.8},"expect":14,"tol":0.000001,"text":"14"},
+{"expr":"2 * g * h","input":{"h":10,"g":9.8},"expect":196,"tol":0.000001,"text":"196"},
+{"expr":"sqrt(2 * g * h) * 3.6","input":{"h":10,"g":9.8},"expect":50.4,"tol":0.000001,"text":"50.4"},
+{"expr":"sqrt(2 * h / g)","input":{"h":1.5,"g":9.8},"expect":0.5532833352,"tol":0.000001,"text":"0.55"},
+{"expr":"sqrt(2 * g * h)","input":{"h":1.5,"g":9.8},"expect":5.4221766847,"tol":0.000001,"text":"5.4"},
+{"expr":"sqrt(2 * g * h) * 3.6","input":{"h":1.5,"g":9.8},"expect":19.5198360649,"tol":0.000001,"text":"19.5"},
+{"expr":"(-c + sqrt(c ** 2 + 4 * 0.5 * g * c * T)) / g","input":{"c":343,"g":9.8,"T":2},"expect":1.9459064038,"tol":0.000001,"text":"1.95"},
+{"expr":"T - (-c + sqrt(c ** 2 + 4 * 0.5 * g * c * T)) / g","input":{"c":343,"g":9.8,"T":2},"expect":0.0540935962,"tol":0.000001,"text":"0.05"},
+{"expr":"0.5 * g * ((-c + sqrt(c ** 2 + 4 * 0.5 * g * c * T)) / g) ** 2","input":{"c":343,"g":9.8,"T":2},"expect":18.5541034889,"tol":0.000001,"text":"18.55"},
+{"expr":"0.5 * g * T ** 2 - 0.5 * g * ((-c + sqrt(c ** 2 + 4 * 0.5 * g * c * T)) / g) ** 2","input":{"c":343,"g":9.8,"T":2},"expect":1.0458965111,"tol":0.000001,"text":"1.05"},
+{"expr":"sqrt(2 * h / g)","input":{"h":20,"g":9.8},"expect":2.0203050891,"tol":0.000001,"text":"2.02"},
+{"expr":"2 * sqrt(2 * h / g)","input":{"h":10,"g":9.8},"expect":2.8571428571,"tol":0.000001,"text":"2.86"},
+{"expr":"sqrt(2 * b / g) / sqrt(2 * a / g)","input":{"a":10,"b":20,"g":9.8},"expect":1.4142135624,"tol":0.000001,"text":"1.414"},
+{"expr":"g * t","input":{"g":9.8,"t":3},"expect":29.4,"tol":0.000001,"text":"29.4"},
+{"input":{"g":10,"t":3},"expect":45,"tol":0.000001,"text":"45"},
+{"expr":"(a - b) / b","input":{"a":45,"b":44.1},"expect":0.0204081633,"tol":0.0000001,"text":"2.04","scale":100},
+{"input":{"g":9.80665,"t":3},"expect":44.129925,"tol":0.000001,"text":"44.13"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #75 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">自由落體公式怎麼算？落下高度 h = ½gt² 拆解（跳台與測井深實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-12</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        物體從靜止放手，第 1 秒落下 4.9 公尺，到第 3 秒累計落下 44.1 公尺。
+        時間變 3 倍，高度變 9 倍，因為落下高度和時間的平方成正比。
+        本文用逐秒落下距離、10 公尺跳台、手機掉落、丟石頭測井深四組實例算一遍，最後拆解「高度加倍、時間為什麼不是加倍」。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">h = ½ g t²</div>
+          <div class="formula-box-note">h 為落下高度（m）· g 為重力加速度（m/s²，地表約 9.8）· t 為從靜止開始落下的時間（s）；忽略空氣阻力</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>h</td><td>從放手位置往下量的落下距離</td><td>m</td><td>跳水跳台 10 m</td></tr>
+            <tr><td>g</td><td>重力加速度，每秒速度增加多少</td><td>m/s²</td><td>9.8（標準值 9.80665）</td></tr>
+            <tr><td>t</td><td>從靜止放手起算的經過時間</td><td>s</td><td>10 m 跳台約 1.43 s</td></tr>
+          </tbody>
+        </table>
+
+        <h2>h = ½gt² 從哪裡來？為什麼有個 ½</h2>
+        <p>
+          自由落體是初速為 0、加速度固定為 g 的直線運動。速度從 0 開始每秒增加 9.8 m/s，
+          所以 t 秒後的瞬間速度是 v = g t，例如 3 秒後是 9.8 × 3 = 29.4 m/s。
+          速度均勻從 0 增加到 g t，這段時間的平均速度剛好是一半：½ g t。
+          落下距離 = 平均速度 × 時間 = ½ g t × t = ½ g t²，½ 就是這樣來的。
+        </p>
+        <p>
+          把公式移項得到兩條常用的反算式：已知高度求時間 t = √(2h ÷ g)，
+          已知高度求落地速度 v = √(2 g h)。後者也可以從能量守恆推出：
+          重力位能 m g h 全部轉成動能 ½ m v²，m 在兩邊消掉，所以落下速度和質量無關。
+          這條公式忽略空氣阻力，適用於石頭、球、手機這類短距離、密度高的物體；
+          羽毛、紙張或高空跳傘時阻力不能忽略，實際落下距離會比公式算的少。
+        </p>
+
+        <h2>用真實數字算一遍：逐秒落下多少公尺</h2>
+        <p>
+          <strong>條件：</strong>g 取 9.8 m/s²，物體從靜止放手，不計空氣阻力。
+        </p>
+        <ol>
+          <li>1 秒：h = ½ × 9.8 × 1² = <strong>4.9</strong> m</li>
+          <li>2 秒：h = ½ × 9.8 × 2² = <strong>19.6</strong> m</li>
+          <li>3 秒：h = ½ × 9.8 × 3² = <strong>44.1</strong> m</li>
+        </ol>
+        <p>
+          時間 2 倍、高度 4 倍；時間 3 倍、高度 9 倍。
+          換個角度看「每一秒內」落下多少：第 1 秒 4.9 m，第 2 秒 19.6 − 4.9 = 14.7 m，
+          第 3 秒 44.1 − 19.6 = 24.5 m，比例是 1 : 3 : 5，正好是連續奇數。
+          這個規律由伽利略在斜面實驗中發現，原因是物體越掉越快，後面每一秒涵蓋的距離越長。
+        </p>
+
+        <h2>10 公尺跳台要掉多久？落地速度多快</h2>
+        <p>
+          奧運跳水的高台是 10 公尺。從跳台邊緣落下（不計起跳的上升段）：
+        </p>
+        <ol>
+          <li>時間：t = √(2 × 10 ÷ 9.8) = √2.04 ≈ 1.43 秒</li>
+          <li>入水速度：v = √(2 × 9.8 × 10) = √196 = 14 m/s</li>
+          <li>換成時速：14 × 3.6 = 50.4 km/h</li>
+        </ol>
+        <p>
+          選手要在約 1.43 秒內完成翻騰與轉體，入水時的速度相當於市區道路的車速。
+          同樣的算法用在日常：手機從 1.5 公尺的胸口高度掉下，落地時間 √(2 × 1.5 ÷ 9.8) ≈ 0.55 秒，
+          落地速度 √(2 × 9.8 × 1.5) ≈ 5.4 m/s，約 19.5 km/h。
+          不到 0.55 秒的時間，就是伸手去接常常接不到的原因。
+        </p>
+
+        <h2>丟石頭聽回音能測井深嗎？聲音時間要扣掉</h2>
+        <p>
+          經典的估算法：往井裡丟一顆石頭，從放手到聽見落水聲共 2 秒，直接代公式得到 ½ × 9.8 × 2² = 19.6 m。
+          但這 2 秒包含石頭落下的時間，加上聲音從水面傳回井口的時間。聲速取 343 m/s（約 20 °C 空氣），
+          設落下時間為 t，條件是 t + ½ g t² ÷ 343 = 2：
+        </p>
+        <ul>
+          <li>解出石頭落下時間 t ≈ 1.95 秒，聲音傳回約 0.05 秒</li>
+          <li>實際井深 ½ × 9.8 × 1.95² ≈ 18.55 m</li>
+          <li>直接代 2 秒會高估約 1.05 m</li>
+        </ul>
+        <p>
+          井越深，聲音占的時間越長，誤差越大；淺井用簡化算法通常就夠用。
+          這裡的井深與秒數為示範數字，實際測量還要考慮按碼錶的反應時間，誤差常比聲音修正更大。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：以為高度加倍，時間也加倍</div>
+          <p style="margin: 0;">
+            10 公尺落下約 1.43 秒，直覺會說 20 公尺就是 2.86 秒。
+            實際上 t = √(2 × 20 ÷ 9.8) ≈ 2.02 秒，只是 10 公尺的 √2 ≈ 1.414 倍。
+            時間藏在平方裡，反算時要開根號，高度變 4 倍時間才會加倍。
+            另一個常見差異是 g 的取值：考題常用 g = 10，3 秒落下 ½ × 10 × 3² = 45 m，
+            比 g = 9.8 的 44.1 m 多了約 2.04%；用標準值 9.80665 則是 44.13 m。
+            跟別人對答案前，先確認雙方的 g 是同一個數。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的自由落體高度計算機。輸入 g = 9.8、t = 3，即可重現本文的 44.1 m。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 自由落體高度 #75</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=75" title="自由落體高度互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/gravitational-potential-energy.html">重力位能 mgh：落下高度換成能量，和落地速度 √(2gh) 是同一件事</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv²：落地速度加倍，撞擊能量變 4 倍</a></li>
+          <li><a href="/formulas/average-speed.html">平均速度 d/t：自由落體的平均速度是落地速度的一半</a></li>
+          <li><a href="/formulas/square-root.html">平方根：已知高度反求時間，就是開根號</a></li>
+          <li><a href="/formulas/newtons-second-law.html">牛頓第二定律 F = ma：重力加速度 g 從哪裡來</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          自由落體 h = ½gt²、v = gt、v = √(2gh) 為等加速度直線運動的標準結果（如 Halliday《Fundamentals of Physics》第 2 章）；
+          標準重力加速度 9.80665 m/s² 依國際度量衡大會（CGPM）定義；聲速 343 m/s 為約 20 °C 乾燥空氣的近似值；10 公尺高台依世界水上運動（World Aquatics）跳水規則。
+          井深、秒數與手機高度為示範數字，所有計算均忽略空氣阻力。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
