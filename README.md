@@ -20,7 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-11-13**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+- **2026-11-14**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/specific-heat.html`（#77 · 物理 · Free，Q = mcΔT：1 公升水 25→100 °C 需 313,950 J ≈ 0.087 度、1500 W 快煮壺理想 3.5 分鐘/效率 85% 約 4.1 分鐘、200 公升洗澡水 15→40 °C 需 5.81 度、水的比熱是鐵 9.3 倍、比熱 g/kg 混用差 1,000 倍與汽化潛熱陷阱）。
+  Formula 卡片由 placeholder 轉為連結（公式表達式依文章補上 Q =），分類計數不變（Tier 一致）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 21 cases）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-11-14.
+- **2026-11-13**— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/free-fall-height.html`（#75 · 物理 · Free，h = ½gt²：1/2/3 秒落下 4.9/19.6/44.1 m、逐秒 1:3:5、10 公尺跳台 1.43 秒入水 14 m/s、丟石頭測井深扣聲音時間 18.55 m、高度加倍時間只變 √2 倍）、
   `2026-10-31-slem-aprime-default.html`（本地 coding agent 評測換預設 A′：子行程繼承 addopts 疊成 -qq 讓測試數歸零、A′ +13.7 分但耗時 1.57 倍、題目 60 重跑 7/10、判準先 commit 踩線不改門檻）。
   Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（Tier 一致、分類計數不變）。
