@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>熱量公式怎麼算？Q = mcΔT 比熱計算拆解（煮 1 公升水實例）· Bobo Labs</title>
+  <meta name="description" content="熱量怎麼算？Q = mcΔT，質量乘比熱乘溫差。本文用煮 1 公升開水、熱水器加熱 200 公升洗澡水、鐵和水吸熱比較、反算升溫四組實例，示範焦耳、千瓦時與加熱時間怎麼換算，以及單位混用與相變化最常算錯的地方。" />
+  <meta property="og:title" content="熱量公式怎麼算？Q = mcΔT 比熱計算拆解" />
+  <meta property="og:description" content="把 1 公升水從 25 °C 煮到 100 °C 要 313,950 焦耳。同樣升溫 10 °C，水吸的熱是鐵的 9.3 倍。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/specific-heat.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/specific-heat.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "熱量公式怎麼算？Q = mcΔT 比熱計算拆解", "url": "https://labs.moneyai168.com/formulas/specific-heat.html", "datePublished": "2026-11-13", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "熱量", "item": "https://labs.moneyai168.com/formulas/specific-heat.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "m * c * dT",
+    "cases": [
+{"input":{"m":1,"c":4186,"dT":75},"expect":313950,"tol":0.000001,"text":"313,950"},
+{"expr":"m * c * dT / 1000","input":{"m":1,"c":4186,"dT":75},"expect":313.95,"tol":0.000001,"text":"314"},
+{"expr":"m * c * dT / 3600000","input":{"m":1,"c":4186,"dT":75},"expect":0.0872083333,"tol":0.0000001,"text":"0.087"},
+{"expr":"m * c * dT / P","input":{"m":1,"c":4186,"dT":75,"P":1500},"expect":209.3,"tol":0.000001,"text":"209"},
+{"expr":"m * c * dT / P / 60","input":{"m":1,"c":4186,"dT":75,"P":1500},"expect":3.4883333333,"tol":0.000001,"text":"3.5"},
+{"expr":"m * c * dT / (P * k)","input":{"m":1,"c":4186,"dT":75,"P":1500,"k":0.85},"expect":246.2352941176,"tol":0.000001,"text":"246"},
+{"expr":"m * c * dT / (P * k) / 60","input":{"m":1,"c":4186,"dT":75,"P":1500,"k":0.85},"expect":4.1039215686,"tol":0.000001,"text":"4.1"},
+{"input":{"m":200,"c":4186,"dT":25},"expect":20930000,"tol":0.000001,"text":"20,930,000"},
+{"expr":"m * c * dT / 1000000","input":{"m":200,"c":4186,"dT":25},"expect":20.93,"tol":0.000001,"text":"20.93"},
+{"expr":"m * c * dT / 3600000","input":{"m":200,"c":4186,"dT":25},"expect":5.8138888889,"tol":0.000001,"text":"5.81"},
+{"expr":"m * c * dT / P / 60","input":{"m":200,"c":4186,"dT":25,"P":4000},"expect":87.2083333333,"tol":0.000001,"text":"87"},
+{"input":{"m":1,"c":4186,"dT":10},"expect":41860,"tol":0.000001,"text":"41,860"},
+{"input":{"m":1,"c":450,"dT":10},"expect":4500,"tol":0.000001,"text":"4,500"},
+{"input":{"m":1,"c":900,"dT":10},"expect":9000,"tol":0.000001,"text":"9,000"},
+{"expr":"a / b","input":{"a":4186,"b":450},"expect":9.3022222222,"tol":0.000001,"text":"9.3"},
+{"expr":"Q / (m * c)","input":{"Q":100000,"m":2,"c":4186},"expect":11.944577162,"tol":0.000001,"text":"11.9"},
+{"expr":"Q / (m * c) + T0","input":{"Q":100000,"m":2,"c":4186,"T0":20},"expect":31.944577162,"tol":0.000001,"text":"31.9"},
+{"input":{"m":1,"c":4186,"dT":1},"expect":4186,"tol":0.000001,"text":"4,186"},
+{"input":{"m":1,"c":4.186,"dT":75},"expect":313.95,"tol":0.000001,"text":"313.95"},
+{"expr":"L / (m * c * dT)","input":{"L":2260000,"m":1,"c":4186,"dT":75},"expect":7.1985985025,"tol":0.000001,"text":"7.2"},
+{"expr":"(m * c * dT + L) / 1000","input":{"L":2260000,"m":1,"c":4186,"dT":75},"expect":2573.95,"tol":0.000001,"text":"2,574"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #77 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">熱量公式怎麼算？Q = mcΔT 比熱計算拆解（煮水與熱水器實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-13</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        把 1 公升水從 25 °C 煮到 100 °C，需要 313,950 焦耳的熱量。
+        物體吸收的熱量等於質量乘上比熱、再乘上溫度變化，三個數字相乘就是答案。
+        本文用煮開水、熱水器加熱洗澡水、鐵和水吸熱比較、已知熱量反算升溫四組實例算一遍，最後拆解單位混用與沸騰時最常算錯的地方。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">Q = m c ΔT</div>
+          <div class="formula-box-note">Q 為吸收（或放出）的熱量（J）· m 為質量（kg）· c 為比熱（J/(kg·°C)）· ΔT 為溫度變化（°C，等同 K）；只適用於沒有相變化的升降溫</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>Q</td><td>物體吸收或放出的熱量，正值為吸熱</td><td>J</td><td>煮 1 公升開水約 314 kJ</td></tr>
+            <tr><td>m</td><td>被加熱物體的質量</td><td>kg</td><td>1 公升水約 1 kg</td></tr>
+            <tr><td>c</td><td>比熱：1 kg 物質升高 1 °C 需要的熱量</td><td>J/(kg·°C)</td><td>水 4,186、鋁約 900、鐵約 450</td></tr>
+            <tr><td>ΔT</td><td>末溫減初溫</td><td>°C 或 K</td><td>25 °C → 100 °C 為 75</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Q = mcΔT 在說什麼？比熱為什麼不一樣</h2>
+        <p>
+          加熱一個物體，需要的熱量和三件事成正比：東西越多（m 越大）、溫度要升得越多（ΔT 越大），熱量就越多；
+          第三個因素是材料本身，用比熱 c 表示。比熱的定義是「1 kg 的物質升高 1 °C 要吸收多少焦耳」，
+          水是 4,186 J/(kg·°C)，也就是把 1 kg 水加熱 1 °C 要 4,186 焦耳。
+          營養標示上的 1 大卡（kcal），原始定義就是把 1 kg 水加熱 1 °C 的熱量，所以 1 kcal 約等於 4,186 J。
+        </p>
+        <p>
+          溫度差用攝氏或克氏都一樣，因為兩者每一度的大小相同，從 25 °C 到 100 °C 和從 298.15 K 到 373.15 K 都是升高 75 度。
+          要注意的是 ΔT 是「差值」，不能把絕對溫度直接代進去。
+          公式反過來用也成立：物體降溫時 ΔT 為負，Q 為負值，代表放出熱量。
+          水的比熱在常見金屬的 5 到 10 倍之間，這就是海邊日夜溫差比內陸小、熱水袋用水而不用金屬的原因。
+        </p>
+
+        <h2>用真實數字算一遍：煮 1 公升開水要多少熱量</h2>
+        <p>
+          <strong>條件：</strong>1 公升自來水約 1 kg，初溫 25 °C，加熱到 100 °C，水的比熱取 4,186 J/(kg·°C)。
+        </p>
+        <ol>
+          <li>溫差：ΔT = 100 − 25 = 75 °C</li>
+          <li>熱量：Q = 1 × 4,186 × 75 = <strong>313,950</strong> J，約 314 kJ</li>
+          <li>換成電費常用的單位：313,950 ÷ 3,600,000 ≈ 0.087 kWh（度）</li>
+        </ol>
+        <p>
+          一台 1500 W 的快煮壺，每秒供給 1500 焦耳。如果所有電能都進到水裡，
+          需要 313,950 ÷ 1500 ≈ 209 秒，約 3.5 分鐘。
+          實際上壺身、空氣與蒸氣都會帶走熱量，假設效率 85%，時間變成 313,950 ÷ (1500 × 0.85) ≈ 246 秒，約 4.1 分鐘，
+          和日常經驗的「快煮壺大約 4 分鐘」相符。這裡的 85% 是示範假設，不同壺的實際效率不同。
+        </p>
+
+        <h2>熱水器加熱 200 公升洗澡水要多少度電？</h2>
+        <p>
+          一缸洗澡水約 200 公升（約 200 kg），冬天自來水 15 °C，要加熱到 40 °C：
+        </p>
+        <ol>
+          <li>熱量：Q = 200 × 4,186 × 25 = 20,930,000 J，即 20.93 MJ</li>
+          <li>換成度數：20,930,000 ÷ 3,600,000 ≈ 5.81 kWh</li>
+          <li>用 4000 W 電熱水器加熱（不計損失）：20,930,000 ÷ 4000 ÷ 60 ≈ 87 分鐘</li>
+        </ol>
+        <p>
+          煮 1 公升開水只要 0.087 度，一缸洗澡水卻要將近 6 度，差別在質量放大了 200 倍。
+          把度數乘上自家電價，就能估算一次泡澡的加熱成本；實際用電會因為儲熱桶散熱再多一些。
+          熱水器標示的加熱時間通常比這個理想值長，原因正是效率不到 100%。
+        </p>
+
+        <h2>同樣升溫 10 °C，水、鋁、鐵各要多少熱量？</h2>
+        <p>
+          比較 1 kg 的不同材料，同樣升高 10 °C（比熱取常見教科書值，實際依合金與溫度略有差異）：
+        </p>
+        <ul>
+          <li>水：1 × 4,186 × 10 = 41,860 J</li>
+          <li>鋁：1 × 900 × 10 = 9,000 J</li>
+          <li>鐵：1 × 450 × 10 = 4,500 J</li>
+        </ul>
+        <p>
+          水需要的熱量是鐵的 4,186 ÷ 450 ≈ 9.3 倍。反過來說，同樣的熱量給鐵，鐵升溫的幅度是水的 9.3 倍，
+          所以鐵鍋空燒幾十秒就燙手，鍋裡的水卻還沒冒泡。
+          反算升溫也是同一條公式：ΔT = Q ÷ (m c)。把 100 kJ 的熱量給 2 kg、20 °C 的水，
+          ΔT = 100,000 ÷ (2 × 4,186) ≈ 11.9 °C，水溫來到約 31.9 °C。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：比熱單位用 g，質量卻代 kg</div>
+          <p style="margin: 0;">
+            水的比熱常寫成 4.186 J/(g·°C)，數字是 J/(kg·°C) 的千分之一。
+            如果比熱代 4.186、質量卻代 1（kg），煮 1 公升水只算出 313.95 J，比正確的 313,950 J 少了 1,000 倍。
+            兩個單位一定要成套：用 g 就全部用 g，用 kg 就全部用 kg。
+            第二個陷阱是相變化：水到了 100 °C 繼續加熱，溫度不再上升，熱量用來變成水蒸氣，Q = mcΔT 在這段不適用。
+            1 kg 水完全汽化約需 2,260 kJ（汽化潛熱），是從 25 °C 加熱到 100 °C 的約 7.2 倍，
+            從 25 °C 到完全煮乾合計約 2,574 kJ。這就是開著蓋子滾很久，水還是不會很快燒乾的原因。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的熱量計算機。輸入 m = 1、c = 4186、ΔT = 75，即可重現本文的 313,950 J。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 熱量 #77</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=77" title="熱量互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI：快煮壺的瓦數決定每秒能供給多少焦耳</a></li>
+          <li><a href="/formulas/mechanical-efficiency.html">效率：輸出能量 ÷ 輸入能量，加熱時間為什麼比理想值長</a></li>
+          <li><a href="/formulas/density.html">密度 ρ = m/V：1 公升水為什麼約等於 1 公斤</a></li>
+          <li><a href="/formulas/mechanical-work.html">功 W = Fd：熱量和功都是能量，單位同樣是焦耳</a></li>
+          <li><a href="/formulas/tdee.html">TDEE 每日總熱量消耗：營養學的大卡和物理的焦耳怎麼換算</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          熱量 Q = mcΔT 為熱學的標準定義（如 Halliday《Fundamentals of Physics》第 18 章）；
+          水的比熱 4,186 J/(kg·°C) 為約 15 °C 的常用值，鋁 900、鐵 450 J/(kg·°C) 為常溫下的教科書近似值；水在 100 °C 的汽化潛熱約 2,260 kJ/kg；1 kWh = 3,600,000 J。
+          快煮壺效率 85%、洗澡水 200 公升與水溫為示範數字，計算不含容器吸熱與散熱損失。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
