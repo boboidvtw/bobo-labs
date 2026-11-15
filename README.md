@@ -20,7 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-11-14**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-11-15**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/centripetal-acceleration.html`（#82 · 物理 · Free，a = v²/r：時速 72 公里過半徑 100 m 彎道 4 m/s² ≈ 0.41 g、提速到 108 公里變 2.25 倍、洗衣機 1200 轉脫水約 403 g、赤道自轉 0.0339 m/s²、太空站 8.66 m/s² 約 88% g、時速沒換 m/s 錯 12.96 倍陷阱）。
+  Formula 卡片由 placeholder 轉為連結（公式表達式依文章補上 a =），分類計數不變（Tier 一致）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-11-15.
+- **2026-11-14**— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/specific-heat.html`（#77 · 物理 · Free，Q = mcΔT：1 公升水 25→100 °C 需 313,950 J ≈ 0.087 度、1500 W 快煮壺理想 3.5 分鐘/效率 85% 約 4.1 分鐘、200 公升洗澡水 15→40 °C 需 5.81 度、水的比熱是鐵 9.3 倍、比熱 g/kg 混用差 1,000 倍與汽化潛熱陷阱）。
   Formula 卡片由 placeholder 轉為連結（公式表達式依文章補上 Q =），分類計數不變（Tier 一致）。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算 21 cases）自動上線。
