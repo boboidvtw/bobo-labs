@@ -20,7 +20,12 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
-- **2026-11-15**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+- **2026-11-16**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/pressure.html`（#101 · 物理 · Free，P = F/A：50 kg 鞋跟 1 cm² 達 4.9 MPa、為 5,000 kg 大象腳底 122.5 kPa 的 40 倍、胎壓 32 psi ≈ 221 kPa 反推每輪接地約 167 cm²、圖釘兩端壓力差 1,000 倍、cm² 換 m² 只除 100 的陷阱）。
+  Formula 卡片由 placeholder 轉為連結、分類計數不變（Tier 一致）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-11-16.
+- **2026-11-15**— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/centripetal-acceleration.html`（#82 · 物理 · Free，a = v²/r：時速 72 公里過半徑 100 m 彎道 4 m/s² ≈ 0.41 g、提速到 108 公里變 2.25 倍、洗衣機 1200 轉脫水約 403 g、赤道自轉 0.0339 m/s²、太空站 8.66 m/s² 約 88% g、時速沒換 m/s 錯 12.96 倍陷阱）。
   Formula 卡片由 placeholder 轉為連結（公式表達式依文章補上 a =），分類計數不變（Tier 一致）。
   通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
