@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>壓力公式怎麼算？P = F/A 壓強計算拆解（高跟鞋 vs 大象實例）· Bobo Labs</title>
+  <meta name="description" content="壓力怎麼算？P = F/A，垂直作用力除以受力面積，單位是帕斯卡 Pa。本文用高跟鞋與大象、胎壓與輪胎接地面積、圖釘、大氣壓四組實例，示範 kg 換成牛頓、cm² 換成 m² 的步驟，以及 psi、bar、kPa 怎麼互換。" />
+  <meta property="og:title" content="壓力公式怎麼算？P = F/A 壓強計算拆解" />
+  <meta property="og:description" content="50 公斤的人踩在 1 cm² 的鞋跟上，壓力是 5,000 公斤大象腳底的 40 倍。用 P = F/A 算給你看。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/pressure.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/pressure.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "壓力公式怎麼算？P = F/A 壓強計算拆解", "url": "https://labs.moneyai168.com/formulas/pressure.html", "datePublished": "2026-11-15", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "壓力", "item": "https://labs.moneyai168.com/formulas/pressure.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "F / A",
+    "cases": [
+{"expr":"m * g","input":{"m":50,"g":9.8},"expect":490,"tol":0.000001,"text":"490"},
+{"expr":"m * g / A","input":{"m":50,"g":9.8,"A":0.0001},"expect":4900000,"tol":0.01,"text":"4,900,000"},
+{"expr":"m * g / A / 1000000","input":{"m":50,"g":9.8,"A":0.0001},"expect":4.9,"tol":0.000001,"text":"4.9"},
+{"expr":"m * g","input":{"m":5000,"g":9.8},"expect":49000,"tol":0.000001,"text":"49,000"},
+{"expr":"k * a","input":{"k":4,"a":0.1},"expect":0.4,"tol":0.000001,"text":"0.4"},
+{"input":{"F":49000,"A":0.4},"expect":122500,"tol":0.01,"text":"122,500"},
+{"expr":"(m * g / A) / (M * g / B)","input":{"m":50,"M":5000,"g":9.8,"A":0.0001,"B":0.4},"expect":40,"tol":0.000001,"text":"40"},
+{"expr":"m * g","input":{"m":60,"g":9.8},"expect":588,"tol":0.000001,"text":"588"},
+{"input":{"F":588,"A":0.04},"expect":14700,"tol":0.01,"text":"14,700"},
+{"expr":"p * c","input":{"p":32,"c":6.894757},"expect":220.632224,"tol":0.000001,"text":"221"},
+{"expr":"m * g","input":{"m":1500,"g":9.8},"expect":14700,"tol":0.000001,"text":"14,700"},
+{"expr":"m * g / 4","input":{"m":1500,"g":9.8},"expect":3675,"tol":0.000001,"text":"3,675"},
+{"expr":"m * g / 4 / (p * c * 1000)","input":{"m":1500,"g":9.8,"p":32,"c":6.894757},"expect":0.0166566784,"tol":0.0000001,"text":"0.0167"},
+{"expr":"m * g / 4 / (p * c * 1000) * 10000","input":{"m":1500,"g":9.8,"p":32,"c":6.894757},"expect":166.566784,"tol":0.0001,"text":"167"},
+{"expr":"F / A / 1000000","input":{"F":20,"A":0.0000001},"expect":200,"tol":0.000001,"text":"200"},
+{"expr":"F / A / 1000","input":{"F":20,"A":0.0001},"expect":200,"tol":0.000001,"text":"200"},
+{"expr":"(F / a) / (F / b)","input":{"F":20,"a":0.0000001,"b":0.0001},"expect":1000,"tol":0.000001,"text":"1,000"},
+{"expr":"p * A","input":{"p":101325,"A":0.01},"expect":1013.25,"tol":0.000001,"text":"1,013"},
+{"expr":"p * A / g","input":{"p":101325,"A":0.01,"g":9.8},"expect":103.3928571,"tol":0.000001,"text":"103"},
+{"expr":"m * g / A","input":{"m":50,"g":9.8,"A":0.01},"expect":49000,"tol":0.000001,"text":"49,000"},
+{"expr":"m / A","input":{"m":50,"A":0.0001},"expect":500000,"tol":0.000001,"text":"500,000"},
+{"expr":"p / 100","input":{"p":220.632224},"expect":2.20632224,"tol":0.000001,"text":"2.2"},
+{"expr":"x * g / 0.0001 / 1000","input":{"x":1,"g":9.8},"expect":98,"tol":0.000001,"text":"98"},
+{"expr":"B / A","input":{"A":0.0001,"B":0.4},"expect":4000,"tol":0.000001,"text":"4,000"},
+{"expr":"M / m","input":{"m":50,"M":5000},"expect":100,"tol":0.000001,"text":"100"},
+{"input":{"F":49000,"A":0.4},"expect":122500,"tol":0.01,"scale":0.001,"text":"122.5"},
+{"input":{"F":588,"A":0.04},"expect":14700,"tol":0.01,"scale":0.001,"text":"14.7"},
+{"expr":"p * c * 1000","input":{"p":32,"c":6.894757},"expect":220632.224,"tol":1,"text":"220,632"},
+{"expr":"(m * g / a) / (m * g / b)","input":{"m":50,"g":9.8,"a":0.0001,"b":0.01},"expect":100,"tol":0.000001,"text":"100"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #101 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">壓力公式怎麼算？P = F/A 壓強計算拆解（高跟鞋 vs 大象實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-15</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一個 50 公斤的人把全身重量壓在 1 平方公分的細鞋跟上，對地板的壓力是一頭 5,000 公斤大象腳底的 40 倍。
+        壓力不看力有多大，而看力被分攤到多大的面積上：P = F/A，垂直作用力除以受力面積。
+        本文用高跟鞋與大象、汽車胎壓、圖釘、大氣壓四組實例算一遍，最後拆解面積單位換算時最常差 100 倍的錯誤。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P = F / A</div>
+          <div class="formula-box-note">P 為壓力（Pa，即 N/m²）· F 為垂直於受力面的作用力（N）· A 為受力面積（m²）。台灣課本也稱「壓強」；力若是斜的，只取垂直分量</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>壓力，單位面積承受的垂直力</td><td>Pa（N/m²）</td><td>海平面大氣壓 101,325 Pa</td></tr>
+            <tr><td>F</td><td>垂直作用力；物體靜置時等於重量 m g</td><td>N</td><td>50 公斤的人約 490 N</td></tr>
+            <tr><td>A</td><td>力實際接觸、分攤的面積</td><td>m²</td><td>1 cm² = 0.0001 m²</td></tr>
+            <tr><td>g</td><td>重力加速度，用來把公斤換成牛頓</td><td>m/s²</td><td>9.8</td></tr>
+          </tbody>
+        </table>
+
+        <h2>壓力和力差在哪裡？同樣重量為什麼效果差很多</h2>
+        <p>
+          力是總量，壓力是密度。同一個人站在地上，不論穿平底鞋還是高跟鞋，對地面的總力都等於體重；
+          差別在於這份力被分到多少面積上。面積縮小 100 倍，每一小塊地板承受的力就放大 100 倍。
+          刀子磨利、針尖做細、雪地穿寬板雪鞋，全都是在調整 A，而不是調整 F。
+        </p>
+        <p>
+          SI 單位帕斯卡（Pa）定義為 1 牛頓的力作用在 1 平方公尺上，是個很小的單位：
+          一張 A4 紙平放在桌上，對桌面的壓力還不到 1 Pa。
+          所以日常多用 kPa（千帕）、MPa（百萬帕），胎壓和氣象則常用 psi、bar、hPa。
+          常用換算：1 bar = 100 kPa、1 atm = 101.325 kPa、1 psi ≈ 6.895 kPa、1 hPa = 100 Pa。
+        </p>
+
+        <h2>用真實數字算一遍：高跟鞋 vs 大象</h2>
+        <p>
+          <strong>條件：</strong>50 公斤的人走路時，某一瞬間全身重量落在一個鞋跟上，鞋跟底面積 1 cm²；
+          5,000 公斤的大象四腳站立，每隻腳底面積約 0.1 m²。重力加速度取 9.8 m/s²。
+        </p>
+        <ol>
+          <li>人的重量：F = 50 × 9.8 = 490 N</li>
+          <li>鞋跟面積換單位：1 cm² = 0.0001 m²</li>
+          <li>鞋跟壓力：P = 490 ÷ 0.0001 = <strong>4,900,000</strong> Pa，也就是 4.9 MPa</li>
+          <li>大象重量：F = 5,000 × 9.8 = 49,000 N；四隻腳總面積 4 × 0.1 = 0.4 m²</li>
+          <li>大象腳底壓力：P = 49,000 ÷ 0.4 = 122,500 Pa，約 122.5 kPa</li>
+        </ol>
+        <p>
+          大象的重量是人的 100 倍，但腳底面積是鞋跟的 4,000 倍，結果細鞋跟的壓力是大象的 40 倍。
+          這就是博物館、體育館木地板常禁止細跟鞋進入的理由：地板承受得住大象的總重，卻可能被 4.9 MPa 的點壓力壓出凹痕。
+        </p>
+        <p>
+          換成平底鞋：60 公斤的人重量 588 N，雙腳站立時鞋底總接地面積約 400 cm²，即 0.04 m²，
+          壓力 P = 588 ÷ 0.04 = 14,700 Pa，約 14.7 kPa，比大象腳底還小。
+          面積是決定壓力最敏感的變數，因為它在分母，而且常見的 cm² 和 m² 之間差了一萬倍。
+        </p>
+
+        <h2>胎壓 32 psi 是多少 kPa？反推輪胎接地面積</h2>
+        <p>
+          壓力公式移項成 A = F/P，就能由已知壓力反推面積。轎車車門邊常標示建議胎壓 32 psi：
+        </p>
+        <ol>
+          <li>換成 kPa：32 × 6.894757 ≈ 221 kPa，約 2.2 bar</li>
+          <li>1,500 公斤的車重：1,500 × 9.8 = 14,700 N，假設四輪平均分攤，每輪 3,675 N</li>
+          <li>每輪接地面積：A = 3,675 ÷ 220,632 ≈ 0.0167 m²，約 167 cm²</li>
+        </ol>
+        <p>
+          167 cm² 大約是一張明信片的大小，這和實際輪胎接地印痕的量級相符。
+          這是簡化估算：胎壓計讀的是錶壓（高於大氣壓的部分），胎壁本身也會承擔一部分負重，所以實際印痕會略有不同。
+          但它說明了一個實用結論：胎壓不足時，同樣車重需要更大的接地面積來支撐，輪胎被壓扁，胎邊磨耗與油耗都跟著增加。
+        </p>
+
+        <h2>圖釘和大氣壓：同一個力為什麼一頭扎進木板、一頭不痛？</h2>
+        <p>
+          用拇指以 20 N 的力按圖釘。圖釘針尖面積約 0.1 mm²（1 × 10⁻⁷ m²），釘帽面積約 1 cm²。
+          力在兩端相同，針尖壓力是 20 ÷ 0.0000001 = 200 MPa，足以壓進木頭；
+          拇指那一端只有 20 ÷ 0.0001 = 200 kPa，兩端壓力相差 1,000 倍，所以手指不會被刺穿。
+        </p>
+        <p>
+          反過來看一個大壓力、卻感覺不到的例子：海平面大氣壓約 101,325 Pa。
+          作用在 10 cm × 10 cm（0.01 m²）手掌上的力是 101,325 × 0.01 ≈ 1,013 N，相當於約 103 公斤物體的重量。
+          手掌沒被壓扁，是因為身體內部的壓力和外部平衡，兩側的力互相抵消。
+          吸盤能吸在牆上，則是把內側空氣排掉、讓外側大氣壓單方面把它壓住。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：cm² 換 m² 只除以 100</div>
+          <p style="margin: 0;">
+            1 公尺 = 100 公分，所以 1 m² = 100 × 100 = 10,000 cm²，1 cm² 是 0.0001 m²，不是 0.01 m²。
+            把高跟鞋的 1 cm² 誤寫成 0.01 m²，會算出 490 ÷ 0.01 = 49,000 Pa，比正確答案小了 100 倍。
+            第二個陷阱是直接用公斤代入：50 ÷ 0.0001 = 500,000，這個數字的單位是 kgf/m²，不是 Pa，比正確值少乘了 9.8。
+            老式胎壓計上的 kgf/cm² 也是同一類單位，1 kgf/cm² ≈ 98 kPa，換算時別忘了重力加速度。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的壓力計算機。輸入 F = 490、A = 0.0001，即可重現本文鞋跟的 4.9 MPa。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 壓力 #101</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=101" title="壓力互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/newtons-second-law.html">牛頓第二定律 F = ma：壓力公式裡的 F 從哪裡來</a></li>
+          <li><a href="/formulas/ideal-gas-pressure.html">理想氣體壓力 PV = nRT：氣體分子撞牆產生的壓力</a></li>
+          <li><a href="/formulas/density.html">密度 ρ = m/V：同樣是「總量除以大小」的密集程度</a></li>
+          <li><a href="/formulas/rectangle-area.html">矩形面積：算受力面積 A 的第一步</a></li>
+          <li><a href="/formulas/circle-area.html">圓面積 πr²：圓形鞋跟、活塞、腳底的面積怎麼算</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          壓力 P = F/A 與帕斯卡（Pa = N/m²）定義依 SI 手冊（BIPM《The International System of Units》）；
+          1 atm = 101,325 Pa、1 bar = 100,000 Pa、1 psi = 6,894.757 Pa 為標準換算值；重力加速度取 9.8 m/s²。
+          鞋跟 1 cm²、大象腳底 0.1 m²、圖釘尖 0.1 mm²、按壓力 20 N、平底鞋接地 400 cm² 為示範數字；
+          輪胎接地面積為忽略胎壁剛性的簡化估算。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
