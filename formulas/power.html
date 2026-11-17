@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>功率怎麼算？P = W/t 公式拆解（60 公斤爬 3 層樓 10 秒實例）· Bobo Labs</title>
+  <meta name="description" content="功率怎麼算？P = W/t，做的功除以花的時間，單位是瓦特 W。本文用爬樓梯、汽車馬力、等速行駛與吹風機用電四組實例，示範 J/s、hp、PS、kWh 怎麼互換，以及時間用分鐘代入會差 60 倍的錯誤。" />
+  <meta property="og:title" content="功率怎麼算？P = W/t 公式拆解" />
+  <meta property="og:description" content="同樣爬 3 層樓，走 30 秒是 176.58 W，衝 10 秒是 529.74 W。功一樣，差的是時間。用 P = W/t 算給你看。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/power.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/power.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "功率怎麼算？P = W/t 公式拆解", "url": "https://labs.moneyai168.com/formulas/power.html", "datePublished": "2026-11-16", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "功率", "item": "https://labs.moneyai168.com/formulas/power.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "W / t",
+    "cases": [
+{"expr":"m * g * h","input":{"m":60,"g":9.81,"h":9},"expect":5297.4,"tol":0.000001,"text":"5,297.4"},
+{"input":{"W":5297.4,"t":30},"expect":176.58,"tol":0.000001,"text":"176.58"},
+{"input":{"W":5297.4,"t":10},"expect":529.74,"tol":0.000001,"text":"529.74"},
+{"expr":"(W / a) / (W / b)","input":{"W":5297.4,"a":10,"b":30},"expect":3,"tol":0.000001,"text":"3"},
+{"expr":"W / t / c","input":{"W":5297.4,"t":10,"c":745.7},"expect":0.7103929194,"tol":0.000001,"text":"0.71"},
+{"expr":"W / t / c","input":{"W":5297.4,"t":30,"c":745.7},"expect":0.2367976398,"tol":0.000001,"text":"0.24"},
+{"expr":"n * c","input":{"n":150,"c":745.7},"expect":111855,"tol":0.000001,"text":"111,855"},
+{"expr":"n * c / 1000","input":{"n":150,"c":745.7},"expect":111.855,"tol":0.000001,"text":"111.9"},
+{"expr":"n * c","input":{"n":150,"c":735.5},"expect":110325,"tol":0.000001,"text":"110,325"},
+{"expr":"n * (a - b)","input":{"n":150,"a":745.7,"b":735.5},"expect":1530,"tol":0.000001,"text":"1,530"},
+{"expr":"v / 3.6","input":{"v":100},"expect":27.7777778,"tol":0.000001,"text":"27.78"},
+{"expr":"F * v / 3.6","input":{"F":500,"v":100},"expect":13888.88889,"tol":0.0001,"text":"13,889"},
+{"expr":"F * v / 3.6 / 1000","input":{"F":500,"v":100},"expect":13.88888889,"tol":0.000001,"text":"13.9"},
+{"expr":"(F * v / 3.6) / (n * c)","input":{"F":500,"v":100,"n":150,"c":745.7},"expect":0.1241687443,"tol":0.000001,"scale":100,"text":"12.4"},
+{"expr":"k * 3600","input":{"k":1000},"expect":3600000,"tol":0.000001,"text":"3,600,000"},
+{"expr":"P * t * 60","input":{"P":1200,"t":10},"expect":720000,"tol":0.000001,"text":"720,000"},
+{"expr":"P * t * 60 / 3600000","input":{"P":1200,"t":10},"expect":0.2,"tol":0.000001,"text":"0.2"},
+{"expr":"P * h * 3600","input":{"P":100,"h":8},"expect":2880000,"tol":0.000001,"text":"2,880,000"},
+{"expr":"P * h / 1000","input":{"P":100,"h":8},"expect":0.8,"tol":0.000001,"text":"0.8"},
+{"input":{"W":5297.4,"t":0.5},"expect":10594.8,"tol":0.000001,"text":"10,594.8"},
+{"expr":"(W / a) / (W / b)","input":{"W":5297.4,"a":0.5,"b":30},"expect":60,"tol":0.000001,"text":"60"},
+{"expr":"n * (a - b) / (n * b)","input":{"n":150,"a":745.7,"b":735.5},"expect":0.01386811693,"tol":0.000001,"scale":100,"text":"1.4"},
+{"expr":"(P * t * 60) / (Q * 3600)","input":{"P":1200,"t":10,"Q":100},"expect":2,"tol":0.000001,"text":"2"},
+{"expr":"(W / a) / (W / b)","input":{"W":1,"a":2,"b":8},"expect":4,"tol":0.000001,"text":"4"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #102 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">功率怎麼算？P = W/t 公式拆解（60 公斤爬 3 層樓實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-16</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一個 60 公斤的人爬上 3 層樓，不論用走的還是用衝的，對抗重力做的功都是 5,297.4 焦耳；
+        但走 30 秒的功率是 176.58 W，衝 10 秒的功率是 529.74 W，差了 3 倍。
+        功率衡量的不是做了多少事，而是做得多快：P = W/t，功除以時間。
+        本文用爬樓梯、汽車馬力、等速行駛、吹風機用電四組實例算一遍，最後拆解時間單位代錯會差 60 倍的錯誤。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P = W / t</div>
+          <div class="formula-box-note">P 為平均功率（W，即 J/s）· W 為這段時間內做的功或轉換的能量（J）· t 為花費的時間（s）。等速運動時可改寫為 P = F v</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>功率，每秒做的功或轉換的能量</td><td>W（J/s）</td><td>LED 燈泡約 10 W、吹風機約 1,200 W</td></tr>
+            <tr><td>W</td><td>功或能量；抬高物體時等於 m g h</td><td>J</td><td>60 公斤爬 9 公尺約 5,297.4 J</td></tr>
+            <tr><td>t</td><td>完成這份功花的時間</td><td>s</td><td>1 分鐘 = 60 s、1 小時 = 3,600 s</td></tr>
+            <tr><td>g</td><td>重力加速度，把公斤換成牛頓</td><td>m/s²</td><td>9.81</td></tr>
+          </tbody>
+        </table>
+
+        <h2>功率和功差在哪？同一件事做快一倍，功率就翻倍</h2>
+        <p>
+          功是總量，功率是速率。把一箱貨搬上貨架，搬一次需要的能量是固定的；
+          用 2 秒搬上去或用 8 秒搬上去，消耗的總能量一樣，但每秒要輸出的能量差了 4 倍。
+          馬達、引擎、人體肌肉的規格限制的正是這個「每秒能給多少」，所以挑設備看的是功率，不是功。
+        </p>
+        <p>
+          SI 單位瓦特（W）定義為每秒 1 焦耳，1 W = 1 J/s。
+          日常還有兩種「馬力」會出現：英制機械馬力 1 hp ≈ 745.7 W，公制馬力 1 PS ≈ 735.5 W，兩者不是同一個單位。
+          電費帳單上的「度」則是 kWh（千瓦小時），它是能量單位，不是功率單位，等於 1,000 W 持續 3,600 秒，
+          也就是 1,000 × 3,600 = 3,600,000 J。
+        </p>
+        <p>
+          P = W/t 算出的是平均功率。短跑起步那一瞬間的功率會遠高於全程平均，
+          這種「某一刻」的瞬時功率要把時間切得極短來看，等速運動時則可以直接用 P = F v 計算。
+        </p>
+
+        <h2>用真實數字算一遍：60 公斤爬 3 層樓</h2>
+        <p>
+          <strong>條件：</strong>60 公斤的人從 1 樓爬到 4 樓，共 3 層、每層 3 公尺，總高度 9 公尺；
+          重力加速度取 9.81 m/s²。只計算對抗重力的部分，忽略手臂擺動與肌肉本身的效率損失。
+        </p>
+        <ol>
+          <li>做的功：W = m g h = 60 × 9.81 × 9 = 5,297.4 J</li>
+          <li>慢慢走，花 30 秒：P = 5,297.4 ÷ 30 = <strong>176.58</strong> W</li>
+          <li>一路衝上去，花 10 秒：P = 5,297.4 ÷ 10 = <strong>529.74</strong> W</li>
+          <li>換成馬力：529.74 ÷ 745.7 ≈ 0.71 hp；走路的 176.58 W 則約 0.24 hp</li>
+        </ol>
+        <p>
+          兩種爬法的功完全相同，時間差 3 倍，功率就差 3 倍。
+          衝上樓會喘，不是因為多做了功，而是肌肉每秒要輸出的能量變成原來的 3 倍。
+          這也是「馬力」這個單位的由來：當年用來比較蒸汽機能取代幾匹馬持續工作，
+          一個人短時間衝刺可達 0.71 hp 的機械輸出，但無法長時間維持。
+        </p>
+        <p>
+          實際上人體從食物轉換成機械功的效率只有約兩成到四分之一，
+          所以身體消耗的總能量遠大於 5,297.4 J；本例算的是「對外輸出」的功率，不是代謝耗能。
+        </p>
+
+        <h2>汽車 150 匹馬力是多少 kW？hp 與 PS 差在哪</h2>
+        <p>
+          汽車規格表常寫「最大馬力 150 匹」，換成瓦特時要先看它用哪一種馬力：
+        </p>
+        <ol>
+          <li>英制 hp：150 × 745.7 = 111,855 W，約 111.9 kW</li>
+          <li>公制 PS：150 × 735.5 = 110,325 W</li>
+          <li>同樣寫「150 匹」，兩者相差 150 × (745.7 − 735.5) = 1,530 W</li>
+        </ol>
+        <p>
+          差距約 1.4%，比較不同車廠的數據時不能直接相減。
+          這個數字是引擎在特定轉速下的最大輸出，並不是行駛時一直在用的功率。
+        </p>
+        <p>
+          等速行駛時改用 P = F v：車以 100 km/h 定速，速度換成 100 ÷ 3.6 ≈ 27.78 m/s。
+          假設風阻加滾動阻力合計 500 N，引擎需要持續克服它，輸出功率是
+          500 × 27.78 ≈ 13,889 W，約 13.9 kW，只有 150 hp 最大輸出的 12.4%。
+          剩下的餘裕留給加速與爬坡；阻力 500 N 為示範假設，實際值依車型、車速與路面而變。
+        </p>
+
+        <h2>功率換回能量：1,200 W 吹風機用 10 分鐘是幾度電</h2>
+        <p>
+          把 P = W/t 移項成 W = P t，就能從功率算出用掉多少能量。電器銘牌上標的是功率，帳單算的是能量：
+        </p>
+        <ol>
+          <li>時間換成秒：10 分鐘 = 600 s</li>
+          <li>用掉的能量：W = 1,200 × 600 = 720,000 J</li>
+          <li>換成度：720,000 ÷ 3,600,000 = 0.2 kWh</li>
+        </ol>
+        <p>
+          換一個角度：一個人平靜時身體的平均功率約 100 W，8 小時睡眠消耗 100 × 8 × 3,600 = 2,880,000 J，
+          相當於 0.8 kWh。也就是說，吹風機吹 10 分鐘的能量，大約是睡 2 小時的身體耗能。
+          功率高的電器只要用得短，總耗能不一定大；判斷耗電看的是功率乘時間，不是單看瓦數。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：時間用分鐘或小時直接代入</div>
+          <p style="margin: 0;">
+            瓦特的定義是「焦耳每秒」，時間必須換成秒。把爬樓梯的 30 秒寫成 0.5 分鐘直接代入，
+            會得到 5,297.4 ÷ 0.5 = 10,594.8，比正確的 176.58 W 大了 60 倍，彷彿一個人能輸出十幾匹馬力。
+            第二個常見混淆是 kW 與 kWh：kW 是功率（多快），kWh 是能量（多少），
+            「這台冷氣 1 kW」與「這個月用了 1 kWh」講的是不同的物理量，不能互相換算而不乘時間。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 的功率計算機。輸入 W = 5297.4、t = 10，即可重現本文衝上 3 層樓的 529.74 W。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 功率 #102</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=102" title="功率互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/mechanical-work.html">機械功 W = Fd：功率公式裡的 W 怎麼算</a></li>
+          <li><a href="/formulas/gravitational-potential-energy.html">重力位能 U = mgh：爬樓梯做的功從哪裡來</a></li>
+          <li><a href="/formulas/electrical-power.html">電功率 P = VI：同樣是瓦特，電學的算法</a></li>
+          <li><a href="/formulas/mechanical-efficiency.html">機械效率 η = Pout/Pin：輸入功率有多少真的變成輸出</a></li>
+          <li><a href="/formulas/kinetic-energy.html">動能 ½mv²：加速時功率花到哪裡去</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          功率 P = W/t 與瓦特（W = J/s）定義依 SI 手冊（BIPM《The International System of Units》）；
+          1 hp（mechanical horsepower）≈ 745.7 W、1 PS（metric horsepower）≈ 735.5 W、1 kWh = 3,600,000 J 為標準換算值；重力加速度取 9.81 m/s²，與本站重力位能、機械功兩篇一致。
+          每層樓 3 公尺、爬樓 30 秒與 10 秒、行駛阻力 500 N、人體靜息功率約 100 W 為示範數字；
+          爬樓計算忽略肌肉效率與身體擺動。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
