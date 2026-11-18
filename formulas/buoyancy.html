@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>浮力怎麼算？阿基米德原理 F = ρgV 公式拆解（10 公斤鐵錨入海實例）· Bobo Labs</title>
+  <meta name="description" content="浮力怎麼算？F = ρ g V，液體密度乘重力加速度乘排開的體積，單位是牛頓 N。本文用寶特瓶、鐵錨入海、竹筏載重、萬噸貨輪從河口駛入海與氦氣球五組實例，示範浮沉怎麼判斷，以及 V 用公升代入會大 1,000 倍的錯誤。" />
+  <meta property="og:title" content="浮力怎麼算？阿基米德原理 F = ρgV 公式拆解" />
+  <meta property="og:description" content="10 公斤鐵錨放進海裡，浮力 12.81 N，水中只剩 8.69 公斤重。同一艘萬噸貨輪從河口開進海，吃水體積少 243.9 m³。用 F = ρgV 算給你看。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/buoyancy.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/buoyancy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "浮力怎麼算？阿基米德原理 F = ρgV 公式拆解", "url": "https://labs.moneyai168.com/formulas/buoyancy.html", "datePublished": "2026-11-17", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "浮力（阿基米德）", "item": "https://labs.moneyai168.com/formulas/buoyancy.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "rho * g * V",
+    "cases": [
+{"input":{"rho":1000,"g":9.81,"V":0.001},"expect":9.81,"tol":0.000001,"text":"9.81"},
+{"input":{"rho":1025,"g":9.81,"V":0.001},"expect":10.05525,"tol":0.000001,"text":"10.055"},
+{"expr":"m / d","input":{"m":10,"d":7850},"expect":0.00127388535,"tol":0.0000001,"text":"0.00127"},
+{"expr":"m / d * 1000000","input":{"m":10,"d":7850},"expect":1273.88535,"tol":0.001,"text":"1,274"},
+{"expr":"rho * g * m / d","input":{"rho":1025,"g":9.81,"m":10,"d":7850},"expect":12.80923567,"tol":0.000001,"text":"12.81"},
+{"expr":"m * g","input":{"m":10,"g":9.81},"expect":98.1,"tol":0.000001,"text":"98.1"},
+{"expr":"m * g - rho * g * m / d","input":{"rho":1025,"g":9.81,"m":10,"d":7850},"expect":85.29076433,"tol":0.000001,"text":"85.29"},
+{"expr":"m - rho * m / d","input":{"rho":1025,"m":10,"d":7850},"expect":8.694267516,"tol":0.000001,"text":"8.69"},
+{"expr":"rho / d","input":{"rho":1025,"d":7850},"expect":0.1305732484,"tol":0.000001,"scale":100,"text":"13.1"},
+{"input":{"rho":1000,"g":9.81,"V":0.5},"expect":4905,"tol":0.000001,"text":"4,905"},
+{"expr":"rho * V","input":{"rho":1000,"V":0.5},"expect":500,"tol":0.000001,"text":"500"},
+{"expr":"rho * V - m","input":{"rho":1000,"V":0.5,"m":50},"expect":450,"tol":0.000001,"text":"450"},
+{"expr":"m / rho","input":{"m":10000000,"rho":1000},"expect":10000,"tol":0.000001,"text":"10,000"},
+{"expr":"m / rho","input":{"m":10000000,"rho":1025},"expect":9756.097561,"tol":0.000001,"text":"9,756.1"},
+{"expr":"m / a - m / b","input":{"m":10000000,"a":1000,"b":1025},"expect":243.902439,"tol":0.000001,"text":"243.9"},
+{"expr":"1 - a / b","input":{"a":1000,"b":1025},"expect":0.0243902439,"tol":0.000001,"scale":100,"text":"2.4"},
+{"input":{"rho":1.2,"g":9.81,"V":1},"expect":11.772,"tol":0.000001,"text":"11.77"},
+{"expr":"(a - b) * V","input":{"a":1.2,"b":0.1786,"V":1},"expect":1.0214,"tol":0.000001,"text":"1.02"},
+{"input":{"rho":1000,"g":9.81,"V":1},"expect":9810,"tol":0.000001,"text":"9,810"},
+{"expr":"(rho * g * a) / (rho * g * b)","input":{"rho":1000,"g":9.81,"a":1,"b":0.001},"expect":1000,"tol":0.000001,"text":"1,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #103 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">浮力怎麼算？阿基米德原理 F = ρgV 公式拆解（鐵錨入海實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-17</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一個 10 公斤的鐵錨在空氣中重 98.1 N，放進海裡後只剩 85.29 N，提起來像 8.69 公斤。
+        少掉的那一截就是浮力：液體被物體擠開，會用被擠開那份液體的重量把物體往上推。
+        阿基米德原理寫成公式是 F = ρ g V，液體密度乘重力加速度乘排開的體積。
+        本文用寶特瓶、鐵錨、竹筏、萬噸貨輪與氦氣球五組實例算一遍，最後拆解體積用公升代入會大 1,000 倍的錯誤。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">F<sub>b</sub> = ρ g V</div>
+          <div class="formula-box-note">F<sub>b</sub> 為浮力（N）· ρ 為「液體」的密度（kg/m³），不是物體的密度 · g 為重力加速度（m/s²）· V 為物體浸在液體中、排開液體的體積（m³）。物體漂浮時 F<sub>b</sub> 等於物體重量</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>F<sub>b</sub></td><td>浮力，液體對物體向上的淨推力</td><td>N</td><td>1 公升物體全沒入淡水約 9.81 N</td></tr>
+            <tr><td>ρ</td><td>周圍流體的密度</td><td>kg/m³</td><td>淡水 1,000、海水約 1,025、空氣約 1.2</td></tr>
+            <tr><td>g</td><td>重力加速度</td><td>m/s²</td><td>9.81</td></tr>
+            <tr><td>V</td><td>浸入液面以下的體積（排開體積）</td><td>m³</td><td>1 公升 = 0.001 m³</td></tr>
+          </tbody>
+        </table>
+
+        <h2>浮力從哪裡來？上下水壓差推出來的</h2>
+        <p>
+          水越深壓力越大，物體底面受到的水壓比頂面大，上下壓力相減就是一股向上的淨力。
+          把這股淨力加總，結果剛好等於「物體排開的那份水」的重量：排開體積 V 的水，質量是 ρV，重量是 ρgV。
+          這就是阿基米德原理，和物體本身是鐵、木頭還是塑膠無關，只看它佔掉多少液體的位置。
+        </p>
+        <p>
+          最簡單的實例是 1 公升的密封寶特瓶完全壓進水裡。1 公升 = 0.001 m³，
+          在淡水中浮力 F = 1,000 × 9.81 × 0.001 = 9.81 N，剛好是 1 公斤水的重量；
+          換到海水，F = 1,025 × 9.81 × 0.001 = 10.055 N，因為海水比淡水重，同樣體積推得更用力。
+        </p>
+        <p>
+          浮或沉的判斷只要比兩個力：浮力大於重量就上浮，小於就下沉，相等就停在原處。
+          全沒入時兩邊的 g 與 V 相同，比較結果等同於比密度：物體密度小於液體就會浮，大於就會沉。
+        </p>
+
+        <h2>用真實數字算一遍：10 公斤鐵錨放進海裡</h2>
+        <p>
+          <strong>條件：</strong>實心鋼製鐵錨 10 公斤，鋼的密度取 7,850 kg/m³；海水密度取 1,025 kg/m³；
+          重力加速度取 9.81 m/s²。鐵錨完全沒入水中、尚未觸底。
+        </p>
+        <ol>
+          <li>先求體積：V = m ÷ ρ<sub>鋼</sub> = 10 ÷ 7,850 ≈ 0.00127 m³，約 1,274 cm³</li>
+          <li>浮力：F = 1,025 × 9.81 × 0.00127… ≈ <strong>12.81</strong> N</li>
+          <li>空氣中的重量：W = m g = 10 × 9.81 = 98.1 N</li>
+          <li>水中的視重：98.1 − 12.81 ≈ <strong>85.29</strong> N，相當於 8.69 公斤</li>
+        </ol>
+        <p>
+          鐵錨在海裡變輕的比例剛好是兩個密度相除：1,025 ÷ 7,850 ≈ 13.1%。
+          這也是潛水員在水下搬重物比在岸上輕鬆的原因，物體越接近水的密度，水中就越「輕」；
+          反過來，同樣這顆鐵錨一旦被拉出水面，手上的拉力會突然多出 12.81 N。
+        </p>
+
+        <h2>竹筏能載多重？漂浮時浮力等於總重量</h2>
+        <p>
+          物體漂浮時只有一部分泡在水裡，此時公式裡的 V 是「水面以下那一截」的體積，
+          而且浮力剛好等於物體總重量。所以載重問題要反過來問：整個浮體壓到全部沒入時，最多能產生多少浮力？
+        </p>
+        <ol>
+          <li>一張竹筏總體積 0.5 m³、自重 50 公斤，放在淡水湖上</li>
+          <li>全部壓進水裡時的最大浮力：F = 1,000 × 9.81 × 0.5 = 4,905 N</li>
+          <li>這股力最多撐得住 1,000 × 0.5 = 500 公斤的總質量</li>
+          <li>扣掉竹筏自重，可載重 500 − 50 = 450 公斤</li>
+        </ol>
+        <p>
+          450 公斤是筏面剛好與水面齊平的極限，實際使用要留乾舷高度，浪一打就進水的載法並不安全。
+          救生衣與浮板的設計邏輯相同：用低密度材料撐出體積，讓人和裝備的平均密度低於水。
+        </p>
+
+        <h2>船從河口開進海會浮高還是沉低？萬噸貨輪實測</h2>
+        <p>
+          一艘總質量 10,000 公噸（10,000,000 kg）的貨輪漂浮時，浮力等於重量，ρ g V = m g，
+          兩邊的 g 消掉，排開體積 V = m ÷ ρ：
+        </p>
+        <ol>
+          <li>在河口淡水：V = 10,000,000 ÷ 1,000 = 10,000 m³</li>
+          <li>在海水：V = 10,000,000 ÷ 1,025 ≈ 9,756.1 m³</li>
+          <li>水下體積少了約 243.9 m³，約 2.4%</li>
+        </ol>
+        <p>
+          船的重量沒變，海水比較重，所以只要排開較少的體積就能撐住，船身會浮高一些。
+          這正是貨輪船殼上載重線（Plimsoll line）分成淡水、夏季海水、冬季海水等不同刻度的原因：
+          在淡水港裝到海水刻度，出海後船身會浮高；反過來在海水裝滿再開進淡水河，吃水就會超過安全線。
+        </p>
+        <p>
+          同一條公式也適用於空氣。空氣密度約 1.2 kg/m³，一顆 1 m³ 的氦氣球受到的浮力是
+          1.2 × 9.81 × 1 ≈ 11.77 N；氦氣本身密度約 0.1786 kg/m³，
+          扣掉氦氣重量後，淨升力約 (1.2 − 0.1786) × 1 ≈ 1.02 公斤，還沒算氣球皮與繩子的重量。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：體積用公升直接代入，或把物體密度當成 ρ</div>
+          <p style="margin: 0;">
+            ρ 用 kg/m³ 時，V 必須是 m³。把 1 公升的寶特瓶寫成 V = 1 直接代入，
+            會得到 1,000 × 9.81 × 1 = 9,810 N，比正確的 9.81 N 大了 1,000 倍，
+            等於說一個寶特瓶能把一公噸的東西頂起來。第二個常見錯誤是把物體的密度放進 ρ：
+            公式裡的 ρ 是「周圍液體」的密度，鐵錨算浮力用的是海水的 1,025，不是鋼的 7,850；
+            鋼的密度只在「由質量反推體積」那一步用到。漂浮物則要記得 V 只算水面以下的部分。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。
+          先輸入 ρ = 1000、g = 9.81、V = 0.001 確認結果是 9.81 N，再換成自己的數字——
+          填之前先把體積換成 m³、確認 ρ 填的是液體而不是物體的密度，這是這條公式最常翻車的兩個地方。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 浮力（阿基米德） #103</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=103" title="浮力互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/density.html">密度 ρ = m/V：浮沉的判斷其實是比密度</a></li>
+          <li><a href="/formulas/pressure.html">壓力 P = F/A：浮力背後的上下水壓差</a></li>
+          <li><a href="/formulas/newtons-second-law.html">牛頓第二定律 F = ma：浮力與重力的淨力怎麼決定加速度</a></li>
+          <li><a href="/formulas/gravitational-potential-energy.html">重力位能 U = mgh：同樣的 g = 9.81 怎麼用</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          浮力 F<sub>b</sub> = ρ g V 依阿基米德原理（見 OpenStax《University Physics Volume 1》§14.4 Archimedes’ Principle and Buoyancy）；
+          淡水密度取 1,000 kg/m³、海水約 1,025 kg/m³、冰約 917 kg/m³ 與本站密度一篇一致，鋼約 7,850 kg/m³、空氣約 1.2 kg/m³、氦氣約 0.1786 kg/m³ 為常用近似值（實際隨溫度、鹽度與氣壓變化）；
+          重力加速度取 9.81 m/s²，與本站重力位能、機械功、功率各篇一致。
+          10 公斤鐵錨、0.5 m³ 竹筏、10,000 公噸貨輪與 1 m³ 氦氣球為示範數字。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

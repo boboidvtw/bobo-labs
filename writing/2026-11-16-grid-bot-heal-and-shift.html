@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>網格不會自己長回來：Testnet 48 小時裡的缺格修補與窗口內移 · Bobo Labs</title>
+  <meta name="description" content="重開機、下單即 EXPIRED、撤單前已成交，三種情況都讓網格少了格子而且不會自己補回。我加了每 5 分鐘一次的缺格修補與窗口內移，第二輪 48 小時 Testnet 判讀：停機 0、補回缺格 6、內移 1、失敗 0。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-16-grid-bot-heal-and-shift.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+    <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-16</p>
+      <h1 class="article-title">網格不會自己長回來：Testnet 48 小時裡的缺格修補與窗口內移</h1>
+      <p class="article-lede">
+        網格交易 bot 的假設是「成交一張、反向補一張」，窗口永遠是滿的。
+        Testnet 跑了兩輪之後發現，至少有三種情況會讓格子消失而且不會自己回來。
+        這篇記錄我怎麼把「補格」寫成純函式、為什麼用輪數不用時間，以及第二輪 48 小時的判讀數字。
+      </p>
+
+      <div class="article-body">
+        <h2>窗口怎麼從 6 張退化成 4 張？</h2>
+        <p>
+          11-12 18:06 Mac 重開機，bot 停了 1 小時 44 分。重新啟動時的對帳流程把離線期間成交的單標成
+          FILLED_OFFLINE，舊單全部撤掉重掛——這一段等於順便驗證了重開機恢復是正常的。
+        </p>
+        <p>
+          問題出在之後：Testnet 一段急跌，3 張買單下單當下就回 EXPIRED；另有 1 張單在我撤單之前已經成交（撤單競態）。
+          原本的邏輯只在「收到成交」時反向補單，這兩種情況都不會觸發，窗口就這樣停在 4 張。
+        </p>
+
+        <h2>補格要補在哪裡？</h2>
+        <p>
+          我把判斷抽成 <code>plan_heal</code> 純函式，引擎每 30 輪（約 5 分鐘）呼叫一次。
+          中心格由兩個方向推算：最低賣單往下一格、最高買單往上一格；兩者不一致時，取最接近現價的那個。
+        </p>
+        <p>
+          規則刻意收得很緊：每邊不超過 N 張、不掛會立刻吃單的價格、照樣過預算檢查；
+          本輪有成交、查詢失敗、或建倉單還沒成交時一律不修補。預算不足時也不每 5 分鐘寫一次 log，
+          否則 48 小時下來 log 會被同一句話塞滿。
+        </p>
+
+        <h2>為什麼用「輪數」而不是「時間」計間隔？</h2>
+        <p>
+          回測是用歷史 K 線逐輪重播。如果修補間隔用牆上時鐘，回測裡的修補時機就取決於機器跑多快，結果不可重現。
+          改用輪數之後，回測和實跑走同一條程式路徑，同樣輸入一定得到同樣輸出。
+          代價是：回測也開始套用修補，舊的回測數字已經不可比，需要重跑。
+        </p>
+
+        <h2>格子都在，但位置偏了</h2>
+        <p>
+          11-14 12:43 出現一次雙向插針，之後賣邊掛滿 3 張，但整組往外偏了一格，最內側反而是空的。
+          第一版修補只看「有沒有空位」，張數滿了就不動，所以完全沒反應。
+        </p>
+        <p>
+          第二版把回傳值改成 <code>HealPlan(places, shifts)</code>：某邊已滿但內側有缺，就撤掉最外側那張、改掛到內側，張數不變。
+          撤不掉就不補（避免一邊變 4 張），撤掉了但改掛失敗則發 alert。
+        </p>
+        <p>
+          寫這版測試時，我一開始的期望寫錯了：以為「有空位時不該內移」。實際上正確行為是先用空位補、再把多出來的外側單內移。
+          我改的是測試裡錯的期望，不是放寬實作——兩者看起來一樣是「讓測試變綠」，意義完全相反。測試數從 70 增加到 86。
+        </p>
+
+        <h2>第二輪 48 小時的數字</h2>
+        <p>
+          判讀窗口 11-13 08:42 到 11-15 08:42。預算從 200 調到 1000，因為 200 在下跌 5% 以內就用完了，後面的格子根本掛不出去，測不到修補。
+        </p>
+        <p>
+          結果：心跳 2805 次、停機 0、EXPIRED 0、成交 50 筆（27 買 23 賣）、撤單競態 8 次、補回缺格 6 次、窗口內移 1 次、內移失敗 0。
+          同期 Testnet 價格下跌約 11%，網格估算 +3.4 USDT（Testnet 手續費為 0），同額買進持有約 −25 USDT。
+          這個比較只說明「下跌盤裡網格虧得比持有少」，不代表實盤會賺錢。
+        </p>
+
+        <h2>還沒驗證的事</h2>
+        <p>
+          修補有一個副作用：在交易所 App 手動撤掉的網格單，約 5 分鐘後會被補回來。要停 bot 只能用 Ctrl+C 或全撤指令，不能靠手動撤單。
+          睡眠與斷網後的恢復還沒驗證，列為實盤前必做的項目。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>事件驅動要配週期巡檢</strong>：只靠「成交才補單」，EXPIRED 與撤單競態造成的缺格永遠不會被發現。</p>
+          <p><strong>修補規則寧緊勿鬆</strong>：有成交、查詢失敗、建倉未完成時就跳過，下一輪再看，比補錯一張安全。</p>
+          <p><strong>間隔用輪數，回測才可重現</strong>：牆上時鐘讓回測結果取決於機器速度。</p>
+          <p><strong>「張數滿」不等於「位置對」</strong>：插針後要檢查的是窗口形狀，不只是數量。</p>
+          <p><strong>改測試前先問誰錯了</strong>：修正錯誤期望和放寬實作，都會讓測試變綠，只有前者是對的。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-16 · binance-grid-bot（Testnet）· 測試 70 → 86 · 48 小時停機 0、補格 6、內移 1
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
