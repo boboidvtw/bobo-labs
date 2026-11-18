@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-18**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/buoyancy.html`（#103 · 物理 · Pro，浮力 F = ρgV 與鐵錨入海實例）、`2026-11-16-grid-bot-heal-and-shift.html`（網格 bot 缺格修補與窗口內移）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結（Tier 一致，分類計數不動）。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-18.
 - **2026-11-17**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/power.html`（#102 · 物理 · Free，P = W/t：60 kg 爬 3 層樓做功 5,297.4 J、走 30 秒 176.58 W vs 衝 10 秒 529.74 W 差 3 倍、150 匹 hp 111,855 W 與 PS 110,325 W 差 1,530 W、100 km/h 定速 500 N 阻力約 13.9 kW、1,200 W 吹風機 10 分鐘 0.2 kWh、時間用分鐘代入錯 60 倍陷阱）。
   Formula 卡片由 placeholder 轉為連結、分類計數不變（Tier 一致）。
