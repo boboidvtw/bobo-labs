@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>光子能量怎麼算？普朗克公式 E = hf 拆解（綠光與微波爐實例）· Bobo Labs</title>
+  <meta name="description" content="光子能量怎麼算？E = hf，普朗克常數乘頻率，單位是焦耳；用波長則是 E = hc/λ。本文用綠光、可見光波長、微波爐、一莫耳光子與鈉的光電效應門檻實算，並拆解頻率單位沒換成 Hz 差 10 的 12 次方的錯誤。" />
+  <meta property="og:title" content="光子能量怎麼算？普朗克公式 E = hf 拆解" />
+  <meta property="og:description" content="一顆綠光光子只有 3.578 × 10⁻¹⁹ J，約 2.233 eV；微波爐的光子能量只有它的 22 萬分之一。用 E = hf 算給你看。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/planck-energy.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/planck-energy.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "光子能量怎麼算？普朗克公式 E = hf 拆解", "url": "https://labs.moneyai168.com/formulas/planck-energy.html", "datePublished": "2026-11-18", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "普朗克能量", "item": "https://labs.moneyai168.com/formulas/planck-energy.html" }
+  ] }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "h * f",
+    "cases": [
+{"expr":"h * f * 10 ** 19","input":{"h":6.62607015e-34,"f":5.4e14},"expect":3.578077881,"tol":0.000001,"text":"3.578"},
+{"expr":"h * f / q","input":{"h":6.62607015e-34,"f":5.4e14,"q":1.602176634e-19},"expect":2.233260556,"tol":0.000001,"text":"2.233"},
+{"expr":"c / l / 10 ** 12","input":{"c":299792458,"l":5.5e-7},"expect":545.0771964,"tol":0.0001,"text":"545.08"},
+{"expr":"h * c / l / q","input":{"h":6.62607015e-34,"c":299792458,"l":5.5e-7,"q":1.602176634e-19},"expect":2.254258153,"tol":0.000001,"text":"2.254"},
+{"expr":"h * c / q * 10 ** 9","input":{"h":6.62607015e-34,"c":299792458,"q":1.602176634e-19},"expect":1239.841984,"tol":0.00001,"text":"1,239.84"},
+{"expr":"h * c / l / q","input":{"h":6.62607015e-34,"c":299792458,"l":4e-7,"q":1.602176634e-19},"expect":3.099604961,"tol":0.000001,"text":"3.10"},
+{"expr":"h * c / l / q","input":{"h":6.62607015e-34,"c":299792458,"l":7e-7,"q":1.602176634e-19},"expect":1.771202835,"tol":0.000001,"text":"1.771"},
+{"expr":"h * f * 10 ** 24","input":{"h":6.62607015e-34,"f":2.45e9},"expect":1.623387187,"tol":0.000001,"text":"1.623"},
+{"expr":"h * f / q * 10 ** 5","input":{"h":6.62607015e-34,"f":2.45e9,"q":1.602176634e-19},"expect":1.013238586,"tol":0.000001,"text":"1.013"},
+{"expr":"a / b","input":{"a":5.4e14,"b":2.45e9},"expect":220408.1633,"tol":0.001,"text":"220,408"},
+{"expr":"h * f * n","input":{"h":6.62607015e-34,"f":5.4e14,"n":6.02214076e23},"expect":215476.8865,"tol":0.001,"text":"215,477"},
+{"expr":"h * f * n","input":{"h":6.62607015e-34,"f":2.45e9,"n":6.02214076e23},"expect":0.977626615,"tol":0.000001,"text":"0.978"},
+{"expr":"phi * q / h / 10 ** 12","input":{"phi":2.28,"q":1.602176634e-19,"h":6.62607015e-34},"expect":551.3015472,"tol":0.0001,"text":"551.30"},
+{"expr":"h * c / l / q - phi","input":{"h":6.62607015e-34,"c":299792458,"l":4e-7,"q":1.602176634e-19,"phi":2.28},"expect":0.81960496,"tol":0.000001,"text":"0.820"},
+{"expr":"h * c / (phi * q) * 10 ** 9","input":{"h":6.62607015e-34,"c":299792458,"phi":2.28,"q":1.602176634e-19},"expect":543.790344,"tol":0.0001,"text":"543.79"},
+{"expr":"h * f / q / 1000","input":{"h":6.62607015e-34,"f":1e18,"q":1.602176634e-19},"expect":4.135667697,"tol":0.000001,"text":"4.136"},
+{"expr":"a / b","input":{"a":5.4e14,"b":540},"expect":1e12,"tol":0.001,"text":"1,000,000,000,000"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 物理 · #85 <span class="formula-tier formula-tier--pro">Pro</span></p>
+      <h1 class="article-title">光子能量怎麼算？普朗克公式 E = hf（綠光與微波爐實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-18</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        一顆綠光光子的能量是 3.578 × 10⁻¹⁹ J，換成電子伏特約 2.233 eV。
+        同一條公式算微波爐的 2.45 GHz 微波，一顆光子只有 1.623 × 10⁻²⁴ J，是綠光的二十二萬分之一。
+        普朗克提出的 E = hf 說明：光的能量不是連續的，而是一份一份的，每一份的大小只由頻率決定。
+        本文用綠光、可見光波長、微波爐、一莫耳光子與鈉的光電效應門檻實際算一遍，最後拆解頻率單位的錯誤。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">E = h f　（等價寫法：E = h c / λ）</div>
+          <div class="formula-box-note">E 為單顆光子的能量（J）· h 為普朗克常數 6.62607015 × 10⁻³⁴ J·s（2019 年起為 SI 定義值）· f 為頻率（Hz）· c 為光速 299,792,458 m/s · λ 為波長（m）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>E</td><td>單顆光子（量子）的能量</td><td>J 或 eV</td><td>可見光約 1.8 至 3.1 eV</td></tr>
+            <tr><td>h</td><td>普朗克常數，能量與頻率的比例係數</td><td>J·s</td><td>6.62607015 × 10⁻³⁴</td></tr>
+            <tr><td>f</td><td>電磁波頻率</td><td>Hz</td><td>綠光 5.4 × 10¹⁴、微波爐 2.45 × 10⁹</td></tr>
+            <tr><td>λ</td><td>波長，與頻率的關係為 c = λ f</td><td>m</td><td>可見光 400 至 700 nm</td></tr>
+          </tbody>
+        </table>
+
+        <h2>為什麼能量只看頻率？光是一份一份送的</h2>
+        <p>
+          黑體輻射實驗用「能量連續」的古典理論算不對，普朗克 1900 年假設：電磁波與物質交換能量時，只能以 hf 的整數倍進行。
+          愛因斯坦隨後用同樣的想法解釋光電效應，把這一份能量稱為光子。
+        </p>
+        <p>
+          光子能量與亮度無關，亮度只決定光子數量。
+          頻率越高，每顆光子越有力：紫光光子比紅光光子強，X 光光子又遠強於可見光。
+        </p>
+
+        <h2>用真實數字算一遍：綠光 540 THz 的一顆光子</h2>
+        <p>
+          <strong>條件：</strong>綠光頻率取 5.4 × 10¹⁴ Hz（540 THz），h 取 6.62607015 × 10⁻³⁴ J·s，1 eV = 1.602176634 × 10⁻¹⁹ J。
+        </p>
+        <ol>
+          <li>代入公式：E = 6.62607015 × 10⁻³⁴ × 5.4 × 10¹⁴ ≈ <strong>3.578</strong> × 10⁻¹⁹ J</li>
+          <li>換成電子伏特：3.578 × 10⁻¹⁹ ÷ 1.602 × 10⁻¹⁹ ≈ <strong>2.233</strong> eV</li>
+        </ol>
+        <p>
+          焦耳在這個尺度上太大，數字拖著 10⁻¹⁹ 很不好讀，所以原子與光學領域習慣用 eV：
+          1 eV 是一顆電子通過 1 V 電位差所獲得的能量。綠光光子約 2.2 eV，
+          和化學鍵、半導體能隙同一量級，光因此能引發化學反應。
+        </p>
+
+        <h2>只知道波長怎麼辦？E = hc/λ 與 1,239.84 這個好用常數</h2>
+        <p>
+          日常描述光色多半給波長而不是頻率。由 c = λf 得 f = c/λ，代回去就是 E = hc/λ。
+          例如 550 nm（5.5 × 10⁻⁷ m）黃綠光，頻率 f = 299,792,458 ÷ 5.5 × 10⁻⁷ ≈ 545.08 THz，
+          能量 E = hc/λ ≈ 2.254 eV。
+        </p>
+        <p>
+          把 hc 先算成 eV·nm 會很方便：hc = 6.62607015 × 10⁻³⁴ × 299,792,458 ÷ 1.602176634 × 10⁻¹⁹ ≈
+          <strong>1,239.84</strong> eV·nm。之後「波長（nm）」直接除進去就是 eV：
+        </p>
+        <ol>
+          <li>紫光 400 nm：1,239.84 ÷ 400 ≈ <strong>3.10</strong> eV</li>
+          <li>紅光 700 nm：1,239.84 ÷ 700 ≈ <strong>1.771</strong> eV</li>
+        </ol>
+        <p>
+          可見光整段落在大約 1.8 至 3.1 eV，能隙超過 3.1 eV 的材料對可見光是透明的。
+        </p>
+
+        <h2>微波爐的光子有多弱？頻率差十萬倍的比較</h2>
+        <p>
+          家用微波爐使用 2.45 GHz（2.45 × 10⁹ Hz）的微波：
+        </p>
+        <ol>
+          <li>單顆光子能量：E = 6.62607015 × 10⁻³⁴ × 2.45 × 10⁹ ≈ <strong>1.623</strong> × 10⁻²⁴ J</li>
+          <li>換成 eV：約 <strong>1.013</strong> × 10⁻⁵ eV，只有十萬分之一 eV 的量級</li>
+          <li>與綠光比較：5.4 × 10¹⁴ ÷ 2.45 × 10⁹ ≈ <strong>220,408</strong> 倍</li>
+        </ol>
+        <p>
+          化學鍵斷裂需要幾 eV，微波光子遠遠不夠，所以微波爐無法直接打斷分子，靠的是激發水分子轉動再轉成熱。要加熱一杯水靠的是光子數量：
+          一莫耳（6.02214076 × 10²³ 顆）微波光子加起來也只有約 0.978 J，
+          對照一莫耳綠光光子約 215,477 J（215 kJ），同樣的「一莫耳」差了二十多萬倍。
+        </p>
+
+        <h2>光電效應門檻：鈉的 2.28 eV 怎麼判斷能不能打出電子</h2>
+        <p>
+          光電效應的條件是：單顆光子的能量要大於金屬的功函數 φ，才能打出一顆電子；
+          多出來的能量變成電子的最大動能，K<sub>max</sub> = hf − φ。
+          這裡假設鈉的功函數取 2.28 eV（教科書常用近似值，實際隨表面狀態而異）：
+        </p>
+        <ol>
+          <li>門檻頻率：f₀ = φ ÷ h = 2.28 × 1.602176634 × 10⁻¹⁹ ÷ 6.62607015 × 10⁻³⁴ ≈ <strong>551.30</strong> THz</li>
+          <li>對應門檻波長：hc ÷ φ ≈ <strong>543.79</strong> nm</li>
+          <li>400 nm 紫光（3.10 eV）照射：K<sub>max</sub> = 3.10 − 2.28 ≈ <strong>0.820</strong> eV</li>
+        </ol>
+        <p>
+          前面的 540 THz 綠光低於 551.30 THz 的門檻，光子能量只有 2.233 eV，
+          不論把光調到多亮、照多久，都打不出電子；而 400 nm 紫光即使很暗也能打出。
+        </p>
+        <p>
+          頻率再往上，1 × 10¹⁸ Hz 的 X 光每顆光子約 <strong>4.136</strong> keV，足以打出原子內層電子。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤：頻率單位沒換成 Hz，或用 nm 直接代入 E = hf</div>
+          <p style="margin: 0;">
+            h 的單位是 J·s，所以 f 必須是 Hz。把「540 THz」直接寫成 540 代入，
+            算出來的能量會比正確值小 1,000,000,000,000 倍（5.4 × 10¹⁴ ÷ 540）；
+            GHz、MHz 同理。第二個常見錯誤是把波長直接代進 E = hf：
+            波長越長能量越小，是反比而不是正比，要用 E = hc/λ，而且 λ 要換成公尺，
+            或使用上面的 1,239.84 eV·nm 常數搭配 nm。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          ∑ Calc Pro 提供這條公式的互動計算。
+          先輸入 h = 6.62607015e-34、f = 5.4e14，確認結果是 3.578e-19 J，再換成自己的頻率——
+          填之前先把 THz、GHz 換成 Hz，這是這條公式最常翻車的地方。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 普朗克能量 #85</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=85" title="普朗克能量互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/wavelength-from-frequency.html">波長與頻率 λ = c/f：E = hc/λ 的前一步</a></li>
+          <li><a href="/formulas/wave-speed.html">波速 v = fλ：頻率、波長與速度的關係</a></li>
+          <li><a href="/formulas/bohr-model-energy.html">波耳模型能階：氫原子躍遷放出的光子能量</a></li>
+          <li><a href="/formulas/emc2.html">質能方程式 E = mc²：另一條用到光速的能量公式</a></li>
+        </ul>
+      </div>
+
+      <p class="article-foot">
+          普朗克關係 E = hf 見 OpenStax《University Physics Volume 3》§6 Photons and Matter Waves；
+          h = 6.62607015 × 10⁻³⁴ J·s 與 1 eV = 1.602176634 × 10⁻¹⁹ J 為 2019 年 SI 重新定義後的精確值（BIPM《SI Brochure》第 9 版）；
+          光速取 299,792,458 m/s，與本站質能方程式、波長與頻率各篇一致；
+          鈉功函數 2.28 eV 為近似值。
+          綠光 540 THz、550 nm 黃綠光、2.45 GHz 微波爐與 10¹⁸ Hz X 光為示範數字。數值計算已逐一驗算。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

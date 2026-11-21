@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>不裝 Harness²，只借它的判讀規則 — 評測加上 CONFOUNDED 與分歧題 · Bobo Labs</title>
+  <meta name="description" content="評估 google-research/harness2 之後決定不安裝，只把它判讀評測結果的規則搬進自己的本地 coding agent 評測：教訓記錄多一個 CONFOUNDED 判定，報表多一節「分歧題」。順手記下選錯 PR base 與 rebase 合併換 hash 的兩個坑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-14-harness2-evals-attribution.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-14</p>
+      <h1 class="article-title">不裝 Harness²，只借它的判讀規則 — 評測加上 CONFOUNDED 與分歧題</h1>
+      <p class="article-lede">
+        google-research 開源的 Harness² 會固定模型權重、反覆改寫 agent 外圍的 harness 來拉高分數。
+        我花了三天評估它能不能接進自己的本地 coding agent 評測，結論是不裝。
+        真正帶走的是它判讀結果的方式：一個分數變好，到底能不能歸功給某一項改動。
+      </p>
+
+      <div class="article-body">
+        <h2>Harness² 在做什麼，為什麼不裝？</h2>
+        <p>
+          Harness² 是 Apache-2.0 授權、版本 v0.1.0 的研究專案。它把 harness 拆成 8 種元件（提示詞、工具描述、記憶等），
+          在模型不動的前提下遞迴優化這些元件，每一題要跑 4k 次：k 次基礎、2k 次候選、k 次定稿。
+        </p>
+        <p>
+          評估下來有三個不合：它只支援 OpenCode 和 Codex 兩種執行器，預設接 Vertex AI；
+          它只能優化「模型外面那一層」，對我另一條訓練模型的路線幫不上忙；
+          以本機推論的速度，每題 4k 次的成本也太高。所以 PoC 先暫緩，不安裝。
+        </p>
+        <p>
+          但它的原始碼裡有一套很完整的判讀規則。我只讀、不執行，整理出 9 條，
+          對照自己的評測流程，已經在做的有 4 條，缺的有 5 條。這篇講其中最有用的兩條。
+        </p>
+
+        <h2>分數變好，什麼時候不能歸功給改動？</h2>
+        <p>
+          我的評測會把每次實驗的結論寫成一筆「教訓」，原本只有 ACCEPTED（改動有效）和 REJECTED（改動無效）兩種判定。
+          Harness² 多了一種：<strong>CONFOUNDED</strong>，意思是分數確實變了，但同時動了不只一個變因，
+          又沒有拆開單獨測，所以說不出是哪一項的功勞。
+        </p>
+        <p>
+          拿真實資料對照，馬上就有一筆符合：上個月換預設時，A′ 比 A 高 13.7 分（這是配對計算的結果，不是兩組平均直接相減），
+          但 A′ 同時開了兩項設定，而且沒有跑「只開其中一項」的拆解組。照新規則，這一筆應該記成 CONFOUNDED，而不是 ACCEPTED。
+        </p>
+        <p>
+          所以教訓記錄多了幾個欄位：判定多一個 CONFOUNDED，而且和另外兩種一樣必須附證據；
+          另外必填一句「線索」（看到什麼現象才下這個結論），信心程度和量測對象則是選填。
+          舊的 58 筆教訓沒有回填，A′ 那筆也留給我自己決定要不要改，工具不替人改結論。
+        </p>
+
+        <h2>為什麼要特別列出「分歧題」？</h2>
+        <p>
+          同一題重複跑幾次，有時過、有時不過，這就是分歧題。只看總分時，分歧題會被平均掉；
+          但兩個方案比較時，分數差很可能大半來自這些題目的運氣。
+        </p>
+        <p>
+          報表新增了一節，專門列出分歧題；兩組配對比較時，另外追蹤基準組的分歧題到了候選組變成什麼樣子。
+          在真實資料上：A 有 41 題分歧，A′ 只有 17 題。A 的那 41 題在 A′ 裡有 31 題變成全過、9 題仍然分歧、1 題變成全敗。
+        </p>
+        <p>
+          這組數字比單一個 +13.7 有用得多。它說明 A′ 的提升主要來自「把不穩定的題目變穩」，
+          而不是剛好多答對幾題，也說明還有 9 題值得單獨研究。
+        </p>
+
+        <h2>選錯 PR base，會發生什麼事？</h2>
+        <p>
+          這次的工作分支是從另一條功能分支切出來的。那條分支兩天前就已經 rebase 合併進 main，但遠端分支沒刪。
+          我開 PR 時預設指向它，如果直接合併，改動只會進到那條已經沒用的分支，永遠到不了 main。
+        </p>
+        <p>
+          改指向 main 又撞上衝突：兩邊都新增了同一個檔案，其中一邊之後又改過。
+          最後的做法是 rebase 到 main、force push、再改 PR 的 base 才合併成功。
+        </p>
+        <p>
+          還有一個副作用：force push 和改 base 之後，CI 都沒有自動跑。
+          改 base 是 edited 事件，本來就不觸發；force push 那次沒跑，我推測是因為當下 PR 對舊 base 有衝突，這點沒有另外驗證。
+          最後用 gh workflow run 手動補跑才拿到綠燈。
+        </p>
+
+        <h2>為什麼文件裡寫的 commit hash 會失效？</h2>
+        <p>
+          rebase 合併會把每個 commit 重新寫一次，hash 也跟著換。我在 PR 合併前就把 commit hash 寫進交接文件，
+          合併後那些 hash 全都不在 main 上，只好再開一個只改一行的 PR 修正。
+          之後的規矩是：要在文件裡引用 commit，等合併之後再寫；或者改寫 tree hash，它不會因為 rebase 而改變。
+        </p>
+      </div>
+
+      <div class="article-body">
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>工具不合，規則可以帶走</strong>：Harness² 本身裝不進來，但它判讀結果的規則補上了我評測流程缺的 5 條。</p>
+          <p><strong>同時動兩個變因，就說不出是誰的功勞</strong>：沒有拆解組時，分數變好要記成 CONFOUNDED，不是 ACCEPTED。</p>
+          <p><strong>分歧題要單獨看</strong>：A 的 41 題分歧在 A′ 有 31 題變全過，這比總分差更能說明改動做了什麼。</p>
+          <p><strong>開 PR 前先確認 base 還活著</strong>：已合併但沒刪的遠端分支，會讓 PR 合到一條死路上。</p>
+          <p><strong>rebase 合併後才寫 commit hash</strong>：合併前寫進文件的 hash，合併後就失效了。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-12～11-14 · 本地 coding agent 評測 · Harness² v0.1.0 評估（不安裝）· 判讀規則 9 條、補 5 條 · 分歧題 A 41 → A′ 17 · 2 個 PR
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
