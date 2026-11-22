@@ -48,30 +48,30 @@
       <div class="article-body">
         <h2>14:30 驗收：預期的靜止沒有出現</h2>
         <p>
-          開工第一步是 ground truth 核查：`ps -o lstart= -p $(pgrep -f "streamlit run main.py")`
-          回傳 `Fri Jun 5 14:30:22 2026`。bot_log 把事件鏈說得更清楚：
+          開工第一步是 ground truth 核查：<code>ps -o lstart= -p $(pgrep -f "streamlit run main.py")</code>
+          回傳 <code>Fri Jun 5 14:30:22 2026</code>。bot_log 把事件鏈說得更清楚：
           14:30:07 寫入 stop_flag（ff9294e 的修復確實生效），14:30:22 bot 重啟。
           stop_flag 寫入到重啟只差 15 秒，300 秒的冷卻窗口形同虛設。
         </p>
         <p>
-          問題出在 ff9294e 的設計位置：冷卻邏輯寫在 menubar 的 `_decide_catch_up` 方法裡，
-          只能攔 menubar 自己觸發的 `_maybe_catch_up_start`。
+          問題出在 ff9294e 的設計位置：冷卻邏輯寫在 menubar 的 <code>_decide_catch_up</code> 方法裡，
+          只能攔 menubar 自己觸發的 <code>_maybe_catch_up_start</code>。
           其他 caller 呼叫 start_bot.sh，menubar 完全不知情。
         </p>
 
         <h2>六層排查：排到最後只剩一個謎</h2>
         <p>
           逐一確認六個可能的重啟來源。
-          macOS 重開機（`sysctl kern.boottime`：5/29 09:23 起連續 7 天未重啟）——排除。
-          menubar 的 `_maybe_catch_up_start`（PID 31202 從 10:38 連續活著 4 小時 39 分、
+          macOS 重開機（<code>sysctl kern.boottime</code>：5/29 09:23 起連續 7 天未重啟）——排除。
+          menubar 的 <code>_maybe_catch_up_start</code>（PID 31202 從 10:38 連續活著 4 小時 39 分、
           is_running=True 已擋住）——排除。
-          menubar timer 或 button callback（Read 程式碼確認 `_refresh` 只刷標題、
+          menubar timer 或 button callback（Read 程式碼確認 <code>_refresh</code> 只刷標題、
           start_bot button 需要手動點）——排除。
         </p>
         <p>
           launchd start.plist 14:30 觸發（runs=7 對得上 5/29 後每天一次 08:00 排程，
           log show 無 14:30 觸發紀錄）——排除。
-          其他 LaunchAgent 或 crontab（全機 grep `start_bot\|streamlit run` 只有三個
+          其他 LaunchAgent 或 crontab（全機 grep <code>start_bot\|streamlit run</code> 只有三個
           stockgridbot plist、crontab 只有 gemini log rotation）——排除。
           sleep/wake 事件（log show + pmset 在 14:30 附近無紀錄）——排除。
         </p>
@@ -86,14 +86,14 @@
 
         <h2>PPID=1 為什麼不能反推 caller</h2>
         <p>
-          直覺是讀 streamlit 的父行程 ID。但 `nohup ... &` 執行後，
+          直覺是讀 streamlit 的父行程 ID。但 <code>nohup ... &</code> 執行後，
           子行程會被 reparent 到 launchd（PID 1），PPID 就失去診斷意義。
           要找上游 caller，只能靠 log show 的時間序列：把 python3.14 spawn →
           launchctl list → bash 這條事件鏈，用時間戳對齊拼出來。
         </p>
         <p>
-          此外，zsh 對 log show 的 `--predicate` 引號處理有個坑：
-          直接帶單引號會報「too many arguments」，改用 `/usr/bin/log` 絕對路徑才繞過。
+          此外，zsh 對 log show 的 <code>--predicate</code> 引號處理有個坑：
+          直接帶單引號會報「too many arguments」，改用 <code>/usr/bin/log</code> 絕對路徑才繞過。
         </p>
 
         <h2>核心洞察：防呆的位置決定能擋多少 caller</h2>
@@ -105,7 +105,7 @@
         </p>
         <p>
           決策選項有四：繼續追兇身份、排查 Hammerspoon 等候選、
-          改用 `log stream` 下次 14:30 時即時監聽、或直接在 start_bot.sh 加兜底防線。
+          改用 <code>log stream</code> 下次 14:30 時即時監聽、或直接在 start_bot.sh 加兜底防線。
           選最後一項。追兇是診斷問題；加兜底是解決問題。兩者可以分開，
           但若先解決，診斷就從「緊急」降為「有空再查」。
         </p>
@@ -119,8 +119,8 @@
           未來若要追查 caller 身份，可以從這裡的時間戳交叉比對。
         </p>
         <p>
-          `COOLDOWN_SEC="${STOCKGRIDBOT_COOLDOWN_SEC:-300}"` 讓測試可以縮短等待時間。
-          `BOT_DIR="${BOT_DIR:-/path/to/bot}"` 讓測試把讀寫重導向 tmpdir，
+          <code>COOLDOWN_SEC="${STOCKGRIDBOT_COOLDOWN_SEC:-300}"</code> 讓測試可以縮短等待時間。
+          <code>BOT_DIR="${BOT_DIR:-/path/to/bot}"</code> 讓測試把讀寫重導向 tmpdir，
           而非真實的 bot 目錄，測試跑完不會污染 production 的 stop_flag 狀態。
         </p>
 

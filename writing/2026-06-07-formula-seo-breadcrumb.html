@@ -50,20 +50,20 @@
           上個 session 在 grep 掃描 15 篇公式頁的互連時崩潰，錯誤訊息是
           「The model's tool call could not be parsed (retry also failed)」。
           排除斷線和 quota 之後，根因落在 grep pattern：
-          `href="[a-z0-9-]+\.html"` 裡的 `\.` 是反斜線加點——
-          JSON 只認 `\\`、`\"`、`\/`、`\n`、`\t` 這些 escape，
-          `\.` 不在清單裡，序列化時直接報 parse error。
+          <code>href="[a-z0-9-]+\.html"</code> 裡的 <code>\.</code> 是反斜線加點——
+          JSON 只認 <code>\\</code>、<code>\"</code>、<code>\/</code>、<code>\n</code>、<code>\t</code> 這些 escape，
+          <code>\.</code> 不在清單裡，序列化時直接報 parse error。
         </p>
         <p>
-          正確寫法是 `[.]html`——在字元類裡，點號是字面量，不需要 escape，
+          正確寫法是 <code>[.]html</code>——在字元類裡，點號是字面量，不需要 escape，
           也就沒有序列化問題。這是除了 emoji 之外讓 tool-call 崩潰的第三種觸發源，
-          只要在 grep pattern 裡混入 `\.`，就會重現。
+          只要在 grep pattern 裡混入 <code>\.</code>，就會重現。
         </p>
 
         <h2>重掃的真相：0 互連是假象，4 個孤兒頁是真問題</h2>
         <p>
           用安全 pattern 重掃 15 篇，發現上次的「0 互連」結論完全是誤判——
-          當時的 pattern 沒有涵蓋 `/formulas/` 絕對路徑，
+          當時的 pattern 沒有涵蓋 <code>/formulas/</code> 絕對路徑，
           讓已存在的連結全部漏計。真實狀況是：15 篇已有稀疏互連，
           但有 4 個孤兒頁（連出 0）：bmi、ohms-law、ph-value、wave-speed。
         </p>
@@ -96,7 +96,7 @@
         <h2>冪等 Python 腳本代替 30 次手動 Edit</h2>
         <p>
           15 篇各補互連 + 各注入 BreadcrumbList，如果手動 Edit 是 30 次操作起跳，
-          出錯機率也等比上升。寫一支 `/tmp/bobo_seo_links.py`，不可變風格：
+          出錯機率也等比上升。寫一支 <code>/tmp/bobo_seo_links.py</code>，不可變風格：
           逐檔讀入 → 轉換 → 寫出，轉換函式有雙重冪等守衛：
           P0 只補 OUTBOUND 矩陣中「href 尚不存在」的連結；
           P1 只在「BreadcrumbList 字串不存在」時才注入。
@@ -126,7 +126,7 @@
 
         <h2>關鍵教訓</h2>
         <div class="takeaway">
-          <p><strong>`\.` 在 JSON 裡是非法 escape</strong>：grep pattern 放進 tool-call 時，反斜線加點會讓序列化 parse 失敗。安全替代方案是 `[.]`——在字元類裡點號是字面量，不需要 escape。</p>
+          <p><strong><code>\.</code> 在 JSON 裡是非法 escape</strong>：grep pattern 放進 tool-call 時，反斜線加點會讓序列化 parse 失敗。安全替代方案是 <code>[.]</code>——在字元類裡點號是字面量，不需要 escape。</p>
           <p><strong>宣告「0 互連」前先確認 pattern 對</strong>：兩次失誤（互連漏計、sitemap 漏算）都源於工具本身有缺陷，讓人誤信了錯誤的 snapshot。count 要嚴格，不能省。</p>
           <p><strong>冪等守衛是批次腳本的必要條件</strong>：「只補不存在的東西」讓腳本可以安全重跑，不需要在每次執行前手動確認狀態。</p>
           <p><strong>誠實的主題關聯優於硬造</strong>：4 個孤兒頁用「同為指標公式」串接，是真實關聯，不是 SEO 關鍵字塞入。虛假的主題連結是技術債，清理成本遠高於不做。</p>

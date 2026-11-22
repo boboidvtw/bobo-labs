@@ -62,24 +62,24 @@
 
         <h2>實驗設計：60 iters，四個 checkpoint</h2>
         <p>
-          base model 用 `gemma-4-E2B-it-4bit-clean`，資料集用既有的
-          `data/coding_contrastive_sft.jsonl`（12 筆，未異動），60 iters、`--save-every 15`
+          base model 用 <code>gemma-4-E2B-it-4bit-clean</code>，資料集用既有的
+          <code>data/coding_contrastive_sft.jsonl</code>（12 筆，未異動），60 iters、<code>--save-every 15</code>
           抓四個 checkpoint（15/30/45/60）。沒有照抄 v6 的 300 iters——那樣 12 筆資料會被
           抽到 ~200 次，接近硬背，val loss 的下降會假裝有進步。
         </p>
         <p>
           60 iters 的 val loss 從 2.840 降到 0.494，無 NaN、無崩潰，peak mem 6.351 GB。
           fuse 60-iter checkpoint，快測目標五題（03/12/13/14/16）各做一次 repeat：
-          題 13（`trace_qa`）出現單次 PASS，其餘四題仍 FAIL。
+          題 13（<code>trace_qa</code>）出現單次 PASS，其餘四題仍 FAIL。
           這達到了「Stage 3 全套守門」的進入門檻。
         </p>
 
         <h2>Stage 3 全套：逐題打平 v3-fused 基準</h2>
         <p>
-          `evals/run_eval.py --repeats 3` 對 16 題 × 3 repeats 完整跑過。
+          <code>evals/run_eval.py --repeats 3</code> 對 16 題 × 3 repeats 完整跑過。
           結果與 v3-fused 基準逐項完全相同：all-pass 7/16、pass@3 9/16、pass@1avg 8.0。
           Stage 2 在題 13 的那次單次 PASS 是僥倖——3 repeats 全部打回 0/3，
-          缺少的是 `apply_coupon` 關鍵字，不是隨機波動。
+          缺少的是 <code>apply_coupon</code> 關鍵字，不是隨機波動。
         </p>
         <p>
           目標五題（03/12/13/14/16）全部維持 0/3，即使 coding 資料拿到了 100% 的訓練預算、
@@ -88,15 +88,15 @@
 
         <h2>但有一件事確實修好了</h2>
         <p>
-          v6 有一個 collateral damage：tool-calling 的回歸測試題 02（`fix_mutable_default`）
-          和 04（`fix_exception`）雙雙從 3/3 崩到 0/3。這次獨立 adapter 的 Stage 3 裡，
+          v6 有一個 collateral damage：tool-calling 的回歸測試題 02（<code>fix_mutable_default</code>）
+          和 04（<code>fix_exception</code>）雙雙從 3/3 崩到 0/3。這次獨立 adapter 的 Stage 3 裡，
           這兩題維持 3/3 無退化。
         </p>
         <p>
           這確認了「域混合干擾」的推測：把差異很大的新資料混進既有資料域，
           會稀釋模型對既有任務的能力，而且這種稀釋不是小的波動，是系統性退步。
           獨立 adapter 架構本身是對的——只是 12 筆的量，即使設計對齊了
-          aider 的真實 `--show-prompts` 輸出格式，仍然不夠。
+          aider 的真實 <code>--show-prompts</code> 輸出格式，仍然不夠。
         </p>
 
         <h2>這不是「contrastive 設計不夠好」</h2>

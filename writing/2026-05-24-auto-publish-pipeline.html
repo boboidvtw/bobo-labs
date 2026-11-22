@@ -101,9 +101,9 @@
         </p>
         <p>
           存在 repo 外要多管一個路徑，跨層移動容易漂移。
-          存在 repo 內但加進 `.gitignore`，「不進版控」跟「不在 repo 路徑下」的區別就出來了：
+          存在 repo 內但加進 <code>.gitignore</code>，「不進版控」跟「不在 repo 路徑下」的區別就出來了：
           前者是本地草稿，後者連工作環境都不在了。
-          `git status` 驗一下，確認 HTML 草稿確實不出現在 tracked files 裡。
+          <code>git status</code> 驗一下，確認 HTML 草稿確實不出現在 tracked files 裡。
         </p>
         <p>
           這裡有一個設計原則在：禁止的通常是對外效果（push、公開頁面變更），
@@ -113,9 +113,9 @@
 
         <h2>Bash 的 cwd 不跨 call 持久</h2>
         <p>
-          實作過程踩了一個讓流程靜默失敗的坑：先 `cd repo && git ...` 成功，
+          實作過程踩了一個讓流程靜默失敗的坑：先 <code>cd repo && git ...</code> 成功，
           但下一個步驟在另一個 Bash call 裡，cwd 已經重置了，
-          後面的 `git rev-parse HEAD` 跑在不對的資料夾裡，變數展開成空字串。
+          後面的 <code>git rev-parse HEAD</code> 跑在不對的資料夾裡，變數展開成空字串。
         </p>
         <p>
           根因很直接：每個 Bash call 都是 fresh shell，shell state 不持久。

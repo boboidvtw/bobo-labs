@@ -49,16 +49,16 @@
         <h2>四層全失，但都不是不可復原的損失</h2>
         <p>
           查 repo 準備新測軸，發現生產路徑一路失敗。損壞清單：
-          `.venv` 的 Python symlink 斷鏈、`models/` 遺失、`gemma4_e4b_agent_fused` 遺失、
-          `gguf_export/` 整目錄消失。adapter 本身完好，SHA <code>71bcf3ec…</code> 與記錄相符。
+          <code>.venv</code> 的 Python symlink 斷鏈、<code>models/</code> 遺失、<code>gemma4_e4b_agent_fused</code> 遺失、
+          <code>gguf_export/</code> 整目錄消失。adapter 本身完好，SHA <code>71bcf3ec…</code> 與記錄相符。
         </p>
         <p>
-          全部可復原：`uv python install 3.11` 修 venv、
-          重抓 `mlx-community/gemma-4-e4b-it-4bit`（rev <code>475b9088…</code>）再 prepare、
-          `mlx_lm.fuse` 重新合成、llama.cpp 整個 GGUF 鏈重跑。
-          最難診斷的是 venv：`ls` 看得到目錄下所有 site-packages，
+          全部可復原：<code>uv python install 3.11</code> 修 venv、
+          重抓 <code>mlx-community/gemma-4-e4b-it-4bit</code>（rev <code>475b9088…</code>）再 prepare、
+          <code>mlx_lm.fuse</code> 重新合成、llama.cpp 整個 GGUF 鏈重跑。
+          最難診斷的是 venv：<code>ls</code> 看得到目錄下所有 site-packages，
           但執行任何指令就回 <code>no such file or directory</code>——
-          指著一個 `ls` 看得到的路徑。
+          指著一個 <code>ls</code> 看得到的路徑。
         </p>
         <p>
           原因是 uv 管理的 CPython 3.11 直譯器在某次清理中被移除，
@@ -107,13 +107,13 @@
         <h2>E 軸首跑 9/9，然後否決了打算提的修法</h2>
         <p>
           既有四軸（A/B/C/D）沒有一軸測任務拆解能力。
-          新建 `evals/zhtw/` 下的 E 軸：18 項 pytest、`decompose.py` 評分器、
-          `run_zhtw.py --axis e` 執行入口。
+          新建 <code>evals/zhtw/</code> 下的 E 軸：18 項 pytest、<code>decompose.py</code> 評分器、
+          <code>run_zhtw.py --axis e</code> 執行入口。
         </p>
         <p>
-          評分設計有一個關鍵分層：<strong>計分</strong>的是 `forbidden_stages`——
+          評分設計有一個關鍵分層：<strong>計分</strong>的是 <code>forbidden_stages</code>——
           路由到會讓目標不可能達成的 stage；
-          <strong>只觀測不計分</strong>的是 `stage_is_expected`——
+          <strong>只觀測不計分</strong>的是 <code>stage_is_expected</code>——
           模型是否選了「最理想的」stage。
           這個分層在首跑裡救了一次判斷。
         </p>
@@ -123,9 +123,9 @@
           兩案落在 locate stage。
         </p>
         <p>
-          原本判斷：code stage 應該補 `list_dir` 和 `read_file`，對稱 graph 的 goal-level fallback，
+          原本判斷：code stage 應該補 <code>list_dir</code> 和 <code>read_file</code>，對稱 graph 的 goal-level fallback，
           讓更多案例路由到 code。
-          但查了 `STAGE_TOOLS["code"]`：只有 `write_code`，沒有 `list_dir` 也沒有 `read_file`。
+          但查了 <code>STAGE_TOOLS["code"]</code>：只有 <code>write_code</code>，沒有 <code>list_dir</code> 也沒有 <code>read_file</code>。
           把「定位 main.py 中的錯誤點」路由到 code stage，
           模型拿不到任何讀取工具，連檔案都打不開。
           落在 locate 是正確排序，不是缺陷。
@@ -148,10 +148,10 @@
         <h2>關鍵教訓</h2>
         <div class="takeaway">
           <p><strong>比對腳本要在零案例時大聲失敗</strong>：空集合的差集是空集合——「沒有翻轉」和「沒有量到任何東西」在輸出上看起來一樣。加 assert 確認案例數量，讓零量測變成硬錯誤。</p>
-          <p><strong>`ls` 看得到 ≠ 可以執行</strong>：uv 管理的 Python symlink 斷鏈後，site-packages 完整、目錄存在，只有直譯器不見。症狀指向「repo 壞掉」，根因是「直譯器被清掉」，兩件事要分開排查。</p>
+          <p><strong><code>ls</code> 看得到 ≠ 可以執行</strong>：uv 管理的 Python symlink 斷鏈後，site-packages 完整、目錄存在，只有直譯器不見。症狀指向「repo 壞掉」，根因是「直譯器被清掉」，兩件事要分開排查。</p>
           <p><strong>高峰值工作不能重疊</strong>：MLX server 3.9 GB + 解量化 14 GB 超過 GPU 上限。並行「看起來獨立」不等於「記憶體獨立」。高峰值工作前先確認 GPU 空出來。</p>
           <p><strong>評分設計決定你能不能信任結果</strong>：把「理想 stage」放進觀測層而非計分層，才能分清「正確但非最優路由」和「錯誤路由」。計分的是不可能達成目標的 stage，不是最理想的 stage。</p>
-          <p><strong>先用評測否決修法，再決定要不要修</strong>：補 code stage 工具看起來合理，但查 `STAGE_TOOLS` 後發現 code 沒有讀取工具，路由過去反而讓模型更失能。評測先行，比直覺先行省工。</p>
+          <p><strong>先用評測否決修法，再決定要不要修</strong>：補 code stage 工具看起來合理，但查 <code>STAGE_TOOLS</code> 後發現 code 沒有讀取工具，路由過去反而讓模型更失能。評測先行，比直覺先行省工。</p>
         </div>
 
         <div class="article-foot">

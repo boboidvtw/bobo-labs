@@ -49,12 +49,12 @@
         <h2>mlx_lm.fuse 的輸出：不只 embedding 是量化格式，全模型都是</h2>
         <p>
           開始轉 GGUF 之前以為只有 embedding 層沒被 LoRA 觸碰、維持 4-bit 仿射量化格式，
-          所以寫了只解 2 組張量的腳本。結果卡在 `mlp.down_proj.biases`，才發現問題規模是
-          全模型層級：`mlx_lm.fuse` 對 4-bit base 的輸出，橫跨所有 attention／MLP／per-layer
+          所以寫了只解 2 組張量的腳本。結果卡在 <code>mlp.down_proj.biases</code>，才發現問題規模是
+          全模型層級：<code>mlx_lm.fuse</code> 對 4-bit base 的輸出，橫跨所有 attention／MLP／per-layer
           投影都是 weight + scales + biases 三件套，共 345 組張量。
         </p>
         <p>
-          新增 `gguf_prepare_dequantize.py` 通用掃描所有符合三件套的張量並一次解量化。
+          新增 <code>gguf_prepare_dequantize.py</code> 通用掃描所有符合三件套的張量並一次解量化。
           解量化後模型從 3.9GB 膨脹到 ~14GB（4-bit→bf16）。
         </p>
 
@@ -62,7 +62,7 @@
         <p>
           解量化過程中一度只剩 12–13GB 可用磁碟，不夠放 14GB 的 bf16 中繼檔。
           請使用者決定：選擇清掉 ~13GB 已被 E4B 遷移徹底取代的 E2B 時代產物
-          （lora_v2-v6、fused v3、coding_v1 等，以及 `models/gemma-4-E2B-it-4bit-clean` base）。
+          （lora_v2-v6、fused v3、coding_v1 等，以及 <code>models/gemma-4-E2B-it-4bit-clean</code> base）。
           這些在 journal / lessons.jsonl 都已記錄結論，權重只是佐證，清掉沒有損失。
           騰到 36GiB 之後繼續。
         </p>
@@ -70,29 +70,29 @@
         <h2>轉檔路徑：直接 q8_0，跳過中繼 f16</h2>
         <p>
           目標是 Q4_K_M，中繼沒必要先產出更大的 f16 檔：
-          `convert_hf_to_gguf.py --outtype q8_0` 一步到位（7.9GB），
-          再用 `llama-quantize --allow-requantize` 降到 Q4_K_M（4.9GB）。
-          `--allow-requantize` 這個旗標要顯式指定，預設拒絕從已量化格式再量化。
+          <code>convert_hf_to_gguf.py --outtype q8_0</code> 一步到位（7.9GB），
+          再用 <code>llama-quantize --allow-requantize</code> 降到 Q4_K_M（4.9GB）。
+          <code>--allow-requantize</code> 這個旗標要顯式指定，預設拒絕從已量化格式再量化。
         </p>
         <p>
-          轉檔踩到兩個坑：`transformers==4.57.6` 的 tokenizer 載入 bug——
-          `tokenizer_config.json` 的 `extra_special_tokens` 是 list 時
-          `AutoTokenizer.from_pretrained` 會炸 `'list' object has no attribute 'keys'`，
-          只在暫存副本 patch 成 `{}` 就過了；llama.cpp 的 convert 腳本已重構，
-          架構轉換邏輯搬到 `conversion/` 子套件，**務必用 clone 下來的 repo 自帶 gguf-py**，
-          不要設 `NO_LOCAL_GGUF=1`——pip 版 `gguf==0.19.0` 的 `MODEL_ARCH` enum 跟不上
-          最新的 `GEMMA4_ASSISTANT` 等值，一度誤判成架構不支援。
+          轉檔踩到兩個坑：<code>transformers==4.57.6</code> 的 tokenizer 載入 bug——
+          <code>tokenizer_config.json</code> 的 <code>extra_special_tokens</code> 是 list 時
+          <code>AutoTokenizer.from_pretrained</code> 會炸 <code>'list' object has no attribute 'keys'</code>，
+          只在暫存副本 patch 成 <code>{}</code> 就過了；llama.cpp 的 convert 腳本已重構，
+          架構轉換邏輯搬到 <code>conversion/</code> 子套件，**務必用 clone 下來的 repo 自帶 gguf-py**，
+          不要設 <code>NO_LOCAL_GGUF=1</code>——pip 版 <code>gguf==0.19.0</code> 的 <code>MODEL_ARCH</code> enum 跟不上
+          最新的 <code>GEMMA4_ASSISTANT</code> 等值，一度誤判成架構不支援。
         </p>
         <p>
-          轉檔用了獨立 venv（`llama.cpp/.venv-convert`），因為 requirements 釘死
-          `numpy~=1.26.4` / `transformers==4.57.6`，會跟專案主 .venv（numpy 2.4.6、mlx 生態）衝突。
+          轉檔用了獨立 venv（<code>llama.cpp/.venv-convert</code>），因為 requirements 釘死
+          <code>numpy~=1.26.4</code> / <code>transformers==4.57.6</code>，會跟專案主 .venv（numpy 2.4.6、mlx 生態）衝突。
         </p>
 
         <h2>Ollama 比 LM Studio 更能處理 Gemma4 原生 tool template</h2>
         <p>
-          用同一顆 Q4_K_M GGUF 分別測兩條路徑——裸 `llama-server --jinja`（port 8091）
-          和 `ollama create` 匯入後 serve 於 11434——對 `verify_server_toolcalling.py`（POS/NEG/ROUNDTRIP）：
-          兩邊各自 3/3，跟現有 `mlx_lm.server` 路徑打平。
+          用同一顆 Q4_K_M GGUF 分別測兩條路徑——裸 <code>llama-server --jinja</code>（port 8091）
+          和 <code>ollama create</code> 匯入後 serve 於 11434——對 <code>verify_server_toolcalling.py</code>（POS/NEG/ROUNDTRIP）：
+          兩邊各自 3/3，跟現有 <code>mlx_lm.server</code> 路徑打平。
         </p>
         <p>
           原本擔心 Ollama 像 LM Studio 一樣被 minja（最小化 Jinja2）卡住——LM Studio 的 minja
@@ -106,47 +106,47 @@
 
         <h2>plist 路徑錯字：E2B→E4B 只是模型遷移，repo 名從沒變</h2>
         <p>
-          把 mlx_lm.server 裝進 launchd 常駐（`com.gemma4e4b.server.plist`）時，
-          抓到 plist 裡的 `ProgramArguments`、`WorkingDirectory`、`StandardOutPath`、
-          `StandardErrorPath` 全都誤植成 `gemma4-e4b-agent-kit`。
-          實際 repo 目錄是 `gemma4-e2b-agent-kit`——E2B→E4B 只是模型遷移，
-          repo 目錄名從沒改過。修正後才 `launchctl load`，常駐後對 8080 server
-          重驗 `verify_server_toolcalling.py` 仍 3/3。
+          把 mlx_lm.server 裝進 launchd 常駐（<code>com.gemma4e4b.server.plist</code>）時，
+          抓到 plist 裡的 <code>ProgramArguments</code>、<code>WorkingDirectory</code>、<code>StandardOutPath</code>、
+          <code>StandardErrorPath</code> 全都誤植成 <code>gemma4-e4b-agent-kit</code>。
+          實際 repo 目錄是 <code>gemma4-e2b-agent-kit</code>——E2B→E4B 只是模型遷移，
+          repo 目錄名從沒改過。修正後才 <code>launchctl load</code>，常駐後對 8080 server
+          重驗 <code>verify_server_toolcalling.py</code> 仍 3/3。
         </p>
 
         <h2>雙模型路由：tool-calling 側遇到 write_code 委派給 coding_v2</h2>
         <p>
-          在 `gemma4_e4b_agent_runtime.py` 新增 `write_code` 工具，讓外層 tool-calling 的
-          `gemma4_e4b_agent_fused`（8080，Router/JIT 迴圈）遇到程式碼撰寫／修改子任務時，
-          透過純文字補全（非 tool-calling）委派給專門的 `gemma4_e4b_agent_fused_coding_v2`
+          在 <code>gemma4_e4b_agent_runtime.py</code> 新增 <code>write_code</code> 工具，讓外層 tool-calling 的
+          <code>gemma4_e4b_agent_fused</code>（8080，Router/JIT 迴圈）遇到程式碼撰寫／修改子任務時，
+          透過純文字補全（非 tool-calling）委派給專門的 <code>gemma4_e4b_agent_fused_coding_v2</code>
           （8081，按需啟動、刻意不裝 launchd）。
         </p>
         <p>
-          委派請求重用 `coding_contrastive_v2_to_kit.py` 訓練時的 `SYSTEM_PROMPT` /
-          `SYSTEM_REMINDER`——train/serve 一致性原則，這份 repo 反覆驗證過的做法。
-          新增 `verify_coding_delegation.py`：SELECT（外層在 JIT code-stage 選對 write_code）
+          委派請求重用 <code>coding_contrastive_v2_to_kit.py</code> 訓練時的 <code>SYSTEM_PROMPT</code> /
+          <code>SYSTEM_REMINDER</code>——train/serve 一致性原則，這份 repo 反覆驗證過的做法。
+          新增 <code>verify_coding_delegation.py</code>：SELECT（外層在 JIT code-stage 選對 write_code）
           和 EXECUTE（委派呼叫拿回可解析且正確的程式碼）各 2/2 通過，
-          實測 `clamp(x, lo, hi)` 請求正確拿回完整檔案。
+          實測 <code>clamp(x, lo, hi)</code> 請求正確拿回完整檔案。
         </p>
         <p>
-          誠實記錄一個不納入守門的觀察：完整 `initialize→plan→act→assess` 迴圈不保證
-          自然落到 `code` stage，因為 stage 分類器是簡單關鍵字啟發式，模型自我生成的
+          誠實記錄一個不納入守門的觀察：完整 <code>initialize→plan→act→assess</code> 迴圈不保證
+          自然落到 <code>code</code> stage，因為 stage 分類器是簡單關鍵字啟發式，模型自我生成的
           todo-list 措辭有變異。這是已知限制，不是守門需要覆蓋的範圍。
         </p>
 
         <h2>12_write_tests_stack 機率性退步——深入診斷後決定不修</h2>
         <p>
           12 從 E4B 基準 3/3 掉到 coding_v2 的 0/3，看起來像退步。讀了 3 次 repeat 的
-          `test_stack.py`：根因是模型自己多寫的第 6 個測試函式（只要求 5 個）裡一個孤立的
-          斷言手誤——`push(1); push(2)` 後正確斷言 `peek() == 2`（當下仍理解 LIFO），
-          緊接著卻寫 `assert popped == 1` 而非 `2`；同檔案第一個測試函式對相同模式
+          <code>test_stack.py</code>：根因是模型自己多寫的第 6 個測試函式（只要求 5 個）裡一個孤立的
+          斷言手誤——<code>push(1); push(2)</code> 後正確斷言 <code>peek() == 2</code>（當下仍理解 LIFO），
+          緊接著卻寫 <code>assert popped == 1</code> 而非 <code>2</code>；同檔案第一個測試函式對相同模式
           完全正確，排除系統性 LIFO 誤解。
         </p>
         <p>
-          攤開 repo 歷史模式後，使用者同意不修：`system_prompt_prefix`／
-          `evals/aider_wholefile_wrapper.py`／v5e transform 廣度／v6 coding-domain 合併，
+          攤開 repo 歷史模式後，使用者同意不修：<code>system_prompt_prefix</code>／
+          <code>evals/aider_wholefile_wrapper.py</code>／v5e transform 廣度／v6 coding-domain 合併，
           過去每一次針對單一失敗的窄修補都讓全套 16 題守門退步，100% 反效果命中率。
-          結論記錄進 `lessons.jsonl`（verdict `OPEN`），
+          結論記錄進 <code>lessons.jsonl</code>（verdict <code>OPEN</code>），
           若之後重啟必須跑滿 16 題 × 3 repeats 全套守門。
         </p>
 

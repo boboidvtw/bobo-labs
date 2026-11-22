@@ -102,7 +102,7 @@
           前端乾等將近 3 分鐘，這不可用。
         </p>
         <p>
-          改法是引入 <strong>SemanticJobManager</strong>：POST 立即回 `{status: "running", started: ...}`，
+          改法是引入 <strong>SemanticJobManager</strong>：POST 立即回 <code>{status: "running", started: ...}</code>，
           背景 thread 執行語意分析，前端每 3 秒 GET /semantic/status 輪詢。
           Job manager 有 <strong>single-flight</strong> 設計——同一個專案如果已在跑，
           重複 POST 不會觸發第二次 LLM 呼叫，直接回 running 狀態。

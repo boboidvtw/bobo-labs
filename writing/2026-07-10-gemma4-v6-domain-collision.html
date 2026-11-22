@@ -50,14 +50,14 @@
         <h2>這個實驗想解決什麼</h2>
         <p>
           Gemma 4 E2B 的 LoRA 訓練到 v5d 時，tool-calling 能力已經相當穩定：
-          `verify_restraint` 8/8、`verify_refusal_generalization` 4/5、
-          `verify_contrastive_grounding` 4/5。但 coding eval 裡有三類落差一直沒有改善：
+          <code>verify_restraint</code> 8/8、<code>verify_refusal_generalization</code> 4/5、
+          <code>verify_contrastive_grounding</code> 4/5。但 coding eval 裡有三類落差一直沒有改善：
           規格精確度（03/14/16 題）、API 幻覺（12 題）、複合提問（13 題）。
           這三類是 gemma4 當 aider 程式碼編輯後端時的問題，跟 tool-calling 完全不同的能力。
         </p>
         <p>
           v6 的目標：設計 12 筆 coding-domain contrastive minimal pairs，
-          用 `aider --show-prompts` 逐字擷取 eval harness 實際送給模型的系統提示，
+          用 <code>aider --show-prompts</code> 逐字擷取 eval harness 實際送給模型的系統提示，
           確保訓練格式與 serving 時完全一致，再併入 v5d 的 2670 筆資料一起訓練。
         </p>
 
@@ -68,26 +68,26 @@
         </p>
         <p>
           coding eval 結果：all-pass 7→6、pass@3 9→8、pass@1avg 8.0→6.67。
-          不只目標四題維持 0/3，連原本 3/3 全過的 `02_fix_mutable_default` 和
-          `04_fix_exception` 也一起崩到 0/3。
-          tool-calling 三支回歸腳本同步退化：`verify_restraint` 8/8→6/8
-          （出現退化式重複 token）、`verify_refusal_generalization` 4/5→3/5、
-          `verify_contrastive_grounding` 4/5→3/5（v5d 剛修好的
-          `send_email` 案例重新幻覺 `get_weather`）。
+          不只目標四題維持 0/3，連原本 3/3 全過的 <code>02_fix_mutable_default</code> 和
+          <code>04_fix_exception</code> 也一起崩到 0/3。
+          tool-calling 三支回歸腳本同步退化：<code>verify_restraint</code> 8/8→6/8
+          （出現退化式重複 token）、<code>verify_refusal_generalization</code> 4/5→3/5、
+          <code>verify_contrastive_grounding</code> 4/5→3/5（v5d 剛修好的
+          <code>send_email</code> 案例重新幻覺 <code>get_weather</code>）。
         </p>
         <p>
           雙重退化，且完全沒達成原始目標。直接 REJECTED。
         </p>
         <p>
           推測根因：coding-domain 資料（aider whole-file 對話格式）跟
-          tool-calling SFT 資料（`{tools, messages}` 格式）在對話結構和系統提示上差異極大。
+          tool-calling SFT 資料（<code>{tools, messages}</code> 格式）在對話結構和系統提示上差異極大。
           2.3B 模型訓練預算有限，混進差異很大的新資料域稀釋了既有能力。
         </p>
 
         <h2>v6 還有一個沒注意到的隱藏變因</h2>
         <p>
-          事後才拆解出來的問題：`gemma4_e2b_mlx_train.py` 用
-          `iters × batch × grad_accum` 隨機抽樣。v6 跑 300 iters、grad_accum=8，
+          事後才拆解出來的問題：<code>gemma4_e2b_mlx_train.py</code> 用
+          <code>iters × batch × grad_accum</code> 隨機抽樣。v6 跑 300 iters、grad_accum=8，
           等於 2400 次抽樣，在 2682 筆資料裡，12 筆 coding 資料平均只被看到 0.9 次。
           「域混合互相干擾」和「coding 資料根本沒被訓練到」在 v6 的設計裡是兩個
           無法區分的解釋。
@@ -101,21 +101,21 @@
         <p>
           兩天後（2026-07-11）跑了這個驗證實驗。設計上特別處理了 v6 的 iters 選擇：
           60 iters 而非照抄 v6 的 300 iters（300 iters 下 12 筆資料會被抽樣 ~200 次，
-          形同硬背而非泛化），加了 `--save-every 15` 記錄四個 checkpoint。
-          base model 直接用 `gemma-4-E2B-it-4bit-clean`，不混入任何 tool-calling 資料。
+          形同硬背而非泛化），加了 <code>--save-every 15</code> 記錄四個 checkpoint。
+          base model 直接用 <code>gemma-4-E2B-it-4bit-clean</code>，不混入任何 tool-calling 資料。
         </p>
         <p>
           訓練結果：val loss 2.840→0.494，無 NaN，peak mem 6.351GB。
-          Stage 2 快測時 `13_trace_qa` 出現一次單次 PASS（v6 這題原本 0/3），
+          Stage 2 快測時 <code>13_trace_qa</code> 出現一次單次 PASS（v6 這題原本 0/3），
           達到進全套守門的條件。
         </p>
         <p>
           全套守門：coding eval 數字與 v3-fused 基準**逐項打平**——all-pass 7/16、
-          pass@3 9/16、pass@1avg 8.0，完全相同。`13_trace_qa` 在三次 repeat 下打回 0/3
+          pass@3 9/16、pass@1avg 8.0，完全相同。<code>13_trace_qa</code> 在三次 repeat 下打回 0/3
           （Stage 2 的單次 PASS 是僥倖）。目標五題（03/12/13/14/16）全部 0/3，零改善。
         </p>
         <p>
-          但有一件事確認了：v6 裡 `02_fix_mutable_default` 和 `04_fix_exception`
+          但有一件事確認了：v6 裡 <code>02_fix_mutable_default</code> 和 <code>04_fix_exception</code>
           崩掉的 collateral damage，這次完全沒有重演，兩題維持 3/3。
           域混合確實是 v6 退步的真正原因，獨立 adapter 成功隔離了。
         </p>
@@ -145,24 +145,24 @@
           除了訓練實驗，v6 這天還完成了兩個基礎設施更新，值得記一筆。
         </p>
         <p>
-          第一，`evals/reflections/` 結構化 lessons store（`lessons.jsonl` + `add_lesson.py`）。
+          第一，<code>evals/reflections/</code> 結構化 lessons store（<code>lessons.jsonl</code> + <code>add_lesson.py</code>）。
           原本「session 內重試、結束即丟棄」的失敗診斷升級成可持久化、可查詢的記錄。
-          碰到的坑：`.gitignore` 的 `*.jsonl` 全域規則（給訓練資料用）會誤擋這個
-          要版本化的 store，加了 `!evals/reflections/*.jsonl` 否定規則才解決。
+          碰到的坑：<code>.gitignore</code> 的 <code>*.jsonl</code> 全域規則（給訓練資料用）會誤擋這個
+          要版本化的 store，加了 <code>!evals/reflections/*.jsonl</code> 否定規則才解決。
         </p>
         <p>
-          第二，MLX server 打包成 `start_mlx_server.sh` + `com.gemma4e2b.server.plist`，
-          手動測試過 `verify_server_toolcalling.py` 3/3。
+          第二，MLX server 打包成 <code>start_mlx_server.sh</code> + <code>com.gemma4e2b.server.plist</code>，
+          手動測試過 <code>verify_server_toolcalling.py</code> 3/3。
           刻意不自動安裝成 launchd 常駐服務——登入就自動啟動、峰值佔用 2.93GB
           的背景程序，這個決定留給使用者，不在 README 裡預設推薦。
         </p>
 
         <h2>關鍵教訓</h2>
         <div class="takeaway">
-          <p><strong>對話格式差異大的資料域，不要混進同一個訓練 run</strong>：whole-file aider 格式跟 `{tools, messages}` tool-calling 格式在 2.3B 模型上是衝突的，混進去的 collateral damage 會超過改善幅度。</p>
+          <p><strong>對話格式差異大的資料域，不要混進同一個訓練 run</strong>：whole-file aider 格式跟 <code>{tools, messages}</code> tool-calling 格式在 2.3B 模型上是衝突的，混進去的 collateral damage 會超過改善幅度。</p>
           <p><strong>分析 REJECTED 前要確認假設可區分</strong>：v6 的設計讓「域衝突」和「資料根本沒被看到（0.9 次）」變成兩個無法區分的解釋。設計驗證實驗要拆開這兩個變因才算數。</p>
           <p><strong>獨立 adapter 不是萬靈丹，只是隔離噪音</strong>：解掉 collateral damage 之後，問題才真正暴露——12 筆資料不夠教會 2.3B 模型泛化這三類落差。隔離只是讓訊號更乾淨，不是解決資料量。</p>
-          <p><strong>`.gitignore` 的全域萬用規則要寫例外</strong>：`*.jsonl` 適合忽略訓練資料，卻會誤傷要版本化的 JSONL（如 lessons store）。不同性質的同副檔名檔案，要用否定規則精確排除。</p>
+          <p><strong><code>.gitignore</code> 的全域萬用規則要寫例外</strong>：<code>*.jsonl</code> 適合忽略訓練資料，卻會誤傷要版本化的 JSONL（如 lessons store）。不同性質的同副檔名檔案，要用否定規則精確排除。</p>
           <p><strong>全套守門，不是局部測試</strong>：Stage 2 快測出現的單次 PASS 是僥倖。只要沒跑全套三次 repeat，結果不算數。這條規則在 v5 系列就已經確認，這次又驗證了一次。</p>
         </div>
 

@@ -49,28 +49,28 @@
         <h2>四項待辦，一天清完</h2>
         <p>
           交接檔 Next Session Goals 有四條：content.js 逼近 800 行上限、e2e 座標寫死在
-          `1710,40`（換螢幕就壞）、非 16:9 影片從未實測、側欄並排拉寬疑似未修。
-          解法各自直白：把 `content.js` 的品質政策抽到 `src/quality-policy.js`、
-          視窗適配邏輯抽到 `src/window-fit.js`，662 → 581 行；
-          e2e 改呼叫 `chrome.system.display` 在執行期查詢座標；
+          <code>1710,40</code>（換螢幕就壞）、非 16:9 影片從未實測、側欄並排拉寬疑似未修。
+          解法各自直白：把 <code>content.js</code> 的品質政策抽到 <code>src/quality-policy.js</code>、
+          視窗適配邏輯抽到 <code>src/window-fit.js</code>，662 → 581 行；
+          e2e 改呼叫 <code>chrome.system.display</code> 在執行期查詢座標；
           直式影片實測——然後踩坑；側欄則發現 v2.3.0 早已修掉，補上守門測試即可。
         </p>
         <p>
-          commits `8b85042` → `c08d5c8`，CI 全綠（單元 74 → 98、e2e 內建 40/40、4K 46/46）。
-          上架後 `2026-08-08` 確認線上版本 = 3.0.1、舊網址殘留 0 次，收尾 commit `8836039`。
+          commits <code>8b85042</code> → <code>c08d5c8</code>，CI 全綠（單元 74 → 98、e2e 內建 40/40、4K 46/46）。
+          上架後 <code>2026-08-08</code> 確認線上版本 = 3.0.1、舊網址殘留 0 次，收尾 commit <code>8836039</code>。
         </p>
 
         <h2>兩條「長期綠燈、但什麼都沒守到」的測試</h2>
         <p>
-          第一條：「彈出視窗開在來源螢幕」。Brave 的 `--window-position` 旗標會覆蓋
-          <em>每一個</em> `chrome.windows.create` 的 `left` / `top` 座標，且不報任何錯。
+          第一條：「彈出視窗開在來源螢幕」。Brave 的 <code>--window-position</code> 旗標會覆蓋
+          <em>每一個</em> <code>chrome.windows.create</code> 的 <code>left</code> / <code>top</code> 座標，且不報任何錯。
           舊 harness 把主視窗與彈出視窗都用同一個旗標座標啟動，
           於是「彈出視窗開在來源螢幕」變成必然成立——
-          因為驗的是命令列旗標，不是產品程式碼裡 `chrome.windows.create` 的邏輯。
+          因為驗的是命令列旗標，不是產品程式碼裡 <code>chrome.windows.create</code> 的邏輯。
         </p>
         <p>
           第二條：「彈出視窗長寬比符合影片」。全新 profile 預設擋自動播放，
-          導致 `videoWidth = 0`；影片寬度為零時程式退回 16:9 基準，
+          導致 <code>videoWidth = 0</code>；影片寬度為零時程式退回 16:9 基準，
           於是「內容區符合影片長寬比」變成 16:9 比 16:9——永遠成立。
         </p>
         <p>
@@ -100,7 +100,7 @@
         <h2>Chrome Web Store：命中次數跌是假進度</h2>
         <p>
           v3.0.0 上架後，說明文案的 OPEN SOURCE 段落一直是舊網址——
-          那是在送審<em>之後</em>才更新 `store-assets/store-listing.md` 的，
+          那是在送審<em>之後</em>才更新 <code>store-assets/store-listing.md</code> 的，
           Dashboard 沒回填，線上從未改過。
           掃 repo 看到的是正確版本，線上是舊的，兩個副本從 v3.0.0 起就不一致。
         </p>

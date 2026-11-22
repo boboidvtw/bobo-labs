@@ -79,14 +79,10 @@
         <p>
           打開 SKILL.md 找 TODO:，看到的是這個：
         </p>
-        <p>
-          ```perl<br>
-          TODO: {<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;local $TODO = 'Caching not yet implemented';<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;...<br>
-          }<br>
-          ```
-        </p>
+        <pre><code class="language-perl">TODO: {
+    local $TODO = 'Caching not yet implemented';
+    ...
+}</code></pre>
         <p>
           這是 Perl 的 Test::More 模組裡，宣告「這段測試預期會失敗，因為功能還沒實作」的合法語法。
           它在 markdown 的 fenced code block 內，是教學範例，不是該被修掉的待辦標記。
@@ -94,9 +90,7 @@
         <p>
           但檢查規則寫的是這樣：
         </p>
-        <p>
-          found = [s for s in args if s in ctx.body]
-        </p>
+        <pre><code class="language-python">found = [s for s in args if s in ctx.body]</code></pre>
         <p>
           一個粗暴的 Python in 子串檢查，把整篇 markdown 當一坨字串掃。
           它根本不知道「這個 TODO: 在 code block 內」這件事。
@@ -106,12 +100,10 @@
         <p>
           這不是 perl-testing 的問題，是規則太天真。修法是加一個前置處理：
         </p>
-        <p>
-          def _strip_code_regions(text):<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;out = re.sub(r"```.*?```", "", text, flags=re.DOTALL)<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;out = re.sub(r"`[^`\n]*`", "", out)<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;return out
-        </p>
+        <pre><code class="language-python">def _strip_code_regions(text):
+    out = re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+    out = re.sub(r"`[^`\n]*`", "", out)
+    return out</code></pre>
         <p>
           absent 規則只對「散文區塊」做檢查，code block（fenced 跟 inline）內的 TODO/FIXME 一律放行。
           這個小修改影響到所有 skill 的 default suite，但邏輯上是修「假警報」、不是放鬆規則。

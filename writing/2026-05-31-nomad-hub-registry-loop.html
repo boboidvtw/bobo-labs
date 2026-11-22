@@ -60,18 +60,18 @@
 
         <h2>改 parser 適配 fixture 是一個陷阱</h2>
         <p>
-          為了配合「無 emoji fixture」，我把 parser 改成 `(?:🟢\s+)?Active`（emoji AND 英文）。
+          為了配合「無 emoji fixture」，我把 parser 改成 <code>(?:🟢\s+)?Active</code>（emoji AND 英文）。
           fixture 全綠，但真實的 ZH 源檔失效了。
         </p>
         <p>
-          真實 PROJECT_MAP-ZH.md 的 header 是 `### 🟢 主動開發中`（中文），
+          真實 PROJECT_MAP-ZH.md 的 header 是 <code>### 🟢 主動開發中</code>（中文），
           新正則只認 emoji OR "Active"，中文完全 miss——ZH active 從 11 條變 0 條，
           system 從 12 條變 0 條，整個 Discover 中文介面消失。
         </p>
         <p>
-          正確的正則是 emoji OR 英文（`(?:🟢|Active)`），兩者擇一。
+          正確的正則是 emoji OR 英文（<code>(?:🟢|Active)</code>），兩者擇一。
           更重要的教訓是：改 parser 去配合測試 fixture 之後，必須用真實資料源跑一次驗證。
-          `python -c` 直接 parse 真實檔、數每個 section 的筆數，比看 fixture 綠燈可靠。
+          <code>python -c</code> 直接 parse 真實檔、數每個 section 的筆數，比看 fixture 綠燈可靠。
         </p>
 
         <h2>產品邊界：nomad-hub 應該寫哪裡？</h2>
@@ -115,7 +115,7 @@
 
         <div class="takeaway">
           <p><strong>emoji 在 JSON tool-call 參數是 parse 地雷</strong>：序列化轉義不完全，用 unicode escape（\U0001F7E2）或在 fixture 完全移除 emoji。中文不受影響。</p>
-          <p><strong>改 parser 配合 fixture 之後，必須用真實資料驗</strong>：fixture 全綠不代表真實資料也通。`python -c` 直接 parse 源檔數筆數，這個步驟不能省。</p>
+          <p><strong>改 parser 配合 fixture 之後，必須用真實資料驗</strong>：fixture 全綠不代表真實資料也通。<code>python -c</code> 直接 parse 源檔數筆數，這個步驟不能省。</p>
           <p><strong>讀寫邊界要明確宣告</strong>：nomad-hub 的 registry 是 nomad-hub 自己的，不是 Gemini 生態的延伸。跨生態寫入是紅線，寫進自己的 data/ 是正確邊界。</p>
           <p><strong>os.replace 是原子寫入的標準做法</strong>：寫 tmp 檔再 replace，防止寫到一半崩潰留下半份資料。</p>
           <p><strong>目視驗證後用 git checkout 自清理</strong>：測試時的真實寫入用 git 還原，乾淨、可重複、不污染真實資料。</p>
