@@ -168,13 +168,15 @@
 .article--enhanced .article-wrap {
   max-width: 72rem;
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, 1fr)，不要寫 1fr：1fr 軌道不會窄於內容的 min-content，
+     一個寬表格或長算式就會把整欄撐出手機畫面（2026-11-23：320px 有 38 篇被撐寬） */
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1.5rem, 1rem + 3vw, 3.5rem);
 }
 
 @media (min-width: 1024px) {
   .article--enhanced .article-wrap {
-    grid-template-columns: 14rem 1fr;
+    grid-template-columns: 14rem minmax(0, 1fr);
   }
   .article--enhanced .article-toc {
     grid-column: 1;
@@ -314,4 +316,13 @@
 .article--enhanced .article-body h3 .anchor-link:hover {
   opacity: 1;
   color: var(--color-accent);
+}
+
+/* 4. 手機：長內容不撐寬頁面 ------------------------------------------
+   正文裡沒有空格的長字串（路徑、網址參數、識別字）不會換行，會把段落（含導言、標題）撐出 280px 的
+   內文欄；表格的最小寬度也是由最長的字串決定，320px 上 4 欄變數表放不下。
+   overflow-wrap: anywhere 會繼承，且一併降低 min-content；只有真的放不下時才斷字。
+   <pre> 是 white-space: pre，不受影響，照舊橫向捲動。 */
+@media (max-width: 40rem) {
+  .article-wrap { overflow-wrap: anywhere; }
 }
