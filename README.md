@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-23**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
+  `formulas/cagr.html`（#111 · 金融 · Free，年化報酬率 CAGR，100 萬變 200 萬 10 年 = 7.18%，對比算術平均）。
+  Formula 卡片由 placeholder 轉為連結，分類計數不動。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 1 draft from _pending/ via /bobo-autopublish on 2026-11-23.
 - **2026-11-21**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/planck-energy.html`（#85 · 物理 · Pro，E = hf 光子能量，綠光與微波爐實例）、`2026-11-14-harness2-evals-attribution.html`（評測加上 CONFOUNDED 與分歧題）。
   Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數不變。
