@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>年化報酬率怎麼算？CAGR 公式拆解（100萬變200萬10年實例） · Bobo Labs</title>
+  <meta name="description" content="年化報酬率怎麼算？CAGR 公式 (V₂/V₁)^(1/t) − 1 把多年漲幅換成每年平均成長率。本文用 100 萬變 200 萬、持有 10 年的實例算出 7.18%，並說明為何它不等於算術平均。" />
+  <meta property="og:title" content="年化報酬率怎麼算？CAGR 公式拆解" />
+  <meta property="og:description" content="CAGR 公式、100 萬變 200 萬 10 年實例、與算術平均報酬率的差距。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/cagr.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/cagr.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "年化報酬率怎麼算？CAGR 公式拆解", "url": "https://labs.moneyai168.com/formulas/cagr.html", "datePublished": "2026-11-21", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "年化報酬率 CAGR", "item": "https://labs.moneyai168.com/formulas/cagr.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(V2/V1) ** (1/t) - 1",
+    "cases": [
+      {"input": {"V1": 1000000, "V2": 2000000, "t": 10}, "expect": 0.0717734625363, "tol": 1e-6, "scale": 100, "text": "7.18"},
+      {"input": {"V1": 1000000, "V2": 3000000, "t": 20}, "expect": 0.0564673085495, "tol": 1e-6, "scale": 100, "text": "5.65"},
+      {"input": {"V1": 1000000, "V2": 5000000, "t": 30}, "expect": 0.0551130635362, "tol": 1e-6, "scale": 100, "text": "5.51"},
+      {"input": {"V1": 500000, "V2": 650000, "t": 3.5}, "expect": 0.0778423496440, "tol": 1e-6, "scale": 100, "text": "7.78"},
+      {"input": {"V1": 1000000, "V2": 1800000, "t": 5}, "expect": 0.1247461131, "tol": 1e-6, "scale": 100, "text": "12.47"},
+      {"input": {"V1": 1000000, "V2": 1800000, "t": 10}, "expect": 0.0605404816, "tol": 1e-6, "scale": 100, "text": "6.05"},
+      {"input": {"V1": 1000000, "V2": 1695330, "t": 5}, "expect": 0.1113499888, "tol": 1e-6, "scale": 100, "text": "11.13"},
+      {"expr": "V*(1+x1)*(1+x2)*(1+x3)*(1+x4)*(1+x5)", "input": {"V": 1000000, "x1": 0.2, "x2": -0.1, "x3": 0.3, "x4": 0.05, "x5": 0.15}, "expect": 1695330, "tol": 1, "text": "1,695,330"},
+      {"expr": "V*(1+m)**t", "input": {"V": 1000000, "m": 0.12, "t": 5}, "expect": 1762341.6832, "tol": 1, "text": "1,762,342"},
+      {"expr": "V*(1+m)**t - V*(1+x1)*(1+x2)*(1+x3)*(1+x4)*(1+x5)", "input": {"V": 1000000, "m": 0.12, "t": 5, "x1": 0.2, "x2": -0.1, "x3": 0.3, "x4": 0.05, "x5": 0.15}, "expect": 67011.6832, "tol": 1, "text": "67,012"},
+      {"expr": "1 - ((1+a)*(1+b)) ** (1/2)", "input": {"a": 0.5, "b": -0.5}, "expect": 0.1339745962, "tol": 1e-6, "scale": 100, "text": "13.40"},
+      {"expr": "V*(1+a)*(1+b)", "input": {"V": 1000000, "a": 0.5, "b": -0.5}, "expect": 750000, "tol": 1, "text": "750,000"},
+      {"expr": "V*(1+g)**t", "input": {"V": 1000000, "g": 0.05, "t": 15}, "expect": 2078928.1794, "tol": 1, "text": "2,078,928"},
+      {"expr": "V*(1+g)**t", "input": {"V": 1000000, "g": 0.08, "t": 15}, "expect": 3172169.1142, "tol": 1, "text": "3,172,169"},
+      {"expr": "V*(1+g)**t", "input": {"V": 1000000, "g": 0.10, "t": 15}, "expect": 4177248.1694, "tol": 1, "text": "4,177,248"},
+      {"expr": "72/(100*((V2/V1)**(1/t)-1))", "input": {"V1": 1000000, "V2": 2000000, "t": 10}, "expect": 10.0315628, "tol": 0.001, "text": "10.03"},
+      {"expr": "log(V2/V1)/log(1+g)", "input": {"V1": 1000000, "V2": 5000000, "g": 0.06}, "expect": 27.6208696, "tol": 0.001, "text": "27.62"},
+      {"input": {"V1": 2000000, "V2": 5000000, "t": 15}, "expect": 0.0629903793, "tol": 1e-6, "scale": 100, "text": "6.30"},
+      {"input": {"V1": 2000000, "V2": 5000000, "t": 10}, "expect": 0.0959582210, "tol": 1e-6, "scale": 100, "text": "9.60"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #111 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">年化報酬率怎麼算？CAGR 把多年漲幅換成「每年」</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-21</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        100 萬放了 10 年變成 200 萬，帳面漲了 100%，但<strong>每年</strong>到底賺多少？
+        答案是 <strong>7.18%</strong>，不是 10%。年化報酬率（CAGR，Compound Annual Growth Rate）
+        用一條公式把「起點、終點、年數」三個數字壓成一個可以跨資產、跨年限比較的成長率。
+        本文拆解 CAGR = (V₂/V₁)<sup>1/t</sup> − 1，並用實例說明它和算術平均報酬率為何會差一截。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">CAGR = (V₂ / V₁)<sup>1/t</sup> − 1</div>
+          <div class="formula-box-note">V₁ 期初價值 · V₂ 期末價值 · t 持有年數（可含小數）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>V₁</td><td>期初價值（本金）</td><td>元</td><td>1,000,000</td></tr>
+            <tr><td>V₂</td><td>期末價值（含再投入的配息）</td><td>元</td><td>2,000,000</td></tr>
+            <tr><td>t</td><td>持有年數，月數可換算成小數</td><td>年</td><td>10</td></tr>
+            <tr><td>CAGR</td><td>年化複合成長率</td><td>小數或 %</td><td>0.0718（7.18%）</td></tr>
+          </tbody>
+        </table>
+
+        <h2>100 萬變 200 萬、10 年，年化是多少？</h2>
+        <p>
+          V₁ = 1,000,000、V₂ = 2,000,000、t = 10。先算比值 2，再開 10 次方根：
+          2<sup>1/10</sup> ≈ 1.0718，減 1 得 CAGR ≈ <strong>7.18%</strong>。
+          這和 <a href="/formulas/rule-of-72.html">72 法則</a> 互相印證：72 ÷ 7.18 ≈ <strong>10.03</strong> 年翻倍，
+          正好是這個例子的實際年數。
+        </p>
+        <p>
+          換不同的終點，年化差很多。同樣 100 萬：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>期初 → 期末</th><th>年數</th><th>CAGR</th></tr></thead>
+          <tbody>
+            <tr><td>100 萬 → 200 萬</td><td>10</td><td>7.18%</td></tr>
+            <tr><td>100 萬 → 300 萬</td><td>20</td><td>5.65%</td></tr>
+            <tr><td>100 萬 → 500 萬</td><td>30</td><td>5.51%</td></tr>
+            <tr><td>100 萬 → 180 萬</td><td>5</td><td>12.47%</td></tr>
+            <tr><td>100 萬 → 180 萬</td><td>10</td><td>6.05%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          最後兩列的終值相同，只是時間從 5 年拉到 10 年，年化就從 12.47% 掉到 6.05%。
+          <strong>只講「賺了 80%」而不講年數，等於沒有資訊。</strong>
+        </p>
+
+        <h2>為什麼是開 1/t 次方，而不是除以 t？</h2>
+        <p>
+          成長是逐年相乘的：V₂ = V₁ × (1+g)<sup>t</sup>。要從 V₂ 倒推 g，就得把 t 次方還原，
+          也就是兩邊開 t 次方根，再減 1。這正是
+          <a href="/formulas/compound-interest.html">複利終值公式</a>（n = 1 的情形）的反向解。
+          若改用「總漲幅 ÷ 年數」，100 萬變 200 萬會得到 100% ÷ 10 = 10%，高估了約 2.8 個百分點，
+          因為它忽略了「利上加利」。
+        </p>
+        <p>
+          t 不必是整數。例如 50 萬在 3.5 年後變成 65 萬：(650,000 / 500,000)<sup>1/3.5</sup> − 1 ≈ <strong>7.78%</strong>。
+          月份請先除以 12 換成年。
+        </p>
+
+        <h2>算術平均 vs CAGR：五年報酬差 6.7 萬</h2>
+        <p>
+          假設五年的逐年報酬依序為 +20%、−10%、+30%、+5%、+15%。算術平均是 12%，看起來很漂亮。
+          但實際資產是連乘：100 萬 × 1.2 × 0.9 × 1.3 × 1.05 × 1.15 = <strong>1,695,330</strong> 元，
+          換算 CAGR 只有 <strong>11.13%</strong>。
+        </p>
+        <p>
+          如果誤以為每年穩穩賺 12%，五年後會算出 1,762,342 元，比真實結果多出 <strong>67,012</strong> 元。
+          波動越大，算術平均與 CAGR 的差距越大。
+        </p>
+        <p>
+          極端例子：第一年 +50%、第二年 −50%。算術平均是 0%，但 100 萬 → 150 萬 → <strong>750,000</strong> 元，
+          實際年化為 −13.40%。跌的幅度是以較高的基數計算，賺回來要的漲幅比跌幅大。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>期末價值漏算配息或中途投入</strong>。CAGR 只看起點、終點與年數，
+            假設期間沒有額外加碼或提領。若中途有定期投入（例如每月扣款），這條公式會把「新增本金」誤算成報酬，
+            應改用內部報酬率（IRR）。另外，把 t 誤填成「次數」或把 10 年寫成 120（月）也很常見。
+          </p>
+        </div>
+
+        <h2>反過來用：已知年化，推終值與年數</h2>
+        <p>
+          CAGR 公式可以變形。已知 g，終值 V₂ = V₁(1+g)<sup>t</sup>。100 萬以固定年化放 15 年：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>年化 g</th><th>15 年後 V₂</th></tr></thead>
+          <tbody>
+            <tr><td>5%</td><td>2,078,928</td></tr>
+            <tr><td>8%</td><td>3,172,169</td></tr>
+            <tr><td>10%</td><td>4,177,248</td></tr>
+          </tbody>
+        </table>
+        <p>
+          年化相差 5 個百分點，15 年後終值差了一倍。要估達標年數，則 t = ln(V₂/V₁) / ln(1+g)：
+          100 萬想變 500 萬、年化 6%，需要約 <strong>27.62</strong> 年。
+        </p>
+        <p>
+          設定目標時也可以直接反推：200 萬想在 15 年內變 500 萬，需要年化 <strong>6.30</strong>%；
+          縮短到 10 年，門檻升到 <strong>9.60</strong>%。時間縮短，要求的年化不是等比例上升，而是更陡。
+          以上只是數學換算，不是對任何資產報酬的預測。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>下面是 ∑ Calc 年化報酬率計算機，輸入期初、期末與年數即可。</p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 年化報酬率 CAGR #111</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=111&utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=111" title="年化報酬率 CAGR 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/compound-interest.html">複利計算公式 — 複利終值怎麼算（100萬30年實例）</a></li>
+          <li><a href="/formulas/present-value.html">現值公式 — 未來的錢今天值多少</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 翻倍年數的快速估算</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 讓不同複利頻率可以比較</a></li>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 總報酬與年化的差別</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：CAGR 定義依標準財務數學（複合成長率，compound growth）· 本文所有數字均以
+        CAGR = (V₂/V₁)^(1/t) − 1 及其變形實算並通過站台數值驗算腳本 · 全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
