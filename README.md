@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-24**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/real-return.html`（#112 · 金融 · Free，實質報酬率，名目 5%、通膨 2% 實質 2.94%）、`2026-11-23-sigma-calc-labs-quality-pass.html`（公式擴充後的範例、百分比與手機版對帳）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-24.
 - **2026-11-23**（今日）— 由 /bobo-autopublish 全自主發布 1 篇文章：
   `formulas/cagr.html`（#111 · 金融 · Free，年化報酬率 CAGR，100 萬變 200 萬 10 年 = 7.18%，對比算術平均）。
   Formula 卡片由 placeholder 轉為連結，分類計數不動。
