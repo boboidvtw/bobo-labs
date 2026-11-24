@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>公式擴充之後：把範例、百分比和手機版逐一對帳 · Bobo Labs</title>
+  <meta name="description" content="∑ Calc 從 v3.12.0 到 v3.12.2 新增 12 條公式，並順手修掉 Bobo Labs 範例對不上、TDEE 百分比寫錯、手機溢出與 39 處過期連結。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-23-sigma-calc-labs-quality-pass.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-23</p>
+      <h1 class="article-title">公式擴充之後：把範例、百分比和手機版逐一對帳</h1>
+      <p class="article-lede">
+        ∑ Calc 新增 #111–#122，共 112 條公式。上線後我回頭對帳，找到 3 篇範例照填對不上、1 個百分比的分母寫錯、手機版橫向溢出，還有 39 處「即將推出」其實早已上線。這篇整理每一處的根因與驗證方式。
+      </p>
+
+      <div class="article-body">
+        <h2>一次公式擴充，為什麼要拆成三個版本</h2>
+        <p>
+          ∑ Calc 這一輪從 v3.12.0 到 v3.12.2，公式從 #111 加到 #122，共 112 條，其中金融 8 條、健康 4 條。第一版上線後我馬上補了 v3.12.1：Free 68、Pro 44 的文案數字更正、公式失敗時不再留著上一個答案，另外 #113 改成等效月報酬 (1+r)^(1/12)−1。
+        </p>
+        <p>
+          最後的 v3.12.2 只動兩處：#48 的有效年利率（EAR）改以百分比輸出，#50 補上體積單位 m³。三個版本加起來測試是 158 條通過，期望值全部用 Python 手算出來的獨立字面值，不用「同一條公式再算一次」。同式重算只會證明程式跟自己一致，抓不到公式本身寫錯。
+        </p>
+
+        <h2>站上的範例數字，要用輸入值倒推一次</h2>
+        <p>
+          Bobo Labs 的 formulas 區有 3 篇文章，範例照著填卻對不上答案。查下去，一篇是氣體常數 R 取 8.314462618 才對得上，另兩篇是作者拿已經四捨五入的中間值再代入，誤差滾出來。
+        </p>
+        <p>
+          修法是把範例改成讓讀者輸入「未四捨五入」的原始值。驗算 gate 也因此擋過我一次：正文裡同時出現 65.99 與 65.98 會被判為 near-miss，因為讀者分不出哪個才是答案。最後 <code>verify_formula_math.py</code> 跑完是 92/92 通過。
+        </p>
+
+        <h2>TDEE 的缺口是 16.7%，不是 20%</h2>
+        <p>
+          文章寫「久坐時，總消耗只比基礎代謝高 20%」，這句話拿 BMR 乘 1.2 的係數來看是對的，但「吃到 BMR 的缺口」講的是反方向：TDEE 是 BMR 的 1.2 倍，那 BMR 比 TDEE 少 1−1/1.2 = 16.7%。
+        </p>
+        <p>
+          分母不同，百分比就不同。這處改完，我也替它加了 3 個 check case，讓之後任何人改這句數字，驗算 gate 會直接擋下。
+        </p>
+
+        <h2>手機版橫向溢出：1fr 不會縮到內容寬度以下</h2>
+        <p>
+          320 到 448px 的手機上，文章頁會被撐寬。根因是 CSS grid 的 <code>1fr</code> 實際是 minmax(auto, 1fr)，最小值是內容的 min-content，長字串或表格就把欄撐開。
+        </p>
+        <p>
+          修法有三處：導覽列在 28rem 以下換列、article grid 改 <code>minmax(0,1fr)</code>、40rem 以下加 overflow-wrap:anywhere。驗證時我用同源 iframe 當不同寬度的 viewport，fetch CSS 要加 cache:'reload'，否則量到的是舊檔。
+        </p>
+
+        <h2>「剩 8 處即將推出」其實是 50 處</h2>
+        <p>
+          延伸閱讀區塊裡寫著「即將推出」的連結，我先前記的是剩 8 處。這次改用 grep 實際對帳，總共 50 處，其中 39 處對應的文章早已上線，只是連結沒換。39 處全換成真連結後，真正還沒寫的剩 11 處。
+        </p>
+        <p>
+          同一輪我也把 14 篇文章裡 222 個反引號轉成 <code> 標籤並加上 <pre> 樣式。轉換器會弄壞本身含反引號的程式碼片段，那幾處改成手動用 pre 加 code 處理。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>期望值要有獨立來源</strong>：158 條測試的預期值是手算字面值，不是同式重算，才抓得到公式本身的錯</p>
+          <p><strong>範例要能從輸入倒推</strong>：讓讀者輸入未四捨五入的值，答案才對得上；near-miss gate 擋的就是這種模糊</p>
+          <p><strong>百分比先問分母</strong>：TDEE 比 BMR 高 20%，BMR 就只比 TDEE 低 16.7%</p>
+          <p><strong>grid 用 minmax(0,1fr)</strong>：1fr 不會縮到 min-content 以下，手機溢出就是這樣來的</p>
+          <p><strong>數量要 grep 對帳</strong>：「剩 8 處」憑印象，實際是 50 處；數字類結論用指令算</p>
+        </div>
+
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-23 · ∑ Calc v3.12.0–v3.12.2 · 158 項測試通過 · formulas 驗算 92/92
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

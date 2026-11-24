@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>實質報酬率怎麼算？扣除通膨公式拆解（名目5%通膨2%實例） · Bobo Labs</title>
+  <meta name="description" content="實質報酬率怎麼算？公式 (1+名目報酬率)/(1+通膨率) − 1，用名目 5%、通膨 2% 的實例算出 2.94%，並說明它為何不等於直接相減、100 萬放 20 年的購買力差多少。" />
+  <meta property="og:title" content="實質報酬率怎麼算？扣除通膨公式拆解" />
+  <meta property="og:description" content="實質報酬率公式、名目 5% 通膨 2% 實例、100 萬放 20 年的購買力換算。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/real-return.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/real-return.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "實質報酬率怎麼算？扣除通膨公式拆解", "url": "https://labs.moneyai168.com/formulas/real-return.html", "datePublished": "2026-11-23", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "實質報酬率", "item": "https://labs.moneyai168.com/formulas/real-return.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "(1+r)/(1+i) - 1",
+    "cases": [
+      {"input": {"r": 0.05, "i": 0.02}, "expect": 0.0294117647, "tol": 1e-6, "scale": 100, "text": "2.94"},
+      {"input": {"r": 0.08, "i": 0.02}, "expect": 0.0588235294, "tol": 1e-6, "scale": 100, "text": "5.88"},
+      {"input": {"r": 0.06, "i": 0.02}, "expect": 0.0392156863, "tol": 1e-6, "scale": 100, "text": "3.92"},
+      {"input": {"r": 0.08, "i": 0.03}, "expect": 0.0485436893, "tol": 1e-6, "scale": 100, "text": "4.85"},
+      {"input": {"r": 0.20, "i": 0.15}, "expect": 0.0434782609, "tol": 1e-6, "scale": 100, "text": "4.35"},
+      {"expr": "r - i - ((1+r)/(1+i) - 1)", "input": {"r": 0.20, "i": 0.15}, "expect": 0.0065217391, "tol": 1e-6, "scale": 100, "text": "0.65"},
+      {"expr": "1 - (1+r)/(1+i)", "input": {"r": 0.015, "i": 0.02}, "expect": 0.0049019608, "tol": 1e-6, "scale": 100, "text": "0.49"},
+      {"expr": "1 - (1+r)/(1+i)", "input": {"r": 0.03, "i": 0.035}, "expect": 0.0048309179, "tol": 1e-6, "scale": 100, "text": "0.48"},
+      {"expr": "P*(1+r)**t", "input": {"P": 1000000, "r": 0.05, "t": 20}, "expect": 2653297.705, "tol": 1, "text": "2,653,298"},
+      {"expr": "P*(1+r)**t/(1+i)**t", "input": {"P": 1000000, "r": 0.05, "i": 0.02, "t": 20}, "expect": 1785593.294, "tol": 1, "text": "1,785,593"},
+      {"expr": "P/(1+i)**t", "input": {"P": 1000000, "i": 0.02, "t": 20}, "expect": 672971.333, "tol": 1, "text": "672,971"},
+      {"expr": "P - P/(1+i)**t", "input": {"P": 1000000, "i": 0.02, "t": 20}, "expect": 327028.667, "tol": 1, "text": "327,029"},
+      {"expr": "P*(1+r)**t", "input": {"P": 1000000, "r": 0.015, "t": 20}, "expect": 1346855.007, "tol": 1, "text": "1,346,855"},
+      {"expr": "P*(1+r)**t/(1+i)**t", "input": {"P": 1000000, "r": 0.015, "i": 0.02, "t": 20}, "expect": 906394.809, "tol": 1, "text": "906,395"},
+      {"expr": "(1+a)*(1+i) - 1", "input": {"a": 0.03, "i": 0.02}, "expect": 0.0506, "tol": 1e-6, "scale": 100, "text": "5.06"},
+      {"expr": "log(2)/log((1+r)/(1+i))", "input": {"r": 0.05, "i": 0.02}, "expect": 23.9119034, "tol": 0.001, "text": "23.91"},
+      {"expr": "72/(100*((1+r)/(1+i)-1))", "input": {"r": 0.05, "i": 0.02}, "expect": 24.48, "tol": 0.001, "text": "24.48"},
+      {"expr": "P*(1+r)**t", "input": {"P": 1000000, "r": 0.08, "t": 30}, "expect": 10062656.889, "tol": 1, "text": "10,062,657"},
+      {"expr": "P*(1+r)**t/(1+i)**t", "input": {"P": 1000000, "r": 0.08, "i": 0.02, "t": 30}, "expect": 5555299.934, "tol": 1, "text": "5,555,300"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #112 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">實質報酬率怎麼算？扣掉通膨，5% 只剩 2.94%</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-23</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        帳戶一年賺 5%，物價同時漲 2%，錢的購買力到底多了多少？答案是 <strong>2.94%</strong>，不是 3%。
+        實質報酬率（Real Return）把「名目報酬率」與「通膨率」合成一個數字，回答的是：
+        <strong>同樣的錢，一年後能多買多少東西</strong>。本文拆解
+        實質報酬率 = (1 + r) / (1 + i) − 1，並用 100 萬放 20 年的實例，
+        算出名目數字漂亮、購買力卻縮水的差距。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">實質報酬率 = (1 + r) / (1 + i) − 1</div>
+          <div class="formula-box-note">r 名目年報酬率 · i 年通膨率 · 兩者皆以小數代入（5% 寫成 0.05）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>r</td><td>名目年報酬率（帳面上看到的報酬，未扣通膨）</td><td>小數或 %</td><td>0.05（5%）</td></tr>
+            <tr><td>i</td><td>年通膨率（物價年漲幅）</td><td>小數或 %</td><td>0.02（2%）</td></tr>
+            <tr><td>實質報酬率</td><td>購買力的年成長率</td><td>小數或 %</td><td>0.0294（2.94%）</td></tr>
+          </tbody>
+        </table>
+
+        <h2>名目 5%、通膨 2%，實質報酬是多少？</h2>
+        <p>
+          r = 0.05、i = 0.02。分子 1.05、分母 1.02，相除得 1.0294，減 1 即 <strong>2.94%</strong>。
+          意思是：年初能買 100 份東西的錢，年底在帳戶長成 105 元，但每份東西也漲到 102 元，
+          於是只能買到約 102.94 份，購買力多了 2.94%。
+        </p>
+        <p>
+          很多人會直接用 5% − 2% = 3%。這在低通膨時差距很小，但<strong>它不是精確值</strong>。
+          原因在下一節。
+        </p>
+
+        <h2>為什麼是相除，而不是相減？</h2>
+        <p>
+          物價上漲讓同一筆錢「變薄」，薄掉的是<strong>已經長大後的那筆錢</strong>。
+          設期初本金為 P，名目上變成 P(1 + r)，物價變成原來的 (1 + i) 倍，
+          換回「期初的物價水準」就要把 P(1 + r) 除以 (1 + i)。
+          這就是 Fisher 方程式的精確形式：(1 + 名目) = (1 + 實質) × (1 + 通膨)，
+          移項後得到本文的公式。相減只是它在 r、i 都很小時的近似。
+        </p>
+        <p>
+          近似的誤差隨通膨升高而放大。名目 20%、通膨 15% 時，直接相減得 5%，
+          精確值是 (1.20 / 1.15) − 1 ≈ <strong>4.35%</strong>，高估了約 <strong>0.65</strong> 個百分點。
+          
+        </p>
+
+        <h2>不同名目報酬與通膨的組合</h2>
+        <table class="formula-vars">
+          <thead><tr><th>名目 r</th><th>通膨 i</th><th>實質報酬率</th></tr></thead>
+          <tbody>
+            <tr><td>5%</td><td>2%</td><td>2.94%</td></tr>
+            <tr><td>6%</td><td>2%</td><td>3.92%</td></tr>
+            <tr><td>8%</td><td>2%</td><td>5.88%</td></tr>
+            <tr><td>8%</td><td>3%</td><td>4.85%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          名目 8% 的資產，遇到 2% 通膨實質為 5.88%，遇到 3% 通膨只剩 4.85%。
+          通膨只多 1 個百分點，實質報酬就少了約 1.03 個百分點，幾乎一比一吃掉。
+          <strong>判斷資產好壞，看實質報酬比看名目更貼近生活。</strong>
+        </p>
+
+        <h2>100 萬放 20 年：帳面與購買力差多少？</h2>
+        <p>
+          假設 100 萬以固定名目 5% 放 20 年、通膨固定 2%（只是計算用的假設，不是預測）：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>項目</th><th>算法</th><th>金額（元）</th></tr></thead>
+          <tbody>
+            <tr><td>名目終值</td><td>1,000,000 × 1.05<sup>20</sup></td><td>2,653,298</td></tr>
+            <tr><td>今日購買力</td><td>2,653,298 ÷ 1.02<sup>20</sup></td><td>1,785,593</td></tr>
+          </tbody>
+        </table>
+        <p>
+          帳面上翻了 2.65 倍，換算回今天的物價只相當於 <strong>1,785,593</strong> 元。
+          若報酬是 0，光通膨 2% 放 20 年，100 萬的購買力就只剩 <strong>672,971</strong> 元，少了 <strong>327,029</strong> 元。
+          這個數字也可以用實質報酬率直接算：1,000,000 × 1.0294<sup>20</sup>，得到相同結果。
+                  </p>
+        <p>
+          再看一個報酬低於通膨的情形：名目 1.5%、通膨 2%，實質報酬率是
+          <strong>負的 0.49%</strong>。100 萬放 20 年，帳面長到 1,346,855 元，
+          但換回今日購買力只剩 <strong>906,395</strong> 元，比本金還少。
+          名目有賺、實質卻在虧，這是只看帳面時最容易漏掉的情形。
+          臨界點很簡單：只要 r &lt; i，實質報酬率就是負的；名目 3%、通膨 3.5% 時，實質為負的 0.48%。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把通膨率重複扣兩次，或把名目與實質混著算。</strong>
+            例如先用實質報酬率算出終值，又再除以通膨一次，等於把物價上漲算了兩遍。
+            規則是：用名目 r 複利，就在最後除以 (1 + i)<sup>t</sup>；用實質報酬率複利，就不用再除。
+            兩條路徑結果相同，混用才會錯。
+          </p>
+        </div>
+
+        <h2>反過來用：想要實質報酬，名目要多少？</h2>
+        <p>
+          公式可以移項。要讓購買力每年成長 a，名目報酬必須是 r = (1 + a)(1 + i) − 1。
+          想要實質 3%、通膨 2%，名目需要 <strong>5.06%</strong>，而不是 5%。
+          差 0.06 個百分點，就是 3% 與 2% 的交叉項（0.03 × 0.02）。
+        </p>
+        <p>
+          翻倍所需的時間也跟著改變。名目 5% 的資產，用 <a href="/formulas/rule-of-72.html">72 法則</a>
+          估算約 14.4 年翻倍；但<strong>購買力</strong>翻倍要看實質報酬 2.94%，72 ÷ 2.94 ≈
+          <strong>24.48</strong> 年，精確值 ln 2 / ln(1.05 / 1.02) 約為 <strong>23.91</strong> 年。
+          從名目看與從購買力看，時間差了近 10 年。
+        </p>
+
+        <h2>時間拉長到 30 年：差距會放大</h2>
+        <p>
+          名目 8%、通膨 2%，100 萬放 30 年，帳面是 <strong>10,062,657</strong> 元，
+          看起來破千萬。換算回今天的購買力，則是 <strong>5,555,300</strong> 元，
+          約為帳面的 55%。時間越長，通膨的複利吃掉得越多。
+          這也是為什麼長期規劃（退休、教育金）應該以實質報酬率與「今日購買力」為單位，
+          而不是直接比較未來的帳面金額。以上只是數學換算，不構成投資建議，也不預測任何資產的報酬與通膨。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 實質報酬率計算機，有兩個輸入欄：名目年報酬率 %（如 5）與年通膨率 %（如 2）。
+          填入 5 與 2，按「計算」即可重現本文的實質報酬率 2.94（%）。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 實質報酬率(扣通膨) #112</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=112&utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=112" title="實質報酬率 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/cagr.html">年化報酬率 CAGR — 把多年漲幅換成每年成長率</a></li>
+          <li><a href="/formulas/compound-interest.html">複利計算公式 — 複利終值怎麼算（100萬30年實例）</a></li>
+          <li><a href="/formulas/present-value.html">現值公式 — 未來的錢今天值多少</a></li>
+          <li><a href="/formulas/rule-of-72.html">72 法則 — 翻倍年數的快速估算</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 讓不同複利頻率可以比較</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：實質報酬率依 Fisher 方程式（(1+名目) = (1+實質)(1+通膨)）移項而得 · 本文所有數字均以
+        實質報酬率 = (1+r)/(1+i) − 1 及其變形實算並通過站台數值驗算腳本 · 全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
