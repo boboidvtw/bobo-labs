@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>沙盒只給 500 毫秒：用 three-live 生成一座程序小島 · Bobo Labs</title>
+  <meta name="description" content="three-live 能不能做 3D 地形？可以，但沙盒執行上限實測是 500 ms，不是文件寫的 3 到 5 秒。這篇記錄小島從 683 ms 壓到 380–411 ms 的過程，以及幾個渲染踩坑。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-23-three-live-island-terrain.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+    <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-23</p>
+      <h1 class="article-title">沙盒只給 500 毫秒：用 three-live 生成一座程序小島</h1>
+      <p class="article-lede">
+        我想知道 google/three-live 能不能做 3D 地形，就直接生成一座小島來試。
+        答案是可以，但只適合中小型、程序生成的場景。
+        真正的限制不在畫面，而在沙盒的執行時間：文件寫 3 到 5 秒，實測上限是 500 ms。
+      </p>
+
+      <div class="article-body">
+        <h2>結論：什麼場景能做，什麼不能？</h2>
+        <p>
+          程序生成、網格不大的地形，three-live 可以做。大型地形、串流載入、真實 DEM 高程資料，
+          請改用 Three.js 或 CesiumJS。分界線就是下面這個 500 ms。
+        </p>
+
+        <h2>683 ms 超時，怎麼壓到 400 ms 上下？</h2>
+        <p>
+          沙盒的執行上限常數是 <code>SECURITY_3D_EXECUTION_CEILING_MS = 500</code>，文件寫的是 3 或 5 秒，兩者差了六倍以上。
+          第一版我用 161×161 的網格、10 層 value noise，實測 683 ms，直接超時。
+        </p>
+        <p>
+          我量過各部分的成本：固定開銷約 160 ms；純 JS 迴圈很便宜，多跑 20 萬次只多 40 ms。
+          所以瓶頸是雜訊運算量，不是迴圈本身。修法有三個：把雜訊預先算成 64×64 的查找表、層數從 10 降到 6、網格改成 129×129，
+          樹和岩石放置時也改成查高度表，不再重算雜訊。最終量測落在 380 到 411 ms。
+        </p>
+
+        <h2>畫面出問題時，我踩到哪些坑？</h2>
+        <p>
+          頂點顏色要寫線性值，也就是先做 <code>pow 2.2</code>，否則整個畫面偏白。
+        </p>
+        <p>
+          渲染器照 <code>scene.add</code> 的順序畫，不會把透明物件自動排到最後。透明的海面必須最後才加進場景，否則會蓋掉後面的物件。
+        </p>
+        <p>
+          <code>InstancedMesh.setColorAt</code> 設的顏色會乘上材質底色，所以材質底色要設成白色，不然樹的顏色全部走樣。
+        </p>
+        <p>
+          最難查的是水下的方角：兩個平面在水下重疊，邊角會透出來。我先懷疑陰影，用 CLI 對照實驗排除之後，
+          改成把地形外圍壓到海床圓盤底下，問題消失。
+        </p>
+
+        <h2>預覽環境的兩個陷阱</h2>
+        <p>
+          頁面需要 <code>three-live-sandbox.html</code> 和 Worker 同源，所以 <code>file://</code> 開不起來，要走本機 HTTP。
+          另外 <code>localhost</code> 在我的機器上會解析到 ::1，那裡跑的是另一個服務，預覽要明確用 127.0.0.1 才會連到對的地方。
+        </p>
+
+        <h2>我漏查了自己的筆記</h2>
+        <p>
+          做完才發現，我的知識庫早有一份 v1.4.0 的限制整理，寫著頂點色會被丟掉。
+          用 1.5.1 實測，頂點色和燈光都已經保留，不再需要「分段單色 mesh」的繞法。
+          如果研究前先查筆記，我會少走一段彎路；現在的作法是把兩版差異補進評估報告，並更新那份筆記。
+        </p>
+
+        <h2>還沒驗證的事</h2>
+        <p>
+          三件事我沒有確認：作品放進 claude.ai 的 Artifact 能不能正常執行（內建瀏覽器沒有登入，沒法測）、
+          實機 AR（Quick Look、Scene Viewer）、以及 <code>HemisphereLight</code> 到底支不支援，因為兩份文件寫法互相矛盾。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>先量執行上限，再選演算法</strong>：文件寫 3 到 5 秒、實測 500 ms，差六倍；預算要以實測為準。</p>
+          <p><strong>先量成本落點再最佳化</strong>：20 萬次迴圈只多 40 ms，瓶頸是雜訊運算，所以改查找表有效、改迴圈寫法無效。</p>
+          <p><strong>渲染順序就是加入順序</strong>：透明物件自己負責最後加。</p>
+          <p><strong>用對照實驗排除嫌疑</strong>：方角先懷疑陰影，實驗排除後才找到重疊平面這個真因。</p>
+          <p><strong>研究前先查自己的筆記</strong>：舊版本結論會過期，新版要重測並回寫。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-23 · three-live 1.5.1 · 小島網格 129×129 · 執行時間 683 → 380–411 ms（上限 500 ms）
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>

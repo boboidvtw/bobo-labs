@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4% 法則怎麼算？退休需要多少錢公式拆解（年花60萬實例） · Bobo Labs</title>
+  <meta name="description" content="4% 法則怎麼算？退休本金 = 年支出 ÷ 提領率，年花 60 萬、提領率 4% 需要 1,500 萬。本文拆解 25 倍年支出的由來、提領率 3% 到 5% 的差距，以及扣掉年金後的算法。" />
+  <meta property="og:title" content="4% 法則怎麼算？退休需要多少錢公式拆解" />
+  <meta property="og:description" content="退休本金公式、年花 60 萬的實例、提領率 3%／4%／5% 的本金差距。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/four-percent-rule.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/four-percent-rule.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "4% 法則怎麼算？退休需要多少錢公式拆解", "url": "https://labs.moneyai168.com/formulas/four-percent-rule.html", "datePublished": "2026-11-24", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "4% 法則退休本金", "item": "https://labs.moneyai168.com/formulas/four-percent-rule.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "E/r",
+    "cases": [
+      {"input": {"E": 600000, "r": 0.04}, "expect": 15000000, "tol": 1, "text": "15,000,000"},
+      {"input": {"E": 600000, "r": 0.03}, "expect": 20000000, "tol": 1, "text": "20,000,000"},
+      {"input": {"E": 600000, "r": 0.05}, "expect": 12000000, "tol": 1, "text": "12,000,000"},
+      {"input": {"E": 600000, "r": 0.035}, "expect": 17142857.143, "tol": 1, "text": "17,142,857"},
+      {"input": {"E": 1000000, "r": 0.04}, "expect": 25000000, "tol": 1, "text": "25,000,000"},
+      {"input": {"E": 432000, "r": 0.04}, "expect": 10800000, "tol": 1, "text": "10,800,000"},
+      {"expr": "m*12", "input": {"m": 36000}, "expect": 432000, "tol": 1, "text": "432,000"},
+      {"expr": "1/r", "input": {"r": 0.04}, "expect": 25, "tol": 0.001, "text": "25"},
+      {"expr": "1/r", "input": {"r": 0.03}, "expect": 33.3333333, "tol": 0.01, "text": "33.33"},
+      {"expr": "1/r", "input": {"r": 0.05}, "expect": 20, "tol": 0.001, "text": "20"},
+      {"expr": "E/r3 - E/r4", "input": {"E": 600000, "r3": 0.035, "r4": 0.04}, "expect": 2142857.143, "tol": 1, "text": "2,142,857"},
+      {"expr": "(E-p)/r", "input": {"E": 600000, "p": 180000, "r": 0.04}, "expect": 10500000, "tol": 1, "text": "10,500,000"},
+      {"expr": "E-p", "input": {"E": 600000, "p": 180000}, "expect": 420000, "tol": 1, "text": "420,000"},
+      {"expr": "P*r", "input": {"P": 10000000, "r": 0.04}, "expect": 400000, "tol": 1, "text": "400,000"},
+      {"expr": "P*r/12", "input": {"P": 10000000, "r": 0.04}, "expect": 33333.333, "tol": 1, "text": "33,333"},
+      {"expr": "E*(1+i)**t", "input": {"E": 600000, "i": 0.02, "t": 20}, "expect": 891568.4376, "tol": 1, "text": "891,568"},
+      {"expr": "P/(E/r)", "input": {"P": 6000000, "E": 600000, "r": 0.04}, "expect": 0.4, "tol": 1e-6, "scale": 100, "text": "40"},
+      {"expr": "E/r - P", "input": {"P": 6000000, "E": 600000, "r": 0.04}, "expect": 9000000, "tol": 1, "text": "9,000,000"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #115 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">4% 法則怎麼算？年花 60 萬，退休本金要 1,500 萬</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-24</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        「退休到底要存多少錢？」最常被引用的答案是 4% 法則：<strong>退休本金 = 每年生活支出 ÷ 提領率</strong>。
+        每年花 60 萬、提領率取 4%，需要 <strong>15,000,000</strong> 元；換個說法，本金是年支出的 <strong>25</strong> 倍。
+        這條公式只有一次除法，難的不是算，而是提領率該取多少。本文拆解公式的來歷、
+        提領率從 3% 到 5% 對本金的影響，以及有年金收入時怎麼扣。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">退休本金 = E / r</div>
+          <div class="formula-box-note">E 每年生活支出 · r 安全提領率（以小數代入，4% 寫成 0.04）</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>E</td><td>退休後每年的生活支出（以今天的物價計）</td><td>元／年</td><td>600,000</td></tr>
+            <tr><td>r</td><td>安全提領率：第一年從本金提出的比例</td><td>小數或 %</td><td>0.04（4%）</td></tr>
+            <tr><td>退休本金</td><td>開始提領時需要準備的資產</td><td>元</td><td>15,000,000</td></tr>
+          </tbody>
+        </table>
+
+        <h2>年花 60 萬、提領率 4%，本金是多少？</h2>
+        <p>
+          E = 600,000、r = 0.04。600,000 ÷ 0.04 = <strong>15,000,000</strong>。
+          驗證方向相反：1,500 萬 × 4% = 60 萬，剛好等於一年的支出。
+          公式本質上就是「提領率 × 本金 = 年支出」移項，沒有任何複利或折現在裡面。
+        </p>
+        <p>
+          因為 1 ÷ 0.04 = <strong>25</strong>，4% 法則常被說成「存到年支出的 25 倍」。
+          年支出 100 萬就是 25,000,000，年支出 60 萬就是 15,000,000，倍數不變。
+        </p>
+
+        <h2>4% 這個數字從哪來？</h2>
+        <p>
+          4% 來自美國的歷史回測研究。William Bengen 在 1994 年發表於 <em>Journal of Financial Planning</em> 的論文，
+          用美國 1926 年起的股債報酬資料，回頭檢查「第一年提出本金的某個比例，之後每年依通膨調高提領額」，
+          在各個起始年份、撐 30 年的條件下，最高能取多少。1998 年 Cooley、Hubbard、Walz 三位教授的
+          Trinity 研究用類似設計得到接近的結論，4% 因此成為常被引用的基準。
+        </p>
+        <p>
+          這裡要看清楚它的前提：<strong>美國歷史資料、約 30 年的退休期間、股債組合、每年依通膨調整提領額</strong>。
+          它是對過去資料的回測，不是對未來的保證；換成台灣的資產配置、更長的退休期間，或不同的市場環境，
+          適用的提領率都可能不同。公式本身是算術，4% 這個輸入才是需要自己判斷的部分。
+        </p>
+
+        <h2>提領率 3%、4%、5%：本金差多少？</h2>
+        <p>同樣每年花 60 萬，提領率改變，需要的本金會明顯不同：</p>
+        <table class="formula-vars">
+          <thead><tr><th>提領率 r</th><th>本金倍數 1/r</th><th>退休本金（元）</th></tr></thead>
+          <tbody>
+            <tr><td>3%</td><td>33.33</td><td>20,000,000</td></tr>
+            <tr><td>4%</td><td>25</td><td>15,000,000</td></tr>
+            <tr><td>5%</td><td>20</td><td>12,000,000</td></tr>
+          </tbody>
+        </table>
+        <p>
+          提領率只差 1 個百分點，本金就差 300 萬到 500 萬。r 在分母，所以它越小、本金增加得越快：
+          從 4% 降到 3%，本金多 500 萬；從 4% 升到 5%，只少 300 萬。
+          若取中間的 3.5%，本金是 <strong>17,142,857</strong> 元，比 4% 多出 <strong>2,142,857</strong> 元。
+          保守一點的代價，就是要多存這一筆。
+        </p>
+
+        <h2>月花 3.6 萬，要先換成年支出</h2>
+        <p>
+          公式的 E 是「年」支出。月花 36,000 元，年支出是 36,000 × 12 = <strong>432,000</strong> 元，
+          再除以 0.04，得到 <strong>10,800,000</strong> 元。
+          直接拿月支出去除以 4% 會少算 12 倍，是最容易發生的單位錯誤。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把 4% 當成每年固定提領「剩餘本金的 4%」，或忘記提領額會隨通膨調高。</strong>
+            4% 法則的原始設定是：<em>第一年</em>提本金的 4%，之後每年把上一年的提領金額依通膨調高，
+            而不是每年重新取當年餘額的 4%。以通膨 2% 計，今天的 60 萬，20 年後要提
+            600,000 × 1.02<sup>20</sup> ≈ <strong>891,568</strong> 元才買得到同樣的東西。
+            公式裡的 E 是「今天物價下的年支出」，不是未來某一年的金額。
+          </p>
+        </div>
+
+        <h2>有年金或其他收入時怎麼算？</h2>
+        <p>
+          公式要放的是「需要由本金支應的支出」。年花 600,000，若每年有 180,000 元的年金或租金收入，
+          本金只需支應 600,000 − 180,000 = <strong>420,000</strong> 元，
+          退休本金是 420,000 ÷ 0.04 = <strong>10,500,000</strong> 元，
+          比完全不扣收入的 15,000,000 少 450 萬。
+          這個扣法只在該收入穩定、而且也會隨物價調整時才合理；如果收入不隨通膨增加，
+          實質購買力會逐年變薄，這部分要另外考慮。
+        </p>
+
+        <h2>反過來算：手上有 1,000 萬，每年能提多少？</h2>
+        <p>
+          公式移項：年可提領 = 本金 × r。1,000 萬 × 4% = <strong>400,000</strong> 元／年，
+          平均每月 <strong>33,333</strong> 元。若年支出是 60 萬，1,000 萬只能支應其中約三分之二。
+        </p>
+        <p>
+          也可以用來看進度。目標本金 15,000,000，手上已有 6,000,000，達成率是
+          6,000,000 ÷ 15,000,000 = <strong>40</strong>%，還差 <strong>9,000,000</strong> 元。
+          至於這 900 萬要存多久，取決於每月儲蓄與報酬率，可以搭配
+          <a href="/formulas/future-value-annuity.html">年金終值公式</a> 另外推算。
+        </p>
+
+        <h2>這條公式沒有回答的事</h2>
+        <p>
+          公式假設支出固定、提領率固定。實際退休時，醫療支出、房貸、資產報酬的順序風險都不會這麼平順。
+          算出來的數字是一個起點，用來和自己的存款比較，不是結論。
+          以上僅是數學說明，不構成投資建議，也不預測任何資產的報酬與通膨。
+        </p>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 4% 法則退休本金計算機，有兩個輸入欄：每年生活支出，與安全提領率 %（如 4）。
+          填入 600000 與 4，按「計算」即可重現本文的退休本金 15,000,000。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 4% 法則退休本金 #115</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=115&utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=115" title="4% 法則退休本金 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/real-return.html">實質報酬率怎麼算 — 扣掉通膨後的真實成長</a></li>
+          <li><a href="/formulas/future-value-annuity.html">年金終值公式 — 每月存 1 萬 30 年能累積多少</a></li>
+          <li><a href="/formulas/present-value-annuity.html">年金現值公式 — 退休金與貸款折現</a></li>
+          <li><a href="/formulas/dividend-yield.html">股息殖利率 — 公式拆解與高殖利率陷阱</a></li>
+          <li><a href="/formulas/compound-interest.html">複利計算公式 — 複利終值怎麼算（100萬30年實例）</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：Bengen, W. P. (1994), "Determining Withdrawal Rates Using Historical Data", Journal of Financial Planning ·
+        Cooley, Hubbard &amp; Walz (1998), "Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable", AAII Journal ·
+        退休本金 = 年支出 ÷ 提領率 為「提領率 × 本金 = 年支出」的移項 · 本文所有數字均以該式及其變形實算並通過站台數值驗算腳本 ·
+        全文僅作數學說明，不構成投資建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>
