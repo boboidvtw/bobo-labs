@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>股價淨值比 P/B 怎麼算？公式拆解（淨值120元、股價180元實例）· Bobo Labs</title>
+  <meta name="description" content="股價淨值比（P/B）怎麼算？股價 ÷ 每股淨值（BVPS）。用股價 180 元、每股淨值 120 元算出 P/B=1.5，再算破淨 0.5 倍的意義，並說明 P/B 與 ROE、P/E 的關係，以及用目標 P/B 反推合理股價的做法。" />
+  <meta property="og:title" content="股價淨值比 P/B 怎麼算？公式拆解" />
+  <meta property="og:description" content="股價 ÷ 每股淨值 = P/B。實例算出 1.5 倍與 0.5 倍（破淨）的差別，以及 P/B = P/E × ROE。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/price-to-book.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/price-to-book.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "股價淨值比 P/B 怎麼算？公式拆解（淨值120元、股價180元實例）", "url": "https://labs.moneyai168.com/formulas/price-to-book.html", "datePublished": "2026-11-25", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "股價淨值比 P/B", "item": "https://labs.moneyai168.com/formulas/price-to-book.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "P / B",
+    "cases": [
+      {"input": {"P": 180, "B": 120}, "expect": 1.5, "tol": 0.001, "text": "1.5"},
+      {"input": {"P": 45, "B": 90}, "expect": 0.5, "tol": 0.001, "text": "0.5"},
+      {"expr": "E / S", "input": {"E": 600, "S": 5}, "expect": 120, "tol": 0.01, "text": "120"},
+      {"expr": "PB * B", "input": {"PB": 1.2, "B": 120}, "expect": 144, "tol": 0.01, "text": "144"},
+      {"expr": "P - PB * B", "input": {"P": 180, "PB": 1.2, "B": 120}, "expect": 36, "tol": 0.01, "text": "36"},
+      {"expr": "R * B", "input": {"R": 0.10, "B": 120}, "expect": 12, "tol": 0.01, "text": "12"},
+      {"expr": "P / (R * B)", "input": {"P": 180, "R": 0.10, "B": 120}, "expect": 15, "tol": 0.01, "text": "15"},
+      {"expr": "P / (R * B) * R", "input": {"P": 180, "R": 0.10, "B": 120}, "expect": 1.5, "tol": 0.001, "text": "1.5"},
+      {"expr": "P / (R * B)", "input": {"P": 90, "R": 0.04, "B": 120}, "expect": 18.75, "tol": 0.01, "text": "18.75"},
+      {"expr": "R * B", "input": {"R": 0.04, "B": 120}, "expect": 4.8, "tol": 0.001, "text": "4.8"},
+      {"expr": "P / B", "input": {"P": 90, "B": 120}, "expect": 0.75, "tol": 0.001, "text": "0.75"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #117 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">股價淨值比 P/B 怎麼算？公式拆解（淨值 120 元、股價 180 元實例）</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-25</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        「這檔跌破淨值了」「P/B 1.5 倍算貴嗎」——背後的算法是一行除法：<strong>股價 ÷ 每股淨值（BVPS）</strong>。
+        本文用同一份數字算出 P/B=1.5 與 P/B=0.5（破淨）的差別，說明每股淨值怎麼從財報算出來，
+        拆解 P/B = P/E × ROE 的關係，並示範用目標 P/B 反推合理股價。全文只做數學說明，不構成投資建議。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">P/B = P &divide; B</div>
+          <div class="formula-box-note">P 每股股價（Price）&middot; B 每股淨值（BVPS，Book Value per Share）&middot; 結果單位：倍</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>變數</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>P</td><td>每股市場價格（Price per Share）</td><td>元</td><td>180</td></tr>
+            <tr><td>B</td><td>每股淨值（BVPS）＝ 股東權益 ÷ 流通在外股數</td><td>元</td><td>120</td></tr>
+            <tr><td>P/B</td><td>股價淨值比（Price-to-Book Ratio）</td><td>倍</td><td>計算結果</td></tr>
+          </tbody>
+        </table>
+
+        <h2>每股淨值 B 怎麼來？先從資產負債表算起</h2>
+        <p>
+          P/B 的分母不是公司「值多少錢」的主觀估計，而是財報上的會計數字：
+          <strong>股東權益（資產 − 負債）÷ 流通在外股數</strong>。
+          設某公司資產負債表上的股東權益為 600 億元，流通在外股數為 5 億股：
+        </p>
+        <p>
+          每股淨值 B = 600 &divide; 5 = <strong>120</strong> 元
+        </p>
+        <p>
+          這個 120 元的意思是：如果公司今天把所有資產按帳面價值變現、還清所有負債，
+          每一股理論上能分到 120 元。實務上帳面價值不等於變現價值（存貨可能跌價、商譽可能減損、
+          土地可能被低估），所以 B 是「帳面基準」，不是保證能拿回的金額。
+          計算時要確認股東權益用的是<strong>歸屬於母公司業主的權益</strong>，
+          不含非控制權益，否則分子會被高估。
+        </p>
+
+        <h2>用真實數字算一遍：P/B = 1.5 與 P/B = 0.5</h2>
+        <p>
+          設甲、乙兩家公司，各自的每股淨值與股價如下。
+        </p>
+
+        <p><strong>甲公司：股價 180 元，每股淨值 120 元</strong></p>
+        <p>
+          P/B = 180 &divide; 120 = <strong>1.5</strong>
+        </p>
+        <p>
+          市場願意用 1.5 倍的帳面價值買這家公司：每 1 元淨值，付出 1.5 元。
+          多出來的 0.5 元，是市場對公司獲利能力、品牌、未來成長等「帳面沒有記錄的價值」所給的溢價。
+        </p>
+
+        <p><strong>乙公司：股價 45 元，每股淨值 90 元</strong></p>
+        <p>
+          P/B = 45 &divide; 90 = <strong>0.5</strong>
+        </p>
+        <p>
+          P/B 小於 1，俗稱「破淨」：股價只有帳面淨值的一半。
+          數學上，這代表市場認為帳上的 90 元淨值只值 45 元。
+          原因可能是資產品質被質疑、獲利持續低於資金成本，也可能只是市場過度悲觀——
+          公式本身不會告訴你是哪一種，需要回頭檢查資產內容與獲利能力。
+        </p>
+
+        <h2>P/B = P/E × ROE：為什麼高 ROE 公司 P/B 常常比較高</h2>
+        <p>
+          P/B 可以拆成兩個因子。每股盈餘 EPS 等於股東權益報酬率 ROE 乘以每股淨值：
+          EPS = ROE &times; B。代回 P/B：
+        </p>
+        <p>
+          P/B = P &divide; B = (P &divide; EPS) &times; (EPS &divide; B) = <strong>P/E &times; ROE</strong>
+        </p>
+        <p>
+          用甲公司驗證。設甲公司 ROE 為 10%，則 EPS = 10% &times; 120 = <strong>12</strong> 元，
+          P/E = 180 &divide; 12 = <strong>15</strong> 倍，
+          P/B = 15 &times; 10% = <strong>1.5</strong>，與直接用 180 &divide; 120 算出的結果一致。
+        </p>
+        <p>
+          這個關係的用途是：<strong>同樣的 P/B，背後的獲利能力可以差很多</strong>。
+          若另一家公司股價 90 元、每股淨值同樣是 120 元，P/B = 90 &divide; 120 = <strong>0.75</strong>；
+          當它的 ROE 只有 4%，EPS = 4.8 元，P/E = 90 &divide; 4.8 = <strong>18.75</strong> 倍。
+          P/B 低於 1 看起來「便宜」，但資產賺錢的效率若遠低於資金成本，
+          折價可能本來就是合理的。這也是為什麼 P/B 幾乎總是要和 ROE 一起看。
+        </p>
+
+        <h2>用目標 P/B 反推合理股價</h2>
+        <p>
+          公式可以反過來用。選定一個「目標 P/B」，就能推出對應股價：
+        </p>
+        <p>
+          <strong>參考股價 = 目標 P/B &times; 每股淨值</strong>
+        </p>
+        <p>
+          設同業的歷史 P/B 約 1.2 倍，甲公司每股淨值 120 元，
+          以「回歸 1.2 倍」為假設的參考股價是：
+        </p>
+        <p>
+          參考股價 = 1.2 &times; 120 = <strong>144</strong> 元
+        </p>
+        <p>
+          甲公司目前股價 180 元，與這個參考值相差 180 − 144 = <strong>36</strong> 元。
+          這只是「如果 P/B 回到 1.2 倍」的算術結果，不是預測。
+          兩個輸入都會改變答案：B 每季會隨盈餘、配息、增資而變動，
+          目標 P/B 的選擇（同業平均、公司自身歷史中位）也沒有標準答案。
+        </p>
+
+        <h2>P/B 適合與不適合的情境</h2>
+        <p>
+          <strong>適合：</strong>資產以金融性或有形資產為主的行業，
+          例如銀行、保險、證券、營建與資產密集型的傳統製造業。
+          這類公司的淨值與營運規模高度相關，帳面價值有參考意義。
+        </p>
+        <p>
+          <strong>較不適合：</strong>輕資產的軟體、設計、顧問類公司。
+          它們最重要的資產（技術、人才、品牌）多半不在資產負債表上，
+          淨值很小，P/B 動輒十幾倍，數字本身沒有太大的比較意義。
+        </p>
+        <p>
+          <strong>需要留意：</strong>公司長期買回庫藏股或大額配息，會讓淨值下降而 P/B 被墊高；
+          淨值為負（累積虧損大於股本）時，P/B 為負，倍數無法解讀。
+          跨產業直接比較 P/B 也沒有意義，應在同一產業、相近資本結構的公司之間比較。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>把「面額」或「股本」當成淨值。</strong>
+            許多股票的面額是 10 元，但每股淨值可能是 120 元，兩者毫無關係。
+            另一個常見誤算是直接用「股東權益總額」除以股價：
+            600（億元）&divide; 180（元/股）單位不一致，結果沒有意義。
+            確認方法：B 的單位是「元／股」，與股價 P 相同，
+            兩者相除後的 P/B 才是純粹的倍數。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面是 ∑ Calc 股價淨值比計算機，有兩個輸入欄：股價、每股淨值 BVPS。
+          輸入股價 180、每股淨值 120，按「計算」即可得到本文的 P/B = 1.5。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc &middot; 股價淨值比 P/B #117</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=117&amp;utm_source=bobolabs&amp;utm_medium=formula_article&amp;utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&amp;formula=117" title="股價淨值比 P/B 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/price-earnings-ratio.html">本益比 P/E — P/B = P/E × ROE 的另一半</a></li>
+          <li><a href="/formulas/dividend-yield.html">股利殖利率 — 同樣以股價為分母的估值指標</a></li>
+          <li><a href="/formulas/return-on-investment.html">投資報酬率 ROI — 報酬率的基本算法</a></li>
+          <li><a href="/formulas/compound-interest.html">複利終值 — 淨值累積背後的數學基礎</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        <p><strong>定義來源</strong></p>
+        <ul>
+          <li>Investopedia — Price-to-Book (P/B) Ratio: Meaning, Formula, and Example</li>
+          <li>CFA Institute — Equity Valuation: Concepts and Basic Tools</li>
+          <li>Graham, B. &amp; Dodd, D. — Security Analysis (6th ed.): 帳面價值與內在價值</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs &middot; <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

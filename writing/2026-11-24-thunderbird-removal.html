@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>刪 App 之前，先證明它沒存東西 — Thunderbird 移除記錄 · Bobo Labs</title>
+  <meta name="description" content="想清掉本機 Thunderbird 的舊信，結果一查發現從未設定帳號、本機 0 封信。這篇記下怎麼用四個證據判定「沒有信」，以及移除一個 Mac App 時容易漏掉的殘留。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-24-thunderbird-removal.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-24</p>
+      <h1 class="article-title">刪 App 之前，先證明它沒存東西 — Thunderbird 移除記錄</h1>
+      <p class="article-lede">
+        我本來想檢查本機 Thunderbird 裡有沒有舊信可以清。查完才發現它 10 月 28 日只開過一次，
+        從來沒設定過郵件帳號，本機 0 封信，Gmail 的信一直都只在伺服器上。
+        這次的重點不在刪除，而在怎麼拿出證據說「裡面真的沒有東西」。
+      </p>
+
+      <div class="article-body">
+        <h2>怎麼判斷本機沒有信</h2>
+        <p>
+          只看「我沒設定過帳號」不算證據，我用四個互相獨立的檢查交叉確認。
+          第一，設定檔 prefs.js 裡沒有任何 mail.server 或 mail.account 開頭的項目，只剩 mail.rights.version 這類預設值。
+          第二，profile 目錄裡沒有 Mail、ImapMail 資料夾，也沒有任何 .msf 索引檔。
+        </p>
+        <p>
+          第三，全域訊息資料庫 global-messages-db.sqlite 的 messages 筆數是 0，通訊錄 abook.sqlite 的 properties 也是 0。
+          第四，times.json 的建立時間等於首次使用時間，Spotlight 記錄的最後使用日期同樣停在 10 月 28 日。
+          四項都指向同一個結論：這個 App 裝了、開過、什麼都沒存。
+        </p>
+
+        <h2>為什麼先證明、再刪除</h2>
+        <p>
+          本機郵件程式和雲端信箱不同：IMAP 帳號的信刪了還能重抓，但 POP3 或本機資料夾的信刪了就沒了。
+          在不知道裡面有沒有東西的情況下刪除，賭的是「應該沒有」。
+          多花幾分鐘查 SQLite 筆數，可以把賭注換成確定。
+        </p>
+
+        <h2>移除 Mac App 會漏掉哪些殘留</h2>
+        <p>
+          把 /Applications 裡的 App 拖進垃圾桶只清掉 530MB 的本體。
+          第一輪我找到 ~/Library 底下的 Thunderbird 資料夾（15MB，兩個空 profile）、
+          Caches 裡的 12MB 快取，以及 Application Support 裡只剩一個空 Crash Reports 的資料夾。
+        </p>
+        <p>
+          第二輪掃描才發現 ~/Library/Preferences 裡還有一個 org.mozilla.thunderbird.plist。
+          另外 Downloads 裡有一個 Thunderbird_Attachments 資料夾，9 月 26 日存下的 20MB 帳單與繳費單附件。
+          這個資料夾不是程式的一部分，是我自己的檔案，所以我先單獨問過才處理，沒有跟著 App 一起清。
+        </p>
+
+        <h2>做法上的三個細節</h2>
+        <p>
+          刪除一律叫 Finder 執行 delete（透過 osascript），效果等同拖進垃圾桶，仍然可以「放回原處」。
+          清空垃圾桶之前，我先列出內容，確認裡面只有這次的目標項目。
+        </p>
+        <p>
+          沙盒環境下直接 ls ~/.Trash 會回 Operation not permitted，改請 Finder 回報垃圾桶裡每個項目的名稱就能查。
+          刪 plist 之前先 killall cfprefsd，避免系統的偏好設定快取在刪除後又把檔案寫回去。
+        </p>
+        <p>
+          殘留掃描我用了四種來源：對 ~/Library、/Library、/Applications 做 find 搭配 iname 比對，
+          用 mdfind 搜名稱，用 launchctl list 看有沒有 LaunchAgent，用 pkgutil --pkgs 看有沒有安裝收據。
+          最終結果是乾淨的：沒有 LaunchAgent、沒有 pkg receipt。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>刪除前先拿多個獨立證據</strong>：設定檔、資料夾、資料庫筆數、時間戳四項互相印證，比一句「我沒用過」可靠。</p>
+          <p><strong>分清「程式的東西」和「我的檔案」</strong>：Downloads 裡的附件不屬於 App，要單獨問過才動。</p>
+          <p><strong>用 Finder delete 而不是 rm</strong>：刪得掉、也放得回，清空垃圾桶前再列一次內容確認。</p>
+          <p><strong>殘留要掃兩輪</strong>：第一輪抓得到資料夾，plist 這類偏好設定常要第二輪、換個搜尋方式才找到。</p>
+          <p><strong>先 killall cfprefsd 再刪 plist</strong>：否則偏好設定快取可能把剛刪的檔案寫回去。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-24 · 本機 Thunderbird 156.0.1 移除 · App 530MB + 資料與快取約 47MB · 本機郵件 0 封
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
