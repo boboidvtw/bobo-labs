@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>房貸負擔率怎麼算？月付除以月收入公式（月收15萬實例） · Bobo Labs</title>
+  <meta name="description" content="房貸負擔率怎麼算？公式為每月房貸支出除以每月家庭收入再乘 100。本文用 1500 萬房貸、月收入 15 萬算出 37.97%，並說明單薪與雙薪、利率上升後的差距。" />
+  <meta property="og:title" content="房貸負擔率怎麼算？月付除以月收入公式" />
+  <meta property="og:description" content="房貸負擔率公式、月收入 15 萬的實例、單薪雙薪與利率上升的對照。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labs.moneyai168.com/formulas/mortgage-burden-ratio.html" />
+  <link rel="canonical" href="https://labs.moneyai168.com/formulas/mortgage-burden-ratio.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../writing/article.css" />
+  <link rel="stylesheet" href="formula.css" />
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "TechArticle", "headline": "房貸負擔率怎麼算？月付除以月收入公式", "url": "https://labs.moneyai168.com/formulas/mortgage-burden-ratio.html", "datePublished": "2026-11-26", "inLanguage": "zh-Hant", "isPartOf": { "@type": "WebSite", "name": "Bobo Labs", "url": "https://labs.moneyai168.com/" } }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首頁", "item": "https://labs.moneyai168.com/" },
+    { "@type": "ListItem", "position": 2, "name": "公式庫", "item": "https://labs.moneyai168.com/formulas/" },
+    { "@type": "ListItem", "position": 3, "name": "房貸負擔率", "item": "https://labs.moneyai168.com/formulas/mortgage-burden-ratio.html" }
+  ] }
+  </script>
+  <script type="application/json" id="formula-check">
+  {
+    "expr": "M/I*100",
+    "cases": [
+      {"expr": "P*r*(1+r)**n/((1+r)**n-1)", "input": {"P": 15000000, "r": 0.0018333333333333333, "n": 360}, "expect": 56955.126214540556, "tol": 1, "text": "56,955"},
+      {"input": {"M": 56955.126214540556, "I": 150000}, "expect": 37.97008414, "tol": 0.001, "text": "37.97"},
+      {"input": {"M": 56955.126214540556, "I": 80000}, "expect": 71.19390777, "tol": 0.001, "text": "71.19"},
+      {"input": {"M": 56955.126214540556, "I": 200000}, "expect": 28.47756311, "tol": 0.001, "text": "28.48"},
+      {"expr": "I/3", "input": {"I": 150000}, "expect": 50000, "tol": 0.01, "text": "50,000"},
+      {"expr": "M*(1-(1+r)**(-n))/r", "input": {"M": 50000, "r": 0.0018333333333333333, "n": 360}, "expect": 13168261.57, "tol": 1, "text": "13,168,262"},
+      {"expr": "I*0.4", "input": {"I": 150000}, "expect": 60000, "tol": 0.01, "text": "60,000"},
+      {"expr": "M*(1-(1+r)**(-n))/r", "input": {"M": 60000, "r": 0.0018333333333333333, "n": 360}, "expect": 15801913.89, "tol": 1, "text": "15,801,914"},
+      {"expr": "P*r*(1+r)**n/((1+r)**n-1)", "input": {"P": 15000000, "r": 0.00225, "n": 360}, "expect": 60839.64335, "tol": 1, "text": "60,840"},
+      {"expr": "(P*r*(1+r)**n/((1+r)**n-1))/I*100", "input": {"P": 15000000, "r": 0.00225, "n": 360, "I": 150000}, "expect": 40.55976034, "tol": 0.001, "text": "40.56"},
+      {"expr": "P*r2*(1+r2)**n/((1+r2)**n-1) - P*r1*(1+r1)**n/((1+r1)**n-1)", "input": {"P": 15000000, "r1": 0.0018333333333333333, "r2": 0.00225, "n": 360}, "expect": 3884.517, "tol": 1, "text": "3,885"},
+      {"expr": "Y/12", "input": {"Y": 1800000}, "expect": 150000, "tol": 0.01, "text": "150,000"},
+      {"expr": "M/Y*100", "input": {"M": 56955.126214540556, "Y": 1800000}, "expect": 3.164173, "tol": 0.001, "text": "3.16"},
+      {"expr": "P*r*(1+r)**n/((1+r)**n-1)*n - P", "input": {"P": 15000000, "r": 0.0018333333333333333, "n": 360}, "expect": 5503845.437, "tol": 1, "text": "5,503,845"}
+    ]
+  }
+  </script>
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+  <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/"><span class="brand-mark">∑</span><span class="brand-name">Bobo&nbsp;Labs</span></a><nav aria-label="主導覽"><ul class="nav-list"><li><a href="/#work">Work</a></li><li><a href="/#writing">Writing</a></li><li><a href="/formulas/">Formulas</a></li><li><a href="/#contact">Contact</a></li></ul></nav></div></header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/formulas/">← 回 Formula Library</a>
+      <p class="article-eyebrow">Formula · 金融 · #118 <span class="formula-tier formula-tier--free">Free</span></p>
+      <h1 class="article-title">房貸負擔率怎麼算？月付佔收入幾成，一個除法就知道</h1>
+      <p class="article-meta">
+        <span class="article-meta-author">Amy</span>
+        <span class="article-meta-sep">·</span>
+        <span>2026-11-26</span>
+        <span class="article-meta-sep">·</span>
+        <span class="article-meta-time" data-reading-time>—</span>
+      </p>
+      <p class="article-lede">
+        看房時最常被問的問題不是「貸多少」，而是「月付會不會太重」。
+        房貸負擔率（Mortgage Burden Ratio）只做一件事：把<strong>每月房貸支出</strong>除以<strong>每月家庭收入</strong>，
+        換成百分比。月收入 15 萬、貸款 1500 萬的家庭，負擔率是 <strong>37.97%</strong>；同一筆房貸換成月收入 8 萬，就變成 <strong>71.19%</strong>。
+        本文拆解這條公式、算出能貸多少的反推，並指出最容易算錯的三個地方。
+      </p>
+
+      <div class="article-body">
+        <div class="formula-box">
+          <div class="formula-box-eq">房貸負擔率 = 每月房貸支出 M ÷ 每月家庭收入 I × 100%</div>
+          <div class="formula-box-note">M 與 I 必須是同一種幣別、同一個「每月」口徑</div>
+        </div>
+
+        <table class="formula-vars">
+          <thead><tr><th>符號</th><th>意義</th><th>單位</th><th>典型值</th></tr></thead>
+          <tbody>
+            <tr><td>M</td><td>每月房貸支出（本金加利息的月付金額）</td><td>元／月</td><td>56,955</td></tr>
+            <tr><td>I</td><td>每月家庭收入（同一個家計單位的月收入合計）</td><td>元／月</td><td>150,000</td></tr>
+            <tr><td>負擔率</td><td>月付佔月收入的比例</td><td>%</td><td>37.97</td></tr>
+          </tbody>
+        </table>
+
+        <h2>月收入 15 萬、貸款 1500 萬，負擔率是多少？</h2>
+        <p>
+          先算月付。貸款 P = 15,000,000、年利率 2.2%、30 年（n = 360 期），月利率 r = 0.022 ÷ 12。
+          用<a href="/formulas/mortgage-payment.html">等額本息公式</a>算出每月房貸支出 M = <strong>56,955</strong> 元。
+        </p>
+        <p>
+          家庭月收入 I = 150,000 元，代入：56,955 ÷ 150,000 × 100 = <strong>37.97</strong>（%）。
+          換句話說，每賺 100 元，有將近 38 元在月初就被房貸預訂走了。剩下的錢要負擔餐費、保險、交通、孩子的支出與儲蓄。
+        </p>
+        <p>
+          這個數字背後還有一個時間尺度：30 年繳完，總共付出的利息是 <strong>5,503,845</strong> 元。
+          負擔率只看「每個月痛不痛」，不看「總共多花多少」，兩者要分開看。
+        </p>
+
+        <h2>負擔率多少算安全？用「反推」代替死背門檻</h2>
+        <p>
+          坊間常見的經驗法則是「月付不要超過月收入的三分之一」，更寬鬆的說法是 40%。
+          這些是經驗值，不是數學定理，銀行實際審核另有自己的負債比標準，各家不同，請以貸款銀行的公告為準。
+          但有了公式，可以直接把門檻反推成「最多能貸多少」。
+        </p>
+        <p>
+          以月收入 150,000 元為例：
+        </p>
+        <ul>
+          <li>三分之一線：月付上限 = I ÷ 3 = <strong>50,000</strong> 元。以 2.2%、30 年反推本金，
+            M × (1 − (1+r)<sup>−n</sup>) ÷ r = <strong>13,168,262</strong> 元，約 1317 萬。</li>
+          <li>40% 線：月付上限 = I × 0.4 = <strong>60,000</strong> 元，
+            同條件反推本金 = <strong>15,801,914</strong> 元，約 1580 萬。</li>
+        </ul>
+        <p>
+          同樣月入 15 萬，三分之一線與 40% 線的可貸金額差了約 263 萬。
+          門檻選哪一條，對「買得起多大的房子」的影響比多數人想像的大。
+          這裡的反推用的是<a href="/formulas/present-value-annuity.html">年金現值</a>的邏輯：把 360 期的月付折現到今天，就是銀行願意借的本金。
+        </p>
+
+        <h2>單薪與雙薪：同一筆房貸，分母不同，結論完全不同</h2>
+        <p>
+          月付固定 56,955 元，只改月收入：
+        </p>
+        <table class="formula-vars">
+          <thead><tr><th>家庭月收入 I</th><th>負擔率</th></tr></thead>
+          <tbody>
+            <tr><td>80,000 元（單薪）</td><td>71.19%</td></tr>
+            <tr><td>150,000 元</td><td>37.97%</td></tr>
+            <tr><td>200,000 元（雙薪）</td><td>28.48%</td></tr>
+          </tbody>
+        </table>
+        <p>
+          分母從 80,000 變成 200,000，負擔率從 71.19% 降到 28.48%。
+          但雙薪的分母有一個隱含假設：<strong>兩份收入都要持續 30 年</strong>。
+          若其中一方因育兒、轉職或健康離開職場，負擔率會瞬間跳回單薪的水準。
+          試算時建議同時算「雙薪」與「只靠主要收入者」兩個版本。
+        </p>
+
+        <h2>利率升 0.5 個百分點，負擔率怎麼動？</h2>
+        <p>
+          浮動利率房貸的月付會隨利率變動。把年利率從 2.2% 調到 2.7%（上升 0.5 個百分點），其他條件不變：
+          月付由 56,955 元變成 <strong>60,840</strong> 元，每月多 <strong>3,885</strong> 元；
+          負擔率由 37.97% 升到 <strong>40.56</strong>%。
+        </p>
+        <p>
+          月收入沒變、月付多了 3,885 元，負擔率就從三分之一線附近滑過了 40% 線。
+          這是為什麼評估房貸時，除了看「現在的利率」，也要用高 0.5 到 1 個百分點的利率再算一次，
+          看負擔率會不會越過自己設定的底線。這是壓力測試的做法，不是預測利率走向。
+        </p>
+
+        <div class="formula-callout">
+          <div class="formula-callout-title">⚠️ 常見錯誤</div>
+          <p style="margin: 0;">
+            <strong>(1) 年收入與月收入混用</strong>：分母要的是「每月」收入。
+            年收入 1,800,000 元要先除以 12 得到 150,000 元；
+            若直接拿月付 56,955 元除以年收入 1,800,000 元，只會得到 3.16%，嚴重低估負擔。<br>
+            <strong>(2) 分子漏掉其他月付</strong>：本文的 M 只代表房貸。若同時有車貸、信貸、卡費分期，
+            要看整體負債佔收入多少，需另外把這些月付加進分子，不能只用房貸月付代表全部壓力。<br>
+            <strong>(3) 用稅前收入卻以稅後現金流判斷</strong>：負擔率是比例，分母用稅前或稅後都可以，
+            但同一個家庭要固定用同一種口徑，才能和自己設定的門檻比較。
+            真正會被月付壓垮的是稅後現金流，所以自己評估時，用稅後（實領）收入較貼近生活感受。
+          </p>
+        </div>
+
+        <h2>動手算算看</h2>
+        <p>
+          下面嵌入 ∑ Calc 的房貸負擔率計算機。它有兩個輸入欄：「每月房貸支出」與「每月家庭收入」，
+          按下計算後會給出一個百分比數字。輸入 56955 與 150000，就能重現本文的 37.97。
+          月付要先自己用<a href="/formulas/mortgage-payment.html">月繳貸款公式</a>算好再填入。
+        </p>
+      </div>
+
+      <div class="formula-interactive">
+        <div class="formula-interactive-head">
+          <span class="formula-interactive-title">∑ Calc · 房貸負擔率 #118</span>
+          <a class="formula-interactive-link" href="https://boboidvtw.github.io/?formula=118&utm_source=bobolabs&utm_medium=formula_article&utm_campaign=formula_lib" target="_blank" rel="noopener">在 ∑ Calc 開啟 ↗</a>
+        </div>
+        <iframe src="https://boboidvtw.github.io/?embed=1&formula=118" title="房貸負擔率 互動計算機" loading="lazy"></iframe>
+      </div>
+
+      <div class="formula-related">
+        <div class="formula-related-title">延伸閱讀</div>
+        <ul>
+          <li><a href="/formulas/mortgage-payment.html">房貸月繳怎麼算 — 先算出公式的分子 M</a></li>
+          <li><a href="/formulas/present-value-annuity.html">年金現值 — 由月付反推可貸本金</a></li>
+          <li><a href="/formulas/effective-annual-rate.html">實質年利率 EAR — 名目利率與實際成本的差</a></li>
+          <li><a href="/formulas/compound-interest.html">複利計算公式 — 複利終值怎麼算（100萬30年實例）</a></li>
+          <li><a href="/formulas/">回 Formula Library 索引</a></li>
+        </ul>
+      </div>
+
+      <div class="article-foot">
+        來源：房貸負擔率為家計財務常用的「債務支出佔收入比」的房貸版本，月付依等額本息公式計算 · 本文所有數字均以
+        負擔率 = M ÷ I × 100 及等額本息與年金現值公式實算並通過站台數值驗算腳本 · 銀行實際授信標準因行而異，全文僅作數學說明，不構成投資或貸款建議。
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Bobo Labs · <a href="/">labs.moneyai168.com</a></p></div></footer>
+
+  <script src="../writing/article.js" defer></script>
+</body>
+</html>

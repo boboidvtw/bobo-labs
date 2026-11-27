@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YouTube 一直轉圈圈：用排除法把問題縮到一個瀏覽器 · Bobo Labs</title>
+  <meta name="description" content="Brave 播 YouTube 卡轉圈圈。DNS、頻寬、記憶體都正常，同一部影片在另一個瀏覽器能播。排除順序與每一步的證據，以及一次重開就好的結果。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-26-brave-youtube-spinner.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-26</p>
+      <h1 class="article-title">YouTube 一直轉圈圈：用排除法把問題縮到一個瀏覽器</h1>
+      <p class="article-lede">
+        Brave 看 YouTube 一直轉圈圈。我沒有先去調 Brave 的設定，而是照「網路、系統、播放本身、瀏覽器」的順序逐層排除，
+        每一層都留下數字。最後問題只在 Brave 這個行程，重開之後恢復，沒有改任何設定。
+      </p>
+
+      <div class="article-body">
+        <h2>先排除網路：四個數字</h2>
+        <p>
+          DNS 用 1.1.1.1 和 8.8.8.8 查詢，各約 7 ms。youtube.com 回 200，耗時 0.26 秒；
+          redirector.googlevideo.com 回 200，耗時 0.13 秒。
+          對 Cloudflare 下載約 24 MB/s（約 190 Mbps），ping 8.8.8.8 為 5 ms、掉包 0%。
+          另外確認沒有開 proxy，hosts 檔裡也沒有 google 或 youtube 的條目。
+          網路這一層沒有嫌疑。
+        </p>
+
+        <h2>再排除系統：記憶體壓力是假警報</h2>
+        <p>
+          這台有 36 GB RAM，swap 用量 0。memory_pressure 顯示 free 只有 9%，看起來吃緊，
+          但那是檔案快取佔掉的空間，會在需要時釋放，不是瓶頸。
+          看到 free 偏低就推論「記憶體不夠」是常見的誤判，swap 是 0 才是比較有力的證據。
+        </p>
+
+        <h2>用另一個瀏覽器當對照組</h2>
+        <p>
+          同一部影片在 App 內建瀏覽器能串流：videoplayback 請求回 200，播放品質回報裡的 fmt=396 也持續送出。
+          串流端沒問題，問題範圍縮到 Brave。
+          這一步比查任何設定都划算，一個能播的對照組，把「YouTube」「網路」「這部影片」三個嫌疑一次排掉。
+        </p>
+
+        <h2>為什麼不直接讀 Brave 的設定</h2>
+        <p>
+          我本來想離線檢查 Brave 的擴充功能、Shields 和硬體加速設定，但 macOS 的檔案隱私保護擋掉了
+          Brave 設定資料夾的讀取，連關掉沙盒都是 Operation not permitted。
+          能查 Brave 內部狀態的路只剩瀏覽器擴充功能。
+          這次剛好使用者為了接 Claude in Chrome 而完全重開 Brave，重開後影片就恢復了。
+        </p>
+        <p>
+          恢復後的實測：1080p，10 秒前進 10.0 秒，掉幀 0／1728，console 沒有錯誤。
+          原本卡住的那部影片，使用者確認可以播。
+        </p>
+
+        <h2>一個假證據：自己手刻的請求</h2>
+        <p>
+          中途我試過自己組 youtubei/v1/player 的請求，帶假的 clientVersion，結果回 UNPLAYABLE「需重新載入」。
+          這不能當證據：請求本身就不是瀏覽器真正送的，回應只反映我的偽造不被接受。
+          另一個小坑：內建瀏覽器面板隱藏時，await 太長的 JavaScript 會逾時，要拆成短呼叫。
+        </p>
+
+        <h2>如果再發生</h2>
+        <p>
+          依序做三件事：完全結束 Brave（Cmd+Q）再重開；只有 YouTube 卡的話，對 youtube.com 關掉 Shields；
+          頻繁發生再到 brave://settings/system 關硬體加速觀察。
+          這次根因沒有被確認，重開能解只能說是行程狀態的問題，我沒有看到是哪個模組卡住。
+        </p>
+
+        <h2>關鍵教訓</h2>
+        <div class="takeaway">
+          <p><strong>先找對照組</strong>：同一部影片在另一個瀏覽器能播，一步就把嫌疑縮到單一行程。</p>
+          <p><strong>數字比感覺可靠</strong>：DNS 7 ms、24 MB/s、swap 0、掉幀 0/1728，每層都能被反駁，也能被複查。</p>
+          <p><strong>free 偏低不等於記憶體不足</strong>：快取佔用會被釋放，看 swap 才準。</p>
+          <p><strong>自己偽造的請求不算證據</strong>：假 clientVersion 回 UNPLAYABLE，只證明偽造被拒。</p>
+          <p><strong>沒查到根因就照實說</strong>：重開能解，但沒看到是哪裡卡住；寫下再發生時的三步，比假裝找到原因有用。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-26 · Brave 播 YouTube 卡轉圈圈 · 排除 4 層 · 恢復後掉幀 0／1728
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
