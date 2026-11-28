@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>發布前先驗收：Epoch RTS v0.5.0 與 3489 行音效 ERROR · Bobo Labs</title>
+  <meta name="description" content="發現 v0.4.0 Release 根本不含 16 時代，趕在試玩前發 v0.5.0；順手查出 mainlog 3489 行 ERROR 全是 OpenAL 音效初始化失敗。" />
+  <link rel="canonical" href="https://labs.moneyai168.com/writing/2026-11-27-epoch-rts-v050-release.html" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="article.css" />
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8a8bc7d0871a4710b8d8a1cf8ab92e1c"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#article">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Bobo&nbsp;Labs</span>
+      </a>
+      <nav aria-label="主導覽">
+        <ul class="nav-list">
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#writing">Writing</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article" class="article article--enhanced">
+    <article class="article-wrap">
+      <aside class="article-toc" aria-label="目錄">
+        <div class="article-toc-title">On this page</div>
+      </aside>
+      <a class="back-link" href="/#writing">← 回 Writing &amp; Docs</a>
+      <p class="article-eyebrow">Writing · Daily log · 2026-11-27</p>
+      <h1 class="article-title">發布前先驗收：Epoch RTS v0.5.0 與 3489 行音效 ERROR</h1>
+      <p class="article-lede">
+        開工檢查時發現，試玩包連結指向的 Release v0.4.0 不含最近做完的 16 個時代。
+        照原計畫發給試玩者，他們測到的會是舊版。我先停下來發了 v0.5.0，
+        再把遊戲內一直跳 ERROR 的原因查清楚：3489 行錯誤，扣掉音效相關後剩 0。
+      </p>
+
+      <div class="article-body">
+        <h2>為什麼不能直接把試玩包發出去</h2>
+        <p>
+          M7.6 是第一輪外部試玩。我對照試玩包文件與 GitHub Release，發現 v0.4.0 的資產是在 16 時代
+          （A1–A4）合入之前打包的，但 INSTALL 與試玩包連結仍指向它。
+          如果照發，回饋會落在舊版上，之後還得逐條判斷「這個問題是不是已經修了」。
+        </p>
+
+        <h2>v0.5.0 怎麼證明是對的版本</h2>
+        <p>
+          發布前把 mod.json 從 0.4.0 升到 0.5.0，測試用的 t13-harness 依賴同步改。
+          回歸跑了六組：t04 183 項、t05 77 項、ages 185 項、ages-early 48 項，
+          加上 duel 與 duel-ai（seed 42，遊戲內時間 7 = 1106 秒、1126 秒）。
+          整套 12 場模擬不到 2 分鐘就跑完，因為 smoke-macos 是非視覺模擬，duel-ai 的秒數是遊戲內時鐘，不是真實時間。
+        </p>
+        <p>
+          打包用 <code>package-mod.py</code>，產出 92 個檔、112,334 bytes。接著做三次比對：
+          在 tag 上重新建置，雜湊與原包相同；GitHub 上的資產 digest 與本機相同；
+          重新下載後 <code>shasum -c</code> 回 OK。三個獨立來源都對得上，才算「發出去的就是測過的」。
+        </p>
+
+        <h2>3489 行 ERROR 其實是音效</h2>
+        <p>
+          用 <code>--menu</code> 開遊戲，親手點對戰設定「玩家」分頁的 Start Age 與 End Age：
+          史前開局、結束在文藝復興，行為正確。但 console 一直跳 ERROR。
+          把 mainlog 去掉 HTML 標籤後過濾，扣掉 OpenAL 與 ogg 相關行，剩下 0 行。
+          根因是 macOS 預設輸出裝置是一台 Philips 電視（HDMI），OpenAL 初始化時沒有回應。
+        </p>
+        <p>
+          自動測試一律帶 <code>-nosound</code>，所以從來沒碰過這條路徑。
+          這提醒我：測試環境與玩家環境差在哪裡，就是會漏的地方。
+          試玩者若同樣用 HDMI 電視當預設輸出，很可能也會看到這些 ERROR；這是我的推測，尚未找人驗證。
+        </p>
+
+        <h2>文件也要對照實作檢查</h2>
+        <p>
+          age-ladder.md 原本寫史前開局的長矛兵「要到青銅才能訓練」，我去查模板，
+          實際條件是 <code>phase_epoch_copper</code>，也就是銅器時代。文件已更正。
+          文件裡的條件，之後發布前要抽幾條對回模板。
+        </p>
+
+        <div class="takeaway">
+          <p><strong>發布前先核對連結指向的版本</strong>：功能做完不等於 Release 含有它。試玩包、INSTALL、tag 三處要指向同一版。</p>
+          <p><strong>用多個獨立來源證明同一個包</strong>：tag 重建、GitHub digest、重新下載比對，三者一致才算驗證過。</p>
+          <p><strong>先過濾已知雜訊再判斷 ERROR 數量</strong>：扣掉 OpenAL／ogg 後是 0，3489 行才從「遊戲壞了」變成「音效裝置的問題」。</p>
+          <p><strong>測試參數會掩蓋玩家環境</strong>：<code>-nosound</code> 讓自動測試永遠避開音效路徑，必須有人用預設設定實機跑一次。</p>
+          <p><strong>文件條件對回實作</strong>：「到青銅才能訓練」與 <code>phase_epoch_copper</code> 差一個時代，只有查模板才抓得到。</p>
+        </div>
+
+        <div class="article-foot">
+          來源：個人開發日誌 2026-11-27 · Epoch RTS · v0.5.0 · 92 檔 112,334 bytes · 回歸 6 組
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> Bobo Labs</span>
+      <span>Built by hand. No frameworks.</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="article.js" defer></script>
+</body>
+</html>
