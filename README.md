@@ -20,6 +20,11 @@ CNAME               Custom domain (labs.moneyai168.com)
 
 ## Changelog / 變更紀錄
 
+- **2026-11-28**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
+  `formulas/dca-future-value.html`（#113 · 金融 · Pro，定期定額終值，年化報酬換算等效月報酬而非直接除以 12）、`2026-11-27-epoch-rts-v050-release.html`（發布前先驗收 Epoch RTS v0.5.0 與 3489 行音效 ERROR）。
+  Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數不變。
+  通過 QA gate（紅線/結構/佔位/不覆蓋/LLM自評/數值驗算）自動上線。
+  Auto-published 2 drafts from _pending/ via /bobo-autopublish on 2026-11-28.
 - **2026-11-27**（今日）— 由 /bobo-autopublish 全自主發布 2 篇文章：
   `formulas/mortgage-burden-ratio.html`（#118 · 金融 · Free，房貸負擔率，月付÷月收入與三分之一／40% 線反推可貸金額）、`2026-11-26-brave-youtube-spinner.html`（YouTube 轉圈圈用排除法縮到單一瀏覽器）。
   Writing 區依時間倒序插入；Formula 卡片由 placeholder 轉為連結、分類計數不動（Tier 一致）。
